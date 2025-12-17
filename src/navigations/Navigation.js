@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {View,TouchableWithoutFeedback} from 'react-native'
+// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {View,TouchableWithoutFeedback, StyleSheet} from 'react-native'
+import { COLOR } from '../theme/theme';
 //----- welcome Screns
 import Splash from '../screens/splash/Splash';
 import Welcome1 from '../screens/welcome/Welcome1'
@@ -12,12 +13,12 @@ import Welcome3 from '../screens/welcome/Welcome3'
 //------ Auth screen
 
 // import Home from '../Screens/Home';
-import SignIn from '../screens/authscreens/signin/SignIn';
+import SignInScreen from '../screens/authscreens/signInScreen/SignInScreen';
 // import Termsofuse from '../Screens/Termsofuse';
 // import PrivacyPolicy from '../Screens/PrivacyPolicy';
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
+// const Tab = createBottomTabNavigator();
 
 function Navigation({ props }) {
   return (
@@ -29,18 +30,19 @@ function Navigation({ props }) {
           <Stack.Screen name="welcome2" component={Welcome2} />
           <Stack.Screen name="welcome3" component={Welcome3} />
         </Stack.Group>
-         {/* ============ main screens ============= */}
+        {/* ============ main screens ============= */}
         <Stack.Group
           screenOptions={({ navigation }) => {
             return {
               headerTitleAlign: 'center',
-              headerLeft: () => (
-                <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-                  <View style={{ backgroundColor: COLOR.dark5, width: 35, height: 35, borderRadius: 20, alignItems: 'center', justifyContent: "center" }}>
-                    <Feather name='chevron-left' size={26} color={COLOR.Black1} />
-                  </View>
-                </TouchableWithoutFeedback>
-              ),
+              // headerLeft: () => (
+              //   <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+              //     <View style={{ backgroundColor: COLOR.dark5, width: 35, height: 35, borderRadius: 20, alignItems: 'center', justifyContent: "center" }}>
+              //       {/* <Feather name='chevron-left' size={26} color={COLOR.Black1} /> */}
+              //     <Text>icon</Text>
+              //     </View>
+              //   </TouchableWithoutFeedback>
+              // ),
               headerBackVisible: false,
               headerShadowVisible: false,
               headerTransparent: false,
@@ -51,7 +53,7 @@ function Navigation({ props }) {
               // },
             };
           }}>
-          <Stack.Screen name="signIn" component={SignIn} options={{ header: () => null }}/>          
+          <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }}/>          
           {/* <Stack.Screen name="MyProfile" component={MyProfile} />
           <Stack.Screen name="Approve" component={Approve} />
           <Stack.Screen name="NewMeeting" component={NewMeeting} />
@@ -65,5 +67,9 @@ function Navigation({ props }) {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  leftIconContainer:{ backgroundColor: COLOR.dark5, width: 35, height: 35, borderRadius: 20, alignItems: 'center', justifyContent: "center" }
+})
 
 export default Navigation

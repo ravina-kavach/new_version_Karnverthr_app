@@ -2,16 +2,32 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { COLOR } from '../theme/theme';
 import { responsiveHeight, responsiveWidth } from '../utils/metrics';
-import {H5} from '../utils/common'
+import LinearGradient from 'react-native-linear-gradient';
+import { FontSize } from '../utils/metrics';
 const CommonButton = props => {
-  const { onPress, title, containerStyle, textStyle } = props;
+  const { onPress, title, containerStyle, textStyle, gradientColors } = props;
   return (
-    <TouchableOpacity
-      style={[styles.containerStyle, containerStyle]}
-      onPress={onPress}
-    >
-      <H5 style={[styles.buttonText,textStyle]}>{title}</H5>
-    </TouchableOpacity>
+    <>
+      {gradientColors ? (
+        <LinearGradient colors={gradientColors} style={[styles.containerStyle, containerStyle]}>
+          <TouchableOpacity
+            activeOpacity={0.5}
+    
+            onPress={() => onPress()}
+          >
+          <Text style={[styles.buttonText, textStyle]}>{title}</Text>
+          </TouchableOpacity>
+        </LinearGradient>
+      ) : (
+        <TouchableOpacity
+          activeOpacity={0.5}
+          style={[styles.containerStyle, containerStyle]}
+          onPress={() => onPress()}
+        >
+          <Text style={[styles.buttonText, textStyle]}>{title}</Text>
+        </TouchableOpacity>
+      )}
+    </>
   );
 };
 
@@ -22,15 +38,18 @@ const styles = StyleSheet.create({
     height: responsiveHeight(7),
     backgroundColor: COLOR.Primary1,
     borderRadius: 40,
-  
+
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
     color: COLOR.White1,
-      paddingTop:'2%',
-      fontWeight:'500'
+    alignSelf:'center',
+    textAlign:'center',
+    fontWeight: '500',
+    fontSize: FontSize.Font18,
+    lineHeight: 20,
   },
 });
 export default CommonButton;
