@@ -6,19 +6,24 @@ import {
   ImageBackground,
   Animated,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import GlobalStyle from '../../theme/globalstyle';
 import CommonButton from '../../components/CommonButton';
 import { welcome2Image, welcome_background } from '../../assets/images/index';
 import { COLOR } from '../../theme/theme';
-import { H5, H4, H3 } from '../../utils/common';
+import { H5, H4, H3, CommonView } from '../../utils/common';
 import { useWelcome } from '../welcome/WelcomeController.js';
+import { responsiveHeight } from '../../utils/metrics.js';
 
 const Welcome2 = () => {
-  const { t, backgroundOpacity, logoOpacity, textOpacity, rowOpacity,navigateToWelcome3 } =
-    useWelcome();
+  const {
+    t,
+    backgroundOpacity,
+    logoOpacity,
+    textOpacity,
+    rowOpacity,
+    navigateToWelcome3,
+  } = useWelcome();
   return (
-    <SafeAreaView style={GlobalStyle.flexContainer} edges={['left', 'right']}>
+    <CommonView statusBarColor={COLOR.OffRed}>
       <View style={styles.container}>
         <Animated.View style={{ opacity: backgroundOpacity }}>
           <ImageBackground
@@ -30,26 +35,32 @@ const Welcome2 = () => {
             </Animated.View>
           </ImageBackground>
         </Animated.View>
-        <Animated.View style={{ opacity: textOpacity }}>
-          <View style={styles.titleContainer}>
-            <H4 style={styles.titleText}>{t('Welcome2.title')}</H4>
-            <H3 style={{ color: COLOR.Primary1 }}>
+
+        <View style={styles.buttonContainer}>
+          <Animated.View style={{ opacity: textOpacity }}>
+            <View style={styles.titleContainer}>
+              <H4 style={styles.titleText}>{t('Welcome2.title')}</H4>
+              <H3 style={{ color: COLOR.Primary1 }}>
                 {t('Welcome2.subtitle')}
               </H3>
-            <H5>{t('Welcome2.dis')}</H5>
+              <H5>{t('Welcome2.dis')}</H5>
+            </View>
+          </Animated.View>
+          <Animated.View opacity={rowOpacity}>
             <View style={styles.dotsContainer}>
               <View style={styles.inActiveDot} />
               <View style={[styles.activeDot, styles.dotsMargin]} />
               <View style={styles.inActiveDot} />
             </View>
-          </View>
-        </Animated.View>
-        <View></View>
-        <Animated.View style={styles.buttonContainer} opacity={rowOpacity}>
-          <CommonButton title={t('Button.Next')} onPress={navigateToWelcome3}/>
-        </Animated.View>
+            <CommonButton
+              title={t('Button.Next')}
+              gradientColors={[COLOR.grediant1,COLOR.grediant2]}
+              onPress={navigateToWelcome3}
+            />
+          </Animated.View>
+        </View>
       </View>
-    </SafeAreaView>
+    </CommonView>
   );
 };
 
@@ -64,7 +75,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   welcomeImage: {
-    top: '15%',
+    marginTop: responsiveHeight(6),
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
@@ -74,30 +85,30 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     alignContent: 'flex-end',
-    bottom: '5%',
+    paddingBottom: responsiveHeight(4),
   },
-  titleContainer: { marginHorizontal: 20, top:'10%' },
+  titleContainer: { marginHorizontal: 20 },
   titleText: { paddingVertical: '2%' },
-  dotsMargin: { marginHorizontal: '1%' },
+  dotsMargin: { marginHorizontal: '0.5%' },
   dotsContainer: {
     flexDirection: 'row',
-    top: '20%',
+    paddingVertical: responsiveHeight(3),
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   activeDot: {
     backgroundColor: COLOR.Primary1,
     height: 8,
-    width: 40,
+    width: 30,
     overflow: 'hidden',
-    borderRadius: 30,
+    borderRadius: 50,
   },
   inActiveDot: {
     backgroundColor: COLOR.dark4,
     height: 8,
-    width: 40,
+    width: 30,
     overflow: 'hidden',
-    borderRadius: 30,
+    borderRadius: 50,
   },
 });
 

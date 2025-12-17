@@ -2,13 +2,15 @@ export const COLOR = {
     Primary1: "#FA7777",
     TextPrimary:"#101828",
     TextSecondary:"#475467",
-
+    Transparent:"transparent",
     secondary1: "#41435a",
     Black1: "#000000",
     White1: "#FFFFFF",
     Liteorange1: "#F8E6E2",
-
+    OffRed :"#FB8D8D",
     Red: "#FF0000",
+    grediant1: "#FF6A8A",
+    grediant2: "#FF7FB2",
 
     dark1: "#545554",
     dark2: "#666666",
