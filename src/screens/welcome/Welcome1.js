@@ -11,7 +11,7 @@ import { welcome1Image, welcome_background } from '../../assets/images/index';
 import { COLOR } from '../../theme/theme';
 import { H5, H4, H3, CommonView } from '../../utils/common';
 import { useWelcome } from '../welcome/WelcomeController.js';
-import { responsiveHeight } from '../../utils/metrics.js';
+import { responsiveHeight, responsiveWidth } from '../../utils/metrics.js';
 
 const Welcome1 = () => {
   const {
@@ -55,6 +55,7 @@ const Welcome1 = () => {
               <View style={styles.inActiveDot} />
             </View>
             <CommonButton
+            containerStyle={styles.buttonInnerContainer}
               title={t('Button.Next')}
               gradientColors={[COLOR.grediant1,COLOR.grediant2]}
               onPress={navigateToWelcome2}
@@ -71,7 +72,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLOR.White1,
   },
-
+  buttonInnerContainer:{
+    width:responsiveWidth(90)
+  },
   backroundImage: {
     resizeMode: 'contain',
     resizeMode: 'cover',

@@ -27,6 +27,9 @@ export const H5 = props => {
 export const H6 = props => {
   return <Text style={[commonStyle.h6, props.style]}>{props.children}</Text>;
 };
+export const Label = (props) => { return (<Text style={[commonStyle.Label, props.style]}>{props.children}</Text>) }
+export const Valide = (props) => { return (<Text style={[commonStyle.Valide, props.style]}>{props.children}</Text>) }
+//-----------
 
 export const commonStyle = StyleSheet.create({
   h3: {
@@ -57,4 +60,16 @@ export const commonStyle = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '600',
   },
+   Label: {
+      fontSize: 17,
+      textTransform: "capitalize",
+      color: COLOR.dark2,
+      marginBottom: 3,
+      fontWeight: "400",
+   },
+   Valide: {
+      fontSize: 15,
+      color: COLOR.Red,
+      fontWeight: "400",
+   },
 });

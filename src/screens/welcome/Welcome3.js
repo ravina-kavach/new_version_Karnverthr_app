@@ -11,7 +11,7 @@ import { welcome3Image, welcome_background } from '../../assets/images/index';
 import { COLOR } from '../../theme/theme';
 import { H5, H4, H3, CommonView } from '../../utils/common';
 import { useWelcome } from '../welcome/WelcomeController.js';
-import { responsiveHeight } from '../../utils/metrics.js';
+import { responsiveHeight, responsiveWidth } from '../../utils/metrics.js';
 
 const Welcome3 = () => {
   const {
@@ -54,6 +54,7 @@ const Welcome3 = () => {
             </View>
             <CommonButton
               title={t('Button.Sign_In')}
+              containerStyle={styles.buttonInnerContainer}
               gradientColors={[COLOR.grediant1, COLOR.grediant2]}
               onPress={navigateToSignIn}
             />
@@ -68,6 +69,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLOR.White1,
+  },
+
+  buttonInnerContainer:{
+    width:responsiveWidth(90)
   },
 
   backroundImage: {

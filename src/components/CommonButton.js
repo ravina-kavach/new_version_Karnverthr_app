@@ -33,7 +33,7 @@ const CommonButton = props => {
 
 const styles = StyleSheet.create({
   containerStyle: {
-    width: responsiveWidth(90),
+    width: '100%',
     marginHorizontal: responsiveHeight(10),
     height: responsiveHeight(7),
     backgroundColor: COLOR.Primary1,

@@ -117,9 +117,34 @@ const getDayDifference = (startDate, endDate) => {
     return duration;
 }
 
+const setisVerified = async (data) => {
+    try {
+        await AsyncStorage.setItem('isVerified', data);
+    } catch (error) {
+        console.log('try catch[ service> isVerified] error:', error.message);
+    }
+}
+const removeisVerified = async () => {
+    try {
+        await AsyncStorage.removeItem('isVerified');
+    } catch (error) {
+        console.log('try catch[ service> removeisVerified] error:', error.message);
+    }
+}
+const GetisVerified = async () => {
+    try {
+        // removeisBiomatic();
+        let isVerified = await AsyncStorage.getItem('isVerified');
+        return (isVerified ? isVerified : false);
+    } catch (error) {
+        console.log('try catch[ service> GetisVerified] error:', error.message);
+    }
+}
+
 const Service = {
     setRemember, GetRemember, removeRemember, GetisFirstime, removeisFirstime, setisFirstime, ClearStorage,
-    FormatIndianNumber, getDayDifference, GetisBiomatic, removeisBiomatic, setisBiomatic,OpenLocaitonbutton
+    FormatIndianNumber, getDayDifference, GetisBiomatic, removeisBiomatic, setisBiomatic,OpenLocaitonbutton,
+    setisVerified,removeisVerified,GetisVerified
 };
 
 export default Service;
