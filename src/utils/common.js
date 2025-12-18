@@ -4,7 +4,6 @@ import { FontSize } from './metrics';
 import { COLOR } from '../theme/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlobalStyle from '../theme/globalstyle';
-import VectorImage from 'react-native-vector-image';
 
 export const CommonView = props => {
   return (
@@ -71,5 +70,19 @@ export const commonStyle = StyleSheet.create({
       fontSize: 15,
       color: COLOR.Red,
       fontWeight: "400",
+   },
+   btn_primary: {
+      paddingHorizontal: 15,
+      paddingVertical: 5,
+      fontSize: 15,
+      color: COLOR.White1,
+      alignItems: "center",
+      textTransform: 'capitalize',
+      justifyContent: "center",
+      textAlign: "center",
+      borderRadius: 5,
+      fontWeight: "600",
+      backgroundColor: COLOR.primary1,
+      overflow: 'hidden',
    },
 });

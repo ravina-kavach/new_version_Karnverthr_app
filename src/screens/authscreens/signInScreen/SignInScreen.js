@@ -15,13 +15,16 @@ import CommonButton from '../../../components/CommonButton';
 import { COLOR } from '../../../theme/theme';
 import { responsiveHeight, responsiveWidth } from '../../../utils/metrics';
 import EmailVerificationModal from '../../../components/EmailVerificationModal.js'
+import ForgotPasswordModal from '../../../components/ForgotPasswordModal.js'
 function SignInScreen() {
   const {
     t,
     Formdata,
     Validator,
     IsReSetmodalvisible,
+    setIsReSetmodalvisible,
     ReSetemail,
+    setReSetemail,
     ResetValidator,
     setFormdata,
     IsPassVisible,
@@ -30,7 +33,6 @@ function SignInScreen() {
     isForgotPasswordFetching,
     isChecked,
     setisChecked,
-    logoOpacity,
     heandleonSignin,
     BiometricLogin,
     heandleonforgot,
@@ -39,6 +41,7 @@ function SignInScreen() {
     isVisibleVerifiedModal,
     handleVerificationModal
   } = useSignInScreen();
+  
   return (
     <CommonView>
       <ScrollView contentContainerStyle={styles.container}>
@@ -92,12 +95,13 @@ function SignInScreen() {
             </TouchableOpacity>
             <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
           </View>
-          <TouchableOpacity style={styles.row}>
+          <TouchableOpacity style={styles.row} onPress={()=>setIsReSetmodalvisible(!IsReSetmodalvisible)}>
             <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
           </TouchableOpacity>
         </View>
 
         <CommonButton
+          loading= {isSigninFetching}
           onPress={() => heandleonSignin()}
           title={t('Button.Sign_In')}
           gradientColors={[COLOR.grediant1, COLOR.grediant2]}
@@ -117,6 +121,16 @@ function SignInScreen() {
         <EmailVerificationModal
           visible={isVisibleVerifiedModal}
           onSubmit={handleVerificationModal}
+        />}
+        {IsReSetmodalvisible && 
+        <ForgotPasswordModal
+        resetValidator={ResetValidator}
+        resetEmail={ReSetemail}
+        setResetEmail={setReSetemail}
+        visible={IsReSetmodalvisible}
+        onClose={()=>setIsReSetmodalvisible(!IsReSetmodalvisible)}
+        heandleonforgot={heandleonforgot}
+        loading={isForgotPasswordFetching}
         />}
       </ScrollView>
     </CommonView>

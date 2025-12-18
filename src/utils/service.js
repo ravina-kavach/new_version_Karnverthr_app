@@ -133,7 +133,6 @@ const removeisVerified = async () => {
 }
 const GetisVerified = async () => {
     try {
-        // removeisBiomatic();
         let isVerified = await AsyncStorage.getItem('isVerified');
         return (isVerified ? isVerified : false);
     } catch (error) {

@@ -31,7 +31,6 @@ export const useSignInScreen = () => {
   const [, forceUpdate] = React.useState();
   const ResetValidator = React.useRef(new SimpleReactValidator({}));
   const [, ResetforceUpdate] = React.useState();
-  const logoOpacity = React.useRef(new Animated.Value(0)).current;
   
   const [Formdata, setFormdata] = React.useState({})  
   // const [Formdata, setFormdata] = React.useState({ "email": "gauravsingh4632@gmail.com", "password": "Gaurav@123" })  
@@ -53,11 +52,6 @@ export const useSignInScreen = () => {
 
   const rnBiometrics = new ReactNativeBiometrics({ allowDeviceCredentials: true, })
   //---------------
-  React.useEffect(() => {
-    Animated.sequence([
-      Animated.timing(logoOpacity, { toValue: 1, duration: 1000, useNativeDriver: true }),
-    ]).start();
-  }, [logoOpacity])
   React.useEffect(() => {
     if (IsFocused) {
       Getdata();
@@ -86,7 +80,6 @@ export const useSignInScreen = () => {
         message: `${t('messages.Welcome_back')}`,
         type: "success",
       })
-
       setdata()
     }
   }, [isSignin])
@@ -106,16 +99,19 @@ export const useSignInScreen = () => {
 
   //-----------------
   const setdata = async () => {
+    console.log("calll")
     await Service.setRemember(UsersigninData)
     dispatch(updateState({ isSignin: false }))
+    console.log("ischecked --->",isChecked)
     if (isChecked) {
       await Service.setisBiomatic('true')
     } else {
+      await Service.setisBiomatic('false')
       await Service.setisFirstime('false')
     }
     // Navigation.navigate('home')
+    // testing parpuse after romove it.
     Navigation.navigate('myTab')
-    
     await Service.setisFirstime('true')
   }
   const Getdata = async () => {
@@ -126,6 +122,10 @@ export const useSignInScreen = () => {
     let newdata = await Service.GetRemember();
     setRememberData(newdata);
     let data = await Service.GetisBiomatic();
+    if(data && data === "true"){
+      setisChecked(true)
+      setFormdata(newdata)
+    }
     setisShowbiomatric(data);
   }
 
@@ -275,16 +275,16 @@ isForgotPasswordFetching,
 setisShowbiomatric,
 isChecked, 
 setisChecked,
-logoOpacity,
 heandleonSignin,
 BiometricLogin,    
 heandleonforgot,
-isShowbiomatric,
 FacelockLogin,
 isSigninFetching,
 ReSetemail,
+setReSetemail,
 ResetValidator,
 isVisibleVerifiedModal, 
 handleVerificationModal,
+setIsReSetmodalvisible
 }
 }

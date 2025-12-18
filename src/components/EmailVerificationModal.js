@@ -56,7 +56,7 @@ const EmailVerificationModal = ({ visible, onSubmit, onResend }) => {
             A verification code will be sent to the email{'\n'}
             for your account verification process.
           </Text>
-          <View style={styles.otpContainer}>
+          <View style={styles.inputContainer}>
             <CommonTextInput
               value={textInput}
               onChangeText={(value)=>setTextInput(value)}
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111',
   },
-  otpContainer: {
+  inputContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginVertical: 16,
