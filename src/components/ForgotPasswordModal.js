@@ -3,64 +3,97 @@ import {
   Modal,
   View,
   Text,
-  TextInput,
-  StyleSheet,
   TouchableOpacity,
-  Pressable,
+  Dimensions,
+  StyleSheet
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/Feather';
+import { COLOR } from '../theme/theme';
+import { useTranslation } from 'react-i18next';
+import { CommonTextInput } from './CommonTextInput';
+import CommonButton from './CommonButton';
 
-const ForgotPasswordModal = ({ visible, onClose }) => {
+
+const ForgotPasswordModal = ({ resetValidator, resetEmail, visible, onClose, heandleonforgot, loading, setResetEmail }) => {
+  const { t, i18n } = useTranslation();
   return (
     <Modal
-      animationType="slide"
-      transparent
+      animationType="none"
+      transparent={true}
       visible={visible}
-      onRequestClose={onClose}
-    >
-      {/* Background Overlay */}
-      <Pressable style={styles.overlay} onPress={onClose} />
+      onRequestClose={() => onClose()}>
+      <TouchableOpacity
+        style={styles.modalContainer}
+        onPress={() => onClose()}>
 
-      {/* Modal Content */}
-      <View style={styles.modalContainer}>
-        <View style={styles.card}>
-          {/* Icon */}
-          <View style={styles.iconWrapper}>
-            <Icon name="shield" size={26} color="#fff" />
+        <View
+          style={styles.mainCotainer}>
+          <View style={{ marginBottom: 10 }}>
+            <Text
+              style={styles.forgotText}>
+              {t('SignIn.Reset_Password')}
+            </Text>
           </View>
-
-          <Text style={styles.title}>Forgot Password</Text>
-
-          <Text style={styles.subtitle}>
-            A verification code will be sent to your email to reset your password.
-          </Text>
-
-          {/* Email Input */}
-          <View style={styles.inputWrapper}>
-            <Icon name="mail" size={18} color="#FF6B6B" />
-            <TextInput
-              placeholder="My email"
-              placeholderTextColor="#999"
-              style={styles.input}
-            />
+          <View style={{ position: 'relative' }}>
+            <Text style={{ fontWeight: '600' }}>
+              {t('SignIn.Email_Address')}
+            </Text>
+            <View style={styles.inputContainer}>
+              <CommonTextInput
+                value={resetEmail}
+                cursorColor={COLOR.Black1}
+                onChangeText={value => setResetEmail(value)}
+                placeholder={t('placeholders.Enter_your_email')}
+                placeholderTextColor={COLOR.dark4}
+                autoCapitalize="none"
+                maxLength={100}
+                errorMassage={resetValidator.current.message(
+                  'email',
+                  resetEmail,
+                  'required|email',
+                )}
+              />
+            </View>
           </View>
-
-          {/* Button */}
-          <TouchableOpacity activeOpacity={0.8}>
-            <LinearGradient
-              colors={['#FFB6B6', '#FF6B6B']}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>
-                Send Verification Code
-              </Text>
-            </LinearGradient>
-          </TouchableOpacity>
+          <CommonButton
+            onPress={heandleonforgot}
+            title={t('Button.Forgot_password')}
+            loading={loading}
+            gradientColors={[COLOR.grediant1, COLOR.grediant2]}
+          />
         </View>
-      </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  inputContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 16,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: COLOR.background2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mainCotainer: {
+    backgroundColor: COLOR.White1,
+
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: Dimensions.get('window').width - 40,
+  },
+  forgotText: {
+    fontSize: 20,
+    fontWeight: '500',
+    textAlign: 'center',
+    color: COLOR.Black1,
+  }
+})
 
 export default ForgotPasswordModal;

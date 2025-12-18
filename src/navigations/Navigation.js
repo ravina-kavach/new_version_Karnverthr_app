@@ -1,24 +1,27 @@
 import React from 'react';
-import { NavigationContainer, useFocusEffect } from '@react-navigation/native';
+import { NavigationContainer, useFocusEffect,  } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import {View,TouchableWithoutFeedback, StyleSheet} from 'react-native'
+import {View,TouchableWithoutFeedback, StyleSheet, StatusBar} from 'react-native'
 import { COLOR } from '../theme/theme';
 //----- welcome Screns
 import Splash from '../screens/splash/Splash';
 import Welcome1 from '../screens/welcome/Welcome1'
 import Welcome2 from '../screens/welcome/Welcome2'
 import Welcome3 from '../screens/welcome/Welcome3'
-
+import Home from '../screens/home/Home'
+import Profile from '../screens/profile/Profile'
+import Attendance from '../screens/attendance/Attendance'
+import Leaves from '../screens/leaves/Leaves'
+import Calender from '../screens/calender/Calender'
+import Expenses from '../screens/expenses/Expenses'
+import TabNavigation from './TabNavigation'
 //------ Auth screen
 
-// import Home from '../Screens/Home';
 import SignInScreen from '../screens/authscreens/signInScreen/SignInScreen';
 // import Termsofuse from '../Screens/Termsofuse';
 // import PrivacyPolicy from '../Screens/PrivacyPolicy';
 
 const Stack = createNativeStackNavigator();
-// const Tab = createBottomTabNavigator();
 
 function Navigation({ props }) {
   return (
@@ -30,6 +33,21 @@ function Navigation({ props }) {
           <Stack.Screen name="welcome2" component={Welcome2} />
           <Stack.Screen name="welcome3" component={Welcome3} />
         </Stack.Group>
+        {/* ============ Bottom Tab ============= */}
+         <Stack.Group        
+          screenOptions={{
+            contentStyle: {              
+              paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 50,
+              backgroundColor: COLOR.dark5,
+            },
+            header: () => null,
+              headerBackVisible: false,
+              headerShadowVisible: true,
+              headerTransparent: false,
+          }}
+          >
+          <Stack.Screen name="myTab" component={TabNavigation}  />
+          </Stack.Group>
         {/* ============ main screens ============= */}
         <Stack.Group
           screenOptions={({ navigation }) => {
@@ -53,7 +71,13 @@ function Navigation({ props }) {
               // },
             };
           }}>
-          <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }}/>          
+          <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }}/>   
+            <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 
+            <Stack.Screen name="attendance" component={Attendance} />
+            <Stack.Screen name="leaves" component={Leaves} />
+            <Stack.Screen name="calender" component={Calender} /> 
+            <Stack.Screen name="expenses" component={Expenses} />             
+            <Stack.Screen name="profile" component={Profile} />
           {/* <Stack.Screen name="MyProfile" component={MyProfile} />
           <Stack.Screen name="Approve" component={Approve} />
           <Stack.Screen name="NewMeeting" component={NewMeeting} />
@@ -63,6 +87,7 @@ function Navigation({ props }) {
           <Stack.Screen name="Announcement" component={Announcement} />
           <Stack.Screen name="ShiftTiming" component={ShiftTiming} />           */}
         </Stack.Group>
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
