@@ -8,16 +8,37 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import { CommonView, H4 } from '../../../utils/common';
-import { useTranslation } from 'react-i18next';
-import { CheckBox, FignerScan, Sms, Emp, Phone } from '../../../assets/icons/index.js';
+import { useSignInScreen } from './SignInScreenController.js'
+import { CommonView, H4, Valide } from '../../../utils/common';
+import { CheckBox, FignerScan, Sms, Emp, Phone, Eye, EyeSlash, FillCheckbox } from '../../../assets/icons/index.js';
 import CommonButton from '../../../components/CommonButton';
 import { COLOR } from '../../../theme/theme';
 import { responsiveHeight, responsiveWidth } from '../../../utils/metrics';
-
-export default function SignInScreen() {
-  const { t } = useTranslation();
-  // const {visibleModal}= useSig
+import EmailVerificationModal from '../../../components/EmailVerificationModal.js'
+function SignInScreen() {
+  const {
+    t,
+    Formdata,
+    Validator,
+    IsReSetmodalvisible,
+    ReSetemail,
+    ResetValidator,
+    setFormdata,
+    IsPassVisible,
+    setIsPassVisible,
+    isShowbiomatric,
+    isForgotPasswordFetching,
+    isChecked,
+    setisChecked,
+    logoOpacity,
+    heandleonSignin,
+    BiometricLogin,
+    heandleonforgot,
+    FacelockLogin,
+    isSigninFetching,
+    isVisibleVerifiedModal,
+    handleVerificationModal
+  } = useSignInScreen();
   return (
     <CommonView>
       <ScrollView contentContainerStyle={styles.container}>
@@ -27,23 +48,48 @@ export default function SignInScreen() {
           <TextInput
             placeholder={t("placeholders.Enter_your_registered_email")}
             placeholderTextColor={COLOR.TextSecondary}
+            cursorColor={COLOR.Primary1}
             style={styles.input}
+            onChangeText={value =>
+              setFormdata({ ...Formdata, email: value })
+            }
+            value={Formdata.email}
           />
         </View>
+        <Valide style={styles.valid}>
+          {Validator.current.message('email', Formdata.email, 'required')}
+        </Valide>
 
         <View style={styles.inputContainer}>
           <Image source={FignerScan} />
           <TextInput
             placeholder={t("placeholders.Enter_your_password")}
+            secureTextEntry={IsPassVisible}
             placeholderTextColor={COLOR.TextSecondary}
-            secureTextEntry
             style={styles.input}
+            cursorColor={COLOR.Primary1}
+            onChangeText={value =>
+              setFormdata({ ...Formdata, password: value })
+            }
+            maxLength={15}
+            value={Formdata.password}
           />
+          <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
+            <Image source={IsPassVisible ? EyeSlash : Eye} />
+          </TouchableOpacity>
         </View>
-
+        <Valide style={styles.valid}>
+          {Validator.current.message(
+            'password',
+            Formdata.password,
+            'required',
+          )}
+        </Valide>
         <View style={styles.rowContainer}>
           <View style={styles.row}>
-            <Image source={CheckBox} />
+            <TouchableOpacity onPress={() => setisChecked(!isChecked)}>
+              <Image source={isChecked ? FillCheckbox : CheckBox} />
+            </TouchableOpacity>
             <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
           </View>
           <TouchableOpacity style={styles.row}>
@@ -51,24 +97,27 @@ export default function SignInScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* <TouchableOpacity style={styles.signInBtn}> */}
         <CommonButton
-          onPress= {()=>{}}
+          onPress={() => heandleonSignin()}
           title={t('Button.Sign_In')}
           gradientColors={[COLOR.grediant1, COLOR.grediant2]}
         />
 
         <Text style={styles.or}>OR</Text>
+        <TouchableOpacity style={styles.outlineBtn}>
+          <Image source={Emp} />
+          <Text style={styles.outlineText}>Sign in With Employee ID</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.outlineBtn}>
-        <Image source={Emp} />
-        <Text style={styles.outlineText}>Sign in With Employee ID</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.outlineBtn}>
-        <Image source={Phone} />
-        <Text style={styles.outlineText}>Sign in With Phone</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.outlineBtn}>
+          <Image source={Phone} />
+          <Text style={styles.outlineText}>Sign in With Phone</Text>
+        </TouchableOpacity>
+        {isVisibleVerifiedModal &&
+        <EmailVerificationModal
+          visible={isVisibleVerifiedModal}
+          onSubmit={handleVerificationModal}
+        />}
       </ScrollView>
     </CommonView>
   );
@@ -92,7 +141,14 @@ const styles = StyleSheet.create({
     color: '#000',
     marginBottom: 6,
   },
+  valid: {
+    color: COLOR.Red,
 
+    marginHorizontal: 10,
+    marginTop: 4,
+    marginBottom: 10,
+    alignSelf: 'flex-start'
+  },
   subtitle: {
     fontSize: 14,
     color: '#666',
@@ -102,14 +158,13 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     height: 55,
-    marginTop: responsiveHeight(2),
+    // marginTop: responsiveHeight(2),
     borderWidth: 1.2,
     borderColor: '#DCDCDC',
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    marginBottom: 18,
   },
 
   leftIcon: {
@@ -125,7 +180,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingHorizontal: responsiveWidth(2),
-    fontSize: 15,
+    fontSize: 17,
   },
 
   row: {
@@ -143,12 +198,12 @@ const styles = StyleSheet.create({
 
   rememberText: {
     marginLeft: 6,
-    fontSize: 14,
+    fontSize: 16,
     color: '#444',
   },
 
   forgotText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#FF6E83',
     fontWeight: '600',
   },
@@ -197,3 +252,5 @@ const styles = StyleSheet.create({
     color: '#444',
   },
 });
+
+export default SignInScreen;

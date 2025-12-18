@@ -1,29 +1,73 @@
 import React from 'react'
-import { Image, StyleSheet, TextInput } from 'react-native'
-import { H5,H4 } from '../utils/common'
+import { Image, StyleSheet, TextInput ,View} from 'react-native'
 import { COLOR } from '../theme/theme'
-
+import {Valide} from '../utils/common'
+import { responsiveWidth } from '../utils/metrics'
 export const CommonTextInput = (props) => {
-  const {inputIcon,placeholder} = props
+  const {leftIcon,rightIcon, vlaue,rightIconPress,placeholder,secureTextEntry,onChangeText,errorMassage, inputContainerStyle, textInputStyle} = props
+  console.log("errorMassage==>",errorMassage)
   return (
-    <View>
-    <H4 style={styles.titleContainer}>{t('Button.Sign_In')}</H4>
-        <View style={styles.inputContainer}>
-          {inputIcon &&<Image source={inputIcon} />}
+    <View style={{flex:1}}>
+       <View style={[styles.inputContainer,inputContainerStyle]}>
+          {leftIcon && <Image source={leftIcon} />}
           <TextInput
             placeholder={placeholder}
+            secureTextEntry={secureTextEntry}
             placeholderTextColor={COLOR.TextSecondary}
-            style={styles.input}
+            style={[styles.input, textInputStyle]}
+            cursorColor={COLOR.Primary1}
             onChangeText={onChangeText}
+            value={vlaue}
           />
+          {rightIcon && <TouchableOpacity onPress={rightIconPress}>
+            <Image source={rightIcon} />
+          </TouchableOpacity>}
         </View>
-        {errorText && <H5 style={styles.errorText}></H5>}
-    </View>    
+       {errorMassage &&
+       <Valide style={styles.valid}>
+          {errorMassage}
+        </Valide>}
+  </View>       
   )
 }
 
 const styles = StyleSheet.create({
   errorText:{
     color:COLOR.Red
-  }
+  },
+   inputContainer: {
+    width: '100%',
+    height: 55,
+    // marginTop: responsiveHeight(2),
+    borderWidth: 1.2,
+    borderColor: '#DCDCDC',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+
+  valid: {
+    color: COLOR.Red,
+    marginHorizontal: 10,
+    marginTop: 4,
+    marginBottom: 10,
+    alignSelf: 'flex-start'
+  },
+
+  leftIcon: {
+    marginRight: 10,
+    backgroundColor: 'green',
+  },
+
+  rightIcon: {
+    position: 'absolute',
+    right: 15,
+  },
+
+  input: {
+    flex: 1,
+    paddingHorizontal: responsiveWidth(2),
+    fontSize: 17,
+  },
 })
