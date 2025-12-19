@@ -9,7 +9,7 @@ import SimpleReactValidator from 'simple-react-validator';
 import DeviceInfo from 'react-native-device-info';
 import Geolocation from '@react-native-community/geolocation';
 import dayjs from 'dayjs'
-import { CommonSelector, ForgotPassword, Usersignin, updateState } from '../../../store/reducers/commonSlice'
+import { CommonSelector, ForgotPassword, UserVerification, Usersignin, updateState } from '../../../store/reducers/commonSlice'
 import { useTranslation } from 'react-i18next';
 
 export const useSignInScreen = () => {
@@ -159,6 +159,7 @@ export const useSignInScreen = () => {
     let getFirstInstallTime = await DeviceInfo.getFirstInstallTime()
     let getLastUpdateTime = await DeviceInfo.getLastUpdateTime()
     let getProduct = await DeviceInfo.getProduct()
+    
     // console.log("testing finction>>>>", await DeviceInfo.getSupportedMediaTypeList())
     // console.log("<<<<<----------------------->>>>>>>>>")
     const deviceDATA = {
@@ -201,6 +202,7 @@ export const useSignInScreen = () => {
       "firstinstalltime": dayjs(getFirstInstallTime).format('DD-MM-YYYY'),
       "lastupdatetime": dayjs(getLastUpdateTime).format('DD-MM-YYYY'),
     }
+    console.log("deviceDATA===>",deviceDATA)
     setDeviceData(deviceDATA)
   }
   const heandleonSignin = async () => {
@@ -257,6 +259,23 @@ export const useSignInScreen = () => {
   }
 
   const handleVerificationModal = async(secreatCode) => {
+    let getDeviceId = DeviceInfo.getDeviceId()
+    let getIpAddress = await DeviceInfo.getIpAddress()
+    let getDevice = await DeviceInfo.getDevice()
+    let getDeviceName = await DeviceInfo.getDeviceName()
+    let getSystemVersion = DeviceInfo.getSystemVersion()
+    let deviceUniqueId = await DeviceInfo.getUniqueId();
+
+    const obj = {
+      "secreateKey":String(secreatCode),
+      "deviceUniqueId": String(deviceUniqueId),
+      "deviceid": String(getDeviceId),
+      "systemversion": String(getSystemVersion),
+      "devicename": String(getDeviceName),
+      "platform": String(getDevice),
+      "ipaddress": String(getIpAddress), 
+    }
+    // dispatch(UserVerification(obj))
     if(isVisibleVerifiedModal && secreatCode && !isVerifiedFetching){
       setIsVisibleVerifiedModal(!isVisibleVerifiedModal)
       await Service.setisVerified('true')

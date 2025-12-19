@@ -39,7 +39,7 @@ export const UserVerification = createAsyncThunk(
             let result = await axios({
                 method: 'POST',
                 baseURL: Config.BASE_URL,                
-                url: `api/employee/login`,                
+                url: `api/employee/verification`,                
                 data: userdata,
             });
             // console.log('Usersignin result.data >>', result.data);
@@ -801,6 +801,7 @@ export const CommonSlice = createSlice({
         isSignin: false,
         isSigninFetching: false,
 
+        VerfiedUserData : {},
         isVerified: false,
         isVerifiedFetching: false,
 
@@ -995,6 +996,7 @@ export const CommonSlice = createSlice({
         builder.addCase(UserVerification.fulfilled, (state, { payload }) => {
             //console.log("[UserVerification.fulfilled]>>>payload>>>", payload)
             try {
+                state.VerfiedUserData = payload;
                 state.isVerified = true;
                 state.isVerifiedFetching = false;
                 state.isError = false;
@@ -1007,6 +1009,7 @@ export const CommonSlice = createSlice({
         builder.addCase(UserVerification.rejected, (state, { payload }) => {
             console.log("[UserVerification.rejected]>>>", payload)
             try {
+                state.VerfiedUserData = {};
                 state.isVerified = false;
                 state.isVerifiedFetching = false;
                 state.isError = true;

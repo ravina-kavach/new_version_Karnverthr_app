@@ -11,6 +11,9 @@ const CalenderIcon = require('./Calender.png');
 const ExpensesIcon = require('./Expenses.png');
 const ReceiptIcon = require('./Receipt.png');
 const HomeIcon = require('./Home.png');
+const HomeClockIcon = require('./HomeClock.png');
+const BiometricIcon = require('./Biometric.png');
+const FaceIdIcon = require('./FaceId.png');
 export {
   CheckBox,
   FillCheckbox,
@@ -25,4 +28,7 @@ export {
   ExpensesIcon,
   ReceiptIcon,
   HomeIcon,
+  HomeClockIcon,
+  BiometricIcon,
+  FaceIdIcon
 };
