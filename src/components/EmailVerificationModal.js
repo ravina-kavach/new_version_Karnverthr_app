@@ -15,12 +15,9 @@ const EmailVerificationModal = ({ visible, onSubmit, onResend }) => {
     new SimpleReactValidator({
       validators: {
         uuid: {
-          message: 'Invalid key format.',
+          message: t('verification.valid_key'),
           rule: (val, params, validator) => {
-            return validator.helpers.testRegex(
-              val,
-              /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-            );
+            return validator.helpers.testRegex(val, /^[A-Za-z0-9]{6}$/);
           },
         },
       },
@@ -50,17 +47,16 @@ const EmailVerificationModal = ({ visible, onSubmit, onResend }) => {
           <View style={styles.iconWrapper}>
             <Text style={styles.icon}>✉️</Text>
           </View>
-          <Text style={styles.title}>Email Verification Sent!</Text>
+          <Text style={styles.title}>{t('verification.Email_verification')}</Text>
 
           <Text style={styles.description}>
-            A verification code will be sent to the email{'\n'}
-            for your account verification process.
+            {t('verification.Email_verific_desc')}
           </Text>
           <View style={styles.inputContainer}>
             <CommonTextInput
               value={textInput}
               onChangeText={(value)=>setTextInput(value)}
-              placeholder={"Enter your unique key"}
+              placeholder={t('verification.key_placeholder')}
               errorMassage={Validator.current.message(
                 'key',
                 textInput,

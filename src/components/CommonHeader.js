@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Image, StatusBar, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLOR } from '../theme/theme';
 import { CommonView } from '../utils/common';
@@ -32,13 +32,13 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     paddingHorizontal: 20,
-    paddingTop: 24,
     flexDirection: 'row',
+    alignItems:'center',
     justifyContent: 'space-between',
   },
   left: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
   },
   title: {
     fontSize: 22,

@@ -166,6 +166,8 @@
     "Save_Close": "Save & Close",
     "Sign_In": "Sign In",
     "Forgot_password": "Forgot password",
+    "LoginWithFigerprint":"Login with Fingerprint",
+    "LoginWithFaceId":"Login with Face Id",
     "Next": "Next"
   },
   "placeholders": {
@@ -191,6 +193,12 @@
   },
   "comman": {
     "No_records_found": "No records found."
+  },
+  "verification":{
+    "Email_verification":"Email Verification Sent!",
+    "Email_verific_desc": "A verification code will be sent to the email\nfor your account verification process.",
+    "key_placeholder":"Enter your unique key",
+    "valid_key":"Invalid key format."
   },
   "messages":{
     "Approve_request":"Approve request approved successfully",

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { COLOR } from '../theme/theme';
-import { HomeIcon,ReceiptIcon,ExpensesIcon,CalenderIcon,AttendancIcon } from '../assets/icons';
+import { HomeIcon,ReceiptIcon,ExpensesIcon,CalenderIcon,AttendancIcon,HomeClockIcon } from '../assets/icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import CommonHeader from '../components/CommonHeader'
 import Home from '../screens/home/Home';
@@ -18,7 +18,9 @@ const TabNavigation = () => {
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: styles.tabBar,
-      }}
+        headerStatusBarHeight:0,
+        
+   }}
     >
       <Tab.Screen
         name="Home"
@@ -28,7 +30,7 @@ const TabNavigation = () => {
             <CommonHeader
               title="Let’s Clock-In!"
               subtitle="Don’t miss your clock in schedule"
-              // rightIcon={require('../assets/clock.png')}
+              rightIcon={HomeClockIcon}
             />
           ),
           tabBarIcon: ({ focused }) => (

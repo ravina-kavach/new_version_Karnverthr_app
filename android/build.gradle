@@ -5,11 +5,21 @@ buildscript {
         compileSdkVersion = 35
         targetSdkVersion = 35
         ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.1.20"
+        kotlinVersion = "2.0.21"
+
+    googlePlayServicesLocationVersion = "21.0.1"
+
+// or check the version TransistorSoft recommends
     }
+
     repositories {
         google()
         mavenCentral()
+           // Required for react-native-background-geolocation
+       maven { url("${project(':react-native-background-geolocation').projectDir}/libs") }
+       maven { url 'https://developer.huawei.com/repo/' }
+       // Required for react-native-background-fetch
+       maven { url("${project(':react-native-background-fetch').projectDir}/libs") }
     }
     dependencies {
         classpath("com.android.tools.build:gradle")
@@ -17,5 +27,24 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
     }
 }
+allprojects {   // <-- NOTE:  allprojects container -- If you don't see this, create it.
+    repositories {
 
+       // Required for react-native-background-geolocation
+       maven { url("${project(':react-native-background-geolocation').projectDir}/libs") }
+       maven { url 'https://developer.huawei.com/repo/' }
+       // Required for react-native-background-fetch
+       maven { url("${project(':react-native-background-fetch').projectDir}/libs") }
+    }
+}
 apply plugin: "com.facebook.react.rootproject"
+
+
+subprojects {
+  project.configurations.all {
+    resolutionStrategy {
+      force 'com.google.android.gms:play-services-location:21.1.0'
+      force 'com.google.android.gms:play-services-activity-recognition:20.0.0'
+    }
+  }
+}

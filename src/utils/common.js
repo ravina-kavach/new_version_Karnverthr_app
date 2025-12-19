@@ -82,7 +82,17 @@ export const commonStyle = StyleSheet.create({
       textAlign: "center",
       borderRadius: 5,
       fontWeight: "600",
-      backgroundColor: COLOR.primary1,
+      backgroundColor: COLOR.Primary1,
       overflow: 'hidden',
+   },
+     shodowBox: {
+      padding: 10,
+      borderRadius: 10,
+      backgroundColor: COLOR.White1,
+      shadowColor: COLOR.Black1,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.29,
+      shadowRadius: 4.65,
+      elevation: 7,
    },
 });
