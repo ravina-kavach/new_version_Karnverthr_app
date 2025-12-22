@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, StatusBar } from 'react-native';
+import { Text, StyleSheet, StatusBar,View } from 'react-native';
 import { FontSize } from './metrics';
 import { COLOR } from '../theme/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,6 +28,9 @@ export const H6 = props => {
 };
 export const Label = (props) => { return (<Text style={[commonStyle.Label, props.style]}>{props.children}</Text>) }
 export const Valide = (props) => { return (<Text style={[commonStyle.Valide, props.style]}>{props.children}</Text>) }
+export const RowView = (props) => { return (<View style={[commonStyle.row, props.style]}>{props.children}</View>) }
+export const ColView = (props) => { return (<View style={[commonStyle.col, props.style]}>{props.children}</View>) }
+
 //-----------
 
 export const commonStyle = StyleSheet.create({
@@ -59,6 +62,15 @@ export const commonStyle = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '600',
   },
+   row: {
+      flexDirection: "row",
+      marginHorizontal: -5,
+      alignItems: "center",
+   },
+   col: {
+      flex: 1,
+      paddingHorizontal: 5,
+   },
    Label: {
       fontSize: 17,
       textTransform: "capitalize",

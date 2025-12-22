@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { CommonTextInput } from '../components/CommonTextInput';
 import SimpleReactValidator from 'simple-react-validator';
 
-const EmailVerificationModal = ({ visible, onSubmit, onResend }) => {
+const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
   const { t, i18n } = useTranslation();
   const [textInput, setTextInput] = React.useState('');
   const [, forceUpdate] = React.useState(0);
@@ -17,7 +17,7 @@ const EmailVerificationModal = ({ visible, onSubmit, onResend }) => {
         uuid: {
           message: t('verification.valid_key'),
           rule: (val, params, validator) => {
-            return validator.helpers.testRegex(val, /^[A-Za-z0-9]{6}$/);
+            return validator.helpers.testRegex(val, /^.{6}$/);
           },
         },
       },
@@ -69,6 +69,7 @@ const EmailVerificationModal = ({ visible, onSubmit, onResend }) => {
             onPress={() => onButtonPress()}
             title={t('Button.Submit')}
             gradientColors={[COLOR.grediant1, COLOR.grediant2]}
+            loading={isVerifiedFetching}
           />
         </View>
       </View>

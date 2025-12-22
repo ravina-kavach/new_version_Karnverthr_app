@@ -29,6 +29,7 @@ export default CommonHeader;
 const styles = StyleSheet.create({
   container: {
     height: 160,
+    paddingTop:30,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     paddingHorizontal: 20,

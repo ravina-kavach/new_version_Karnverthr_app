@@ -3,7 +3,7 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { Alert, PermissionsAndroid, Platform } from 'react-native';
-import Service from '../../Utils/service';
+import Service from './service';
 import Config from 'react-native-config';
 import { request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
 

@@ -5,7 +5,6 @@ import {Valide} from '../utils/common'
 import { responsiveWidth } from '../utils/metrics'
 export const CommonTextInput = (props) => {
   const {leftIcon,rightIcon, vlaue,rightIconPress,placeholder,secureTextEntry,onChangeText,errorMassage, inputContainerStyle, textInputStyle} = props
-  console.log("errorMassage==>",errorMassage)
   return (
     <View style={{flex:1}}>
        <View style={[styles.inputContainer,inputContainerStyle]}>
