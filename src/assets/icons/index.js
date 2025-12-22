@@ -14,6 +14,21 @@ const HomeIcon = require('./Home.png');
 const HomeClockIcon = require('./HomeClock.png');
 const BiometricIcon = require('./Biometric.png');
 const FaceIdIcon = require('./FaceId.png');
+const SelfieIcon = require('./SelfieIcon.png')
+const NotFoundImg = require('./NoRecordFound.png')
+const ArrowDown = require('./ArrowDown.png')
+
+const HomeMenuIcons = {
+  Announcement: require('./homeMenu/Announcement.png'),
+  Attendance: require('./homeMenu/Attendance.png'),
+  Calendar: require('./homeMenu/Calendar.png'),
+  Expense: require('./homeMenu/Expense.png'),
+  Leave: require('./homeMenu/Leave.png'),
+  NotApproved: require('./homeMenu/NotApproved.png'),
+  Payslip: require('./homeMenu/Payslip.png'),
+  Report: require('./homeMenu/Report.png'),
+  Shift: require('./homeMenu/Shift.png'),
+}
 export {
   CheckBox,
   FillCheckbox,
@@ -30,5 +45,9 @@ export {
   HomeIcon,
   HomeClockIcon,
   BiometricIcon,
-  FaceIdIcon
+  FaceIdIcon,
+  SelfieIcon,
+  HomeMenuIcons,
+  NotFoundImg,
+  ArrowDown
 };

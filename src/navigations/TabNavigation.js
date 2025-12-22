@@ -14,13 +14,14 @@ const Tab = createBottomTabNavigator();
 const TabNavigation = () => {
   return (
     <Tab.Navigator
+
       screenOptions={{
+        // headerShown:false,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: styles.tabBar,
-        headerStatusBarHeight:0,
-        
    }}
+  
     >
       <Tab.Screen
         name="Home"
@@ -44,20 +45,24 @@ const TabNavigation = () => {
         }}
       />
 
+    
+
       <Tab.Screen
-        name="Expenses"
-        component={Expenses}
+        name="Attendance"
+        component={Attendance}
         options={{
+        
           header: () => (
             <CommonHeader
-              title="Expenses"
-              subtitle="Track your expenses"
+              title="Attendance"
+              subtitle="Daily attendance summary"
+              rightIcon={HomeClockIcon}
             />
           ),
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
-                source={ExpensesIcon}
+                source={AttendancIcon}
                 tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
               />
             </View>
@@ -66,19 +71,20 @@ const TabNavigation = () => {
       />
 
       <Tab.Screen
-        name="Attendance"
-        component={Attendance}
+        name="Expenses"
+        component={Expenses}
         options={{
           header: () => (
             <CommonHeader
-              title="Attendance"
-              subtitle="Daily attendance summary"
+              title="Expenses"
+              subtitle="Track your expenses"
+              rightIcon={HomeClockIcon}
             />
           ),
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
-                source={AttendancIcon}
+                source={ExpensesIcon}
                 tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
               />
             </View>
@@ -94,6 +100,7 @@ const TabNavigation = () => {
             <CommonHeader
               title="Leaves"
               subtitle="Manage your leaves"
+              rightIcon={HomeClockIcon}
             />
           ),
           tabBarIcon: ({ focused }) => (
@@ -111,10 +118,12 @@ const TabNavigation = () => {
         name="Calender"
         component={Calender}
         options={{
+          headerStatusBarHeight:0,
           header: () => (
             <CommonHeader
               title="Calendar"
               subtitle="Your monthly schedule"
+              rightIcon={HomeClockIcon}
             />
           ),
           tabBarIcon: ({ focused }) => (
