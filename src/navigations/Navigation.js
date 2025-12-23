@@ -33,21 +33,7 @@ function Navigation({ props }) {
           <Stack.Screen name="welcome2" component={Welcome2} />
           <Stack.Screen name="welcome3" component={Welcome3} />
         </Stack.Group>
-        {/* ============ Bottom Tab ============= */}
-         <Stack.Group        
-          screenOptions={{
-            contentStyle: {              
-              paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 50,
-              backgroundColor: COLOR.dark5,
-            },
-            header: () => null,
-              headerBackVisible: false,
-              headerShadowVisible: true,
-              headerTransparent: false,
-          }}
-          >
-          <Stack.Screen name="myTab" component={TabNavigation}  />
-          </Stack.Group>
+        
         {/* ============ main screens ============= */}
         <Stack.Group
           screenOptions={({ navigation }) => {
@@ -73,10 +59,6 @@ function Navigation({ props }) {
           }}>
           <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }}/>   
             <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 
-            <Stack.Screen name="attendance" component={Attendance} />
-            <Stack.Screen name="leaves" component={Leaves} />
-            <Stack.Screen name="calender" component={Calender} /> 
-            <Stack.Screen name="expenses" component={Expenses} />             
             <Stack.Screen name="profile" component={Profile} />
           {/* <Stack.Screen name="MyProfile" component={MyProfile} />
           <Stack.Screen name="Approve" component={Approve} />
@@ -87,7 +69,20 @@ function Navigation({ props }) {
           <Stack.Screen name="Announcement" component={Announcement} />
           <Stack.Screen name="ShiftTiming" component={ShiftTiming} />           */}
         </Stack.Group>
-        
+        {/* ============ Bottom Tab ============= */}
+         <Stack.Group        
+          screenOptions={{
+            contentStyle: {              
+              backgroundColor: COLOR.dark5,
+            },
+            header: () => null,
+              headerBackVisible: false,
+              headerShadowVisible: true,
+              headerTransparent: false,
+          }}
+          >
+          <Stack.Screen name="myTab" component={TabNavigation}  />
+          </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
   );

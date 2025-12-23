@@ -148,27 +148,24 @@ const requestLocationPermission = async () => {
       }
 
       if (hasPermission) {
+      return new Promise((resolve, reject) => {
         launchCamera(
           {
             mediaType: 'photo',
-            PhotoQuality: 0.1,
+            quality: 0.1,
             cameraType: 'front',
-            saveToPhotos: false,
             includeBase64: true,
-            includeExtra: true,
           },
           (response) => {
-            if (response.didCancel) {
-              console.log('User cancelled camera picker');
-            } else if (response.errorCode) {
-              console.log('Camera Error: ', response.errorMessage);
-            } else if (response.assets && response.assets.length > 0) {
-              const source = response.assets[0];
-               return source
-            }
-          },
+            if (response?.didCancel) return resolve(null);
+            if (response?.errorCode) return reject(response.errorMessage);
+
+            const asset = response?.assets?.[0];
+            resolve(asset?.base64 || null);
+          }
         );
-      }
+      });
+    }
     } catch (err) {
       console.warn('Camera Permission Error:', err);
     }

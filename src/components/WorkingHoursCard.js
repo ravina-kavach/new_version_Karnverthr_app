@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   Image,
-  ActivityIndicator
 } from "react-native";
 import CommonButton from './CommonButton'
 import { useTranslation } from 'react-i18next';
@@ -14,14 +13,12 @@ import dayjs from "dayjs";
 
 const WorkingHoursCard = ({
   usersigninData,
-  imageFetching,
-  checkInData,
-  checkOutData,
+  localAttendanceData,
   onPress,
   loading,
-  isAtandance
 }) => {
   const { t, i18n } = useTranslation();
+  const IsAttanced = localAttendanceData?.action === "CHECK_IN"
   const ShowImage = (props) => {
     return (
       <View style={styles.imageContainer}>
@@ -32,12 +29,7 @@ const WorkingHoursCard = ({
             resizeMode='cover'
           />
         ) : (
-          props.loading ? (
-            <ActivityIndicator size={20} color={COLOR?.Black1} animating={true} />
-          ) : (
-            <Image source={SelfieIcon} />
-          )
-
+          <Image source={SelfieIcon} />
         )}
       </View>
     )
@@ -54,24 +46,23 @@ const WorkingHoursCard = ({
         <View style={styles.hourBox}>
           <Text style={styles.label}>CHECK IN</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <ShowImage loading={imageFetching} image={checkInData?.check_in_image} />
-            <Text style={styles.hourText}>{checkInData?.check_in ? dayjs(checkInData.check_in).format('hh:mm A') : '00:00'}</Text>
+            <ShowImage image={localAttendanceData?.check_in_image} />
+            <Text style={styles.hourText}>{localAttendanceData?.check_in_time ? dayjs(localAttendanceData?.check_in_time).format('hh:mm A') : '00:00'}</Text>
           </View>
         </View>
 
         <View style={styles.hourBox}>
           <Text style={styles.label}>CHECK OUT</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <ShowImage loading={imageFetching} image={checkOutData?.check_out_image} />
-            <Text style={styles.hourText}>{checkOutData?.check_out ? dayjs(checkOutData.check_out).format('hh:mm A') : '00:00'}</Text>
+            <ShowImage image={localAttendanceData?.check_out_image} />
+            <Text style={styles.hourText}>{localAttendanceData?.check_out_time ? dayjs(localAttendanceData?.check_out_time).format('hh:mm A') : '00:00'}</Text>
           </View>
         </View>
       </View>
       <View style={styles.buttonMainCotainer}>
         <CommonButton
-          onPress={onPress}
-          title={isAtandance?t('Home.Check_out'):t('Home.Check_in')}
-          // title={t(t('Home.Check_out'))}
+          onPress={() => onPress(IsAttanced ? "CHECK_OUT" : "CHECK_IN")}
+          title={IsAttanced ? t('Home.Check_out') : t('Home.Check_in')}
           loading={loading}
           gradientColors={[COLOR.grediant1, COLOR.grediant2]}
         />
@@ -124,21 +115,21 @@ const styles = StyleSheet.create({
     color: "#111827",
     paddingLeft: 5
   },
-  imageContainer: { 
-    height: 30, 
-    width: 30, 
-    borderRadius: 5, 
-    overflow: 'hidden', 
-    borderWidth: 0.4, 
-    borderColor: COLOR?.Black1, 
-    backgroundColor: '#fff', 
-    justifyContent: 'center', 
-    alignItems: 'center' 
+  imageContainer: {
+    height: 30,
+    width: 30,
+    borderRadius: 5,
+    overflow: 'hidden',
+    borderWidth: 0.4,
+    borderColor: COLOR?.Black1,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  innerImageContainer: { 
-    height: 28, 
-    width: 28, 
-    borderRadius: 5 
+  innerImageContainer: {
+    height: 28,
+    width: 28,
+    borderRadius: 5
   },
   button: {
     borderRadius: 30,

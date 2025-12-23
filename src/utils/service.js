@@ -140,10 +140,33 @@ const GetisVerified = async () => {
     }
 }
 
+const setAsyncAttendanceData = async (data) => {
+    try {
+        await AsyncStorage.setItem('Attendance', JSON.stringify(data));
+    } catch (error) {
+        console.log('try catch[ service> Attendance] error:', error.message);
+    }
+}
+const removeAsyncAttendanceData = async () => {
+    try {
+        await AsyncStorage.removeItem('Attendance');
+    } catch (error) {
+        console.log('try catch[ service> removeAttendance] error:', error.message);
+    }
+}
+const GetAsyncAttendanceData = async () => {
+    try {
+        let Attendance = await AsyncStorage.getItem('Attendance');
+        return (Attendance ? JSON.parse(Attendance) : null);
+    } catch (error) {
+        console.log('try catch[ service> Get Attendance] error:', error.message);
+    }
+}
+
 const Service = {
     setRemember, GetRemember, removeRemember, GetisFirstime, removeisFirstime, setisFirstime, ClearStorage,
     FormatIndianNumber, getDayDifference, GetisBiomatic, removeisBiomatic, setisBiomatic,OpenLocaitonbutton,
-    setisVerified,removeisVerified,GetisVerified
+    setisVerified,removeisVerified,GetisVerified,setAsyncAttendanceData,removeAsyncAttendanceData,GetAsyncAttendanceData
 };
 
 export default Service;

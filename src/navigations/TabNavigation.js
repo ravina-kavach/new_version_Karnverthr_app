@@ -24,7 +24,7 @@ const TabNavigation = () => {
   
     >
       <Tab.Screen
-        name="Home"
+        name="home"
         component={Home}
         options={{
           header: () => (
@@ -48,7 +48,7 @@ const TabNavigation = () => {
     
 
       <Tab.Screen
-        name="Attendance"
+        name="attendance"
         component={Attendance}
         options={{
         
@@ -71,7 +71,7 @@ const TabNavigation = () => {
       />
 
       <Tab.Screen
-        name="Expenses"
+        name="expenses"
         component={Expenses}
         listeners={({ navigation }) => ({
         tabPress: e => {e.preventDefault()},
@@ -97,7 +97,7 @@ const TabNavigation = () => {
       />
 
       <Tab.Screen
-        name="Leaves"
+        name="leaves"
         component={Leaves}
         listeners={({ navigation }) => ({
         tabPress: e => {e.preventDefault()},
@@ -123,7 +123,7 @@ const TabNavigation = () => {
       />
 
       <Tab.Screen
-        name="Calender"
+        name="calender"
         component={Calender}
         listeners={({ navigation }) => ({
         tabPress: e => {e.preventDefault()},
