@@ -7,7 +7,7 @@ import GlobalStyle from '../theme/globalstyle';
 
 export const CommonView = props => {
   return (
-    <SafeAreaView style={GlobalStyle.flexContainer} edges={['left', 'right']} >
+    <SafeAreaView style={GlobalStyle.flexContainer} edges={props.edges?props.edges:['left', 'right']} >
       <StatusBar translucent backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
       {props.children}
     </SafeAreaView>
@@ -83,6 +83,20 @@ export const commonStyle = StyleSheet.create({
       color: COLOR.Red,
       fontWeight: "400",
    },
+    input: {
+      height: 50,
+      fontSize: 15,
+      lineHeight: 20,
+      color: COLOR.Black1,
+      paddingVertical: 3,
+      paddingLeft: 15,
+      paddingRight: 35,
+      borderColor: COLOR.dark2,
+      backgroundColor: COLOR.White1,
+      borderWidth: 0.5,
+      borderStyle: "solid",
+      borderRadius: 10,
+   },
    btn_primary: {
       paddingHorizontal: 15,
       paddingVertical: 5,
@@ -106,5 +120,18 @@ export const commonStyle = StyleSheet.create({
       shadowOpacity: 0.29,
       shadowRadius: 4.65,
       elevation: 7,
+   },
+    btn_primary_round: {
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+      fontSize: 18,
+      color: COLOR.White1,
+      alignItems: "center",
+      textTransform: 'capitalize',
+      justifyContent: "center",
+      textAlign: "center",
+      borderRadius: 20,
+      backgroundColor: COLOR.Primary1,
+      overflow: 'hidden',
    },
 });

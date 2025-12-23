@@ -31,13 +31,13 @@ export const useSignInScreen = () => {
   const [, forceUpdate] = React.useState();
   const ResetValidator = React.useRef(new SimpleReactValidator({}));
   const [, ResetforceUpdate] = React.useState();
-  
-  const [Formdata, setFormdata] = React.useState({})  
+
+  const [Formdata, setFormdata] = React.useState({})
   // const [Formdata, setFormdata] = React.useState({ "email": "gauravsingh4632@gmail.com", "password": "Gaurav@123" })  
   // const [Formdata, setFormdata] = React.useState({ "email": "raia6651@gmail.com", "password": "Abhishek@123" })  
   // const [Formdata, setFormdata] = React.useState({ "email": "rainilesh045@gmail.com", "password": "Nilesh@123" })  
   // const [Formdata, setFormdata] = React.useState({ "email": "prateekjnp2002@gmail.com", "password": "Prateek@0421" })  
-  
+
   const [ReSetemail, setReSetemail] = React.useState('')
   const [IsReSetmodalvisible, setIsReSetmodalvisible] = React.useState(false)
   const [IsPassVisible, setIsPassVisible] = React.useState(true)
@@ -48,7 +48,7 @@ export const useSignInScreen = () => {
   const [isShowbiomatric, setisShowbiomatric] = React.useState(false)
   const [DeviceData, setDeviceData] = React.useState({})
   const [isVisibleVerifiedModal, setIsVisibleVerifiedModal] = React.useState(false)
-  const { isSignin, isSigninFetching, isVerified, isVerifiedFetching, UsersigninData, isError, errorMessage, isForgotPassword, isForgotPasswordFetching, } = useSelector(CommonSelector);
+  const { isSignin, isSigninFetching, isVerified, VerfiedUserData, isVerifiedFetching, UsersigninData, isError, errorMessage, isForgotPassword, isForgotPasswordFetching, } = useSelector(CommonSelector);
 
   const rnBiometrics = new ReactNativeBiometrics({ allowDeviceCredentials: true, })
   //---------------
@@ -85,6 +85,16 @@ export const useSignInScreen = () => {
   }, [isSignin])
 
   React.useEffect(() => {
+    if (VerfiedUserData?.message) {
+      showMessage({
+        icon: "success",
+        message: VerfiedUserData?.message,
+        type: "success",
+      })
+    }
+  }, [VerfiedUserData?.message])
+
+  React.useEffect(() => {
     if (isForgotPassword) {
       showMessage({
         icon: "success",
@@ -102,7 +112,7 @@ export const useSignInScreen = () => {
     console.log("calll")
     await Service.setRemember(UsersigninData)
     dispatch(updateState({ isSignin: false }))
-    console.log("ischecked --->",isChecked)
+    console.log("ischecked --->", isChecked)
     if (isChecked) {
       await Service.setisBiomatic('true')
     } else {
@@ -116,13 +126,13 @@ export const useSignInScreen = () => {
   }
   const Getdata = async () => {
     let isVerified = await Service.GetisVerified();
-    if(!isVerified){
+    if (!isVerified) {
       setIsVisibleVerifiedModal(!isVerified)
     }
     let newdata = await Service.GetRemember();
     setRememberData(newdata);
     let data = await Service.GetisBiomatic();
-    if(data && data === "true"){
+    if (data && data === "true") {
       setisChecked(true)
       setFormdata(newdata)
     }
@@ -159,7 +169,7 @@ export const useSignInScreen = () => {
     let getFirstInstallTime = await DeviceInfo.getFirstInstallTime()
     let getLastUpdateTime = await DeviceInfo.getLastUpdateTime()
     let getProduct = await DeviceInfo.getProduct()
-    
+
     // console.log("testing finction>>>>", await DeviceInfo.getSupportedMediaTypeList())
     // console.log("<<<<<----------------------->>>>>>>>>")
     const deviceDATA = {
@@ -202,7 +212,6 @@ export const useSignInScreen = () => {
       "firstinstalltime": dayjs(getFirstInstallTime).format('DD-MM-YYYY'),
       "lastupdatetime": dayjs(getLastUpdateTime).format('DD-MM-YYYY'),
     }
-    console.log("deviceDATA===>",deviceDATA)
     setDeviceData(deviceDATA)
   }
   const heandleonSignin = async () => {
@@ -237,8 +246,8 @@ export const useSignInScreen = () => {
     const formvalid = ResetValidator.current.allValid();
     if (formvalid) {
       ResetValidator.current.hideMessages();
-      ResetforceUpdate(0);      
-      dispatch(ForgotPassword({ "email": ReSetemail }))      
+      ResetforceUpdate(0);
+      dispatch(ForgotPassword({ "email": ReSetemail }))
     } else {
       ResetValidator.current.showMessages();
       ResetforceUpdate(1);
@@ -258,7 +267,7 @@ export const useSignInScreen = () => {
     }
   }
 
-  const handleVerificationModal = async(secreatCode) => {
+  const handleVerificationModal = async (secreatCode) => {
     let getDeviceId = DeviceInfo.getDeviceId()
     let getIpAddress = await DeviceInfo.getIpAddress()
     let getDevice = await DeviceInfo.getDevice()
@@ -266,44 +275,45 @@ export const useSignInScreen = () => {
     let getSystemVersion = DeviceInfo.getSystemVersion()
     let deviceUniqueId = await DeviceInfo.getUniqueId();
 
-    const obj = {
-      "secreateKey":String(secreatCode),
-      "deviceUniqueId": String(deviceUniqueId),
-      "deviceid": String(getDeviceId),
-      "systemversion": String(getSystemVersion),
-      "devicename": String(getDeviceName),
-      "platform": String(getDevice),
-      "ipaddress": String(getIpAddress), 
-    }
-    // dispatch(UserVerification(obj))
-    if(isVisibleVerifiedModal && secreatCode && !isVerifiedFetching){
+    if (isVisibleVerifiedModal && secreatCode) {
+      const formdata = new FormData();
+      formdata.append("random_code_for_reg", String(secreatCode)),
+        formdata.append("device_unique_id", String(deviceUniqueId)),
+        formdata.append("device_id", String(getDeviceId)),
+        formdata.append("system_version", String(getSystemVersion)),
+        formdata.append("device_name", String(getDeviceName)),
+        formdata.append("device_platform", String(getDevice)),
+        formdata.append("ip_address", String(getIpAddress)),
+        dispatch(UserVerification(formdata))
       setIsVisibleVerifiedModal(!isVisibleVerifiedModal)
       await Service.setisVerified('true')
     }
   }
-return {
-t,
-Formdata,
-Validator,
-IsReSetmodalvisible, 
-setFormdata,
-IsPassVisible, 
-setIsPassVisible,
-isShowbiomatric, 
-isForgotPasswordFetching,
-setisShowbiomatric,
-isChecked, 
-setisChecked,
-heandleonSignin,
-BiometricLogin,    
-heandleonforgot,
-FacelockLogin,
-isSigninFetching,
-ReSetemail,
-setReSetemail,
-ResetValidator,
-isVisibleVerifiedModal, 
-handleVerificationModal,
-setIsReSetmodalvisible
-}
+  return {
+    t,
+    Formdata,
+    Validator,
+    IsReSetmodalvisible,
+    setFormdata,
+    IsPassVisible,
+    setIsPassVisible,
+    isShowbiomatric,
+    isForgotPasswordFetching,
+    setisShowbiomatric,
+    isChecked,
+    setisChecked,
+    heandleonSignin,
+    BiometricLogin,
+    heandleonforgot,
+    FacelockLogin,
+    isSigninFetching,
+    ReSetemail,
+    setReSetemail,
+    ResetValidator,
+    isVisibleVerifiedModal,
+    handleVerificationModal,
+    setIsReSetmodalvisible,
+    VerfiedUserData,
+    isVerifiedFetching,
+  }
 }

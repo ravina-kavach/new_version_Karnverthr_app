@@ -73,6 +73,9 @@ const TabNavigation = () => {
       <Tab.Screen
         name="Expenses"
         component={Expenses}
+        listeners={({ navigation }) => ({
+        tabPress: e => {e.preventDefault()},
+        })}
         options={{
           header: () => (
             <CommonHeader
@@ -85,7 +88,8 @@ const TabNavigation = () => {
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
                 source={ExpensesIcon}
-                tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
+                tintColor={COLOR.dark2}
+                // tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
               />
             </View>
           ),
@@ -95,6 +99,9 @@ const TabNavigation = () => {
       <Tab.Screen
         name="Leaves"
         component={Leaves}
+        listeners={({ navigation }) => ({
+        tabPress: e => {e.preventDefault()},
+        })}
         options={{
           header: () => (
             <CommonHeader
@@ -107,7 +114,8 @@ const TabNavigation = () => {
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
                 source={ReceiptIcon}
-                tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
+                tintColor={COLOR.dark2}
+                // tintColor={focused ? COLOR.di : COLOR.Black1}
               />
             </View>
           ),
@@ -117,6 +125,9 @@ const TabNavigation = () => {
       <Tab.Screen
         name="Calender"
         component={Calender}
+        listeners={({ navigation }) => ({
+        tabPress: e => {e.preventDefault()},
+        })}
         options={{
           headerStatusBarHeight:0,
           header: () => (
@@ -130,7 +141,8 @@ const TabNavigation = () => {
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
                 source={CalenderIcon}
-                tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
+                tintColor={COLOR.dark2}
+                // tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
               />
             </View>
           ),

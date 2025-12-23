@@ -42,7 +42,8 @@ function SignInScreen() {
     FacelockLogin,
     isSigninFetching,
     isVisibleVerifiedModal,
-    handleVerificationModal
+    handleVerificationModal,
+    isVerifiedFetching,
   } = useSignInScreen();
 
   return (
@@ -111,7 +112,7 @@ function SignInScreen() {
             gradientColors={[COLOR.grediant1, COLOR.grediant2]}
           />
 
-          <Text style={styles.or}>OR</Text>
+          {/* <Text style={styles.or}>OR</Text>
           <TouchableOpacity style={styles.outlineBtn}>
             <Image source={Emp} />
             <Text style={styles.outlineText}>Sign in With Employee ID</Text>
@@ -120,11 +121,12 @@ function SignInScreen() {
           <TouchableOpacity style={styles.outlineBtn}>
             <Image source={Phone} />
             <Text style={styles.outlineText}>Sign in With Phone</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {isVisibleVerifiedModal &&
             <EmailVerificationModal
               visible={isVisibleVerifiedModal}
               onSubmit={handleVerificationModal}
+              isVerifiedFetching ={isVerifiedFetching}
             />}
           {IsReSetmodalvisible &&
             <ForgotPasswordModal
@@ -144,7 +146,7 @@ function SignInScreen() {
               <TouchableWithoutFeedback
                 onPress={() => BiometricLogin()}
                 disabled={isSigninFetching}>
-                <View>
+            
                   <View style={styles.rowsContainer}>
                     <View style={{paddingRight:20}}>
                       <Label>{t('Button.LoginWithFigerprint')}</Label>
@@ -163,7 +165,6 @@ function SignInScreen() {
                         />
                       )}
                     </View>
-                  </View>
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -173,7 +174,6 @@ function SignInScreen() {
               <TouchableWithoutFeedback
                 onPress={() => FacelockLogin()}
                 disabled={isSigninFetching}>
-                <View>
                   <View style={styles.rowsContainer}>
                     <View style={{paddingRight:20}}>
                       <Label>{t('Button.LoginWithFaceId')}</Label>
@@ -192,7 +192,6 @@ function SignInScreen() {
                         />
                       )}
                     </View>
-                  </View>
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -280,6 +279,7 @@ const styles = StyleSheet.create({
    rowsContainer: {
       flexDirection: "row",
       marginHorizontal:30,
+      height:50,
       alignItems: "center",
    },
    colContainer: {
