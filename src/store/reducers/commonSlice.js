@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Config from 'react-native-config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const Authheader = { "Content-Type": "multipart/form-data" }
 const Authheader = { 'Content-Type': 'multipart/form-data' };
@@ -31,27 +32,60 @@ export const Usersignin = createAsyncThunk(
     },
 );
 
+export const UserToken = createAsyncThunk(
+  'auth/UserToken',
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        'http://192.168.11.150:4000/api/auth',
+        payload 
+      );
+      console.log("TOKEN===>", response.data)
+      if (response.data.status === 'success') {
+        const token = response.data.token;
+        await AsyncStorage.setItem('USER_TOKEN', token);
+        return token;
+      } else {
+        return thunkAPI.rejectWithValue(response.data.errorMessage);
+      }
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+
 export const UserVerification = createAsyncThunk(
     'UserVerification',
     async (userdata, thunkAPI) => {
-        console.log('Usersignin userdata >>', userdata);
+        // console.log('UserVerification payload data>>', userdata);
+        const token = await AsyncStorage.getItem('USER_TOKEN');
+        const header = {
+            "Content-Type": "multipart/form-data",
+            "Authorization":`Bearer ${token}`
+        }
+
         try {
             let result = await axios({
                 method: 'POST',
-                baseURL: Config.BASE_URL,                
-                url: `api/employee/verification`,                
+                baseURL: "http://192.168.11.150:4000/",                
+                url: `api/employee/device-register`,   
+                headers:header,             
                 data: userdata,
             });
-            // console.log('Usersignin result.data >>', result.data);
+            console.log("OBJ==>",result.data)
             if (result.data.success) {
-                return result.data.data;
+                return {...result.data.data, message:result.data.successMessage};
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
             }
+            
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ Usersignin ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("error>>>", error.response)
+            console.log('try catch [ Verification ] error.message>>', error.message);
+            if(error.message){ 
+                return thunkAPI.rejectWithValue({ error: error.message});
+            }
         }
     },
 );
@@ -115,7 +149,7 @@ export const GetCheckStatus = createAsyncThunk(
                 baseURL: Config.BASE_URL,
                 url: `api/checkin_checkout`,
                 // headers: Authheader,
-                params: userdata,
+                params:  userdata,
             });
             // console.log('GetCheckStatus result.data >>', result.data);
             if (result.data.success) {
@@ -1015,8 +1049,8 @@ export const CommonSlice = createSlice({
                 state.isError = true;
                 payload
                     ? (state.errorMessage = payload.error?.message
-                        ? payload.error?.message
-                        : (payload.error || "Oops! It seems like either your username or password is incorrect")) : "Oops! It seems like either your username or password is incorrect";
+                        ? payload.error.message
+                        : (payload.error || "Oops! It seems like either your verification code is incorrect")) : "Oops! It seems like either your verification code is incorrect";
             } catch (error) {
                 console.log(
                     'Error: [UserVerification.rejected] try catch error >>',
