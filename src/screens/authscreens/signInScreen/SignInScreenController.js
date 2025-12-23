@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Animated, BackHandler, Dimensions } from 'react-native'
+import React from 'react'
+import { BackHandler, Dimensions } from 'react-native'
 import Service from '../../../utils/service'
 import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
@@ -33,11 +33,6 @@ export const useSignInScreen = () => {
   const [, ResetforceUpdate] = React.useState();
 
   const [Formdata, setFormdata] = React.useState({})
-  // const [Formdata, setFormdata] = React.useState({ "email": "gauravsingh4632@gmail.com", "password": "Gaurav@123" })  
-  // const [Formdata, setFormdata] = React.useState({ "email": "raia6651@gmail.com", "password": "Abhishek@123" })  
-  // const [Formdata, setFormdata] = React.useState({ "email": "rainilesh045@gmail.com", "password": "Nilesh@123" })  
-  // const [Formdata, setFormdata] = React.useState({ "email": "prateekjnp2002@gmail.com", "password": "Prateek@0421" })  
-
   const [ReSetemail, setReSetemail] = React.useState('')
   const [IsReSetmodalvisible, setIsReSetmodalvisible] = React.useState(false)
   const [IsPassVisible, setIsPassVisible] = React.useState(true)
@@ -109,10 +104,8 @@ export const useSignInScreen = () => {
 
   //-----------------
   const setdata = async () => {
-    console.log("calll")
     await Service.setRemember(UsersigninData)
     dispatch(updateState({ isSignin: false }))
-    console.log("ischecked --->", isChecked)
     if (isChecked) {
       await Service.setisBiomatic('true')
     } else {
@@ -285,8 +278,8 @@ export const useSignInScreen = () => {
         formdata.append("device_platform", String(getDevice)),
         formdata.append("ip_address", String(getIpAddress)),
         dispatch(UserVerification(formdata))
-      setIsVisibleVerifiedModal(!isVisibleVerifiedModal)
-      await Service.setisVerified('true')
+        setIsVisibleVerifiedModal(!isVisibleVerifiedModal)
+        await Service.setisVerified(isVerified)
     }
   }
   return {

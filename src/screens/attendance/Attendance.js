@@ -73,7 +73,7 @@ export default function Attendance() {
 
 const styles = StyleSheet.create ({
   filterContainer: {
-    marginTop: 200,
+    marginTop: 190,
     marginHorizontal: 20,
   },
   dropdownBox: {

@@ -7,34 +7,19 @@ import {RenderBox} from '../../components/RenderBox.js'
 const Home = () => {
   const {
     MENUDATA,
-    IsAtandance,
     UsersigninData,
-    isCheckin,
-    isCheckOut,
-    isError,
-    errorMessage,
-    isGetCheckStatus,
-    GetCheckStatusData,
-    isGetCheckStatusFetching,
-    isGetAttandanceListFetching,
-    GetAttandanceListData,
-    isCheckOutFetching,
-    isCheckinFetching,
     takeImage,
-    checkInData,
-    checkOutData,
+    isAttendanceFetching,
+    localAttendanceData
   } = useHome();
-
   return (
     // <CommonView>
       <ScrollView>
         <WorkingHoursCard
           usersigninData={UsersigninData}
-          imageFetching={isGetAttandanceListFetching}
-          checkInData={checkInData}
-          checkOutData={checkOutData}
+          localAttendanceData={localAttendanceData}
+          loading={isAttendanceFetching}
           onPress={takeImage}
-          isAtandance={IsAtandance}
         />
         <FlatList
           data={MENUDATA}
@@ -46,7 +31,7 @@ const Home = () => {
               <RenderBox
                 image={item.image}
                 title={item.title}
-                onClick={item.screen}
+                screen={item.screen}
               />
             </View>
           )}

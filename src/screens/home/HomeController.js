@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { BackHandler } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { CommonSelector, Checkin, CheckOut, GetAttandanceList, GetCheckStatus, updateState } from '../../store/reducers/commonSlice'
+import { CommonSelector, UserAttendance , GetAttandanceList, updateState } from '../../store/reducers/commonSlice'
 import { useFocusEffect } from '@react-navigation/native';
 import { permission } from '../../utils/permission'
 import BackgroundGeolocation from "react-native-background-geolocation";
@@ -16,25 +16,23 @@ export const useHome = () => {
     const dispatch = useDispatch();
     const [CurrentLongitude, setCurrentLongitude] = React.useState(0)
     const [CurrentLatitude, setCurrentLatitude] = React.useState(0)
-    const [IsAtandance, setIsAtandance] = React.useState(false);
-    const { UsersigninData, isCheckin, isCheckOut, isError, errorMessage, isGetCheckStatus, GetCheckStatusData, isGetCheckStatusFetching, isGetAttandanceListFetching, GetAttandanceListData, isCheckOutFetching, isCheckinFetching } = useSelector(CommonSelector);
+    const [localAttendanceData, setLocalAttendanceData] = React.useState({})
+    const { UsersigninData, isError, errorMessage, UserAttendanceData, isAttendanceFetching } = useSelector(CommonSelector);
     const MENUDATA = [
-  { id: '1', image: HomeMenuIcons.Expense, title: t('Home.Expense'), screen: 'Expenses' },
-  { id: '2', image: HomeMenuIcons.Attendance, title: t('Home.Attendance'), screen: 'Attendance' },
-  { id: '3', image: HomeMenuIcons.Leave, title: t('Home.Leave'), screen: 'Leaves' },
-  { id: '4', image: HomeMenuIcons.Calendar, title: t('Home.Calendar'), screen: 'Calender' },
-  { id: '5', image: HomeMenuIcons.NotApproved, title: t('Home.Approvals'), screen: 'Approvals' },
-  { id: '6', image: HomeMenuIcons.Report, title: t('Home.Reports'), screen: 'Reports' },
-  { id: '7', image: HomeMenuIcons.Payslip, title: t('Home.PaySlip'), screen: 'Payslip' },
-  { id: '8', image: HomeMenuIcons.Announcement, title: t('Home.Announcement'), screen: 'Announcement' },
-  { id: '9', image: HomeMenuIcons.Shift, title: t('Home.Shift_Timings'), screen: 'ShiftTiming' },
-];
- 
+        { id: '1', image: HomeMenuIcons.Expense, title: t('Home.Expense'), screen: 'expenses' },
+        { id: '2', image: HomeMenuIcons.Attendance, title: t('Home.Attendance'), screen: 'attendance' },
+        { id: '3', image: HomeMenuIcons.Leave, title: t('Home.Leave'), screen: 'leaves' },
+        { id: '4', image: HomeMenuIcons.Calendar, title: t('Home.Calendar'), screen: 'calender' },
+        { id: '5', image: HomeMenuIcons.NotApproved, title: t('Home.Approvals'), screen: 'approvals' },
+        { id: '6', image: HomeMenuIcons.Report, title: t('Home.Reports'), screen: 'reports' },
+        { id: '7', image: HomeMenuIcons.Payslip, title: t('Home.PaySlip'), screen: 'payslip' },
+        { id: '8', image: HomeMenuIcons.Announcement, title: t('Home.Announcement'), screen: 'announcement' },
+        { id: '9', image: HomeMenuIcons.Shift, title: t('Home.Shift_Timings'), screen: 'shiftTiming' },
+    ];
+
     useFocusEffect(
         useCallback(() => {
             GetDevicelocation();
-            GetStatus();
-            dispatch(GetAttandanceList({ email: UsersigninData.email }));
             const backHandler = BackHandler.addEventListener(
                 "hardwareBackPress",
                 () => true
@@ -42,6 +40,29 @@ export const useHome = () => {
             return () => backHandler.remove();
         }, [])
     );
+
+    const getCheckInData = async () => {
+        if (!UserAttendanceData && !Object.keys(UserAttendanceData).length === 0) {
+            if (UserAttendanceData === "CHECK_IN") {
+                const obj = {
+                    check_in_image: UserAttendanceData.check_in_image,
+                    check_in_time: UserAttendanceData.check_in_time,
+                    action: result.data.action
+                }
+                setLocalAttendanceData(obj)
+            } else {
+                setLocalAttendanceData({})
+            }
+        } else {
+            const checkindata = await Service.GetAsyncAttendanceData();
+            setLocalAttendanceData(checkindata);
+
+        }
+    };
+
+    useEffect(() => {
+        getCheckInData();
+    }, []);
 
     //   React.useEffect(() => {
     //     Navigation.setOptions({
@@ -72,42 +93,35 @@ export const useHome = () => {
     }, [isError])
 
     React.useEffect(() => {
-        if (isCheckin) {
-            showMessage({
-                icon: "success",
-                message: `${t('messages.Check_in')}`,
-                type: "success",
-            })
-            if (UsersigninData?.is_geo_tracking) {
-                BackgroundHandler.startTracking()
-            }
-            setIsAtandance(true);
-            dispatch(updateState({ isCheckin: false }));
-            dispatch(GetAttandanceList({ email: UsersigninData.email }));
+        if (UsersigninData?.is_geo_tracking) {
+            BackgroundHandler.startTracking()
         }
-    }, [isCheckin])
+        dispatch(GetAttandanceList({ email: UsersigninData.email }));
+    }, [UsersigninData])
 
     React.useEffect(() => {
-        if (isCheckOut) {
-            showMessage({
-                icon: "success",
-                message: `${t('messages.Check_out')}`,
-                type: "success",
-            })
-            BackgroundHandler.stopTracking()
-            setIsAtandance(false);
-            dispatch(updateState({ isCheckOut: false }));
+        if (UserAttendanceData?.action) {
+            if (UserAttendanceData?.action === "CHECK_IN") {
+                showMessage({
+                    icon: "success",
+                    message: `${t('messages.Check_in')}`,
+                    type: "success",
+                })
+            } else {
+                showMessage({
+                    icon: "success",
+                    message: `${t('messages.Check_out')}`,
+                    type: "success",
+                })
+            }
             dispatch(GetAttandanceList({ email: UsersigninData.email }));
         }
-    }, [isCheckOut])
-    
-    React.useEffect(() => {
-        if (isGetCheckStatus) {
-            let ischeckedIn = GetCheckStatusData?.status == 'CheckedIn' ? true : false;
-            dispatch(updateState({ isGetCheckStatus: false }));
-            setIsAtandance(ischeckedIn)
+        if (UserAttendanceData.action === "CHECK_OUT") {
+            if (UsersigninData?.is_geo_tracking) {
+                BackgroundHandler.stopTracking()
+            }
         }
-    }, [isGetCheckStatus])
+    }, [UserAttendanceData])
 
 
     const GetDevicelocation = async () => {
@@ -131,66 +145,53 @@ export const useHome = () => {
             console.log("error.message>>>", error.message)
         }
     };
-    const HeandleonCheckIn = async (data) => {
+
+    const handleAttendance = async (type, imageBase64) => {
         const formdata = new FormData();
-        formdata.append("CheckInImage", data)
-        formdata.append("email", UsersigninData.email)
-        formdata.append("Longitude", CurrentLongitude)
-        formdata.append("Latitude", CurrentLatitude)
-        // formdata.append("Longitude", '72.579863')
-        // formdata.append("Latitude", '23.022505')
-        formdata.append("location", `${CurrentLongitude},${CurrentLatitude}`)
-        dispatch(Checkin(formdata))
-    }
-    const HeandleonCheckOut = async (data) => {
-        const formdata = new FormData();
-        formdata.append("CheckOutImage", data)
-        formdata.append("check_in", checkInData.check_in)
-        formdata.append("email", UsersigninData.email)
-        formdata.append("Longitude", CurrentLongitude)
-        formdata.append("Latitude", CurrentLatitude)
-        // formdata.append("Longitude", '72.579863')
-        // formdata.append("Latitude", '23.022505')
-        formdata.append("location", `${CurrentLongitude},${CurrentLatitude}`)
-        dispatch(CheckOut(formdata))
-    }
-    const GetStatus = async () => {
-        dispatch(GetCheckStatus({ 'email': UsersigninData.email }))
-    }
-    const takeImage = (value) => {
-        const res = permission.heandleOnCamera()
-        if (value === 2) {
-            HeandleonCheckIn(res)
-        } else {
-            HeandleonCheckOut(res)
+        const attendanceData = await Service.GetAsyncAttendanceData();
+        const timeNow = new Date().toISOString();
+
+        formdata.append("Image", imageBase64);
+        formdata.append("email", UsersigninData.email);
+        formdata.append("Longitude", CurrentLongitude);
+        formdata.append("Latitude", CurrentLatitude);
+
+        if (type === "CHECK_IN") {
+            formdata.append("check_in", timeNow);
+            const obj = {
+                ...attendanceData,
+                check_in_image: imageBase64,
+                check_in_time: timeNow,
+                action: "CHECK_IN",
+            };
+
+            await Service.setAsyncAttendanceData(obj);
         }
-    }
 
-    const checkInData = React.useMemo(() => {
-        return !GetAttandanceListData[0]?.check_out ? GetAttandanceListData[0] : null;
-    }, [GetAttandanceListData])
+        if (type === "CHECK_OUT") {
+            formdata.append("check_out", timeNow);
+            formdata.append("check_in", attendanceData?.check_in_time || "");
+            await Service.removeAsyncAttendanceData();
+        }
+        // dispatch(UserAttendance(formdata));
+        getCheckInData();
+    };
 
-    const checkOutData = React.useMemo(() => {
-        return checkInData && checkInData.check_out ? checkInData : null;
-    }, [checkInData])
+    const takeImage = async (value) => {
+        const image = await permission.heandleOnCamera();
+        if (!image) return;
+        if (value === "CHECK_IN") {
+            handleAttendance(value, image);
+        } else {
+            handleAttendance(value, image);
+        }
+    };
 
     return {
-        MENUDATA,
-        IsAtandance,
-        UsersigninData,
-        isCheckin,
-        isCheckOut,
-        isError,
-        errorMessage,
-        isGetCheckStatus,
-        GetCheckStatusData,
-        isGetCheckStatusFetching,
-        isGetAttandanceListFetching,
-        GetAttandanceListData,
-        isCheckOutFetching,
-        isCheckinFetching,
-        takeImage,
-        checkInData,
-        checkOutData,
+    MENUDATA,
+    UsersigninData,
+    takeImage,
+    isAttendanceFetching,
+    localAttendanceData
     }
 }
