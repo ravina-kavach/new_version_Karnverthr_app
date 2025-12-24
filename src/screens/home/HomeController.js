@@ -19,8 +19,8 @@ export const useHome = () => {
     const [localAttendanceData, setLocalAttendanceData] = React.useState({})
     const { UsersigninData, isError, errorMessage, UserAttendanceData, isAttendanceFetching } = useSelector(CommonSelector);
     const MENUDATA = [
-        { id: '1', image: HomeMenuIcons.Expense, title: t('Home.Expense'), screen: 'expenses' },
-        { id: '2', image: HomeMenuIcons.Attendance, title: t('Home.Attendance'), screen: 'attendance' },
+        { id: '1', image: HomeMenuIcons.Attendance, title: t('Home.Attendance'), screen: 'attendance' },
+        { id: '2', image: HomeMenuIcons.Expense, title: t('Home.Expense'), screen: 'expenses' },
         { id: '3', image: HomeMenuIcons.Leave, title: t('Home.Leave'), screen: 'leaves' },
         { id: '4', image: HomeMenuIcons.Calendar, title: t('Home.Calendar'), screen: 'calender' },
         { id: '5', image: HomeMenuIcons.NotApproved, title: t('Home.Approvals'), screen: 'approvals' },

@@ -284,9 +284,9 @@ export const useSignInScreen = () => {
         formdata.append("device_platform", String(getDevice)),
         formdata.append("ip_address", String(getIpAddress)),
         dispatch(UserVerification(formdata))
-        setIsVisibleVerifiedModal(!isVisibleVerifiedModal)
-        await Service.setisVerified(true)
+        await Service.setisVerified(isVerified)
         Getdata()
+        // setIsVisibleVerifiedModal(isVerifiedUser)
     }
   }
   return {

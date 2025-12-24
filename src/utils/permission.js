@@ -153,7 +153,7 @@ const requestLocationPermission = async () => {
           {
             mediaType: 'photo',
             quality: 0.1,
-            cameraType: 'front',
+            cameraType:'front',
             includeBase64: true,
           },
           (response) => {
