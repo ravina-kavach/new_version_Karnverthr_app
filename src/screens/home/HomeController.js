@@ -93,10 +93,8 @@ export const useHome = () => {
     }, [isError])
 
     React.useEffect(() => {
-        if (UsersigninData?.is_geo_tracking) {
-            BackgroundHandler.startTracking()
-        }
-        dispatch(GetAttandanceList({ email: UsersigninData.email }));
+        BackgroundHandler.startTracking()
+        // dispatch(GetAttandanceList({ email: UsersigninData.email }));
     }, [UsersigninData])
 
     React.useEffect(() => {
@@ -114,12 +112,10 @@ export const useHome = () => {
                     type: "success",
                 })
             }
-            dispatch(GetAttandanceList({ email: UsersigninData.email }));
+            // dispatch(GetAttandanceList({ email: UsersigninData.email }));
         }
         if (UserAttendanceData.action === "CHECK_OUT") {
-            if (UsersigninData?.is_geo_tracking) {
-                BackgroundHandler.stopTracking()
-            }
+            BackgroundHandler.stopTracking()
         }
     }, [UserAttendanceData])
 
@@ -147,6 +143,7 @@ export const useHome = () => {
     };
 
     const handleAttendance = async (type, imageBase64) => {
+        console.log("calll")
         const formdata = new FormData();
         const attendanceData = await Service.GetAsyncAttendanceData();
         const timeNow = new Date().toISOString();
@@ -173,13 +170,12 @@ export const useHome = () => {
             formdata.append("check_in", attendanceData?.check_in_time || "");
             await Service.removeAsyncAttendanceData();
         }
-        // dispatch(UserAttendance(formdata));
+        dispatch(UserAttendance(formdata));
         getCheckInData();
     };
 
     const takeImage = async (value) => {
         const image = await permission.heandleOnCamera();
-        if (!image) return;
         if (value === "CHECK_IN") {
             handleAttendance(value, image);
         } else {

@@ -29,7 +29,8 @@ const WorkingHoursCard = ({
             resizeMode='cover'
           />
         ) : (
-          <Image source={SelfieIcon} />
+          <Image source={SelfieIcon} resizeMode='cover' style={{ height: 28,
+    width: 28,}} />
         )}
       </View>
     )
@@ -39,7 +40,7 @@ const WorkingHoursCard = ({
     <View style={styles.container}>
       <Text style={styles.title}>{t('Home.Shift_Timings')}</Text>
       <Text style={styles.subtitle}>
-        {usersigninData.shift_timing}
+        {usersigninData?.shift_timing}
       </Text>
 
       <View style={styles.hoursRow}>
@@ -116,8 +117,8 @@ const styles = StyleSheet.create({
     paddingLeft: 5
   },
   imageContainer: {
-    height: 30,
-    width: 30,
+    height: 35,
+    width: 35,
     borderRadius: 5,
     overflow: 'hidden',
     borderWidth: 0.4,
@@ -127,8 +128,8 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   innerImageContainer: {
-    height: 28,
-    width: 28,
+    height: 32,
+    width: 32,
     borderRadius: 5
   },
   button: {

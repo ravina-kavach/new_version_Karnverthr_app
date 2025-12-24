@@ -6,16 +6,17 @@ import { RowView } from "../utils/common";
 import { AttendancIcon } from "../assets/icons/index.js";
 
 const AttendanceItem = ({ item, t, getDuration }) => {
-  const dateTitle = item.check_in
-    ? dayjs(item.check_in).format("DD MMMM YYYY")
+  
+  const dateTitle = item?.check_in
+    ? dayjs(item?.check_in).format("DD MMMM YYYY")
     : "";
 
-  const checkIn = item.check_in
-    ? dayjs(item.check_in).format("hh:mm A")
+  const checkIn = item?.check_in
+    ? dayjs(item?.check_in).format("hh:mm A")
     : "--";
 
-  const checkOut = item.check_out
-    ? dayjs(item.check_out).format("hh:mm A")
+  const checkOut = item?.check_out
+    ? dayjs(item?.check_out).format("hh:mm A")
     : "--";
 
   return (
@@ -33,7 +34,7 @@ const AttendanceItem = ({ item, t, getDuration }) => {
           <View style={styles.block}>
             <Text style={styles.label}>Total Hours</Text>
             <Text style={styles.value}>
-              {getDuration(item.check_in, item.check_out)} hrs
+              {getDuration(item?.check_in, item?.check_out)} hrs
             </Text>
           </View>
 

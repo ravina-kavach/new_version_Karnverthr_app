@@ -31,7 +31,7 @@ export const useExpenses = () => {
         React.useEffect(() => {
             if (IsFocused) {
                 dispatch(CategoryList())
-                dispatch(GetExpenseList({ "email": UsersigninData.email }))
+                dispatch(GetExpenseList({ "email": UsersigninData?.email }))
             }
         }, [IsFocused])
     
@@ -154,7 +154,7 @@ export const useExpenses = () => {
         const SubmitExpense = () => {
             const formvalid = Validator.current.allValid();        
             const formdata = new FormData();
-            formdata.append("email", UsersigninData.email)
+            formdata.append("email", UsersigninData?.email)
             formdata.append("name", Formdata.ExpenseName || "")
             formdata.append("product_id", Catagory?.id)
             formdata.append("total_amount_currency", Formdata.Amount || "")

@@ -2,35 +2,80 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Service from '../../utils/service';
 
 // const Authheader = { "Content-Type": "multipart/form-data" }
 const Authheader = { 'Content-Type': 'multipart/form-data' };
 // const Authheader = { "Content-Type": "application/json" }
 
+// export const Usersignin = createAsyncThunk(
+//     'Usersignin',
+//     async (userdata, thunkAPI) => {
+//         const token = await AsyncStorage.getItem('USER_TOKEN');
+//         const header = {
+//             "Authorization": `Bearer ${token}`
+//         }
+//         const obj = {
+//             "email" : userdata.email,
+//             "password" :userdata.password
+//         }
+//         try {
+//             let result = await axios({
+//                 method: 'POST',
+//                 baseURL: "http://192.168.11.150:4000/",
+//                 url: `api/login`,
+//                 headers:header,
+//                 data: obj,
+//             });
+//             console.log('Usersignin result.data >>', result.data);
+//             if (result.data.status === "success") {
+//                 return result.data.data;
+//             }
+//         } catch (error) {
+//             console.log("error>>>", error)
+//             console.log('try catch [ Usersignin ] error.message>>', error.message);
+//             return thunkAPI.rejectWithValue({ error: error.message });
+//         }
+//     },
+// );
+
 export const Usersignin = createAsyncThunk(
     'Usersignin',
     async (userdata, thunkAPI) => {
-        // console.log('Usersignin userdata >>', userdata);
         try {
-            let result = await axios({
+
+            const token = await AsyncStorage.getItem('USER_TOKEN');
+
+            const result = await axios({
                 method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: `api/employee/login`,
-                data: userdata,
+                baseURL: "http://192.168.11.150:4000/",
+                url: `api/login`,
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                },
+                data: {
+                    email: userdata.email,
+                    password: userdata.password,
+                },
             });
-            // console.log('Usersignin result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+
+            console.log("Signin result >>", result.data);
+
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: result.data.message
+                });
             }
+
+            return result.data;
+
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ Usersignin ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Axios Error:", error);
+
+            return thunkAPI.rejectWithValue({
+                error: error.response?.data?.message || error.message
+            });
         }
-    },
+    }
 );
 
 export const UserToken = createAsyncThunk(
@@ -41,7 +86,6 @@ export const UserToken = createAsyncThunk(
                 'http://192.168.11.150:4000/api/auth',
                 payload
             );
-            console.log("TOKEN===>", response.data)
             if (response.data.status === 'success') {
                 const token = response.data.token;
                 await AsyncStorage.setItem('USER_TOKEN', token);
@@ -73,7 +117,6 @@ export const UserVerification = createAsyncThunk(
                 headers: header,
                 data: userdata,
             });
-            // console.log("OBJ==>", result.data)
             if (result.data.success) {
                 return { ...result.data.data, message: result.data.successMessage };
             } else {
@@ -95,7 +138,6 @@ export const UserAttendance = createAsyncThunk(
     async (userdata, thunkAPI) => {
         const token = await AsyncStorage.getItem('USER_TOKEN');
         const header = {
-            "Content-Type": "multipart/form-data",
             "Authorization": `Bearer ${token}`
         }
         console.log('UserAttendance payload data>>', userdata);
@@ -109,10 +151,10 @@ export const UserAttendance = createAsyncThunk(
                 data: userdata,
             });
 
-            if (result.data.success) {   
-            return { ...result.data.data, message: result.data.successMessage , action:result.data.action };
+            if (result.data.success) {
+                return { ...result.data.data, message: result.data.successMessage, action: result.data.action };
             } else {
-            return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
             }
         } catch (error) {
             console.log("Error >>>", error.response?.data || error.message);
@@ -228,25 +270,30 @@ export const CreateExpenses = createAsyncThunk(
 export const GetAttandanceList = createAsyncThunk(
     'GetAttandanceList',
     async (userdata, thunkAPI) => {
-        console.log('GetAttandanceList userdata >>', userdata);
+        const token = await AsyncStorage.getItem('USER_TOKEN');
+        const header = {
+            // "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`
+        }
+        console.log('GetAttandanceList userdata >>', userdata, token);
+        console.log("URL==>", `http://192.168.11.150:4000/api/user/attendance?user_id=${userdata.id}&month=${userdata.month}&year=${userdata.year}`)
         try {
             let result = await axios({
                 method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_attendance',
-                // headers: Authheader,
-                params: userdata,
+                baseURL: `http://192.168.11.150:4000/api/user/attendance?user_id=${userdata.id}&month=${userdata.month}&year=${userdata.year}`,
+                headers: header,
             });
-            // console.log('GetAttandanceList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.records;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+             if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: result.data.message
+                });
             }
+            return { attandancelist:result.data.data, message: result.data.successMessage };
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetAttandanceList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: error.response?.data?.message || error.message
+            });
         }
     },
 );
@@ -1115,7 +1162,7 @@ export const CommonSlice = createSlice({
         builder.addCase(ForgotPassword.pending, state => {
             state.isForgotPasswordFetching = true;
         });
-        
+
         //========= CategoryList
         builder.addCase(CategoryList.fulfilled, (state, { payload }) => {
             // console.log("[CategoryList.fulfilled]>>>payload>>>", payload)
