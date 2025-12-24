@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import { useDispatch, useSelector } from 'react-redux';
 import { CommonSelector, GetAttandanceList } from '../../store/reducers/commonSlice';
+import { showMessage } from 'react-native-flash-message'
 
 export const useAttendance = () =>{
      const { t, i18n } = useTranslation();
@@ -50,13 +51,22 @@ export const useAttendance = () =>{
     
       React.useEffect(() => {
         let data = {
-          email: UsersigninData?.email,
-          month: Selectedmonth?.id,
-          year: SelectedYear?.id ? SelectedYear.name : ""
+          id: Number(UsersigninData?.user_id),
+          month: Number(Selectedmonth?.id),
+          year: SelectedYear?.id ? Number(SelectedYear.name) : ""
         }
         dispatch(GetAttandanceList(data))
       }, [Selectedmonth, SelectedYear])
-    
+
+      React.useEffect(() => {
+          if (GetAttandanceListData?.message) {
+            showMessage({
+              icon: "success",
+              message: GetAttandanceListData?.message,
+              type: "success",
+            })
+          }
+        }, [GetAttandanceListData?.message])  
       const getDuration = (checkIn, checkOut) => {
         const inTime = moment(checkIn, "YYYY-MM-DD HH:mm:ss");
         const outTime = moment(checkOut, "YYYY-MM-DD HH:mm:ss");

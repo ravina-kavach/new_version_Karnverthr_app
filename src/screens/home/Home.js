@@ -18,7 +18,7 @@ const Home = () => {
         <WorkingHoursCard
           usersigninData={UsersigninData}
           localAttendanceData={localAttendanceData}
-          loading={isAttendanceFetching}
+          // loading={isAttendanceFetching}
           onPress={takeImage}
         />
         <FlatList

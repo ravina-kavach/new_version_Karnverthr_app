@@ -48,12 +48,14 @@ export const useSignInScreen = () => {
   const rnBiometrics = new ReactNativeBiometrics({ allowDeviceCredentials: true, })
   //---------------
   React.useEffect(() => {
+    
     if (IsFocused) {
       Getdata();
       GetDevicedata();
       const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
       return () => backHandler.remove()
     }
+    
   }, [IsFocused])
   React.useEffect(() => {
     if (isError) {
@@ -86,6 +88,7 @@ export const useSignInScreen = () => {
         message: VerfiedUserData?.message,
         type: "success",
       })
+      setFormdata({...Formdata, email: VerfiedUserData.private_email})
     }
   }, [VerfiedUserData?.message])
 
@@ -104,7 +107,7 @@ export const useSignInScreen = () => {
 
   //-----------------
   const setdata = async () => {
-    await Service.setRemember(UsersigninData)
+    await Service.setRemember({...UsersigninData, password:Formdata.password})
     dispatch(updateState({ isSignin: false }))
     if (isChecked) {
       await Service.setisBiomatic('true')
@@ -112,16 +115,17 @@ export const useSignInScreen = () => {
       await Service.setisBiomatic('false')
       await Service.setisFirstime('false')
     }
+
+
     // Navigation.navigate('home')
     // testing parpuse after romove it.
+
     Navigation.navigate('myTab')
     await Service.setisFirstime('true')
   }
   const Getdata = async () => {
-    let isVerified = await Service.GetisVerified();
-    if (!isVerified) {
-      setIsVisibleVerifiedModal(!isVerified)
-    }
+    let isVerifiedUser = await Service.GetisVerified();
+      setIsVisibleVerifiedModal(!isVerifiedUser)
     let newdata = await Service.GetRemember();
     setRememberData(newdata);
     let data = await Service.GetisBiomatic();
@@ -212,7 +216,7 @@ export const useSignInScreen = () => {
     if (formvalid) {
       Validator.current.hideMessages();
       forceUpdate(0);
-      dispatch(Usersignin({ ...DeviceData, "email": Formdata.email, "password": Formdata.password, }))
+      dispatch(Usersignin({ "email": Formdata.email, "password": Formdata.password, }))
     } else {
       Validator.current.showMessages();
       forceUpdate(1);
@@ -222,14 +226,14 @@ export const useSignInScreen = () => {
   const BiometricLogin = async () => {
     const { biometryType } = await rnBiometrics.isSensorAvailable()
     if (biometryType == undefined) {
-      dispatch(Usersignin({ ...DeviceData, "email": RememberData.email, "password": RememberData.password }))
+      dispatch(Usersignin({ "email": RememberData.email, "password": RememberData.password }))
     }
     if (biometryType === BiometryTypes.Biometrics) {
       const result = await rnBiometrics.simplePrompt({
         promptMessage: 'Authenticate',
       })
       if (result.success) {
-        dispatch(Usersignin({ ...DeviceData, "email": RememberData.email, "password": RememberData.password }))
+        dispatch(Usersignin({ "email": RememberData.email, "password": RememberData.password }))
       } else {
         console.log('Keys do not exist or were deleted')
       }
@@ -268,7 +272,9 @@ export const useSignInScreen = () => {
     let getSystemVersion = DeviceInfo.getSystemVersion()
     let deviceUniqueId = await DeviceInfo.getUniqueId();
 
-    if (isVisibleVerifiedModal && secreatCode) {
+    let isVerifiedUser = await Service.GetisVerified();
+
+    if (isVisibleVerifiedModal && secreatCode && !isVerifiedUser) {
       const formdata = new FormData();
       formdata.append("random_code_for_reg", String(secreatCode)),
         formdata.append("device_unique_id", String(deviceUniqueId)),
@@ -279,7 +285,8 @@ export const useSignInScreen = () => {
         formdata.append("ip_address", String(getIpAddress)),
         dispatch(UserVerification(formdata))
         setIsVisibleVerifiedModal(!isVisibleVerifiedModal)
-        await Service.setisVerified(isVerified)
+        await Service.setisVerified(true)
+        Getdata()
     }
   }
   return {

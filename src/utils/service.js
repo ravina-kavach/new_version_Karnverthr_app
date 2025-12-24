@@ -119,26 +119,30 @@ const getDayDifference = (startDate, endDate) => {
 
 const setisVerified = async (data) => {
     try {
-        await AsyncStorage.setItem('isVerified', data);
+        await AsyncStorage.setItem('isVerified', JSON.stringify(data));
     } catch (error) {
         console.log('try catch[ service> isVerified] error:', error.message);
     }
-}
+};
+
 const removeisVerified = async () => {
     try {
         await AsyncStorage.removeItem('isVerified');
     } catch (error) {
         console.log('try catch[ service> removeisVerified] error:', error.message);
     }
-}
+};
+
 const GetisVerified = async () => {
     try {
-        let isVerified = await AsyncStorage.getItem('isVerified');
-        return (isVerified ? isVerified : false);
+        const value = await AsyncStorage.getItem('isVerified');
+        return value !== null ? JSON.parse(value) : false;
     } catch (error) {
         console.log('try catch[ service> GetisVerified] error:', error.message);
+        return false;
     }
-}
+};
+
 
 const setAsyncAttendanceData = async (data) => {
     try {

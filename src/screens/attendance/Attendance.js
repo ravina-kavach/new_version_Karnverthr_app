@@ -48,7 +48,7 @@ export default function Attendance() {
       </View>
 
       <FlatList
-        data={GetAttandanceListData}
+        data={GetAttandanceListData?.attandancelist}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => (
           <AttendanceItem
