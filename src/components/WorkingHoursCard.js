@@ -123,7 +123,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 0.4,
     borderColor: COLOR?.Black1,
-    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center'
   },

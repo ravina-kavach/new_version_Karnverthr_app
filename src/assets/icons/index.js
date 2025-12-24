@@ -17,6 +17,8 @@ const FaceIdIcon = require('./FaceId.png');
 const SelfieIcon = require('./SelfieIcon.png')
 const NotFoundImg = require('./NoRecordFound.png')
 const ArrowDown = require('./ArrowDown.png')
+const BackIcon = require('./BackIcon.png')
+const CloseIcon = require('./CloseIcon.png')
 
 const HomeMenuIcons = {
   Announcement: require('./homeMenu/Announcement.png'),
@@ -49,5 +51,7 @@ export {
   SelfieIcon,
   HomeMenuIcons,
   NotFoundImg,
-  ArrowDown
+  ArrowDown,
+  BackIcon,
+  CloseIcon
 };

@@ -269,6 +269,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: responsiveWidth(2),
     fontSize: 17,
+    color:COLOR.Black1
   },
 
   row: {
