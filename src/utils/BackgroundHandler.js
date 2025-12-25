@@ -120,40 +120,40 @@ const startTracking = async () => {
         formData.append('email', newdata?.email);
         formData.append('geo_fence_data', JSON.stringify(allLocations));
 
-        if (isOnline) {
-          // try {
-          //   const response = await fetch(`${Config.BASE_URL}api/geo_fence`, {
-          //     method: 'POST',
-          //     body: formData,
-          //   });
-          //   const result = await response.json();
+        // if (isOnline) {
+        //   try {
+        //     const response = await fetch(`${Config.BASE_URL}api/geo_fence`, {
+        //       method: 'POST',
+        //       body: formData,
+        //     });
+        //     const result = await response.json();
 
-          //   if (response.ok) {
-          //     console.log('✅ Sent to API:', result);
-          //     await AsyncStorage.removeItem('pending_geo_data');
-          //   } else {
-          //     console.log('❌ API error:', result);
-          //     await AsyncStorage.setItem('pending_geo_data', JSON.stringify(allLocations));
-          //   }
-          // } catch (err) {
-          //   console.log('❌ Network/API error:', err);
-          //   await AsyncStorage.setItem('pending_geo_data', JSON.stringify(allLocations));
-          // }
-        } else {
-          // const existingPending = await AsyncStorage.getItem('pending_geo_data');
-          // const storedPending = existingPending ? JSON.parse(existingPending) : [];
-          // const isDuplicate = storedPending.some(
-          //   item =>
-          //     item.latitude === loc.latitude &&
-          //     item.longitude === loc.longitude &&
-          //     item.timestamp === loc.timestamp
-          // );
+        //     if (response.ok) {
+        //       console.log('✅ Sent to API:', result);
+        //       await AsyncStorage.removeItem('pending_geo_data');
+        //     } else {
+        //       console.log('❌ API error:', result);
+        //       await AsyncStorage.setItem('pending_geo_data', JSON.stringify(allLocations));
+        //     }
+        //   } catch (err) {
+        //     console.log('❌ Network/API error:', err);
+        //     await AsyncStorage.setItem('pending_geo_data', JSON.stringify(allLocations));
+        //   }
+        // } else {
+        //   const existingPending = await AsyncStorage.getItem('pending_geo_data');
+        //   const storedPending = existingPending ? JSON.parse(existingPending) : [];
+        //   const isDuplicate = storedPending.some(
+        //     item =>
+        //       item.latitude === loc.latitude &&
+        //       item.longitude === loc.longitude &&
+        //       item.timestamp === loc.timestamp
+        //   );
 
-          // if (!isDuplicate) {
-          //   storedPending.push(loc);
-          //   await AsyncStorage.setItem('pending_geo_data', JSON.stringify(storedPending));
-          // }
-        }
+        //   if (!isDuplicate) {
+        //     storedPending.push(loc);
+        //     await AsyncStorage.setItem('pending_geo_data', JSON.stringify(storedPending));
+        //   }
+        // }
       },
       error => {
         console.log('⚠️ Location error:', error);

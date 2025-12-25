@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react'
 import { BackHandler } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { CommonSelector, UserAttendance , GetAttandanceList, updateState } from '../../store/reducers/commonSlice'
+import { CommonSelector, UserAttendance , updateState } from '../../store/reducers/commonSlice'
 import { useFocusEffect } from '@react-navigation/native';
 import { permission } from '../../utils/permission'
 import BackgroundGeolocation from "react-native-background-geolocation";
@@ -94,7 +94,6 @@ export const useHome = () => {
 
     React.useEffect(() => {
         BackgroundHandler.startTracking()
-        // dispatch(GetAttandanceList({ email: UsersigninData.email }));
     }, [UsersigninData])
 
     React.useEffect(() => {
@@ -112,7 +111,6 @@ export const useHome = () => {
                     type: "success",
                 })
             }
-            // dispatch(GetAttandanceList({ email: UsersigninData.email }));
         }
         if (UserAttendanceData.action === "CHECK_OUT") {
             BackgroundHandler.stopTracking()
