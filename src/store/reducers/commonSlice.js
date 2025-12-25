@@ -22,11 +22,11 @@ export const UserToken = createAsyncThunk(
         return token;
       }
       return thunkAPI.rejectWithValue(
-        response.data.errorMessage || 'Authentication failed'
+        response?.data?.errorMessage || 'Authentication failed'
       );
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || error.message
+        error?.response?.data?.message || error?.message
       );
     }
   }
@@ -43,7 +43,7 @@ export const Usersignin = createAsyncThunk(
 
       if (result.data.status === 'error') {
         return thunkAPI.rejectWithValue({
-          error: errorMassage(result.data.message),
+          error: errorMassage(result?.data?.message),
         });
       }
 
@@ -64,11 +64,11 @@ export const UserVerification = createAsyncThunk(
             if (result.data.success) {
                 return { ...result.data.data, message: result.data.successMessage };
             } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result.data.errorMessage) });
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
         } catch (error) {
             if(error.message){
-                return thunkAPI.rejectWithValue({ error:  errorMassage (error.response?.data?.message || error.message) });
+                return thunkAPI.rejectWithValue({ error:  errorMassage (error?.response?.data?.message || error.message) });
             }
         }
     },
@@ -77,22 +77,19 @@ export const UserVerification = createAsyncThunk(
 export const UserAttendance = createAsyncThunk(
     'UserAttendance',
     async (userdata, thunkAPI) => {
-       
-        // console.log('UserAttendance payload data>>', userdata);
-        // console.log("PAYLOAD ATTENDANCE===>",userdata)
         try {
           
-            let result = await API.post('api/employee/attandence',userdata );
+            let result = await API.post('api/employee/attandence', userdata );
 
             if (result.data.success) {
-                return { ...result.data.data, message: result.data.successMessage, action: result.data.action };
+                return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
             } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result.data.errorMessage) });
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
         } catch (error) {
-            // console.log("Error >>>", error.response?.data || error.message);
+            console.log("Error >>>", error.response?.data || error.message);
             return thunkAPI.rejectWithValue({
-                error:  errorMassage(error.response?.data?.errorMessage || error.message)
+                error:  errorMassage(error.response?.data?.errorMessage || error?.message)
             });
         }
     },
@@ -872,7 +869,7 @@ export const CommonSlice = createSlice({
             state.isGetCheckStatus = payload.isGetCheckStatus !== undefined ? payload.isGetCheckStatus : state.isGetCheckStatus;
             state.isCategoryList = payload.isCategoryList !== undefined ? payload.isCategoryList : state.isCategoryList;
             state.isCreateExpenses = payload.isCreateExpenses !== undefined ? payload.isCreateExpenses : state.isCreateExpenses;
-
+            state.isVerified = payload.isVerified !== undefined ? payload.isVerified : state.isVerified
             state.isGetAttandanceList = payload.isGetAttandanceList !== undefined ? payload.isGetAttandanceList : state.isGetAttandanceList;
             state.isGetExpenseList = payload.isGetExpenseList !== undefined ? payload.isGetExpenseList : state.isGetExpenseList;
 

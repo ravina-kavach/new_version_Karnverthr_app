@@ -8,7 +8,6 @@ import BackgroundGeolocation from "react-native-background-geolocation";
 import { showMessage } from 'react-native-flash-message'
 import { useTranslation } from 'react-i18next';
 import Service from '../../utils/service'
-import BackgroundHandler from '../../utils/BackgroundHandler'
 import { HomeMenuIcons } from '../../assets/icons';
 
 export const useHome = () => {
@@ -88,13 +87,10 @@ export const useHome = () => {
                 type: "danger",
                 duration: 2000
             })
-            dispatch(updateState({ isError: false, errorMessage: "" }))
+        dispatch(updateState({ isError: false, errorMessage: "" }))
         }
     }, [isError])
 
-    React.useEffect(() => {
-        BackgroundHandler.startTracking()
-    }, [UsersigninData])
 
     React.useEffect(() => {
         if (UserAttendanceData?.action) {
@@ -111,9 +107,6 @@ export const useHome = () => {
                     type: "success",
                 })
             }
-        }
-        if (UserAttendanceData.action === "CHECK_OUT") {
-            BackgroundHandler.stopTracking()
         }
     }, [UserAttendanceData])
 
@@ -140,37 +133,47 @@ export const useHome = () => {
         }
     };
 
-    const handleAttendance = async (type, imageBase64) => {
-        console.log("calll")
-        const formdata = new FormData();
-        const attendanceData = await Service.GetAsyncAttendanceData();
-        const timeNow = new Date().toISOString();
-
-        formdata.append("Image", imageBase64);
-        formdata.append("email", UsersigninData.email);
-        formdata.append("Longitude", CurrentLongitude);
-        formdata.append("Latitude", CurrentLatitude);
-
-        if (type === "CHECK_IN") {
-            formdata.append("check_in", timeNow);
-            const obj = {
-                ...attendanceData,
-                check_in_image: imageBase64,
-                check_in_time: timeNow,
-                action: "CHECK_IN",
-            };
-
-            await Service.setAsyncAttendanceData(obj);
-        }
-
-        if (type === "CHECK_OUT") {
-            formdata.append("check_out", timeNow);
-            formdata.append("check_in", attendanceData?.check_in_time || "");
-            await Service.removeAsyncAttendanceData();
-        }
-        dispatch(UserAttendance(formdata));
-        getCheckInData();
+   const handleAttendance = async (type, imageBase64) => {
+    const attendanceData = await Service.GetAsyncAttendanceData();
+    const timeNow = new Date().toISOString();
+    let payload = {
+        Image: imageBase64,
+        email: UsersigninData.email,
+        Longitude:"23.102477",
+        Latitude:"72.557501"
+        // Longitude: CurrentLongitude,
+        // Latitude: CurrentLatitude,
     };
+
+    if (type === "CHECK_IN") {
+        payload = {
+            ...payload,
+            check_in: timeNow,
+            action: "CHECK_IN",
+        };
+
+        const obj = {
+            ...attendanceData,
+            check_in_image: imageBase64,
+            check_in_time: timeNow,
+            action: "CHECK_IN",
+        };
+        
+        await Service.setAsyncAttendanceData(obj);
+    }
+
+    if (type === "CHECK_OUT") {
+        payload = {
+            ...payload,
+            check_out: timeNow,
+            check_in: attendanceData?.check_in_time || "",
+            action: "CHECK_OUT",
+        };
+        await Service.removeAsyncAttendanceData();
+    }
+    dispatch(UserAttendance(payload))
+    getCheckInData();
+};
 
     const takeImage = async (value) => {
         const image = await permission.heandleOnCamera();
