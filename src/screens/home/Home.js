@@ -13,7 +13,7 @@ const Home = () => {
     localAttendanceData
   } = useHome();
   return (
-    // <CommonView>
+    <CommonView>
       <ScrollView>
         <WorkingHoursCard
           usersigninData={UsersigninData}
@@ -37,7 +37,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
-    // </CommonView>
+    </CommonView>
   );
 };
 const styles = StyleSheet.create({
