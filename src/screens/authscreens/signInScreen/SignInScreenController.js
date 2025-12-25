@@ -319,10 +319,7 @@ export const useSignInScreen = () => {
     let getSystemVersion = DeviceInfo.getSystemVersion();
     let deviceUniqueId = await DeviceInfo.getUniqueId();
 
-    let isVerifiedUser = await Service.GetisVerified();
-
-    if (isVisibleVerifiedModal && secreatCode && !isVerifiedUser) {
-     
+    if (isVisibleVerifiedModal) {
       const payloadObj = {
         device_id: String(getDeviceId),
         device_name: String(getDeviceName),
@@ -332,11 +329,9 @@ export const useSignInScreen = () => {
         random_code_for_reg: String(secreatCode),
         system_version: String(getSystemVersion),
       };
-      dispatch(UserVerification(payloadObj));
-      console.log("isVerified===>",isVerified)
-      await Service.setisVerified(isVerified);
-      Getdata();
-      // setIsVisibleVerifiedModal(isVerifiedUser)
+        const result = await dispatch(UserVerification(payloadObj)).unwrap();
+        await Service.setisVerified(result); 
+        setIsVisibleVerifiedModal(!result);
     }
   };
   return {

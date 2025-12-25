@@ -9,8 +9,8 @@ const Home = () => {
     MENUDATA,
     UsersigninData,
     takeImage,
-    isAttendanceFetching,
-    localAttendanceData
+    localAttendanceData,
+    isAttendanceFetching
   } = useHome();
   return (
     <CommonView>
@@ -18,8 +18,8 @@ const Home = () => {
         <WorkingHoursCard
           usersigninData={UsersigninData}
           localAttendanceData={localAttendanceData}
-          // loading={isAttendanceFetching}
           onPress={takeImage}
+          loading={isAttendanceFetching}
         />
         <FlatList
           data={MENUDATA}
