@@ -1,14 +1,13 @@
 
 import Geolocation from '@react-native-community/geolocation';
 import { request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
-import { PermissionsAndroid, Alert, Platform } from 'react-native'
+import { PermissionsAndroid, Alert, Platform, BackHandler } from 'react-native'
 import Service from './service';
 import { launchCamera } from 'react-native-image-picker'
 
 const requestLocationPermission = async () => {
     try {
       if (Platform.OS === 'android') {
-        // ✅ ANDROID FLOW
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
@@ -31,7 +30,7 @@ const requestLocationPermission = async () => {
           showPermissionSettingsAlert();
         }
       } else {
-        // ✅ iOS FLOW
+      
         const permission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
         const result = await request(permission);
         console.log("result>>>>", result)
@@ -93,83 +92,86 @@ const requestLocationPermission = async () => {
   }
 
   const heandleOnCamera = async () => {
-    try {
-      let hasPermission = false;
-
-      // ✅ Android Permission Handling
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA,
-          {
-            title: 'Konvert HR - Camera Permission',
-            message: 'Konvert HR needs access to your camera to take your photo.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          hasPermission = true;
-        } else if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-          showSettingsAlert(false);
-          return;
-        } else {
-          showSettingsAlert(false);
-          return;
+  try {
+    let hasPermission = false;
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Konvert HR - Camera Permission',
+          message: 'Konvert HR needs access to your camera to take your photo.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
         }
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        hasPermission = true;
+      } else {
+        showSettingsAlert(false);
+        return { success: false, reason: 'permission_denied' };
       }
+    }
 
-      // ✅ iOS Permission Handling
-      if (Platform.OS === 'ios') {
-        const result = await request(PERMISSIONS.IOS.CAMERA);
+    if (Platform.OS === 'ios') {
+      const result = await request(PERMISSIONS.IOS.CAMERA);
 
-        switch (result) {
-          case RESULTS.GRANTED:
-            hasPermission = true;
-            break;
-          case RESULTS.DENIED:
-            Alert.alert(
-              'Konvert HR - Camera Access Needed',
-              'Please allow camera access to take a photo using Konvert HR.',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Open Settings', onPress: () => openSettings() },
-              ]
-            );
-            return;
-          case RESULTS.BLOCKED:
-            showSettingsAlert(true);
-            return;
-          default:
-            showSettingsAlert(true);
-            return;
-        }
+      if (result === RESULTS.GRANTED) {
+        hasPermission = true;
+      } else {
+        showSettingsAlert(true);
+        return { success: false, reason: 'permission_denied' };
       }
+    }
 
-      if (hasPermission) {
-      return new Promise((resolve, reject) => {
-        launchCamera(
-          {
-            mediaType: 'photo',
-            quality: 0.1,
-            cameraType:'front',
-            includeBase64: true,
-          },
-          (response) => {
-            if (response?.didCancel) return resolve(null);
-            if (response?.errorCode) return reject(response.errorMessage);
+    if (!hasPermission) {
+      return { success: false, reason: 'no_permission' };
+    }
 
-            const asset = response?.assets?.[0];
-            resolve(asset?.base64 || null);
+    return new Promise((resolve) => {
+      launchCamera(
+        {
+          mediaType: 'photo',
+          quality: 0.1,
+          cameraType: 'front',
+          includeBase64: true,
+        },
+        (response) => {
+          if (response?.didCancel) {
+            return resolve({ success: false, reason: 'cancelled' });
           }
-        );
-      });
-    }
-    } catch (err) {
-      console.warn('Camera Permission Error:', err);
-    }
-  };
+
+          if (response?.errorCode) {
+            return resolve({
+              success: false,
+              reason: response.errorMessage || 'camera_error',
+            });
+          }
+
+          const asset = response?.assets?.[0];
+
+          if (!asset?.base64) {
+            return resolve({ success: false, reason: 'no_image' });
+          }
+
+          resolve({
+            success: true,
+            image: {
+              base64: asset.base64,
+              uri: asset.uri,
+              fileName: asset.fileName,
+              type: asset.type,
+            },
+          });
+        }
+      );
+    });
+  } catch (err) {
+    return { success: false, reason: 'exception' };
+  }
+};
+
 
    const showSettingsAlert = (isIOS = false) => {
     Alert.alert(

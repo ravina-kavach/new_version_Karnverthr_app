@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import { useDispatch, useSelector } from 'react-redux';
 import { CommonSelector, GetAttandanceList } from '../../store/reducers/commonSlice';
-import { showMessage } from 'react-native-flash-message'
+import { showMessage } from 'react-native-flash-message';
+import { useIsFocused } from '@react-navigation/native';
 
 export const useAttendance = () =>{
      const { t, i18n } = useTranslation();
+     const IsFocused = useIsFocused();
       const dispatch = useDispatch();
       const months = [
         { "id": '', "name": `${t("Attendance.Select_Month")}` },
@@ -50,13 +52,15 @@ export const useAttendance = () =>{
       const { GetAttandanceListData, isGetAttandanceListFetching, UsersigninData } = useSelector(CommonSelector);
     
       React.useEffect(() => {
+      if(IsFocused){
         let data = {
           id: Number(UsersigninData?.user_id),
           month: Number(Selectedmonth?.id),
           year: SelectedYear?.id ? Number(SelectedYear.name) : ""
         }
         dispatch(GetAttandanceList(data))
-      }, [Selectedmonth, SelectedYear])
+        }
+      }, [IsFocused , Selectedmonth , SelectedYear])
 
       React.useEffect(() => {
           if (GetAttandanceListData?.message) {

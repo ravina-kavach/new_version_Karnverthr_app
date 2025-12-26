@@ -1,6 +1,7 @@
 import React from 'react';
 import { CommonView, H4 } from '../../utils/common';
 import { ScrollView,FlatList, View, StyleSheet } from 'react-native';
+import { COLOR } from '../../theme/theme.js';
 import WorkingHoursCard from '../../components/WorkingHoursCard';
 import { useHome } from './HomeController.js';
 import {RenderBox} from '../../components/RenderBox.js'
@@ -13,7 +14,7 @@ const Home = () => {
     isAttendanceFetching
   } = useHome();
   return (
-    <CommonView>
+    <CommonView statusBarColor={COLOR.OffRed}>
       <ScrollView>
         <WorkingHoursCard
           usersigninData={UsersigninData}
