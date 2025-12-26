@@ -1,22 +1,24 @@
-import React, { useCallback, useEffect } from 'react'
-import { BackHandler } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
-import { CommonSelector, UserAttendance , updateState } from '../../store/reducers/commonSlice'
+import React, { useCallback, useEffect } from 'react';
+import { BackHandler } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { CommonSelector, UserAttendance, updateState } from '../../store/reducers/commonSlice';
 import { useFocusEffect } from '@react-navigation/native';
-import { permission } from '../../utils/permission'
-import BackgroundGeolocation from "react-native-background-geolocation";
-import { showMessage } from 'react-native-flash-message'
+import { permission } from '../../utils/permission';
+import { showMessage } from 'react-native-flash-message';
 import { useTranslation } from 'react-i18next';
-import Service from '../../utils/service'
+import Service from '../../utils/service';
 import { HomeMenuIcons } from '../../assets/icons';
-
+import BackgroundGeolocation from 'react-native-background-geolocation';
+import BackgroundHandler from '../../utils/BackgroundHandler';
+import { useIsFocused } from '@react-navigation/native';
 export const useHome = () => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [CurrentLongitude, setCurrentLongitude] = React.useState(0)
-    const [CurrentLatitude, setCurrentLatitude] = React.useState(0)
-    const [localAttendanceData, setLocalAttendanceData] = React.useState({})
+    const IsFocused = useIsFocused();
+    const [localAttendanceData, setLocalAttendanceData] = React.useState({});
+    const [latestLocation, setLatestLocation] = React.useState({ latitude: 0, longitude: 0 });
     const { UsersigninData, isError, errorMessage, UserAttendanceData, isAttendanceFetching } = useSelector(CommonSelector);
+
     const MENUDATA = [
         { id: '1', image: HomeMenuIcons.Attendance, title: t('Home.Attendance'), screen: 'attendance' },
         { id: '2', image: HomeMenuIcons.Expense, title: t('Home.Expense'), screen: 'expenses' },
@@ -31,164 +33,154 @@ export const useHome = () => {
 
     useFocusEffect(
         useCallback(() => {
-            GetDevicelocation();
-            const backHandler = BackHandler.addEventListener(
-                "hardwareBackPress",
-                () => true
-            );
+            const backHandler = BackHandler.addEventListener("hardwareBackPress", () => true);
             return () => backHandler.remove();
         }, [])
     );
 
-    const getCheckInData = async () => {
-        if (!UserAttendanceData && !Object.keys(UserAttendanceData).length === 0) {
-            if (UserAttendanceData === "CHECK_IN") {
-                const obj = {
-                    check_in_image: UserAttendanceData.check_in_image,
-                    check_in_time: UserAttendanceData.check_in_time,
-                    action: result.data.action
-                }
-                setLocalAttendanceData(obj)
-            } else {
-                setLocalAttendanceData({})
-            }
-        } else {
-            const checkindata = await Service.GetAsyncAttendanceData();
-            setLocalAttendanceData(checkindata);
+    useEffect(() => {
+        if(IsFocused){
+        const initLocation = async () => {
+            try {
+                const state = await BackgroundGeolocation.ready({
+                    desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+                    distanceFilter: 10,
+                    stopOnTerminate: false,
+                    startOnBoot: true,
+                });
 
-        }
+                const location = await BackgroundGeolocation.getCurrentPosition({
+                    persist: false,
+                    samples: 1,
+                    maximumAge: 0,
+                    desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+                    timeout: 30,
+                });
+
+                setLatestLocation({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                });
+
+                // Subscribe to updates
+                const subscription = BackgroundGeolocation.onLocation(
+                    loc => {
+                        setLatestLocation({
+                            latitude: loc.coords.latitude,
+                            longitude: loc.coords.longitude,
+                        });
+                    },
+                    error => console.log('Location error:', error)
+                );
+
+                return () => subscription.remove();
+            } catch (err) {
+                console.log('Error initializing location:', err.message);
+            }
+        };
+
+        initLocation();
+    }
+    }, [IsFocused]);
+
+
+    const getCheckInData = async () => {
+        const checkindata = await Service.GetAsyncAttendanceData();
+        setLocalAttendanceData(checkindata || {});
     };
 
     useEffect(() => {
         getCheckInData();
     }, []);
 
-    //   React.useEffect(() => {
-    //     Navigation.setOptions({
-    //       headerTitle: () => <Text style={{ fontWeight: "700", fontSize: 16, color: COLOR?.Black1 }}>{t('Home.Home')}</Text>,
-    //       headerRight: () =>
-    //         <Div style={{ flexDirection: 'row', justifyContent: 'center' }}>
-    //           <TouchableWithoutFeedback onPress={() => Navigation.navigate('Announcement')}>
-    //             <Div style={{ marginRight: 10 }}>
-    //               <Ionicons name="chatbox-ellipses-outline" color="#000" size={30} />
-    //             </Div>
-    //           </TouchableWithoutFeedback>
-    //           <ProfileBTN />
-    //         </Div>
-
-    //     });
-    //   }, [Navigation]);
-
-    React.useEffect(() => {
+    useEffect(() => {
         if (isError) {
             showMessage({
                 icon: "danger",
                 message: errorMessage,
                 type: "danger",
                 duration: 2000
-            })
-        dispatch(updateState({ isError: false, errorMessage: "" }))
+            });
+            dispatch(updateState({ isError: false, errorMessage: "" }));
         }
-    }, [isError])
+    }, [isError]);
 
-
-    React.useEffect(() => {
+    useEffect(() => {
         if (UserAttendanceData?.action) {
-            if (UserAttendanceData?.action === "CHECK_IN") {
-                showMessage({
-                    icon: "success",
-                    message: `${t('messages.Check_in')}`,
-                    type: "success",
-                })
+            if (UserAttendanceData.action === "CHECK_IN") {
+                showMessage({ icon: "success", message: t('messages.Check_in'), type: "success" });
             } else {
-                showMessage({
-                    icon: "success",
-                    message: `${t('messages.Check_out')}`,
-                    type: "success",
-                })
+                showMessage({ icon: "success", message: t('messages.Check_out'), type: "success" });
             }
         }
-    }, [UserAttendanceData])
+    }, [UserAttendanceData]);
 
+    const handleAttendance = async (type, imageBase64) => {
+        const attendanceData = await Service.GetAsyncAttendanceData();
+        const timeNow = new Date().toISOString();
+        let payload = {
+            Image: imageBase64,
+            email: UsersigninData.email,
+            Longitude: String(latestLocation.longitude),
+            Latitude: String(latestLocation.latitude),
+        };
 
-    const GetDevicelocation = async () => {
-        try {
-            const location = await BackgroundGeolocation.getCurrentPosition({
-                persist: false,
-                samples: 1,
-                maximumAge: 0,
-                desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-                timeout: 30,
-            });
-
-            const lat = location.coords.latitude.toString();
-            const lng = location.coords.longitude.toString();
-
-            setCurrentLatitude(lat);
-            setCurrentLongitude(lng);
-            // console.log("GPS LOCATION:", lat, lng);
-        } catch (error) {
-            Service.OpenLocaitonbutton();
-            console.log("error.message>>>", error.message)
+        if (type === "CHECK_IN") {
+            payload = { ...payload, check_in: timeNow, action: "CHECK_IN" };
+            setLocalAttendanceData({
+                check_in_image: imageBase64,
+                check_in_time: timeNow,
+                action: "CHECK_IN",
+            })
+        } else {
+            payload = {
+                ...payload,
+                check_out: timeNow,
+                check_in: attendanceData?.check_in_time || "",
+                action: "CHECK_OUT",
+            };
         }
-    };
 
-   const handleAttendance = async (type, imageBase64) => {
-    const attendanceData = await Service.GetAsyncAttendanceData();
-    const timeNow = new Date().toISOString();
-    let payload = {
-        Image: imageBase64,
-        email: UsersigninData.email,
-        Longitude:"23.102477",
-        Latitude:"72.557501"
-        // Longitude: CurrentLongitude,
-        // Latitude: CurrentLatitude,
-    };
+        try {
+            const res = await dispatch(UserAttendance(payload)).unwrap();
 
-    if (type === "CHECK_IN") {
-        payload = {
-            ...payload,
-            check_in: timeNow,
-            action: "CHECK_IN",
-        };
+            if (type === "CHECK_IN") {
+                await Service.setAsyncAttendanceData({
+                    ...attendanceData,
+                    check_in_image: imageBase64,
+                    check_in_time: timeNow,
+                    action: "CHECK_IN",
+                });
+                BackgroundHandler.startTracking();
 
-        const obj = {
-            ...attendanceData,
-            check_in_image: imageBase64,
-            check_in_time: timeNow,
-            action: "CHECK_IN",
-        };
-        
-        await Service.setAsyncAttendanceData(obj);
-    }
-
-    if (type === "CHECK_OUT") {
-        payload = {
-            ...payload,
-            check_out: timeNow,
-            check_in: attendanceData?.check_in_time || "",
-            action: "CHECK_OUT",
-        };
-        await Service.removeAsyncAttendanceData();
-    }
-    dispatch(UserAttendance(payload))
+            } else {
+                await Service.removeAsyncAttendanceData();
+                BackgroundHandler.stopTracking();
+            }
+            
+        } catch (err) {
+             if (type === "CHECK_IN") {
+              setLocalAttendanceData({})  
+            } else {
+               await Service.setAsyncAttendanceData({
+                    ...attendanceData,
+                });
+            }
+        }
     getCheckInData();
-};
+    };
 
     const takeImage = async (value) => {
         const image = await permission.heandleOnCamera();
-        if (value === "CHECK_IN") {
-            handleAttendance(value, image);
-        } else {
-            handleAttendance(value, image);
-        }
+        handleAttendance(value, image);
     };
 
     return {
-    MENUDATA,
-    UsersigninData,
-    takeImage,
-    isAttendanceFetching,
-    localAttendanceData
-    }
-}
+        MENUDATA,
+        UsersigninData,
+        takeImage,
+        isAttendanceFetching,
+        localAttendanceData,
+        latestLocation,
+    };
+};

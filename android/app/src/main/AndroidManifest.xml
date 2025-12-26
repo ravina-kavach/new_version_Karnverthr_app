@@ -30,16 +30,12 @@
       android:usesCleartextTraffic="true"
       android:enableOnBackInvokedCallback="false"
       android:supportsRtl="true">
-    <meta-data android:name="com.transistorsoft.locationmanager.license" android:value="d686d9e976c1d620e210dc2ea5e575c34c23d537c60419843a49324641f07b03" />  
 <service
   android:name="com.transistorsoft.locationmanager.service.TrackingService"
+  android:enabled="true"
+  android:exported="true"
   android:foregroundServiceType="location"
-  android:exported="false" />
-
-<service
-  android:name="com.transistorsoft.locationmanager.service.LocationService"
-  android:foregroundServiceType="location"
-  android:exported="false" />
+  />
 
 <receiver
   android:name="com.transistorsoft.locationmanager.receiver.BootReceiver"
@@ -62,5 +58,6 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+    <meta-data android:name="com.transistorsoft.locationmanager.license" android:value="d686d9e976c1d620e210dc2ea5e575c34c23d537c60419843a49324641f07b03" />  
     </application>
 </manifest>
