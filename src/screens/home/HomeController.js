@@ -39,48 +39,48 @@ export const useHome = () => {
     );
 
     useEffect(() => {
-        if(IsFocused){
-        const initLocation = async () => {
-            try {
-                const state = await BackgroundGeolocation.ready({
-                    desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-                    distanceFilter: 10,
-                    stopOnTerminate: false,
-                    startOnBoot: true,
-                });
+        if (IsFocused) {
+            const initLocation = async () => {
+                try {
+                    const state = await BackgroundGeolocation.ready({
+                        desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+                        distanceFilter: 10,
+                        stopOnTerminate: false,
+                        startOnBoot: true,
+                    });
 
-                const location = await BackgroundGeolocation.getCurrentPosition({
-                    persist: false,
-                    samples: 1,
-                    maximumAge: 0,
-                    desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-                    timeout: 30,
-                });
+                    const location = await BackgroundGeolocation.getCurrentPosition({
+                        persist: false,
+                        samples: 1,
+                        maximumAge: 0,
+                        desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+                        timeout: 30,
+                    });
 
-                setLatestLocation({
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                });
+                    setLatestLocation({
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
+                    });
 
-                // Subscribe to updates
-                const subscription = BackgroundGeolocation.onLocation(
-                    loc => {
-                        setLatestLocation({
-                            latitude: loc.coords.latitude,
-                            longitude: loc.coords.longitude,
-                        });
-                    },
-                    error => console.log('Location error:', error)
-                );
+                    // Subscribe to updates
+                    const subscription = BackgroundGeolocation.onLocation(
+                        loc => {
+                            setLatestLocation({
+                                latitude: loc.coords.latitude,
+                                longitude: loc.coords.longitude,
+                            });
+                        },
+                        error => console.log('Location error:', error)
+                    );
 
-                return () => subscription.remove();
-            } catch (err) {
-                console.log('Error initializing location:', err.message);
-            }
-        };
+                    return () => subscription.remove();
+                } catch (err) {
+                    console.log('Error initializing location:', err.message);
+                }
+            };
 
-        initLocation();
-    }
+            initLocation();
+        }
     }, [IsFocused]);
 
 
@@ -157,23 +157,26 @@ export const useHome = () => {
                 await Service.removeAsyncAttendanceData();
                 BackgroundHandler.stopTracking();
             }
-            
+
         } catch (err) {
-             if (type === "CHECK_IN") {
-              setLocalAttendanceData({})  
+            if (type === "CHECK_IN") {
+                setLocalAttendanceData({})
             } else {
-               await Service.setAsyncAttendanceData({
+                await Service.setAsyncAttendanceData({
                     ...attendanceData,
                 });
             }
         }
-    getCheckInData();
+        getCheckInData();
     };
 
     const takeImage = async (value) => {
-        const image = await permission.heandleOnCamera();
-        handleAttendance(value, image);
+        const result = await permission.heandleOnCamera();
+        if (result.success && result.image) {
+            handleAttendance(value, result.image.base64);
+        }
     };
+
 
     return {
         MENUDATA,

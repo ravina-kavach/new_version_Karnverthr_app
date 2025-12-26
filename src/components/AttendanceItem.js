@@ -1,34 +1,46 @@
 import React from "react";
-import { View, Text, StyleSheet,Image } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import dayjs from "dayjs";
 import { COLOR } from "../theme/theme";
 import { RowView } from "../utils/common";
 import { AttendancIcon } from "../assets/icons/index.js";
+import utc from 'dayjs/plugin/utc';
 
+dayjs.extend(utc);
 const AttendanceItem = ({ item, t, getDuration }) => {
-  
   const dateTitle = item?.check_in
-    ? dayjs(item?.check_in).format("DD MMMM YYYY")
-    : "";
+    ? dayjs
+      .utc(item.check_in, 'YYYY-MM-DD HH:mm:ss')
+      .local()
+      .format('DD MMMM YYYY')
+    : '';
 
   const checkIn = item?.check_in
-    ? dayjs(item?.check_in).format("hh:mm A")
-    : "--";
+    ? dayjs
+      .utc(item.check_in, 'YYYY-MM-DD HH:mm:ss')
+      .local()
+      .format('hh:mm A')
+    : '--';
 
   const checkOut = item?.check_out
-    ? dayjs(item?.check_out).format("hh:mm A")
-    : "--";
+    ? dayjs
+      .utc(item.check_out, 'YYYY-MM-DD HH:mm:ss')
+      .local()
+      .format('hh:mm A')
+    : '--';
+
+
 
   return (
     <View style={styles.wrapper}>
 
       <View style={styles.card}>
         <RowView style={styles.titleContainer}>
-        <Image
-          source={AttendancIcon}
-          tintColor={COLOR.Primary1}
+          <Image
+            source={AttendancIcon}
+            tintColor={COLOR.Primary1}
           />
-        <Text style={styles.dateTitle}>{dateTitle}</Text>
+          <Text style={styles.dateTitle}>{dateTitle}</Text>
         </RowView>
         <View style={styles.row}>
           <View style={styles.block}>
@@ -60,10 +72,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     color: "#111827",
-    paddingLeft:5,
+    paddingLeft: 5,
   },
-  titleContainer:{
-    alignItems:'center',
+  titleContainer: {
+    alignItems: 'center',
     marginBottom: 6,
   },
 
