@@ -13,10 +13,12 @@ API.interceptors.request.use(
   async (config) => {
     try {
       const token = await AsyncStorage.getItem('USER_TOKEN');
+      console.log("Config.BASE_URL===>",Config.BASE_URL)
+      console.log("Token===>",token)
       if (!skipAuthUrls.some((url) => config.url.includes(url)) && token) {
         config.headers = {
           ...config.headers,
-          Authorization: token,
+          Authorization: `Bearer ${token}`,
         };
       }
       return config;

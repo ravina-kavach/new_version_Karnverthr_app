@@ -4,71 +4,71 @@ import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
 
-const errorMassage = (error) =>{
-    if (error==="Network Error"){
+const errorMassage = (error) => {
+    if (error === "Network Error") {
         return "Server not responding. Please try again later."
     }
     return error
 }
 
 export const UserToken = createAsyncThunk(
-  'auth/UserToken',
-  async (payload, thunkAPI) => {
-    try {
-      const response = await API.post('api/auth', payload);
-      if (response.data.status === 'success') {
-        const token = response.data.token;
-        await AsyncStorage.setItem('USER_TOKEN', token);
-        return token;
-      }
-      return thunkAPI.rejectWithValue(
-        response?.data?.errorMessage || 'Authentication failed'
-      );
-    } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || error?.message
-      );
+    'auth/UserToken',
+    async (payload, thunkAPI) => {
+        try {
+            const response = await API.post('api/auth', payload);
+            if (response.data.status === 'success') {
+                const token = response.data.token;
+                await AsyncStorage.setItem('USER_TOKEN', token);
+                return token;
+            }
+            return thunkAPI.rejectWithValue(
+                response?.data?.errorMessage || 'Authentication failed'
+            );
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error?.response?.data?.message || error?.message
+            );
+        }
     }
-  }
 );
 
 export const Usersignin = createAsyncThunk(
-  'Usersignin',
-  async (userdata, thunkAPI) => {
-    try {
-      const result = await API.post('api/login', {
-        email: userdata.email,
-        password: userdata.password,
-      });
+    'Usersignin',
+    async (userdata, thunkAPI) => {
+        try {
+            const result = await API.post('api/login', {
+                email: userdata.email,
+                password: userdata.password,
+            });
+    
+            if (result.data.status === 'error') {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result?.data?.message),
+                });
+            }
 
-      if (result.data.status === 'error') {
-        return thunkAPI.rejectWithValue({
-          error: errorMassage(result?.data?.message),
-        });
-      }
-
-      return result.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue({
-        error: errorMassage(error.response?.data?.message || error.message),
-      });
+            return result.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message),
+            });
+        }
     }
-  }
 );
 
 export const UserVerification = createAsyncThunk(
     'UserVerification',
     async (payload, thunkAPI) => {
         try {
-            let result = await API.post('api/employee/device-register', payload );
+            let result = await API.post('api/employee/device-register', payload);
             if (result.data.success) {
                 return { ...result.data.data, message: result.data.successMessage };
             } else {
                 return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
         } catch (error) {
-            if(error.message){
-                return thunkAPI.rejectWithValue({ error:  errorMassage (error?.response?.data?.message || error.message) });
+            if (error.message) {
+                return thunkAPI.rejectWithValue({ error: errorMassage(error?.response?.data?.message || error.message) });
             }
         }
     },
@@ -78,8 +78,8 @@ export const UserAttendance = createAsyncThunk(
     'UserAttendance',
     async (userdata, thunkAPI) => {
         try {
-          
-            let result = await API.post('api/employee/attandence', userdata );
+    
+            let result = await API.post('api/employee/attandence', userdata);
 
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
@@ -89,7 +89,7 @@ export const UserAttendance = createAsyncThunk(
         } catch (error) {
             console.log("Error >>>", error.response?.data || error.message);
             return thunkAPI.rejectWithValue({
-                error:  errorMassage(error.response?.data?.errorMessage || error?.message)
+                error: errorMassage(error.response?.data?.errorMessage || error?.message)
             });
         }
     },
@@ -100,12 +100,12 @@ export const GetAttandanceList = createAsyncThunk(
     async (userdata, thunkAPI) => {
         try {
             let result = await API.get(`api/user/attendance?user_id=${userdata.id}&month=${userdata.month}&year=${userdata.year}`);
-             if (result.data.status === "error") {
+            if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result.data.message)
                 });
             }
-            return { attandancelist:result.data.data, message: result.data.successMessage };
+            return { attandancelist: result.data.data, message: result.data.successMessage };
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
