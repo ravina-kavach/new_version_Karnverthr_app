@@ -3,7 +3,8 @@ export const COLOR = {
     Secondary:"#171717",
     Placeholder: "#897F7F",
     Gray : "#171717CC",
-    GrayBorder: "#D2D2D2",
+    GrayBorder: "rgba(210, 210, 210, 1)",
+    TextPlaceholder:"rgba(137, 127, 127, 1)",
     LightOrange : "#FF6634",
     LightYellow : "#FFBB34",
 

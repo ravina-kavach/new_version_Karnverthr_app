@@ -3,6 +3,7 @@ import { Image, StyleSheet, TextInput ,View,TouchableOpacity} from 'react-native
 import { COLOR } from '../theme/theme'
 import {Valide} from '../utils/common'
 import { responsiveWidth } from '../utils/metrics'
+import { GlobalFonts } from '../theme/typography'
 export const CommonTextInput = (props) => {
   const {leftIcon,rightIcon, value,rightIconPress,placeholder,secureTextEntry,onChangeText,errorMassage, inputContainerStyle, textInputStyle} = props
   return (
@@ -19,7 +20,7 @@ export const CommonTextInput = (props) => {
             value={value}
           />
           {rightIcon && <TouchableOpacity onPress={rightIconPress}>
-            <Image source={rightIcon} />
+            <Image source={rightIcon} tintColor={COLOR.Secondary}/>
           </TouchableOpacity>}
         </View>
        {errorMassage &&
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingHorizontal: responsiveWidth(2),
-    fontSize: 17,
-    color:COLOR.Black1
+      ...GlobalFonts.subtitle,
+    color:COLOR.Secondary
   },
 })
