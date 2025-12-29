@@ -17,7 +17,8 @@ import Config from 'react-native-config';
 import { Eye, EyeSlash } from '../assets/icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { GlobalFonts } from '../theme/typography';
+import { FontSize } from '../utils/metrics';
 const ForgotPasswordModal = ({
   visible,
   onClose,
@@ -189,8 +190,9 @@ const ForgotPasswordModal = ({
 
               {step === 1 && (
                 <>
-                  <Text style={styles.label}>
-                    {t('SignIn.Email_Address')}
+
+                  <Text style={styles.description}>
+                    {t('messages.password_reset')}
                   </Text>
 
                   <View style={styles.inputContainer}>
@@ -224,8 +226,7 @@ const ForgotPasswordModal = ({
               )}
 
               {step === 2 && (
-                <>
-                  <Text style={styles.label}>Temporary Password</Text>
+                <>                   
                   <View style={styles.inputContainer}>
                     <CommonTextInput
                       value={tempPassword}
@@ -238,7 +239,6 @@ const ForgotPasswordModal = ({
                   </View>
 
                   <View style={styles.mainTextContainer}>
-                    <Text style={styles.label}>New Password</Text>
                     <View style={styles.inputContainer}>
                       <CommonTextInput
                         value={newPassword}
@@ -252,7 +252,6 @@ const ForgotPasswordModal = ({
                   </View>
 
                   <View style={styles.mainTextContainer}>
-                    <Text style={styles.label}>Confirm Password</Text>
                     <View style={styles.inputContainer}>
                       <CommonTextInput
                         value={confirmPassword}
@@ -270,7 +269,7 @@ const ForgotPasswordModal = ({
                       title={t('SignIn.Reset_Password')}
                       onPress={onResetPassword}
                       loading={loading}
-                      gradientColors={[COLOR.grediant1, COLOR.grediant2]}
+
                     />
                   </View>
 
@@ -302,7 +301,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  description: {
+    textAlign: 'center',
+    ...GlobalFonts.small,
+    color: COLOR.Secondary,
+    marginVertical: 12,
+  },
   mainCotainer: {
     backgroundColor: COLOR.White1,
     paddingVertical: 30,
@@ -347,7 +351,8 @@ const styles = StyleSheet.create({
 
   backText: {
     textAlign: 'center',
-    color: COLOR.grediant1,
+    fontSize:FontSize.Font16,
+    color: COLOR.Secondary,
     fontWeight: '500',
   },
 });

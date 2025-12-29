@@ -12,13 +12,14 @@ import {
   Image,
 } from 'react-native';
 import { useSignInScreen } from './SignInScreenController.js'
-import { commonStyle, CommonView, H4, Valide, Label } from '../../../utils/common';
+import { commonStyle, CommonView, H4,H3, Valide, Label } from '../../../utils/common';
 import { CheckBox, FignerScan, Sms, Emp, Phone, Eye, EyeSlash, FillCheckbox, FaceIdIcon, BiometricIcon } from '../../../assets/icons/index.js';
 import CommonButton from '../../../components/CommonButton';
 import { COLOR } from '../../../theme/theme';
-import { responsiveHeight, responsiveWidth } from '../../../utils/metrics';
+import { FontSize, responsiveHeight, responsiveWidth } from '../../../utils/metrics';
 import EmailVerificationModal from '../../../components/EmailVerificationModal.js'
 import ForgotPasswordModal from '../../../components/ForgotPasswordModal.js'
+import { font } from '../../../theme/typography.js';
 function SignInScreen() {
   const {
     t,
@@ -45,18 +46,18 @@ function SignInScreen() {
     handleVerificationModal,
     isVerifiedFetching,
   } = useSignInScreen();
-
+console.log("Validator.current===>",Validator.current.errorMessages)
   return (
     <CommonView>
       {!isShowbiomatric ? (
         <ScrollView contentContainerStyle={styles.container}>
-          <H4 style={styles.titleContainer}>{t('Button.Sign_In')}</H4>
-          <View style={styles.inputContainer}>
-            <Image source={Sms} />
+          <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
+          <View style={[styles.inputContainer,{borderColor:Validator.current.errorMessages?.email?COLOR.Red:COLOR.GrayBorder}]}>
+            <Image source={Sms} style={styles.icon}/>
             <TextInput
               placeholder={t("placeholders.Enter_your_registered_email")}
-              placeholderTextColor={COLOR.TextSecondary}
-              cursorColor={COLOR.Primary1}
+              placeholderTextColor={COLOR.TextPlaceholder}
+              cursorColor={COLOR.Gray}
               style={styles.input}
               onChangeText={value =>
                 setFormdata({ ...Formdata, email: value })
@@ -68,14 +69,14 @@ function SignInScreen() {
             {Validator.current.message('email', Formdata.email, 'required')}
           </Valide>
 
-          <View style={styles.inputContainer}>
-            <Image source={FignerScan} />
+          <View style={[styles.inputContainer,{borderColor:Validator.current.errorMessages?.password?COLOR.Red:COLOR.GrayBorder}]}>
+            <Image source={FignerScan} style={styles.icon} />
             <TextInput
               placeholder={t("placeholders.Enter_your_password")}
               secureTextEntry={IsPassVisible}
-              placeholderTextColor={COLOR.TextSecondary}
+              placeholderTextColor={COLOR.TextPlaceholder}
               style={styles.input}
-              cursorColor={COLOR.Primary1}
+              cursorColor={COLOR.Gray}
               onChangeText={value =>
                 setFormdata({ ...Formdata, password: value })
               }
@@ -83,7 +84,7 @@ function SignInScreen() {
               value={Formdata.password}
             />
             <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
-              <Image source={IsPassVisible ? EyeSlash : Eye} />
+              <Image source={IsPassVisible ? EyeSlash : Eye} style={styles.icon} />
             </TouchableOpacity>
           </View>
           <Valide style={styles.valid}>
@@ -96,12 +97,13 @@ function SignInScreen() {
           <View style={styles.rowContainer}>
             <View style={styles.row}>
               <TouchableOpacity onPress={() => setisChecked(!isChecked)}>
-                <Image source={isChecked ? FillCheckbox : CheckBox} />
+                <Image  source={isChecked ? FillCheckbox : CheckBox} />
               </TouchableOpacity>
               <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
             </View>
-            <TouchableOpacity style={styles.row} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
+            <TouchableOpacity style={styles.colmnCotainer} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
               <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
+              <View style={styles.lineContainer}/>
             </TouchableOpacity>
           </View>
 
@@ -109,7 +111,6 @@ function SignInScreen() {
             loading={isSigninFetching}
             onPress={() => heandleonSignin()}
             title={t('Button.Sign_In')}
-            gradientColors={[COLOR.grediant1, COLOR.grediant2]}
           />
 
           {/* <Text style={styles.or}>OR</Text>
@@ -130,13 +131,8 @@ function SignInScreen() {
             />}
           {IsReSetmodalvisible &&
             <ForgotPasswordModal
-              // resetValidator={ResetValidator}
-              // resetEmail={ReSetemail}
-              // setResetEmail={setReSetemail}
               visible={IsReSetmodalvisible}
               onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
-              // heandleonforgot={heandleonforgot}
-              // loading={isForgotPasswordFetching}
             />}
         </ScrollView>
       ) : (
@@ -187,7 +183,7 @@ function SignInScreen() {
                         />
                       ) : (
                         <Image
-                          style={{ marginEnd: 8, marginTop: 4 }}
+                          style={{ marginEnd: 8, marginTop: 4, tintColor:COLOR.Secondary }}
                           source={FaceIdIcon}
                         />
                       )}
@@ -214,6 +210,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     marginBottom: responsiveHeight(3),
   },
+  lineContainer:{backgroundColor:COLOR.TextPlaceholder, height:1.5},
   biometricContainer:{ 
     flex:1,
     justifyContent:'center',
@@ -226,9 +223,10 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#000',
+    color: COLOR.Secondary,
     marginBottom: 6,
   },
+  icon:{width:25, height:25, tintColor:COLOR.Secondary},
   valid: {
     color: COLOR.Red,
 
@@ -238,17 +236,17 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start'
   },
   subtitle: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: FontSize.Font14,
+    color: COLOR.Gray,
     marginBottom: 35,
   },
 
   inputContainer: {
     width: '100%',
-    height: 55,
+    height: 60,
     // marginTop: responsiveHeight(2),
     borderWidth: 1.2,
-    borderColor: '#DCDCDC',
+    borderColor:COLOR.GrayBorder,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
@@ -268,13 +266,20 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingHorizontal: responsiveWidth(2),
-    fontSize: 17,
-    color:COLOR.Black1
+    fontFamily: font('Medium'),
+    fontWeight:'500',
+    fontSize: FontSize.Font16,
+    color:COLOR.Secondary
   },
 
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 25,
+  },
+  colmnCotainer:{
+    flexDirection:'column',
+    // alignItems: 'center',
     marginBottom: 25,
   },
    rowsContainer: {
@@ -297,14 +302,19 @@ const styles = StyleSheet.create({
 
   rememberText: {
     marginLeft: 6,
-    fontSize: 16,
-    color: '#444',
+   fontFamily: font('Medium'),
+    fontWeight:'500',
+    fontSize: FontSize.Font16,
+    color:COLOR.TextPlaceholder,
+    lineHeight:22
   },
 
   forgotText: {
-    fontSize: 16,
-    color: '#FF6E83',
-    fontWeight: '600',
+   fontFamily: font('Medium'),
+    fontWeight:'500',
+    fontSize: FontSize.Font16,
+    color:COLOR.TextPlaceholder,
+    lineHeight:22
   },
 
   signInBtn: {
