@@ -12,9 +12,9 @@ export const CommonTextInput = (props) => {
           <TextInput
             placeholder={placeholder}
             secureTextEntry={secureTextEntry}
-            placeholderTextColor={COLOR.TextSecondary}
+            placeholderTextColor={COLOR.Gray}
             style={[styles.input, textInputStyle]}
-            cursorColor={COLOR.Primary1}
+            cursorColor={COLOR.Gray}
             onChangeText={onChangeText}
             value={value}
           />

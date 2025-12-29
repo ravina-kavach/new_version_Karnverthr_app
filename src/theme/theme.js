@@ -1,5 +1,12 @@
 export const COLOR = {
-    Primary1: "#FA7777",
+    Primary1: "#F5F5F5",
+    Secondary:"#171717",
+    Placeholder: "#897F7F",
+    Gray : "#171717CC",
+    GrayBorder: "#D2D2D2",
+    LightOrange : "#FF6634",
+    LightYellow : "#FFBB34",
+
     TextPrimary:"#101828",
     TextSecondary:"#475467",
     Transparent:"transparent",

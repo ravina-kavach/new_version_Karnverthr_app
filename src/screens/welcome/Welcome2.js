@@ -3,62 +3,54 @@ import {
   StyleSheet,
   View,
   Image,
-  ImageBackground,
-  Animated,
 } from 'react-native';
 import CommonButton from '../../components/CommonButton';
-import { welcome2Image, welcome_background } from '../../assets/images/index';
+import { welcome2Image } from '../../assets/images/index';
 import { COLOR } from '../../theme/theme';
-import { H5, H4, H3, CommonView } from '../../utils/common';
+import { H4, H3, CommonView, H5 } from '../../utils/common';
 import { useWelcome } from '../welcome/WelcomeController.js';
-import { responsiveHeight , responsiveWidth } from '../../utils/metrics.js';
-
+import { responsiveHeight, responsiveWidth } from '../../utils/metrics.js';
+import { GlobalFonts } from '../../theme/typography.js';
 const Welcome2 = () => {
   const {
     t,
-    backgroundOpacity,
-    logoOpacity,
-    textOpacity,
-    rowOpacity,
     navigateToWelcome3,
   } = useWelcome();
+  const Subcomponent = ({ title, desc }) => {
+    return (
+      <View style={styles.subContainer}>
+        <H4 style={styles.subtitleText}>
+          {title}
+        </H4>
+        <H5 style={styles.descText}>{desc}</H5>
+      </View>
+    )
+  }
   return (
-    <CommonView statusBarColor={COLOR.OffRed}>
+    <CommonView statusBarColor={COLOR.Primary1}>
       <View style={styles.container}>
-        <Animated.View style={{ opacity: backgroundOpacity }}>
-          <ImageBackground
-            style={styles.backroundImage}
-            source={welcome_background}
-          >
-            <Animated.View style={{ opacity: logoOpacity }}>
-              <Image style={styles.welcomeImage} source={welcome2Image} />
-            </Animated.View>
-          </ImageBackground>
-        </Animated.View>
-
+        <View style={styles.welcomeImage}>
+          <Image style={styles.welcomeImage} source={welcome2Image} />
+        </View>
+        <View style={styles.dotsContainer}>
+          <View style={styles.inActiveDot} />
+          <View style={[styles.activeDot, styles.dotsMargin]} />
+          <View style={styles.inActiveDot} />
+        </View>
+        <View style={styles.titleContainer}>
+          <H3 style={styles.titleText}>
+            {t('Welcome2.title')}
+          </H3>
+          <Subcomponent title={t('Welcome2.subtitle1')} desc={t('Welcome2.dis1')} />
+          <Subcomponent title={t('Welcome2.subtitle2')} desc={t('Welcome2.dis2')} />
+          <Subcomponent title={t('Welcome2.subtitle3')} desc={t('Welcome2.dis3')} />
+        </View>
         <View style={styles.buttonContainer}>
-          <Animated.View style={{ opacity: textOpacity }}>
-            <View style={styles.titleContainer}>
-              <H4 style={styles.titleText}>{t('Welcome2.title')}</H4>
-              <H3 style={{ color: COLOR.Primary1 }}>
-                {t('Welcome2.subtitle')}
-              </H3>
-              <H5>{t('Welcome2.dis')}</H5>
-            </View>
-          </Animated.View>
-          <Animated.View opacity={rowOpacity}>
-            <View style={styles.dotsContainer}>
-              <View style={styles.inActiveDot} />
-              <View style={[styles.activeDot, styles.dotsMargin]} />
-              <View style={styles.inActiveDot} />
-            </View>
-            <CommonButton
+          <CommonButton
             containerStyle={styles.buttonInnerContainer}
-              title={t('Button.Next')}
-              gradientColors={[COLOR.grediant1,COLOR.grediant2]}
-              onPress={navigateToWelcome3}
-            />
-          </Animated.View>
+            title={t('Button.Continue')}
+            onPress={navigateToWelcome3}
+          />
         </View>
       </View>
     </CommonView>
@@ -69,21 +61,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLOR.White1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20
+  },
+  buttonInnerContainer: {
+    width: responsiveWidth(90)
   },
 
-  buttonInnerContainer:{
-    width:responsiveWidth(90)
+  descText: {
+    color: COLOR.Gray
   },
 
-  backroundImage: {
-    resizeMode: 'contain',
-    resizeMode: 'cover',
-  },
   welcomeImage: {
-    marginTop: responsiveHeight(6),
     alignSelf: 'center',
+    resizeMode: 'contain',
+    paddingTop: responsiveHeight(14),
+    paddingBottom:responsiveHeight(8),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  subtitleText: {
+    color: COLOR.Secondary,
+    ...GlobalFonts.subtitle,
+    textAlign: 'center'
+  },
+  subContainer:{
+    paddingBottom:responsiveHeight(1.5)
   },
   buttonContainer: {
     flex: 1,
@@ -92,9 +96,12 @@ const styles = StyleSheet.create({
     alignContent: 'flex-end',
     paddingBottom: responsiveHeight(4),
   },
-  titleContainer: { marginHorizontal: 20 },
-  titleText: { paddingVertical: '2%' },
-  dotsMargin: { marginHorizontal: '0.5%' },
+  titleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  titleText: { paddingVertical: '2%', textAlign: 'center',paddingBottom:responsiveHeight(2) },
+  dotsMargin: { marginHorizontal: '1%' },
   dotsContainer: {
     flexDirection: 'row',
     paddingVertical: responsiveHeight(3),
@@ -102,16 +109,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   activeDot: {
-    backgroundColor: COLOR.Primary1,
-    height: 8,
+    backgroundColor: COLOR.Secondary,
+    height: 10,
     width: 30,
     overflow: 'hidden',
     borderRadius: 50,
   },
   inActiveDot: {
     backgroundColor: COLOR.dark4,
-    height: 8,
-    width: 30,
+    height: 10,
+    width: 10,
     overflow: 'hidden',
     borderRadius: 50,
   },
