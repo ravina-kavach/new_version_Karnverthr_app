@@ -1,12 +1,10 @@
-import React from 'react';
-import { useEffect } from 'react';
+import React,{ useEffect } from 'react';
+import { StyleSheet, Image } from 'react-native';
 import { permission } from '../../utils/permission';
 import Service from '../../utils/service';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, ImageBackground, View, Image } from 'react-native';
-import GlobalStyle from '../../theme/globalstyle';
-import { splash_background, splash_logo } from '../../assets/images/index';
+import { splash_logo } from '../../assets/images/index';
 import { responsiveHeight, responsiveWidth } from '../../utils/metrics';
 
 const Splash = () => {
@@ -33,20 +31,18 @@ const Splash = () => {
     }
   };
   return (
-    <SafeAreaView style={GlobalStyle.flexContainer} edges={['left', 'right']}>
-      <ImageBackground style={styles.backroundImage} source={splash_background}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
         <Image style={styles.splashLogo} source={splash_logo} />
-      </ImageBackground>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  backroundImage: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+ container:{
+  flex:1,
+  justifyContent:'center',
+  alignItems:'center'
+ },
   splashLogo: {
     alignSelf: 'center',
     width: responsiveWidth(70),
