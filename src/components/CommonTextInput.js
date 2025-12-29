@@ -1,12 +1,12 @@
 import React from 'react'
-import { Image, StyleSheet, TextInput ,View} from 'react-native'
+import { Image, StyleSheet, TextInput ,View,TouchableOpacity} from 'react-native'
 import { COLOR } from '../theme/theme'
 import {Valide} from '../utils/common'
 import { responsiveWidth } from '../utils/metrics'
 export const CommonTextInput = (props) => {
-  const {leftIcon,rightIcon, vlaue,rightIconPress,placeholder,secureTextEntry,onChangeText,errorMassage, inputContainerStyle, textInputStyle} = props
+  const {leftIcon,rightIcon, value,rightIconPress,placeholder,secureTextEntry,onChangeText,errorMassage, inputContainerStyle, textInputStyle} = props
   return (
-    <View style={{flex:1}}>
+    <View>
        <View style={[styles.inputContainer,inputContainerStyle]}>
           {leftIcon && <Image source={leftIcon} />}
           <TextInput
@@ -16,7 +16,7 @@ export const CommonTextInput = (props) => {
             style={[styles.input, textInputStyle]}
             cursorColor={COLOR.Primary1}
             onChangeText={onChangeText}
-            value={vlaue}
+            value={value}
           />
           {rightIcon && <TouchableOpacity onPress={rightIconPress}>
             <Image source={rightIcon} />

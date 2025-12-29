@@ -7,8 +7,6 @@ import { showMessage } from 'react-native-flash-message';
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 import SimpleReactValidator from 'simple-react-validator';
 import DeviceInfo from 'react-native-device-info';
-import Geolocation from '@react-native-community/geolocation';
-import dayjs from 'dayjs';
 import {
   CommonSelector,
   ForgotPassword,
@@ -49,8 +47,6 @@ export const useSignInScreen = () => {
   const [IsReSetmodalvisible, setIsReSetmodalvisible] = React.useState(false);
   const [IsPassVisible, setIsPassVisible] = React.useState(true);
   const [RememberData, setRememberData] = React.useState(null);
-  const [CurrentLongitude, setCurrentLongitude] = React.useState(0);
-  const [CurrentLatitude, setCurrentLatitude] = React.useState(0);
   const [isChecked, setisChecked] = React.useState(false);
   const [isShowbiomatric, setisShowbiomatric] = React.useState(false);
   const [DeviceData, setDeviceData] = React.useState({});
@@ -72,7 +68,7 @@ export const useSignInScreen = () => {
   const rnBiometrics = new ReactNativeBiometrics({
     allowDeviceCredentials: true,
   });
-  //---------------
+
   React.useEffect(() => {
     if (IsFocused) {
       Getdata();
@@ -166,78 +162,20 @@ export const useSignInScreen = () => {
   };
 
   const GetDevicedata = async () => {
-    Geolocation.getCurrentPosition(
-      position => {
-        const currentLongitude = JSON.stringify(position.coords.longitude);
-        setCurrentLongitude(currentLongitude);
-        const currentLatitude = JSON.stringify(position.coords.latitude);
-        setCurrentLatitude(currentLatitude);
-      },
-      error => {
-        Service.OpenLocaitonbutton();
-        console.log('error.message>>>', error.message);
-      },
-      { enableHighAccuracy: false, timeout: 60000, maximumAge: 0 },
-    );
+    let getDeviceId = DeviceInfo.getDeviceId();
     let getIpAddress = await DeviceInfo.getIpAddress();
-    let getAndroidId = await DeviceInfo.getAndroidId();
-    let getBrand = DeviceInfo.getBrand();
     let getDevice = await DeviceInfo.getDevice();
     let getDeviceName = await DeviceInfo.getDeviceName();
-    let getVersion = DeviceInfo.getVersion();
     let getSystemVersion = DeviceInfo.getSystemVersion();
-    let getDeviceType = DeviceInfo.getDeviceType();
-    let getUserAgent = await DeviceInfo.getUserAgent();
-    let getApplicationName = DeviceInfo.getApplicationName();
-    let getBaseOs = await DeviceInfo.getBaseOs();
-    let getHardware = await DeviceInfo.getHardware();
-    let getCodename = await DeviceInfo.getCodename();
-    let getDeviceId = DeviceInfo.getDeviceId();
-    let getFirstInstallTime = await DeviceInfo.getFirstInstallTime();
-    let getLastUpdateTime = await DeviceInfo.getLastUpdateTime();
-    let getProduct = await DeviceInfo.getProduct();
+    let deviceUniqueId = await DeviceInfo.getUniqueId();
 
-    // console.log("testing finction>>>>", await DeviceInfo.getSupportedMediaTypeList())
-    // console.log("<<<<<----------------------->>>>>>>>>")
     const deviceDATA = {
-      devicePlateform: 'mobile',
-      type: 'mobile',
-      userAgent: String(getUserAgent),
-      browserName: '',
-      browserVersion: '',
-      platform: String(getDevice),
-      language: '',
-      appName: String(getApplicationName),
-      appVersion: String(getVersion),
-      appCodeName: String(getCodename),
-      vendor: '',
-      product: String(getProduct),
-      brand1: '',
-      version1: '',
-      brand2: '',
-      version2: '',
-      brand3: '',
-      version3: '',
-      mobile: 'true',
-      platform1: '',
-      deviceMemory: '',
-      hardwareConcurrency: '',
-      os: String(getBaseOs),
-      browser: '',
-      screenWidth: String(Dimensions.get('window').width),
-      screenHeight: String(Dimensions.get('window').height),
-      latitude: String(CurrentLatitude),
-      longitude: String(CurrentLongitude),
-      hardware: String(getHardware),
-      devicetype: String(getDeviceType),
-      systemversion: String(getSystemVersion),
-      devicename: String(getDeviceName),
-      brand: String(getBrand),
-      androidId: String(getAndroidId),
-      ipaddress: String(getIpAddress),
-      deviceid: String(getDeviceId),
-      firstinstalltime: dayjs(getFirstInstallTime).format('DD-MM-YYYY'),
-      lastupdatetime: dayjs(getLastUpdateTime).format('DD-MM-YYYY'),
+      device_platform: String(getDevice),
+      system_version: String(getSystemVersion),
+      device_name: String(getDeviceName),
+      ip_address: String(getIpAddress),
+      device_id: String(getDeviceId),
+      device_unique_id:String(deviceUniqueId)
     };
     setDeviceData(deviceDATA);
   };
@@ -312,22 +250,11 @@ export const useSignInScreen = () => {
   };
 
   const handleVerificationModal = async secreatCode => {
-    let getDeviceId = DeviceInfo.getDeviceId();
-    let getIpAddress = await DeviceInfo.getIpAddress();
-    let getDevice = await DeviceInfo.getDevice();
-    let getDeviceName = await DeviceInfo.getDeviceName();
-    let getSystemVersion = DeviceInfo.getSystemVersion();
-    let deviceUniqueId = await DeviceInfo.getUniqueId();
-
+  
     if (isVisibleVerifiedModal) {
       const payloadObj = {
-        device_id: String(getDeviceId),
-        device_name: String(getDeviceName),
-        device_platform: String(getDevice),
-        device_unique_id: String(deviceUniqueId),
-        ip_address: String(getIpAddress),
+       ...DeviceData,
         random_code_for_reg: String(secreatCode),
-        system_version: String(getSystemVersion),
       };
         const result = await dispatch(UserVerification(payloadObj)).unwrap();
         await Service.setisVerified(result); 

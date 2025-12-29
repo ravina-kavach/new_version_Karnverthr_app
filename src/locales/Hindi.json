@@ -145,7 +145,8 @@
         "Biometrics": "बायोमेट्रिक्स",
         "Face_ID": "फेस आईडी",
         "Reset_Password": "पासवर्ड रीसेट करें",
-        "Remember_Me": "मुझे याद रखें"
+        "Remember_Me": "मुझे याद रखें",
+        "SetNewPAssword": "नया पासवर्ड सेट करें"
     },
     "Button": {
         "Update_Profile": "प्रोफ़ाइल अपडेट करें",
@@ -160,6 +161,7 @@
         "Forgot_password": "पासवर्ड भूल गए",
         "Next": "अगला",
         "LoginWithFigerprint":"फ़िंगरप्रिंट से लॉगिन करें",
+        "SendTemporaryPassword": "अस्थायी पासवर्ड भेजें",
         "LoginWithFaceId":"फेस आईडी से लॉगिन करें"
     },
     "placeholders": {
@@ -183,7 +185,7 @@
     "Email_verification":"ईमेल सत्यापन भेजा गया!",
     "Email_verific_desc": "आपके खाते के सत्यापन की प्रक्रिया के लिए\nएक सत्यापन कोड आपके ईमेल पर भेजा जाएगा।",
     "key_placeholder":"अपनी अद्वितीय कुंजी दर्ज करें",
-    "valid_key":"कुंजी का प्रारूप अमान्य है।"
+    "valid_key":"कुंजी में ठीक 6 अद्वितीय अक्षर होने चाहिए।"
   },
     "messages": {
         "Approve_request": "अनुरोध स्वीकृत सफलतापूर्वक स्वीकृत",
