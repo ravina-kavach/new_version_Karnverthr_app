@@ -8,10 +8,10 @@ export const useWelcome = () => {
   const { t } = useTranslation();
   const Navigation = useNavigation();
   const IsFocused = useIsFocused();
-  const logoOpacity = React.useRef(new Animated.Value(0)).current;
-  const backgroundOpacity = React.useRef(new Animated.Value(0)).current;
-  const textOpacity = React.useRef(new Animated.Value(0)).current;
-  const rowOpacity = React.useRef(new Animated.Value(0)).current;
+  // const logoOpacity = React.useRef(new Animated.Value(0)).current;
+  // const backgroundOpacity = React.useRef(new Animated.Value(0)).current;
+  // const textOpacity = React.useRef(new Animated.Value(0)).current;
+  // const rowOpacity = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     if (IsFocused) {
@@ -23,30 +23,30 @@ export const useWelcome = () => {
     }
   }, [IsFocused]);
 
-  React.useEffect(() => {
-    Animated.sequence([
-      Animated.timing(logoOpacity, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(backgroundOpacity, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(textOpacity, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(rowOpacity, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [logoOpacity]);
+  // React.useEffect(() => {
+  //   Animated.sequence([
+  //     Animated.timing(logoOpacity, {
+  //       toValue: 1,
+  //       duration: 1000,
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.timing(backgroundOpacity, {
+  //       toValue: 1,
+  //       duration: 1000,
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.timing(textOpacity, {
+  //       toValue: 1,
+  //       duration: 1000,
+  //       useNativeDriver: true,
+  //     }),
+  //     Animated.timing(rowOpacity, {
+  //       toValue: 1,
+  //       duration: 1000,
+  //       useNativeDriver: true,
+  //     }),
+  //   ]).start();
+  // }, [logoOpacity]);
 
   const navigateToWelcome2 = () => {
     Navigation.navigate('welcome2');
@@ -62,10 +62,6 @@ export const useWelcome = () => {
 
   return {
     t,
-    logoOpacity,
-    backgroundOpacity,
-    textOpacity,
-    rowOpacity,
     navigateToWelcome2,
     navigateToWelcome3,
     navigateToSignIn,

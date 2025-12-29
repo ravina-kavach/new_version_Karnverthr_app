@@ -19,6 +19,8 @@ const NotFoundImg = require('./NoRecordFound.png')
 const ArrowDown = require('./ArrowDown.png')
 const BackIcon = require('./BackIcon.png')
 const CloseIcon = require('./CloseIcon.png')
+const WelCheck = require('./WelCheck.png')
+const MailIcon = require('./MailIcon.png')
 
 const HomeMenuIcons = {
   Announcement: require('./homeMenu/Announcement.png'),
@@ -53,5 +55,7 @@ export {
   NotFoundImg,
   ArrowDown,
   BackIcon,
-  CloseIcon
+  CloseIcon,
+  WelCheck,
+  MailIcon
 };

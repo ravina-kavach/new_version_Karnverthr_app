@@ -1,10 +1,13 @@
 import React from 'react';
-import { Modal, View, Text, StyleSheet } from 'react-native';
+import { Modal, View, Text, StyleSheet, Image } from 'react-native';
 import CommonButton from './CommonButton';
 import { COLOR } from '../theme/theme';
 import { useTranslation } from 'react-i18next';
+import { MailIcon } from '../assets/icons';
 import { CommonTextInput } from '../components/CommonTextInput';
 import SimpleReactValidator from 'simple-react-validator';
+import { GlobalFonts } from '../theme/typography';
+import { FontSize } from '../utils/metrics';
 
 const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
   const { t, i18n } = useTranslation();
@@ -45,7 +48,7 @@ const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
       <View style={styles.overlay}>
         <View style={styles.container}>
           <View style={styles.iconWrapper}>
-            <Text style={styles.icon}>✉️</Text>
+            <Image style={styles.imageStyle}source={MailIcon}/>
           </View>
           <Text style={styles.title}>{t('verification.Email_verification')}</Text>
 
@@ -84,6 +87,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  imageStyle:{
+    width:35,
+     height:35,
+     resizeMode:'contain'
+  },
   container: {
     width: '90%',
     backgroundColor: '#fff',
@@ -92,29 +100,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconWrapper: {
-    width: 64,
-    height: 64,
     borderRadius: 16,
-    backgroundColor: '#FF9E9E',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -40,
   },
   icon: {
     fontSize: 28,
   },
   title: {
     fontSize: 18,
-    fontWeight: '700',
     marginTop: 16,
-    color: '#111',
+    ...GlobalFonts.subtitleText,
   },
   description: {
     textAlign: 'center',
-    fontSize: 14,
-    color: COLOR.TextPrimary,
+    ...GlobalFonts.small,
+    color: COLOR.Secondary,
     marginVertical: 12,
-    lineHeight: 18,
   },
   email: {
     fontWeight: '600',

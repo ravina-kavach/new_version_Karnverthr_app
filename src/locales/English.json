@@ -127,17 +127,17 @@
     "User": "User"
   },
   "Welcome1": {
-    "title": "Welcome To",
-    "subtitle": "KonvertHr !",
-    "dis": "Konvert Employee App is designed for office use, and keep your profile information up to date—all from one convenient platform."
+    "title": "Workforce Management, Simplified",
+    "subtitle": "Attendance, leave, and approvals in one reliable platform."
   },
   "Welcome2": {
-    "title": "All-in-One Employee Management",
-    "subtitle": "Smart Tools for Office Productivity",
-    "dis": "Konvert Employee App lets you check in and out, manage your expenses, apply for and track leaves, view detailed attendance and leave records, organize calendar events for your office needs."
+    "title": "Your Everyday Tools",
+    "dis1":"Clear records, no confusion",
+    "dis2":"Faster approvals",
+    "dis3":"One system, fewer errors"
   },
   "Welcome3": {
-    "title": "Effortless Office Management",
+    "title": "Built for Everyday Work",
     "subtitle": "Everything You Need in One App",
     "dis": "Konvert Employee App gives easy-to-use platform designed for your office needs."
   },
@@ -170,7 +170,8 @@
     "LoginWithFigerprint":"Login with Fingerprint",
     "LoginWithFaceId":"Login with Face Id",
     "SendTemporaryPassword": "Send Temporary Password",
-    "Next": "Next"
+    "Next": "Next",
+    "Continue" : "Continue"
   },
   "placeholders": {
     "Enter_First_Name": "Enter First Name",
@@ -198,7 +199,7 @@
   },
   "verification":{
     "Email_verification":"Email Verification Sent!",
-    "Email_verific_desc": "A verification code will be sent to the email\nfor your account verification process.",
+    "Email_verific_desc": "We’ll send a verification code to your email.\nEnter the code to verify your account.",
     "key_placeholder":"Enter your unique key",
     "valid_key":"The key must be exactly 6 unique characters."
   },

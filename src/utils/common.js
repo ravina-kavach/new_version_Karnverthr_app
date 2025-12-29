@@ -4,6 +4,7 @@ import { FontSize } from './metrics';
 import { COLOR } from '../theme/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlobalStyle from '../theme/globalstyle';
+import {GlobalFonts} from '../theme/typography'
 
 export const CommonView = props => {
   return (
@@ -15,16 +16,16 @@ export const CommonView = props => {
 };
 
 export const H3 = props => {
-  return <Text style={[commonStyle.h3, props.style]}>{props.children}</Text>;
+  return <Text style={[commonStyle.titleText, props.style]}>{props.children}</Text>;
 };
 export const H4 = props => {
-  return <Text style={[commonStyle.h4, props.style]}>{props.children}</Text>;
+  return <Text style={[commonStyle.subtitleText, props.style]}>{props.children}</Text>;
 };
 export const H5 = props => {
-  return <Text style={[commonStyle.h5, props.style]}>{props.children}</Text>;
+  return <Text style={[commonStyle.normalText, props.style]}>{props.children}</Text>;
 };
 export const H6 = props => {
-  return <Text style={[commonStyle.h6, props.style]}>{props.children}</Text>;
+  return <Text style={[commonStyle.descText, props.style]}>{props.children}</Text>;
 };
 export const Label = (props) => { return (<Text style={[commonStyle.Label, props.style]}>{props.children}</Text>) }
 export const Valide = (props) => { return (<Text style={[commonStyle.Valide, props.style]}>{props.children}</Text>) }
@@ -34,33 +35,27 @@ export const ColView = (props) => { return (<View style={[commonStyle.col, props
 //-----------
 
 export const commonStyle = StyleSheet.create({
-  h3: {
+  titleText: {
     marginBottom: 6,
-    color: COLOR.dark1,
-    fontSize: FontSize.Font28,
-    lineHeight: 30,
-    fontWeight: '800',
+    color: COLOR.Secondary,
+    fontSize: FontSize.Font24,
+    ...GlobalFonts.title
   },
-  h4: {
+  subtitleText: {
     marginBottom: 6,
-    color: COLOR.TextPrimary,
-    fontSize: FontSize.Font26,
-    lineHeight: 30,
-    fontWeight: '600',
+    color: COLOR.Secondary,
+    ...GlobalFonts.subtitle
   },
-  h5: {
+  normalText: {
     marginBottom: 5,
-    color: COLOR.TextSecondary,
-    fontSize: FontSize.Font18,
-    lineHeight: 20,
-    // fontWeight: "500",
+    color: COLOR.Secondary,
+    ...GlobalFonts.normalText
   },
-  h6: {
+  descText: {
     marginBottom: 4,
     fontSize: FontSize.Font14,
-    color: COLOR.Blue,
-    lineHeight: 16,
-    fontWeight: '600',
+    color: COLOR.Secondary,
+    ...GlobalFonts.body
   },
    row: {
       flexDirection: "row",

@@ -1,11 +1,10 @@
 import { StyleSheet, Platform } from 'react-native';
 import {FontSize} from '../utils/metrics'
 
-const font = (name) =>
+export const font = (name) =>
   Platform.OS === 'ios' ? `Inter-${name}` : `Inter_18pt-${name}`;
 
 export const GlobalFonts = StyleSheet.create({
-  // Main App Titles
   title: {
     fontFamily: font('Bold'),
     fontSize: FontSize.Font24,
@@ -19,6 +18,14 @@ export const GlobalFonts = StyleSheet.create({
     lineHeight: 22,
     fontWeight:'600'
   },
+
+   subtitleText: {
+    fontFamily: font('SemiBold'),
+    fontSize: FontSize.Font20,
+    lineHeight: 26,
+    fontWeight:'600'
+  },
+
 
   normalText:{
     fontFamily: font('Medium'),
@@ -34,7 +41,7 @@ export const GlobalFonts = StyleSheet.create({
   },
 
   small: {
-    fontFamily: font('Light'),
+    fontFamily: font('Medium'),
     fontSize: FontSize.Font14,
     lineHeight: 20,
   },
