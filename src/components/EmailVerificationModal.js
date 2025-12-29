@@ -52,7 +52,6 @@ const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
           <Text style={styles.description}>
             {t('verification.Email_verific_desc')}
           </Text>
-          <View style={styles.inputContainer}>
             <CommonTextInput
               value={textInput}
               onChangeText={(value)=>setTextInput(value)}
@@ -62,15 +61,16 @@ const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
                 textInput,
                 'required|uuid',
               )}
-            />
-          </View>
+              />
 
+          <View style={styles.inputContainer}>
           <CommonButton
             onPress={() => onButtonPress()}
             title={t('Button.Submit')}
             gradientColors={[COLOR.grediant1, COLOR.grediant2]}
             loading={isVerifiedFetching}
-          />
+            />
+            </View>
         </View>
       </View>
     </Modal>

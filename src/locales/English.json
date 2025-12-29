@@ -153,7 +153,8 @@
     "Biometrics": "Biometrics",
     "Face_ID": "Face ID",
     "Reset_Password": "Reset Password",
-    "Remember_Me": "Remember Me"
+    "Remember_Me": "Remember Me",
+    "SetNewPAssword": "Set New Password"
   },
   "Button": {
     "Update_Profile": "Update Profile",
@@ -168,6 +169,7 @@
     "Forgot_password": "Forgot password",
     "LoginWithFigerprint":"Login with Fingerprint",
     "LoginWithFaceId":"Login with Face Id",
+    "SendTemporaryPassword": "Send Temporary Password",
     "Next": "Next"
   },
   "placeholders": {
@@ -198,7 +200,7 @@
     "Email_verification":"Email Verification Sent!",
     "Email_verific_desc": "A verification code will be sent to the email\nfor your account verification process.",
     "key_placeholder":"Enter your unique key",
-    "valid_key":"Invalid key format."
+    "valid_key":"The key must be exactly 6 unique characters."
   },
   "messages":{
     "Approve_request":"Approve request approved successfully",

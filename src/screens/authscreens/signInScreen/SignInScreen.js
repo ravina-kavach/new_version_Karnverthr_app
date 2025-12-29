@@ -100,9 +100,9 @@ function SignInScreen() {
               </TouchableOpacity>
               <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
             </View>
-            {/* <TouchableOpacity style={styles.row} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
+            <TouchableOpacity style={styles.row} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
               <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
 
           <CommonButton
@@ -130,13 +130,13 @@ function SignInScreen() {
             />}
           {IsReSetmodalvisible &&
             <ForgotPasswordModal
-              resetValidator={ResetValidator}
-              resetEmail={ReSetemail}
-              setResetEmail={setReSetemail}
+              // resetValidator={ResetValidator}
+              // resetEmail={ReSetemail}
+              // setResetEmail={setReSetemail}
               visible={IsReSetmodalvisible}
               onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
-              heandleonforgot={heandleonforgot}
-              loading={isForgotPasswordFetching}
+              // heandleonforgot={heandleonforgot}
+              // loading={isForgotPasswordFetching}
             />}
         </ScrollView>
       ) : (

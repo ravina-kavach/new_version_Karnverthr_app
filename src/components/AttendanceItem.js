@@ -40,19 +40,19 @@ const AttendanceItem = ({ item, t, getDuration }) => {
             source={AttendancIcon}
             tintColor={COLOR.Primary1}
           />
-          <Text style={styles.dateTitle}>{dateTitle}</Text>
+          <Text numberOfLines={1} style={styles.dateTitle}>{dateTitle}</Text>
         </RowView>
         <View style={styles.row}>
           <View style={styles.block}>
             <Text style={styles.label}>Total Hours</Text>
-            <Text style={styles.value}>
+            <Text numberOfLines={1} style={styles.value}>
               {getDuration(item?.check_in, item?.check_out)} hrs
             </Text>
           </View>
 
           <View style={styles.block}>
             <Text style={styles.label}>Clock in & Out</Text>
-            <Text style={styles.value}>
+            <Text numberOfLines={1} style={styles.value}>
               {checkIn} — {checkOut}
             </Text>
           </View>

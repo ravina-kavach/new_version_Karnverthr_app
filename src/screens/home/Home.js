@@ -15,7 +15,9 @@ const Home = () => {
   } = useHome();
   return (
     <CommonView statusBarColor={COLOR.OffRed}>
-      <ScrollView>
+      <ScrollView 
+      nestedScrollEnabled
+      >
         <WorkingHoursCard
           usersigninData={UsersigninData}
           localAttendanceData={localAttendanceData}
