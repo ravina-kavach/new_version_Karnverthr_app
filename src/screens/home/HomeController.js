@@ -82,6 +82,7 @@ export const useHome = () => {
 
             initLocation();
         }
+      BackgroundHandler.startTracking();   
     }, [IsFocused]);
 
 
@@ -128,6 +129,7 @@ export const useHome = () => {
         };
 
         if (type === "CHECK_IN") {
+            
             payload = { ...payload, check_in: timeNow, action: "CHECK_IN" };
             setLocalAttendanceData({
                 check_in_image: imageBase64,
@@ -147,14 +149,14 @@ export const useHome = () => {
             const res = await dispatch(UserAttendance(payload)).unwrap();
 
             if (type === "CHECK_IN") {
+                
                 await Service.setAsyncAttendanceData({
                     ...attendanceData,
                     check_in_image: imageBase64,
                     check_in_time: timeNow,
                     action: "CHECK_IN",
                 });
-                BackgroundHandler.startTracking();
-
+                
             } else {
                 await Service.removeAsyncAttendanceData();
                 BackgroundHandler.stopTracking();
