@@ -32,6 +32,7 @@ export const useHome = () => {
     ];
 
     useFocusEffect(
+        
         useCallback(() => {
             const backHandler = BackHandler.addEventListener("hardwareBackPress", () => true);
             return () => backHandler.remove();
@@ -116,6 +117,7 @@ export const useHome = () => {
     }, [UserAttendanceData]);
 
     const handleAttendance = async (type, imageBase64) => {
+        
         const attendanceData = await Service.GetAsyncAttendanceData();
         const timeNow = new Date().toISOString();
         let payload = {

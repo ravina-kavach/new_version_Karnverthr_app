@@ -14,7 +14,6 @@ const Tab = createBottomTabNavigator();
 const TabNavigation = () => {
   return (
     <Tab.Navigator
-
       screenOptions={{
         // headerShown:false,
         tabBarShowLabel: false,
@@ -27,6 +26,7 @@ const TabNavigation = () => {
         name="home"
         component={Home}
         options={{
+          // headerShown:false,
           header: () => (
             <CommonHeader
               title="Let’s Clock-In!"
@@ -38,7 +38,7 @@ const TabNavigation = () => {
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
                 source={HomeIcon}
-                tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
+                tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
               />
             </View>
           ),
@@ -63,7 +63,7 @@ const TabNavigation = () => {
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
                 source={AttendancIcon}
-                tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
+                tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
               />
             </View>
           ),
@@ -89,7 +89,7 @@ const TabNavigation = () => {
               <Image
                 source={ExpensesIcon}
                 tintColor={COLOR.dark2}
-                // tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
+                // tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
               />
             </View>
           ),
@@ -115,7 +115,7 @@ const TabNavigation = () => {
               <Image
                 source={ReceiptIcon}
                 tintColor={COLOR.dark2}
-                // tintColor={focused ? COLOR.di : COLOR.Black1}
+                // tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
               />
             </View>
           ),
@@ -142,7 +142,7 @@ const TabNavigation = () => {
               <Image
                 source={CalenderIcon}
                 tintColor={COLOR.dark2}
-                // tintColor={focused ? COLOR.Primary1 : COLOR.Black1}
+                // tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
               />
             </View>
           ),
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderTopWidth: 3,
-    borderColor: COLOR.Primary1,
+    borderColor: COLOR.LightOrange,
   },
 });
 

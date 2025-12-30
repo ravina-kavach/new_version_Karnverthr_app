@@ -20,6 +20,7 @@ import { FontSize, responsiveHeight, responsiveWidth } from '../../../utils/metr
 import EmailVerificationModal from '../../../components/EmailVerificationModal.js'
 import ForgotPasswordModal from '../../../components/ForgotPasswordModal.js'
 import { font } from '../../../theme/typography.js';
+import { AppLogo } from '../../../assets/images/index.js';
 function SignInScreen() {
   const {
     t,
@@ -46,13 +47,14 @@ function SignInScreen() {
     handleVerificationModal,
     isVerifiedFetching,
   } = useSignInScreen();
-console.log("Validator.current===>",Validator.current.errorMessages)
   return (
     <CommonView>
+      
       {!isShowbiomatric ? (
         <ScrollView contentContainerStyle={styles.container}>
+          <Image style={styles.appLogo} source={AppLogo} />
           <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
-          <View style={[styles.inputContainer,{borderColor:Validator.current.errorMessages?.email?COLOR.Red:COLOR.GrayBorder}]}>
+          <View style={[styles.inputContainer,{borderColor:Formdata.email && Validator.current.errorMessages?.email?COLOR.Red:COLOR.GrayBorder}]}>
             <Image source={Sms} style={styles.icon}/>
             <TextInput
               placeholder={t("placeholders.Enter_your_registered_email")}
@@ -69,7 +71,7 @@ console.log("Validator.current===>",Validator.current.errorMessages)
             {Validator.current.message('email', Formdata.email, 'required')}
           </Valide>
 
-          <View style={[styles.inputContainer,{borderColor:Validator.current.errorMessages?.password?COLOR.Red:COLOR.GrayBorder}]}>
+          <View style={[styles.inputContainer,{borderColor:Formdata.password && Validator.current.errorMessages.password?COLOR.Red:COLOR.GrayBorder}]}>
             <Image source={FignerScan} style={styles.icon} />
             <TextInput
               placeholder={t("placeholders.Enter_your_password")}
@@ -137,6 +139,7 @@ console.log("Validator.current===>",Validator.current.errorMessages)
         </ScrollView>
       ) : (
         <View style={styles.biometricContainer}>
+          <Image style={styles.appLogo} source={AppLogo} />
           {Platform.OS == 'android' && (
             <View style={[commonStyle.shodowBox, { marginBottom: 10 }]}>
               <TouchableWithoutFeedback
@@ -151,12 +154,12 @@ console.log("Validator.current===>",Validator.current.errorMessages)
                       {isSigninFetching ? (
                         <ActivityIndicator
                           animating={isSigninFetching}
-                          color={COLOR.Primary1}
+                          color={COLOR.Secondary}
                           size={30}
                         />
                       ) : (
                         <Image
-                          style={{ marginEnd: 8, marginTop: 4 }}
+                          style={{ marginEnd: 8, marginTop: 4, tintColor:COLOR.Secondary }}
                           source={BiometricIcon}
                         />
                       )}
@@ -205,7 +208,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingBottom: 40,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop:responsiveHeight(10),
+  },
+   appLogo: {
+    alignSelf: 'center',
+    paddingVertical:responsiveHeight(10),
+    resizeMode: 'contain',
   },
   titleContainer: {
     marginBottom: responsiveHeight(3),
@@ -213,7 +221,8 @@ const styles = StyleSheet.create({
   lineContainer:{backgroundColor:COLOR.TextPlaceholder, height:1.5},
   biometricContainer:{ 
     flex:1,
-    justifyContent:'center',
+    // justifyContent:'center',
+    paddingTop:responsiveHeight(20),
     alignItems:'center',
     backgroundColor:COLOR.White1,
     paddingHorizontal:30
