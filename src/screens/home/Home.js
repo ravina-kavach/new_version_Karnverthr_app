@@ -12,7 +12,6 @@ const Home = () => {
     takeImage,
     localAttendanceData,
     isAttendanceFetching,
-    latestLocation
   } = useHome();
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
