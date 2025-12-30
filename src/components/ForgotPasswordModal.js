@@ -231,7 +231,7 @@ const ForgotPasswordModal = ({
                     <CommonTextInput
                       value={tempPassword}
                       onChangeText={setTempPassword}
-                      placeholder="Enter temporary password"
+                      placeholder={t("placeholders.Enter_temporary_password")}
                       secureTextEntry={tempIsPassVisible}
                       rightIcon={tempIsPassVisible ? EyeSlash : Eye}
                       rightIconPress={() => setTempIsPassVisible(!tempIsPassVisible)}
@@ -243,7 +243,7 @@ const ForgotPasswordModal = ({
                       <CommonTextInput
                         value={newPassword}
                         onChangeText={setNewPassword}
-                        placeholder="Enter new password"
+                        placeholder={t("placeholders.Enter_new_password")}
                         secureTextEntry={newIsPassVisible}
                         rightIcon={newIsPassVisible ? EyeSlash : Eye}
                         rightIconPress={() => setNewIsPassVisible(!newIsPassVisible)}
@@ -256,7 +256,7 @@ const ForgotPasswordModal = ({
                       <CommonTextInput
                         value={confirmPassword}
                         onChangeText={setConfirmPassword}
-                        placeholder="Confirm new password"
+                        placeholder={t("placeholders.Enter_confirm_password")}
                         secureTextEntry={comIsPassVisible}
                         rightIcon={comIsPassVisible ? EyeSlash : Eye}
                         rightIconPress={() => setComIsPassVisible(!comIsPassVisible)}
@@ -278,7 +278,7 @@ const ForgotPasswordModal = ({
                     onPress={() => setStep(1)}
                   >
                     <Text style={styles.backText}>
-                      ← Back to email
+                      {t('button.BackToMail')}
                     </Text>
                   </TouchableOpacity>
                 </>

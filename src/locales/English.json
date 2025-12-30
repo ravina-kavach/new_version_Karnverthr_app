@@ -171,7 +171,8 @@
     "LoginWithFaceId":"Login with Face Id",
     "SendTemporaryPassword": "Send Temporary Password",
     "Next": "Next",
-    "Continue" : "Continue"
+    "Continue" : "Continue",
+    "BackToMail": "Back to mail"
   },
   "placeholders": {
     "Enter_First_Name": "Enter First Name",
@@ -185,6 +186,9 @@
     "Enter_Location": "Enter Location",
     "Enter_your_registered_email": "Enter your registered email",
     "Enter_your_password": "Enter your password",
+    "Enter_temporary_password":"Enter temporary password",
+    "Enter_new_password": "Enter new password",
+    "Enter_confirm_password":"Enter confirm password",
     "Enter_your_email": "Enter your email",
     "Enter_emp_address": "Enter Your Address",
     "Enter_pincode": "Enter Pincode",
