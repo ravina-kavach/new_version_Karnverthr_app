@@ -59,4 +59,5 @@
         </intent-filter>
       </activity>
     </application>
+<meta-data android:name="com.transistorsoft.locationmanager.license" android:value="d686d9e976c1d620e210dc2ea5e575c34c23d537c60419843a49324641f07b03" />  
 </manifest>
