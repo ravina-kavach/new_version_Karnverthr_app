@@ -23,7 +23,7 @@ export default function Attendance() {
   } = useAttendance();
 
   return (
-    <CommonView statusBarColor={COLOR.OffRed}>
+    <CommonView statusBarColor={COLOR.LightOrange}>
       <View style={styles.filterContainer}>
         <RowView>
           <ColView>

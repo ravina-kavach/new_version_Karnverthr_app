@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, StatusBar, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLOR } from '../theme/theme';
 import { CommonView } from '../utils/common';
@@ -8,7 +8,7 @@ const CommonHeader = ({ title, subtitle, rightIcon }) => {
   return (
    <CommonView statusBarColor={COLOR.OffRed} >
     <LinearGradient
-      colors={[COLOR.grediant1, COLOR.grediant2]}
+      colors={[COLOR.LightOrange, COLOR.LightYellow]}
       style={styles.container}
     >
       <View style={styles.left}>

@@ -11,10 +11,11 @@ const Home = () => {
     UsersigninData,
     takeImage,
     localAttendanceData,
-    isAttendanceFetching
+    isAttendanceFetching,
+    latestLocation
   } = useHome();
   return (
-    <CommonView statusBarColor={COLOR.OffRed}>
+    <CommonView statusBarColor={COLOR.LightOrange}>
       <ScrollView 
       nestedScrollEnabled
       >

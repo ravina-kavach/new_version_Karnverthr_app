@@ -278,7 +278,7 @@ const ForgotPasswordModal = ({
                     onPress={() => setStep(1)}
                   >
                     <Text style={styles.backText}>
-                      {t('button.BackToMail')}
+                      {t('Button.BackToMail')}
                     </Text>
                   </TouchableOpacity>
                 </>
