@@ -1,4 +1,4 @@
-package com.konverthrmobile
+package com.konverthr
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

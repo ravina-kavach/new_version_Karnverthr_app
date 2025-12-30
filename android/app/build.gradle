@@ -85,9 +85,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.konverthrmobile"
+    namespace "com.konverthr"
     defaultConfig {
-        applicationId "com.konverthrmobile"
+        applicationId "com.konverthr"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
