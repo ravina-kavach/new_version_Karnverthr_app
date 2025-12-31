@@ -52,7 +52,7 @@ export const useAttendance = () =>{
       const { GetAttandanceListData, isGetAttandanceListFetching, UsersigninData } = useSelector(CommonSelector);
     
       React.useEffect(() => {
-      if(IsFocused){
+      if(IsFocused && UsersigninData && Selectedmonth && SelectedYear ){
         let data = {
           id: Number(UsersigninData?.user_id),
           month: Number(Selectedmonth?.id),
