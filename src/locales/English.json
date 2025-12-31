@@ -132,6 +132,9 @@
   },
   "Welcome2": {
     "title": "Your Everyday Tools",
+    "subtitle1": "Track Time",
+    "subtitle2":"Manage Requests",
+    "subtitle3":"Stay Organized",
     "dis1":"Clear records, no confusion",
     "dis2":"Faster approvals",
     "dis3":"One system, fewer errors"

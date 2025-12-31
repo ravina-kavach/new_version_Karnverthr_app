@@ -8,17 +8,18 @@ import store from './src/store'
 import './src/utils/i18n';
 import { Provider } from 'react-redux';
 import { UserToken } from './src/store/reducers/commonSlice';
+import GlobalStyle from './src/theme/globalstyle';
 
 function App() {
   React.useEffect(() => {
   store.dispatch(UserToken({ user_name: 'john' }));
 }, []);
-  
+
   return (
     <Provider store={store}>
-     <SafeAreaProvider>
+      <SafeAreaProvider>
           <Navigation />
-        <FlashMessage position="bottom" />
+        <FlashMessage position="bottom" style={GlobalStyle.massageCotanier}/>
       </SafeAreaProvider>
     </Provider>
   );
