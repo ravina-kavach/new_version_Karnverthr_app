@@ -26,7 +26,7 @@ export const RenderBox = ({ image, title, screen }) => {
 
 const styles = StyleSheet.create({
     comingText:{
-        color:COLOR.Primary1,
+        color:COLOR.LightOrange,
         fontWeight:'600',
         bottom:3,
     },
