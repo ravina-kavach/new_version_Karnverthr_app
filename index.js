@@ -9,7 +9,7 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import BackgroundGeolocationHeadlessTask from './src/utils/HeadlessTask.js'
 
 if (typeof __DEV__ !== 'undefined' &&__DEV__) {
-  console.log = () => {};
+  // console.log = () => {};
   console.warn = () => {};
   console.error = () => {};
   console.info = () => {};

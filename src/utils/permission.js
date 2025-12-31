@@ -1,105 +1,17 @@
-
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import { request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
-import { PermissionsAndroid, Alert, Platform, BackHandler } from 'react-native'
+import { PermissionsAndroid, Alert, Platform } from 'react-native';
 import Service from './service';
-import { launchCamera } from 'react-native-image-picker'
+import { launchCamera } from 'react-native-image-picker';
 
 const requestLocationPermission = async () => {
-    try {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          {
-            title: 'Konvert HR - Location Access Required',
-            message: 'Konvert HR needs access to your location to track attendance and check-ins accurately.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          }
-        );
-
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log('Location permission granted');
-          getLocation();
-        } else if (granted === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-          console.log('User selected Never Ask Again');
-          showPermissionSettingsAlert();
-        } else {
-          console.log('Location permission denied');
-          showPermissionSettingsAlert();
-        }
-      } else {
-      
-        const permission = PERMISSIONS.IOS.LOCATION_WHEN_IN_USE;
-        const result = await request(permission);
-        console.log("result>>>>", result)
-
-        switch (result) {
-          case RESULTS.GRANTED:
-            console.log('iOS location permission granted');
-            getLocation();
-            break;
-
-          case RESULTS.DENIED:
-            console.log('iOS location permission denied');
-            Alert.alert(
-              'Konvert HR - Location Required',
-              'Please allow location access to enable attendance and check-in features.',
-              [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Open Settings', onPress: () => openSettings() },
-              ]
-            );
-            break;
-
-          case RESULTS.BLOCKED:
-            console.log('iOS location permission permanently denied');
-            showPermissionSettingsAlert(true);
-            break;
-
-          default:
-            console.log('iOS permission status:', result);
-            showPermissionSettingsAlert(true);
-            break;
-        }
-      }
-    } catch (err) {
-      console.log('Error requesting location permission:', err);
-    }
-  };
-
-    const showPermissionSettingsAlert = (isBlocked = false) => {
-    const message = isBlocked
-      ? 'You have permanently denied location access. Please enable it in settings.'
-      : 'Please enable location access in settings.';
-
-    Alert.alert('Location Permission', message, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Open Settings', onPress: () => openSettings() },
-    ]);
-  };
-  const getLocation = async () => {
-    Geolocation.getCurrentPosition((position) => {
-      console.log("position.coords>>>", position.coords)
-    },
-      (error) => {
-        Service.OpenLocaitonbutton()
-        console.log("error.message>>>", error)
-      },
-      { enableHighAccuracy: false, timeout: 60000, maximumAge: 0 }
-    );
-  }
-
-  const heandleOnCamera = async () => {
   try {
-    let hasPermission = false;
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         {
-          title: 'Konvert HR - Camera Permission',
-          message: 'Konvert HR needs access to your camera to take your photo.',
+          title: 'Konvert HR - Location Access Required',
+          message: 'Konvert HR needs access to your location to track attendance and check-ins accurately.',
           buttonNeutral: 'Ask Me Later',
           buttonNegative: 'Cancel',
           buttonPositive: 'OK',
@@ -107,29 +19,72 @@ const requestLocationPermission = async () => {
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        hasPermission = true;
+        getLocation();
       } else {
-        showSettingsAlert(false);
-        return { success: false, reason: 'permission_denied' };
+        showPermissionSettingsAlert();
       }
-    }
-
-    if (Platform.OS === 'ios') {
-      const result = await request(PERMISSIONS.IOS.CAMERA);
+    } else {
+      const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
 
       if (result === RESULTS.GRANTED) {
-        hasPermission = true;
+        getLocation();
       } else {
-        showSettingsAlert(true);
-        return { success: false, reason: 'permission_denied' };
+        showPermissionSettingsAlert(true);
       }
+    }
+  } catch (err) {
+    console.log('Location permission error:', err);
+  }
+};
+
+const showPermissionSettingsAlert = (isIOS = false) => {
+  Alert.alert(
+    'Location Permission',
+    'Please enable location access in Settings.',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Open Settings', onPress: openSettings },
+    ]
+  );
+};
+
+const getLocation = () => {
+  Geolocation.getCurrentPosition(
+    position => {
+      console.log('coords:', position.coords);
+    },
+    error => {
+      console.log('location error:', error);
+      Service.OpenLocaitonbutton();
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 10000,
+    }
+  );
+};
+
+const heandleOnCamera = async () => {
+  try {
+    let hasPermission = false;
+
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA
+      );
+      hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+    } else {
+      const result = await request(PERMISSIONS.IOS.CAMERA);
+      hasPermission = result === RESULTS.GRANTED;
     }
 
     if (!hasPermission) {
-      return { success: false, reason: 'no_permission' };
+      showSettingsAlert();
+      return { success: false };
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       launchCamera(
         {
           mediaType: 'photo',
@@ -137,24 +92,12 @@ const requestLocationPermission = async () => {
           cameraType: 'front',
           includeBase64: true,
         },
-        (response) => {
-          if (response?.didCancel) {
-            return resolve({ success: false, reason: 'cancelled' });
+        response => {
+          if (response?.didCancel || response?.errorCode) {
+            return resolve({ success: false });
           }
 
-          if (response?.errorCode) {
-            return resolve({
-              success: false,
-              reason: response.errorMessage || 'camera_error',
-            });
-          }
-
-          const asset = response?.assets?.[0];
-
-          if (!asset?.base64) {
-            return resolve({ success: false, reason: 'no_image' });
-          }
-
+          const asset = response.assets?.[0];
           resolve({
             success: true,
             image: {
@@ -167,31 +110,25 @@ const requestLocationPermission = async () => {
         }
       );
     });
-  } catch (err) {
-    return { success: false, reason: 'exception' };
+  } catch {
+    return { success: false };
   }
 };
 
+const showSettingsAlert = () => {
+  Alert.alert(
+    'Permission Required',
+    'Please enable permission in Settings.',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Open Settings', onPress: openSettings },
+    ]
+  );
+};
 
-   const showSettingsAlert = (isIOS = false) => {
-    Alert.alert(
-      'Konvert HR - Permission Required',
-      isIOS
-        ? 'Please enable camera access in Settings to use Konvert HR camera features.'
-        : 'Please enable camera access in Settings to use Konvert HR camera features.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Open Settings', onPress: () => openSettings() },
-      ]
-    );
-  };
-
-
-  export const permission = {
-    requestLocationPermission,
-    showPermissionSettingsAlert,
-    showSettingsAlert,
-    heandleOnCamera
-
-  }
-
+export const permission = {
+  requestLocationPermission,
+  showPermissionSettingsAlert,
+  showSettingsAlert,
+  heandleOnCamera,
+};

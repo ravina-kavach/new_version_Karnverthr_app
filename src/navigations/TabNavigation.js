@@ -26,14 +26,14 @@ const TabNavigation = () => {
         name="home"
         component={Home}
         options={{
-          // headerShown:false,
-          header: () => (
-            <CommonHeader
-              title="Let’s Clock-In!"
-              subtitle="Don’t miss your clock in schedule"
-              rightIcon={HomeClockIcon}
-            />
-          ),
+          headerShown:false,
+          // header: () => (
+          //   <CommonHeader
+          //     title="Let’s Clock-In!"
+          //     subtitle="Don’t miss your clock in schedule"
+          //     rightIcon={HomeClockIcon}
+          //   />
+          // ),
           tabBarIcon: ({ focused }) => (
             <View style={[styles.tabContainer, focused && styles.activeTab]}>
               <Image
