@@ -29,9 +29,7 @@ const Welcome2 = () => {
   return (
     <CommonView statusBarColor={COLOR.Primary1}>
       <View style={styles.container}>
-        <View style={styles.welcomeImage}>
           <Image style={styles.welcomeImage} source={welcome2Image} />
-        </View>
         <View style={styles.dotsContainer}>
           <View style={styles.inActiveDot} />
           <View style={[styles.activeDot, styles.dotsMargin]} />
@@ -76,8 +74,8 @@ const styles = StyleSheet.create({
   welcomeImage: {
     alignSelf: 'center',
     resizeMode: 'contain',
-    paddingTop: responsiveHeight(14),
-    paddingBottom:responsiveHeight(8),
+   marginTop:responsiveHeight(10),
+    marginBottom:responsiveHeight(8),
     justifyContent: 'center',
     alignItems: 'center',
   },

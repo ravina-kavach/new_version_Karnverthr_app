@@ -32,7 +32,7 @@ export const useHome = () => {
     ];
 
     useFocusEffect(
-        
+
         useCallback(() => {
             const backHandler = BackHandler.addEventListener("hardwareBackPress", () => true);
             return () => backHandler.remove();
@@ -82,7 +82,7 @@ export const useHome = () => {
 
             initLocation();
         }
-      BackgroundHandler.startTracking();   
+        BackgroundHandler.startTracking();
     }, [IsFocused]);
 
 
@@ -118,60 +118,61 @@ export const useHome = () => {
     }, [UserAttendanceData]);
 
     const handleAttendance = async (type, imageBase64) => {
-        
-        const attendanceData = await Service.GetAsyncAttendanceData();
-        const timeNow = new Date().toISOString();
-        let payload = {
-            Image: imageBase64,
-            email: UsersigninData.email,
-            Longitude: String(latestLocation.longitude),
-            Latitude: String(latestLocation.latitude),
-        };
-
-        if (type === "CHECK_IN") {
-            
-            payload = { ...payload, check_in: timeNow, action: "CHECK_IN" };
-            setLocalAttendanceData({
-                check_in_image: imageBase64,
-                check_in_time: timeNow,
-                action: "CHECK_IN",
-            })
-        } else {
-            payload = {
-                ...payload,
-                check_out: timeNow,
-                check_in: attendanceData?.check_in_time || "",
-                action: "CHECK_OUT",
+        if (UsersigninData) {
+            const attendanceData = await Service.GetAsyncAttendanceData();
+            const timeNow = new Date().toISOString();
+            let payload = {
+                Image: imageBase64,
+                email: UsersigninData.email,
+                Longitude: String(latestLocation.longitude),
+                Latitude: String(latestLocation.latitude),
             };
-        }
-
-        try {
-            const res = await dispatch(UserAttendance(payload)).unwrap();
 
             if (type === "CHECK_IN") {
-                
-                await Service.setAsyncAttendanceData({
-                    ...attendanceData,
+
+                payload = { ...payload, check_in: timeNow, action: "CHECK_IN" };
+                setLocalAttendanceData({
                     check_in_image: imageBase64,
                     check_in_time: timeNow,
                     action: "CHECK_IN",
-                });
-                
+                })
             } else {
-                await Service.removeAsyncAttendanceData();
-                BackgroundHandler.stopTracking();
+                payload = {
+                    ...payload,
+                    check_out: timeNow,
+                    check_in: attendanceData?.check_in_time || "",
+                    action: "CHECK_OUT",
+                };
             }
 
-        } catch (err) {
-            if (type === "CHECK_IN") {
-                setLocalAttendanceData({})
-            } else {
-                await Service.setAsyncAttendanceData({
-                    ...attendanceData,
-                });
+            try {
+                const res = await dispatch(UserAttendance(payload)).unwrap();
+
+                if (type === "CHECK_IN") {
+
+                    await Service.setAsyncAttendanceData({
+                        ...attendanceData,
+                        check_in_image: imageBase64,
+                        check_in_time: timeNow,
+                        action: "CHECK_IN",
+                    });
+
+                } else {
+                    await Service.removeAsyncAttendanceData();
+                    BackgroundHandler.stopTracking();
+                }
+
+            } catch (err) {
+                if (type === "CHECK_IN") {
+                    setLocalAttendanceData({})
+                } else {
+                    await Service.setAsyncAttendanceData({
+                        ...attendanceData,
+                    });
+                }
             }
+            getCheckInData();
         }
-        getCheckInData();
     };
 
     const takeImage = async (value) => {

@@ -13,7 +13,7 @@ const Home = () => {
     localAttendanceData,
     isAttendanceFetching,
   } = useHome();
-  return (
+  return(
     <CommonView statusBarColor={COLOR.LightOrange}>
       <ScrollView 
       nestedScrollEnabled

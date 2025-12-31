@@ -62,13 +62,14 @@ export const UserVerification = createAsyncThunk(
         try {
             let result = await API.post('api/employee/device-register', payload);
             if (result.data.success) {
-                return { ...result.data.data, message: result.data.successMessage };
+                return { ...result.data.data, message: result.data?.successMessage };
             } else {
                 return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
         } catch (error) {
             if (error.message) {
-                return thunkAPI.rejectWithValue({ error: errorMassage(error?.response?.data?.message || error.message) });
+             const errorMessage = error?.response?.data?.message || error?.message;
+            return thunkAPI.rejectWithValue({ error: errorMassage(errorMessage) });
             }
         }
     },
