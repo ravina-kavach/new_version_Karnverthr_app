@@ -9,6 +9,7 @@ import CommonButton from './CommonButton'
 import { useTranslation } from 'react-i18next';
 import { COLOR } from "../theme/theme";
 import { SelfieIcon } from '../assets/icons/index.js';
+import {CheckIn} from '../assets/svgs/index.js'
 import dayjs from "dayjs";
 
 const WorkingHoursCard = ({
@@ -21,18 +22,21 @@ const WorkingHoursCard = ({
   const IsAttanced = localAttendanceData?.action === "CHECK_IN"
   const ShowImage = (props) => {
     return (
-      <View style={styles.imageContainer}>
-        {props.image ? (
+      <>
+      {props.image ? (
+          <View style={styles.imageContainer}>
           <Image
             source={{ uri: `data:image/png;base64,${props.image}` }}
             style={styles.innerImageContainer}
             resizeMode='cover'
           />
+          </View>
         ) : (
-          <Image source={SelfieIcon} resizeMode='cover' style={{ height: 28,
-    width: 28,}} />
+          <CheckIn/>
+    //       <Image source={SelfieIcon} resizeMode='cover' style={{ height: 28,
+    // width: 28,}} />
         )}
-      </View>
+    </>
     )
   }
 
