@@ -202,7 +202,9 @@
     "Enter_aadhar_number": "Enter Aadhar Number"
   },
   "comman": {
-    "No_records_found": "No records found."
+    "No_records_found": "No records found.",
+    "Hello": "Hello",
+    "Welcome":"Welcome back"
   },
   "verification":{
     "Email_verification":"Email Verification Sent!",
@@ -223,5 +225,11 @@
     "Project_created":"Project created successfully",
     "Welcome_back":"Welcome back! You've successfully logged in. Enjoy your experience!",
     "password_reset":"A password reset link has been sent to your email. Please check your inbox to reset your password."
+  },
+  "Tabs":{
+   "Home" :"Home",
+   "Expense" :"Expanse",
+   "Leaves": "Leaves",
+   "Calendar":"Calendar"
   }
 }

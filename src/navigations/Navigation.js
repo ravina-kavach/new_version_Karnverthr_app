@@ -11,6 +11,7 @@ import Welcome3 from '../screens/welcome/Welcome3'
 import Home from '../screens/home/Home'
 import Profile from '../screens/profile/Profile'
 import ShiftTiming from '../screens/shiftTiming/ShiftTiming'
+import Attendance from '../screens/attendance/Attendance'
 import TabNavigation from './TabNavigation'
 //------ Auth screen
 
@@ -58,6 +59,7 @@ function Navigation({ props }) {
             <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 
             <Stack.Screen name="profile" component={Profile} />
             <Stack.Screen name="shiftTiming" component={ShiftTiming} />
+            <Stack.Screen name="attendance" component={Attendance} />
           {/* <Stack.Screen name="MyProfile" component={MyProfile} />
           <Stack.Screen name="Approve" component={Approve} />
           <Stack.Screen name="NewMeeting" component={NewMeeting} />

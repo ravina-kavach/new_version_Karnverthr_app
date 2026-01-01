@@ -7,6 +7,25 @@ import Phone from "./Phone.svg";
 import Sms from "./Sms.svg";
 import FingerScan from "./FingerScan.svg";
 import CheckIn from "./CheckIn.svg";
+import CalenderIcon from './CalenderIcon.svg';
+import ExpensesIcon from './ExpensesIcon.svg';
+import HomeIcon from "./HomeIcon.svg";
+import LeaveIcon from "./LeaveIcon.svg"
+import FillCalenderIcon from './FillCalenderIcon.svg';
+import FillExpensesIcon from './FillExpensesIcon.svg';
+import FillHomeIcon from "./FillHomeIcon.svg";
+import FillLeaveIcon from "./FillLeaveIcon.svg";
+import ApprovelsIcon from './homeMenu/ApprovelsIcon.svg';
+import AttendanceIcon from './homeMenu/Attendance.svg';
+import CalendarIcon from './homeMenu/Calendar.svg';
+import DeclarationIcon from './homeMenu/DeclarationIcon.svg';
+import ExpenseIcon from './homeMenu/Expense.svg';
+import LeaveMenuIcon from './homeMenu/Leave.svg';
+import PaySlipIcon from './homeMenu/Payslip.svg';
+import ReportIcon from './homeMenu/Report.svg';
+import ShiftIcon from './homeMenu/ShiftIcon.svg';
+
+
 
 export {
   Check,
@@ -18,4 +37,21 @@ export {
   Sms,
   FingerScan,
   CheckIn,
+  CalenderIcon,
+  ExpensesIcon,
+  HomeIcon,
+  LeaveIcon,
+  FillCalenderIcon,
+  FillExpensesIcon,
+  FillHomeIcon,
+  FillLeaveIcon,
+  ApprovelsIcon,
+  AttendanceIcon,
+  CalendarIcon,
+  DeclarationIcon,
+  ExpenseIcon,
+  LeaveMenuIcon,
+  PaySlipIcon,
+  ReportIcon,
+  ShiftIcon,
 };

@@ -5,12 +5,13 @@ import {
   StyleSheet,
   Image,
 } from "react-native";
-import CommonButton from './CommonButton'
+import CommonButton from './CommonButton';
 import { useTranslation } from 'react-i18next';
 import { COLOR } from "../theme/theme";
-import { SelfieIcon } from '../assets/icons/index.js';
-import {CheckIn} from '../assets/svgs/index.js'
+import { CheckIn } from '../assets/svgs';
 import dayjs from "dayjs";
+import { GlobalFonts } from "../theme/typography";
+import { FontSize, responsiveHeight } from "../utils/metrics";
 
 const WorkingHoursCard = ({
   usersigninData,
@@ -18,49 +19,54 @@ const WorkingHoursCard = ({
   onPress,
   loading,
 }) => {
-  const { t, i18n } = useTranslation();
-  const IsAttanced = localAttendanceData?.action === "CHECK_IN"
-  const ShowImage = (props) => {
+  const { t } = useTranslation();
+
+  const IsAttanced = localAttendanceData?.action === "CHECK_IN";
+
+  const ShowImage = ({ image }) => {
+    if (!image) return <CheckIn />;
+
     return (
-      <>
-      {props.image ? (
-          <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: `data:image/png;base64,${props.image}` }}
-            style={styles.innerImageContainer}
-            resizeMode='cover'
-          />
-          </View>
-        ) : (
-          <CheckIn/>
-    //       <Image source={SelfieIcon} resizeMode='cover' style={{ height: 28,
-    // width: 28,}} />
-        )}
-    </>
-    )
-  }
+      <View style={styles.imageContainer}>
+        <Image
+          source={{ uri: `data:image/png;base64,${image}` }}
+          style={styles.innerImageContainer}
+          resizeMode="cover"
+        />
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{t('Home.Shift_Timings')}</Text>
-      <Text style={styles.subtitle}>
-        {usersigninData?.shift_timing}
-      </Text>
-
-      <View style={styles.hoursRow}>
-        <View style={styles.hourBox}>
-          <Text style={styles.label}>CHECK IN</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>{t('Home.Shift_Timings')}</Text>
+        <Text style={styles.weekText}>
+          {usersigninData?.shift_timing}
+        </Text>
+      </View>
+      <View style={styles.lineView}/>
+      <View style={styles.timeRow}>
+        <View style={styles.timeItem}>
+          <Text style={styles.label}>{t('Home.Check_in')}</Text>
+          <View style={styles.timeContent}>
             <ShowImage image={localAttendanceData?.check_in_image} />
-            <Text style={styles.hourText}>{localAttendanceData?.check_in_time ? dayjs(localAttendanceData?.check_in_time).format('hh:mm A') : '00:00'}</Text>
+            <Text style={styles.timeText}>
+              {localAttendanceData?.check_in_time
+                ? dayjs(localAttendanceData.check_in_time).format('hh:mm A')
+                : '00:00'}
+            </Text>
           </View>
         </View>
-
-        <View style={styles.hourBox}>
-          <Text style={styles.label}>CHECK OUT</Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={[styles.timeItem]}>
+          <Text style={styles.label}>{t('Home.Check_out')}</Text>
+          <View style={styles.timeContent}>
             <ShowImage image={localAttendanceData?.check_out_image} />
-            <Text style={styles.hourText}>{localAttendanceData?.check_out_time ? dayjs(localAttendanceData?.check_out_time).format('hh:mm A') : '00:00'}</Text>
+            <Text style={styles.timeText}>
+              {localAttendanceData?.check_out_time
+                ? dayjs(localAttendanceData.check_out_time).format('hh:mm A')
+                : '00:00'}
+            </Text>
           </View>
         </View>
       </View>
@@ -69,7 +75,7 @@ const WorkingHoursCard = ({
           onPress={() => onPress(IsAttanced ? "CHECK_OUT" : "CHECK_IN")}
           title={IsAttanced ? t('Home.Check_out') : t('Home.Check_in')}
           loading={loading}
-          gradientColors={[COLOR.grediant1, COLOR.grediant2]}
+          textStyle={styles.textStyle}
         />
       </View>
     </View>
@@ -78,74 +84,98 @@ const WorkingHoursCard = ({
 
 const styles = StyleSheet.create({
   container: {
-    zIndex: 1,
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
-    padding: 16,
-    margin: 16,
-    marginTop: 190,
-    elevation: 4,
+    padding: 20,
+    paddingBottom: 30,
+    paddingHorizontal:25,
+    marginHorizontal: 10,
+    marginVertical: 16,
+    shadowColor: COLOR.Secondary,
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
-  buttonMainCotainer: { justifyContent: 'center', alignItems: 'center' },
+
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
   title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#111827",
+    fontSize: 15,
+    ...GlobalFonts.buttonText,
+    fontSize:FontSize.Font16,
+    color: COLOR.Placeholder,
   },
-  subtitle: {
-    fontSize: 12,
-    color: "#6B7280",
-    marginTop: 4,
-    marginBottom: 16,
+
+  weekText: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: COLOR.Secondary,
   },
-  hoursRow: {
+
+  timeRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
+    justifyContent:'center',
+    marginVertical:responsiveHeight(2)
   },
-  hourBox: {
-    backgroundColor: "#F9FAFB",
-    borderRadius: 12,
-    padding: 12,
+
+  timeItem: {
     width: "48%",
+    alignItems:'center'
   },
+
   label: {
-    fontSize: 12,
-    color: "#6B7280",
-    marginBottom: 6,
+    fontSize: FontSize.Font12,
+    color: COLOR.Placeholder,
+    ...GlobalFonts.small,
+    paddingHorizontal:15,
+    alignSelf:'flex-start',
+    marginBottom: 12,
   },
-  hourText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#111827",
-    paddingLeft: 5
+
+  timeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
+
+  timeText: {
+    fontSize: FontSize.Font16,
+    ...GlobalFonts.subtitle,
+    color:COLOR.Secondary
+  },
+
   imageContainer: {
-    height: 35,
-    width: 35,
-    borderRadius: 5,
+    height: 34,
+    width: 34,
+    borderRadius: 6,
     overflow: 'hidden',
-    borderWidth: 0.4,
-    borderColor: COLOR?.Black1,
+    borderWidth: 0.5,
+    borderColor: COLOR.Black1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
+
   innerImageContainer: {
     height: 32,
     width: 32,
-    borderRadius: 5
+    borderRadius: 6,
   },
-  button: {
-    borderRadius: 30,
-    paddingVertical: 14,
-    alignItems: "center",
+
+  buttonMainCotainer: {
+    marginTop: 4,
   },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
+  textStyle:{
+    ...GlobalFonts.normalText,
+    color:COLOR.Primary1
   },
+  lineView:{
+    backgroundColor:COLOR.GrayBorder,
+    height:1,
+  }
 });
-
-
 export default WorkingHoursCard;

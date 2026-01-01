@@ -5,6 +5,7 @@ import { COLOR } from '../../theme/theme.js';
 import WorkingHoursCard from '../../components/WorkingHoursCard';
 import { useHome } from './HomeController.js';
 import {RenderBox} from '../../components/RenderBox.js'
+import GreetingHeader from '../../components/GreetingHeader.js'
 const Home = () => {
   const {
     MENUDATA,
@@ -14,8 +15,10 @@ const Home = () => {
     isAttendanceFetching,
   } = useHome();
   return(
-    <CommonView statusBarColor={COLOR.LightOrange}>
+    <CommonView statusBarColor={COLOR.Black1}>
+      <GreetingHeader/>
       <ScrollView 
+      style={styles.mainContainer}
       nestedScrollEnabled
       >
         <WorkingHoursCard
@@ -47,6 +50,7 @@ const styles = StyleSheet.create({
   container:{
     paddingVertical:20
   },
+  mainContainer:{paddingHorizontal:10},
   itemContainer:{ flex: 1, alignItems: 'center', marginBottom: 20 }
 })
 

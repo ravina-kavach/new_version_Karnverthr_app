@@ -10,7 +10,6 @@ const CommonButton = ({
   title,
   containerStyle,
   textStyle,
-  gradientColors,
   loading,
 }) => {
   const ButtonContent = () => (
@@ -24,25 +23,6 @@ const CommonButton = ({
       )}
     </View>
   );
-
-  // if (gradientColors) {
-  //   return (
-  //     <TouchableOpacity
-  //       activeOpacity={0.8}
-  //       disabled={loading}
-  //       onPress={onPress}
-  //       style={[styles.containerStyle, containerStyle]}
-  //     >
-  //       <LinearGradient
-  //         colors={gradientColors}
-  //         style={styles.gradient}
-  //       >
-  //         <ButtonContent />
-  //       </LinearGradient>
-  //     </TouchableOpacity>
-  //   );
-  // }
-
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -58,7 +38,7 @@ const CommonButton = ({
 const styles = StyleSheet.create({
   containerStyle: {
     width: '100%',
-    height: responsiveHeight(7),
+    paddingVertical:responsiveHeight(1.8),
     justifyContent:'center',
     alignItems:'center',
     borderRadius: 12,
