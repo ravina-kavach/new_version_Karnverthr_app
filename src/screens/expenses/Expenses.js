@@ -312,9 +312,8 @@ export default function Expenses() {
       </View>
     </CommonView>
   )
-
-
-  const styles = StyleSheet.create({
+}
+const styles = StyleSheet.create({
     card: {
       backgroundColor: COLOR.White1,
       borderRadius: 12,
@@ -327,7 +326,7 @@ export default function Expenses() {
       shadowOffset: { width: 0, height: 2 },
     },
     flexContainer: { flex: 1 },
-    iconContainer: { backgroundColor: COLOR.primary1, padding: 5, borderRadius: 15 },
+    iconContainer: { backgroundColor: COLOR.Primary1, padding: 5, borderRadius: 15 },
     container: { marginHorizontal: 10 },
     contentContainer: { paddingVertical: 10 },
     labelText: {
@@ -394,5 +393,3 @@ export default function Expenses() {
       backgroundColor: '#eee',
     },
   });
-
-}

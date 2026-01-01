@@ -9,7 +9,7 @@ import {GlobalFonts} from '../theme/typography'
 export const CommonView = props => {
   return (
     <SafeAreaView style={GlobalStyle.flexContainer} edges={props.edges?props.edges:['left', 'right']} >
-      <StatusBar translucent backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
+      <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
       {props.children}
     </SafeAreaView>
   );

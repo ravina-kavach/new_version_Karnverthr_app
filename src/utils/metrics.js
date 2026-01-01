@@ -63,6 +63,7 @@ const FontSize = {
   Font10: getFont(10),
   Font12: getFont(12),
   Font14: getFont(14),
+  Font15: getFont(15),
   Font16: getFont(16),
   Font18: getFont(18),
   Font20: getFont(20),

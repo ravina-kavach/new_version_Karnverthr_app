@@ -22,17 +22,7 @@ const CloseIcon = require('./CloseIcon.png')
 const WelCheck = require('./WelCheck.png')
 const MailIcon = require('./MailIcon.png')
 
-const HomeMenuIcons = {
-  Announcement: require('./homeMenu/Announcement.png'),
-  Attendance: require('./homeMenu/Attendance.png'),
-  Calendar: require('./homeMenu/Calendar.png'),
-  Expense: require('./homeMenu/Expense.png'),
-  Leave: require('./homeMenu/Leave.png'),
-  NotApproved: require('./homeMenu/NotApproved.png'),
-  Payslip: require('./homeMenu/Payslip.png'),
-  Report: require('./homeMenu/Report.png'),
-  Shift: require('./homeMenu/Shift.png'),
-}
+
 export {
   CheckBox,
   FillCheckbox,
@@ -51,7 +41,6 @@ export {
   BiometricIcon,
   FaceIdIcon,
   SelfieIcon,
-  HomeMenuIcons,
   NotFoundImg,
   ArrowDown,
   BackIcon,
