@@ -60,10 +60,13 @@ export const STATE = {
 }
 
 export const APPROVALS = {
-
+    confirm : "#28a745",
     approved: '#28a745',
-    refused: '#5f636f',
-    submitted: '#f2af3a',
-    tosubmit: '#17a2b8',
-    pending: '#f2af3a'
+    refuse: '#5f636f',
+    validate :"#fd7e14",
+    validate2:"#f2af3a",
+    cancel: "#FF0000"
+    // submitted: '#f2af3a',
+//     tosubmit: '#17a2b8',
+//     pending: '#f2af3a'
 }

@@ -16,6 +16,7 @@ import TabNavigation from './TabNavigation'
 //------ Auth screen
 
 import SignInScreen from '../screens/authscreens/signInScreen/SignInScreen';
+import Leaves from '../screens/leaves/Leaves';
 // import Termsofuse from '../Screens/Termsofuse';
 // import PrivacyPolicy from '../Screens/PrivacyPolicy';
 
@@ -42,6 +43,7 @@ function Navigation({ props }) {
             <Stack.Screen name="profile" component={Profile} />
             <Stack.Screen name="shiftTiming" component={ShiftTiming} />
             <Stack.Screen name="attendance" component={Attendance} />
+            <Stack.Screen name="leaves" component={Leaves} />
           {/* <Stack.Screen name="MyProfile" component={MyProfile} />
           <Stack.Screen name="Approve" component={Approve} />
           <Stack.Screen name="NewMeeting" component={NewMeeting} />

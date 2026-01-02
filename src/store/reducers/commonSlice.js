@@ -134,6 +134,88 @@ export const CheckAttandanceStatus = createAsyncThunk(
     },
 );
 
+
+//==== Get Leave Type 
+export const GetLeavetype = createAsyncThunk(
+    'GetLeavetype',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/leave-type?user_id=${userdata.id}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+                return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
+export const GetDepartmentType = createAsyncThunk(
+    'GetDepartmentType',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/department?user_id=${userdata.id}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+                return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+export const CreateLeave = createAsyncThunk(
+    'CreateLeave',
+    async (userId, userdata, thunkAPI) =>{ 
+        try {
+            let result = await API.post(`api/create/leave-request?user_id=${userId}`, userdata);
+            if (result.data.success) {
+                return { ...result.data.data, message: result?.data.successMessage };
+            } else {
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
+            }
+        } catch (error) {
+            console.log("Error >>>", error.response?.data || error.message);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.errorMessage || error?.message)
+            });
+        }
+    },
+);
+
+export const GetLeaveList = createAsyncThunk(
+    'GetLeaveList',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/leave-request?user_id=${userdata.id}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+            return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
+
+
 export const ProfileUpdate = createAsyncThunk(
     'ProfileUpdate',
     async (userdata, thunkAPI) => {
@@ -182,6 +264,7 @@ export const ForgotPassword = createAsyncThunk(
         }
     },
 );
+
 // =====================================================================
 
 // =====================================================================
@@ -337,82 +420,7 @@ export const ExpenseApprove = createAsyncThunk(
         }
     },
 );
-export const GetLeaveList = createAsyncThunk(
-    'GetLeaveList',
-    async (userdata, thunkAPI) => {
-        console.log('GetLeaveList userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_leave',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetLeaveList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetLeaveList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-//==== Get Leave TYpe 
-export const GetLeavetype = createAsyncThunk(
-    'GetLeavetype',
-    async (userdata, thunkAPI) => {
-        console.log('GetLeavetype userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_leave_type',
-                headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetLeavetype result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.leave_types;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetLeavetype ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-export const CreateLeave = createAsyncThunk(
-    'CreateLeave',
-    async (userdata, thunkAPI) => {
-        console.log('CreateLeave userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: `api/create_leave`,
-                // headers: Authheader,
-                data: userdata,
-            });
-            // console.log('CreateLeave result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ CreateLeave ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
+
 //==== GEt Calendar event
 export const GetCalendarEvents = createAsyncThunk(
     'GetCalendarEvents',
@@ -820,6 +828,7 @@ export const CommonSlice = createSlice({
         isGetLeaveListFetching: false,
 
         GetLeavetypeData: [],
+        GetDepartmentTypeData:[],
         isGetLeavetype: false,
         isGetLeavetypeFetching: false,
 
@@ -1457,6 +1466,40 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(GetLeavetype.pending, state => {
             state.isGetLeavetypeFetching = true;
+        });
+
+        //===== Department type
+        
+        builder.addCase(GetDepartmentType.fulfilled, (state, { payload }) => {
+            // console.log("[GetDepartmentType.fulfilled]>>>payload>>>", payload)
+            try {
+                state.GetDepartmentTypeData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetDepartmentType.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetDepartmentType.rejected, (state, { payload }) => {
+            console.log("[GetDepartmentType.rejected]>>>", payload)
+            try {
+                state.GetDepartmentTypeData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetDepartmentType.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetDepartmentType.pending, state => {
+            return state
         });
 
         //===== Create Leave
