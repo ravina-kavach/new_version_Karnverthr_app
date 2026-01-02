@@ -51,6 +51,7 @@
         "Expense_Date": "व्यय तिथि"
     },
     "Attendance": {
+        "AttendanceList": "उपस्थिति सूची",
         "Total_Hours": "कुल घंटे",
         "Select_Month": "महीना चुनिए",
         "Select_Year": "वर्ष चुनें",

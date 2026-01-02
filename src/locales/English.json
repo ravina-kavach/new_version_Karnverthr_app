@@ -59,6 +59,7 @@
     "Expense_Date": "Expense Date"
   },
   "Attendance": {
+    "AttendanceList": "Attendance list",
     "Total_Hours": "Total Hours",
     "Select_Month": "Select Month",
     "Select_Year": "Select Year",
