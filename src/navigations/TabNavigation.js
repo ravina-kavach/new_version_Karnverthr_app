@@ -68,9 +68,9 @@ const TabNavigation = () => {
       <Tab.Screen
         name="expenses"
         component={Expenses}
-        // listeners={{
-        //   tabPress: e => e.preventDefault(),
-        // }}
+        listeners={{
+          tabPress: e => e.preventDefault(),
+        }}
         options={{
           tabBarIcon: ({ focused }) =>
             renderTabIcon(

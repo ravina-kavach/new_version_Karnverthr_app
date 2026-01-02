@@ -11,7 +11,7 @@ export const RenderBox = ({ image, title, screen }) => {
     const Navigation = useNavigation();
     // return (Navigation.navigate(onClick)
     const onPress = () => {
-        if (screen === "attendance") {
+        if (screen === "attendance" || screen === "leaves") {
             return Navigation.navigate(screen)
         }
     }

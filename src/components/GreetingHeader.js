@@ -46,7 +46,7 @@ const { UsersigninData } = useSelector(CommonSelector);
   }
 
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={navigateProfile} style={[styles.container,containerStyle]}>
+    <TouchableOpacity activeOpacity={1} onPress={()=>{}} style={[styles.container,containerStyle]}>
       {avatar ? (
         <Image source={{ uri: avatar }} style={styles.avatar} />
       ) : (

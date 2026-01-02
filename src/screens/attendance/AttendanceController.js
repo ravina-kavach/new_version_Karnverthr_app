@@ -64,7 +64,6 @@ export const useAttendance = () => {
         month: Number(Selectedmonth?.id),
         year: SelectedYear?.name ? Number(SelectedYear.name) : ""
       }
-      console.log("data===>", data)
       dispatch(GetAttandanceList(data))
     }
   }, [IsFocused, Selectedmonth, SelectedYear])
