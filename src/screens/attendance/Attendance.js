@@ -1,11 +1,13 @@
 import React from 'react';
-import {View, FlatList, RefreshControl, StyleSheet} from 'react-native';
+import { View, FlatList, RefreshControl, StyleSheet } from 'react-native';
 import Dropdown from '../../components/Dropdown'
-import {COLOR} from '../../theme/theme';
+import { COLOR } from '../../theme/theme';
 import NodataFound from '../../components/NodataFound'
-import {useAttendance} from './AttendanceController';
-import {RowView, ColView, CommonView} from '../../utils/common';
+import { useAttendance } from './AttendanceController';
+import { RowView, ColView, CommonView } from '../../utils/common';
 import AttendanceItem from '../../components/AttendanceItem'
+import CommonHeader from '../../components/CommonHeader';
+import { responsiveHeight } from '../../utils/metrics';
 
 export default function Attendance() {
   const {
@@ -24,6 +26,9 @@ export default function Attendance() {
 
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
+      <CommonHeader
+        title={t('Attendance.AttendanceList')}
+      />
       <View style={styles.filterContainer}>
         <RowView>
           <ColView>
@@ -50,7 +55,7 @@ export default function Attendance() {
       <FlatList
         data={GetAttandanceListData?.attandancelist}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <AttendanceItem
             item={item}
             t={t}
@@ -71,16 +76,17 @@ export default function Attendance() {
 }
 
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
   filterContainer: {
-    marginTop: 190,
+    paddingTop:responsiveHeight(3),
     marginHorizontal: 20,
+    marginBottom: 10,
   },
   dropdownBox: {
     marginBottom: 10,
     backgroundColor: COLOR.White1,
     borderRadius: 10,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
     elevation: 5,

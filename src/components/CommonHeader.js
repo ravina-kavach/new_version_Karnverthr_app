@@ -16,7 +16,6 @@ const CommonHeader = ({
   const navigation = useNavigation();
 
   return (
-    <CommonView>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.left}
@@ -30,9 +29,7 @@ const CommonHeader = ({
         <TouchableOpacity style={styles.right} onPress={rightIconPress}>
           {rightIcon || null}
         </TouchableOpacity>
-
       </View>
-    </CommonView>
   );
 };
 
