@@ -44,7 +44,7 @@ const TabNavigation = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        headerShown: false,
+        // headerShown: false,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: styles.tabBar,
@@ -54,6 +54,7 @@ const TabNavigation = () => {
         name="home"
         component={Home}
         options={{
+          headerShown:false,
           tabBarIcon: ({ focused }) =>
             renderTabIcon(
               focused,
@@ -67,9 +68,9 @@ const TabNavigation = () => {
       <Tab.Screen
         name="expenses"
         component={Expenses}
-        listeners={{
-          tabPress: e => e.preventDefault(),
-        }}
+        // listeners={{
+        //   tabPress: e => e.preventDefault(),
+        // }}
         options={{
           tabBarIcon: ({ focused }) =>
             renderTabIcon(
@@ -78,7 +79,13 @@ const TabNavigation = () => {
               ExpensesIcon,
               t('Tabs.Expense')
             ),
+            header:(()=>(
+              <CommonHeader 
+              title={t('Expenses.Expense')}
+              />
+            ))
         }}
+        
       />
 
       <Tab.Screen

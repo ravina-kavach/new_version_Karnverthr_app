@@ -46,6 +46,7 @@
   },
   "Expenses": {
     "Name": "Name",
+    "Expense":"Expense",
     "employee": "employee",
     "Status": "Status",
     "Create_Expense": "Create Expense",

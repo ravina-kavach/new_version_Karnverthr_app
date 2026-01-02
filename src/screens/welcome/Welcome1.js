@@ -18,7 +18,7 @@ const Welcome1 = () => {
     navigateToWelcome2,
   } = useWelcome();
   return (
-    <CommonView statusBarColor={COLOR.Primary1}>
+    <CommonView>
       <View style={styles.container}>
           <Image style={styles.welcomeImage} source={welcome1Image} />
         <View style={styles.dotsContainer}>

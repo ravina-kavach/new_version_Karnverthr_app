@@ -25,7 +25,6 @@ const requestLocationPermission = async () => {
       }
     } else {
       const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-
       if (result === RESULTS.GRANTED) {
         getLocation();
       } else {

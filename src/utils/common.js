@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, StatusBar,View } from 'react-native';
+import { Text, StyleSheet, StatusBar,View, Platform } from 'react-native';
 import { FontSize } from './metrics';
 import { COLOR } from '../theme/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,10 +8,19 @@ import {GlobalFonts} from '../theme/typography'
 
 export const CommonView = props => {
   return (
-    <SafeAreaView style={GlobalStyle.flexContainer} edges={props.edges?props.edges:['left', 'right']} >
+    <>
+    {Platform.OS === 'ios'?
+    <SafeAreaView style={GlobalStyle.flexContainer} edges={ props.edges?props.edges:['top']}>
       <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
       {props.children}
     </SafeAreaView>
+    :
+    <View style={GlobalStyle.flexContainer}>
+      <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
+      {props.children}
+    </View>
+    }
+    </>
   );
 };
 

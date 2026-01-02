@@ -34,26 +34,8 @@ function Navigation({ props }) {
         
         {/* ============ main screens ============= */}
         <Stack.Group
-          screenOptions={({ navigation }) => {
-            return {
-              headerTitleAlign: 'center',
-              // headerLeft: () => (
-              //   <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
-              //     <View style={{ backgroundColor: COLOR.dark5, width: 35, height: 35, borderRadius: 20, alignItems: 'center', justifyContent: "center" }}>
-              //       {/* <Feather name='chevron-left' size={26} color={COLOR.Black1} /> */}
-              //     <Text>icon</Text>
-              //     </View>
-              //   </TouchableWithoutFeedback>
-              // ),
-              headerBackVisible: false,
-              headerShadowVisible: false,
-              headerTransparent: false,
-              // headerBackground: () => <Div style={{ height: 50, width: '100%', backgroundColor: COLOR.dark5 }} />,
-              // contentStyle: {              
-              //   paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 50,
-              //   backgroundColor: COLOR.dark5,
-              // },
-            };
+          screenOptions={{
+            headerShown:false
           }}>
           <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }}/>   
             <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 

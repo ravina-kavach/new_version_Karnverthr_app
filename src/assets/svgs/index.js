@@ -24,7 +24,7 @@ import LeaveMenuIcon from './homeMenu/Leave.svg';
 import PaySlipIcon from './homeMenu/Payslip.svg';
 import ReportIcon from './homeMenu/Report.svg';
 import ShiftIcon from './homeMenu/ShiftIcon.svg';
-
+import BackIcon from './BackIcon.svg';
 
 
 export {
@@ -54,4 +54,5 @@ export {
   PaySlipIcon,
   ReportIcon,
   ShiftIcon,
+  BackIcon
 };

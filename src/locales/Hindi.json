@@ -38,6 +38,7 @@
     },
     "Expenses": {
         "Name": "नाम",
+        "Expense": "खर्च",
         "employee": "कर्मचारी",
         "Status": "स्थिति",
         "Create_Expense": "व्यय बनाएँ",
