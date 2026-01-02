@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect } from 'react';
 import { BackHandler } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonSelector, UserAttendance, updateState } from '../../store/reducers/commonSlice';
+import { CommonSelector, UserAttendance,CheckAttandanceStatus, updateState } from '../../store/reducers/commonSlice';
 import { useFocusEffect } from '@react-navigation/native';
 import { permission } from '../../utils/permission';
 import { showMessage } from 'react-native-flash-message';
 import { useTranslation } from 'react-i18next';
 import Service from '../../utils/service';
-import { HomeMenuIcons } from '../../assets/icons';
 import {
     ApprovelsIcon,
     AttendanceIcon,
@@ -96,15 +95,43 @@ export const useHome = () => {
         BackgroundHandler.startTracking();
     }, [IsFocused]);
 
-
-    const getCheckInData = async () => {
-        const checkindata = await Service.GetAsyncAttendanceData();
-        setLocalAttendanceData(checkindata || {});
+const getCheckInData = async () => {
+  const checkindata = await Service.GetAsyncAttendanceData();
+  if (checkindata) {
+    setLocalAttendanceData(checkindata);
+  } else {
+    const data = {
+      email: UsersigninData.email,
     };
 
+    try {
+      const result = await dispatch(CheckAttandanceStatus(data)).unwrap();
+  
+      if (result?.status === "CheckedIn") {
+        const obj = {
+          check_in_image: result.action_image,
+          check_in_time: result.action_time,
+          action: result.status === "CHECK_IN",
+        };
+
+        setLocalAttendanceData(obj);
+        await Service.setAsyncAttendanceData(obj);
+      }else{
+        setLocalAttendanceData({});
+        await Service.removeAsyncAttendanceData()
+      }
+    } catch (error) {
+      console.error("Attendance check failed", error);
+    }
+  }
+};
+
+
     useEffect(() => {
-        getCheckInData();
-    }, []);
+        if(IsFocused){
+            getCheckInData();
+        }
+    }, [IsFocused]);
 
     useEffect(() => {
         if (isError) {
@@ -129,7 +156,7 @@ export const useHome = () => {
     }, [UserAttendanceData]);
 
     const handleAttendance = async (type, imageBase64) => {
-        if (UsersigninData) {
+        if (UsersigninData && latestLocation.longitude && latestLocation.latitude) {
             const attendanceData = await Service.GetAsyncAttendanceData();
             const timeNow = new Date().toISOString();
             let payload = {
@@ -155,10 +182,8 @@ export const useHome = () => {
                     action: "CHECK_OUT",
                 };
             }
-
             try {
                 const res = await dispatch(UserAttendance(payload)).unwrap();
-
                 if (type === "CHECK_IN") {
 
                     await Service.setAsyncAttendanceData({
