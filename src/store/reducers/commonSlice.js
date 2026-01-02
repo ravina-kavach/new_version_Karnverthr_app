@@ -114,6 +114,26 @@ export const GetAttandanceList = createAsyncThunk(
     },
 );
 
+export const CheckAttandanceStatus = createAsyncThunk(
+    'CheckAttandanceStatus',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/checkin_checkout_status?email=${userdata.email}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+                return result.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
 export const ProfileUpdate = createAsyncThunk(
     'ProfileUpdate',
     async (userdata, thunkAPI) => {
@@ -865,7 +885,7 @@ export const CommonSlice = createSlice({
     reducers: {
         updateState: (state, { payload }) => {
             state.isSignin = payload.isSignin !== undefined ? payload.isSignin : state.isSignin;
-            state.isGetCheckStatus = payload.isGetCheckStatus !== undefined ? payload.isGetCheckStatus : state.isGetCheckStatus;
+            state.attandanceStatusData = payload.attandanceStatusData !== undefined ? payload.attandanceStatusData : state.attandanceStatusData;
             state.isCategoryList = payload.isCategoryList !== undefined ? payload.isCategoryList : state.isCategoryList;
             state.isCreateExpenses = payload.isCreateExpenses !== undefined ? payload.isCreateExpenses : state.isCreateExpenses;
             state.isVerified = payload.isVerified !== undefined ? payload.isVerified : state.isVerified
@@ -1008,6 +1028,38 @@ export const CommonSlice = createSlice({
             state.isAttendanceFetching = true;
         });
 
+        //========= CheckAttandanceStatus 
+
+            builder.addCase(CheckAttandanceStatus.fulfilled, (state, { payload }) => {
+            //console.log("[CheckAttandanceStatus.fulfilled]>>>payload>>>", payload)
+            try {
+                state.attandanceStatusData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: CheckAttandanceStatus.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(CheckAttandanceStatus.rejected, (state, { payload }) => {
+            console.log("[CheckAttandanceStatus.rejected]>>>", payload)
+            try {
+                state.attandanceStatusData = null;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error.message
+                        : (payload.error)) : "Oops! It seems like either your verification code is incorrect";
+            } catch (error) {
+                console.log(
+                    'Error: [CheckAttandanceStatus.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(CheckAttandanceStatus.pending, state => {
+            return state
+        });
         //========= ProfileUpdate
         builder.addCase(ProfileUpdate.fulfilled, (state, { payload }) => {
             // console.log("[ProfileUpdate.fulfilled]>>>payload>>>", payload)
