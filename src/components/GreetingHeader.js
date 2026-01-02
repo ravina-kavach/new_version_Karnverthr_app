@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next'
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    marginTop:responsiveHeight(3)
+    marginTop:Platform.OS === 'android' ? responsiveHeight(3) : 0
   },
   avatar: {
     width: 44,

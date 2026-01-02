@@ -1,11 +1,12 @@
 import React from 'react'
-import { View,Text } from 'react-native'
+import { Text } from 'react-native'
+import { CommonView } from '../../utils/common'
 
 const Profile = () => {
   return (
-    <View>
+    <CommonView>
         <Text>Profle</Text>
-    </View>
+    </CommonView>
   )
 }
 

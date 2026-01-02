@@ -1,5 +1,5 @@
 import React from "react"
-import { TouchableWithoutFeedback, Image, View, Text, StyleSheet } from "react-native"
+import { TouchableWithoutFeedback, View, Text, StyleSheet } from "react-native"
 import { useNavigation } from '@react-navigation/native'
 
 import { commonStyle } from '../utils/common'
@@ -20,7 +20,7 @@ export const RenderBox = ({ image, title, screen }) => {
             <View style={[commonStyle.shodowBox, styles.container]}>
                 {screen !== "attendance" && <Text style={styles.comingText}>Coming soon</Text>}
                 {image}
-                <Text style={styles.titleContainer}>{title}</Text>
+                <Text numberOfLines={1} style={styles.titleContainer}>{title}</Text>
             </View>
         </TouchableWithoutFeedback>
     )
@@ -33,5 +33,5 @@ const styles = StyleSheet.create({
         fontSize: FontSize.Font12,
     },
     container: { flex: 1, height: responsiveHeight(14), width: responsiveWidth(28), borderRadius: 20, alignItems: 'center', justifyContent: 'space-around' },
-    titleContainer: { color: COLOR.Black1, ...GlobalFonts.subtitle, fontSize: FontSize.Font14, textAlign: 'center' }
+    titleContainer: { color: COLOR.Black1, ...GlobalFonts.subtitle, fontSize: FontSize.Font14, textAlign: 'center'}
 })

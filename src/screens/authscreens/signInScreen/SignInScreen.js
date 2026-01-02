@@ -49,7 +49,6 @@ function SignInScreen() {
   } = useSignInScreen();
   return (
     <CommonView>
-      
       {!isShowbiomatric ? (
         <ScrollView contentContainerStyle={styles.container}>
           <Image style={styles.appLogo} source={AppLogo} />

@@ -125,7 +125,7 @@ export default function Expenses() {
 
 
   return (
-    <CommonView edges={['left', 'right', 'bottom']}>
+    <CommonView >
       <View style={styles.flexContainer}>
         <View style={styles.container}>
           <FlatList
