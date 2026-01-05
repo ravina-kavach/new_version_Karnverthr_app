@@ -22,7 +22,7 @@ function Dropdown({ DropdownData = [], Style, Selecteditem, setSelecteditem }) {
                     dropdownOverlayColor={"rgba(0,0,0,0.1)"}
                     renderButton={(selectedItem, isOpened) => {
                         return (
-                            <View style={{ width: 'auto', borderRadius: 10, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 5,  height: 45, paddingTop: 10, paddingHorizontal: 10, backgroundColor:COLOR.White1}}>
+                            <View style={{ width: 'auto', borderRadius: 10,  height: 45, paddingTop: 10, paddingHorizontal: 10, backgroundColor:COLOR.White1}}>
                                 <RowView>
                                     <ColView>
                                         <Label style={{ color: COLOR.Black1, marginRight: 10 }}>{Selecteditem ? Selecteditem.name : DropdownData[0]?.name}</Label>

@@ -41,6 +41,7 @@
         "Expense": "खर्च",
         "employee": "कर्मचारी",
         "Status": "स्थिति",
+        "Upload_Document":"दस्तावेज़ अपलोड करें",
         "Create_Expense": "व्यय बनाएँ",
         "Payment_Mode": "भुगतान विधि",
         "Own_account": "अपना खाता",
@@ -157,6 +158,7 @@
     "Button": {
         "Update_Profile": "प्रोफ़ाइल अपडेट करें",
         "Close": "बंद करना",
+        "Cancel":"रद्द करना",
         "Discard": "खारिज करना",
         "Submit": "जमा करना",
         "Save": "सहेजें",

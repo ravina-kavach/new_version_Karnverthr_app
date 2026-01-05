@@ -56,7 +56,6 @@ export const useExpenses = () => {
             setIsStartdatepickeropen(false)
         };
         const heandleonCamera = async (value) => {
-            console.log("camera==>",value)
             try {
               let hasPermission = false;
           
@@ -152,10 +151,12 @@ export const useExpenses = () => {
           };
           
         const SubmitExpense = () => {
+          console.log("startDate===>",startDate)
             const formvalid = Validator.current.allValid();        
             const formdata = new FormData();
             formdata.append("email", UsersigninData?.email)
             formdata.append("name", Formdata.ExpenseName || "")
+            formdata.append("account_id", "")
             formdata.append("product_id", Catagory?.id)
             formdata.append("total_amount_currency", Formdata.Amount || "")
             formdata.append("attachment", FileObj.base64)
@@ -177,7 +178,12 @@ export const useExpenses = () => {
             } else if (formvalid) {
                 Validator.current.hideMessages();
                 forceUpdate(0);
-                dispatch(CreateExpenses(formdata))
+                  const obj = {
+                  userid:UsersigninData.user_id,
+                  userData:formdata
+                  }
+                  console.log("obj===>",obj)
+                // dispatch(CreateExpenses(obj))
             } else {
                 Validator.current.showMessages();
                 forceUpdate(1);

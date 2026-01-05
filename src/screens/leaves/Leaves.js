@@ -10,7 +10,6 @@ import moment from 'moment'
 const Leaves = () => {
   const { t,
     leavesSummary,
-    submittedLeaves,
     getStatusColor,
     visibleModal,
     handleModal,
@@ -34,9 +33,14 @@ const Leaves = () => {
     setResonText,
     GetLeaveListData,
     isGetLeaveListFetching,
-    onRefresh
+    onRefresh,
+    isPublicLeave,
+    setIsPublicLeave,
+    isOverTimeLeave,
+    setIsOverTimeLeave,
+    isEarnedLeave,
+    setIsEarnedLeave
   } = useLeaves();
-  // console.log("GetLeaveListData===>",GetLeaveListData)
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
       <View style={styles.container}>
@@ -116,6 +120,12 @@ const Leaves = () => {
           resonText={resonText}
           setResonText={setResonText}
           onSave={saveLeave}
+          isPublicLeave={isPublicLeave}
+          setIsPublicLeave={setIsPublicLeave}
+          isOverTimeLeave={isOverTimeLeave}
+          setIsOverTimeLeave={setIsOverTimeLeave}
+          isEarnedLeave={isEarnedLeave}
+          setIsEarnedLeave={setIsEarnedLeave}
         />}
     </CommonView>
   )

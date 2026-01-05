@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { COLOR } from '../theme/theme';
 import Dropdown from './Dropdown';
@@ -13,6 +14,7 @@ import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import { CheckBox, FillCheckbox } from '../assets/icons';
 
 const ApplyLeaveModal = ({
   UsersigninData,
@@ -34,7 +36,13 @@ const ApplyLeaveModal = ({
   setOpenStartDatePicker,
   setOpenEndDatePicker,
   resonText,
-  setResonText
+  setResonText,
+  isPublicLeave,
+  setIsPublicLeave,
+  isOverTimeLeave,
+  setIsOverTimeLeave,
+  isEarnedLeave,
+  setIsEarnedLeave
 }) => {
 
   return (
@@ -53,7 +61,7 @@ const ApplyLeaveModal = ({
           {/* Employee */}
           <Text style={styles.label}>Employee</Text>
           <View style={styles.input}>
-            <Text style={styles.placeholder}>{UsersigninData?.name}</Text>
+            <Text style={styles.placeholder}>{UsersigninData?.full_name}</Text>
           </View>
 
           {/* Leave Type */}
@@ -79,14 +87,14 @@ const ApplyLeaveModal = ({
           <View style={styles.row}>
             <View style={styles.flex}>
               <Text style={styles.label}>Start Date</Text>
-              <TouchableOpacity style={styles.input} onPress={()=>setOpenStartDatePicker(true)}>
+              <TouchableOpacity style={styles.input} onPress={() => setOpenStartDatePicker(true)}>
                 <Text style={styles.placeholder}>{moment(selectStartDate).format("DD/MM/YYYY")}</Text>
               </TouchableOpacity>
             </View>
 
             <View style={styles.flex}>
               <Text style={styles.label}>End Date</Text>
-              <TouchableOpacity style={styles.input} onPress={()=>setOpenEndDatePicker(true)}>
+              <TouchableOpacity style={styles.input} onPress={() => setOpenEndDatePicker(true)}>
                 <Text style={styles.placeholder}>{moment(selectEndDate).format("DD/MM/YYYY")}</Text>
               </TouchableOpacity>
             </View>
@@ -96,11 +104,24 @@ const ApplyLeaveModal = ({
           <TextInput
             style={[styles.input, styles.textArea]}
             value={resonText}
-            onChangeText={(text)=>setResonText(text)}
+            onChangeText={(text) => setResonText(text)}
             placeholder="Add a description..."
             placeholderTextColor="#999"
             multiline
           />
+
+          <TouchableOpacity activeOpacity={1} style={styles.leavetypeContainer} onPress={() => setIsPublicLeave(!isPublicLeave)}>
+            <Image width={12} height={12} source={isPublicLeave ? FillCheckbox : CheckBox} />
+            <Text style={styles.leaveTypeText}>Include Public Holiday</Text>
+          </TouchableOpacity >
+          <TouchableOpacity activeOpacity={1} style={styles.leavetypeContainer} onPress={() => setIsOverTimeLeave(!isOverTimeLeave)}>
+            <Image width={12} height={12} source={isOverTimeLeave ? FillCheckbox : CheckBox} />
+            <Text style={styles.leaveTypeText}>Overtime Deductible</Text>
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={1} style={styles.leavetypeContainer} onPress={() => setIsEarnedLeave(!isEarnedLeave)}>
+            <Image width={12} height={12} source={isEarnedLeave ? FillCheckbox : CheckBox} />
+            <Text style={styles.leaveTypeText}>Eearned Leave</Text>
+          </TouchableOpacity>
 
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
@@ -165,6 +186,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 12,
   },
+  leavetypeContainer: {
+    flexDirection: 'row',
+    paddingTop: 10,
+    alignItems: 'center'
+  },
   title: {
     fontSize: 18,
     fontWeight: '600',
@@ -223,6 +249,11 @@ const styles = StyleSheet.create({
   cancelText: {
     color: '#333',
     fontWeight: '500',
+  },
+  leaveTypeText: {
+    ...GlobalFonts.normalText,
+    fontSize: FontSize.Font14,
+    paddingLeft: 10
   },
   saveBtn: {
     flex: 1,
