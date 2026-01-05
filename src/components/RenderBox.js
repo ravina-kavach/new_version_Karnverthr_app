@@ -11,7 +11,7 @@ export const RenderBox = ({ image, title, screen }) => {
     const Navigation = useNavigation();
     // return (Navigation.navigate(onClick)
     const onPress = () => {
-        if (screen === "attendance" || screen === "leaves") {
+        if (screen === "attendance" || screen === "leaves" || screen === "expenses") {
             return Navigation.navigate(screen)
         }
     }
@@ -32,6 +32,6 @@ const styles = StyleSheet.create({
         ...GlobalFonts.normalText,
         fontSize: FontSize.Font12,
     },
-    container: { flex: 1, height: responsiveHeight(14), width: responsiveWidth(28), borderRadius: 20, alignItems: 'center', justifyContent: 'space-around' },
+    container: { flex: 1, padding:20, borderRadius: 20, alignItems: 'center', justifyContent: 'space-around' },
     titleContainer: { color: COLOR.Black1, ...GlobalFonts.subtitle, fontSize: FontSize.Font14, textAlign: 'center'}
 })

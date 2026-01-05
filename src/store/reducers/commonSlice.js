@@ -177,16 +177,18 @@ export const GetDepartmentType = createAsyncThunk(
 );
 export const CreateLeave = createAsyncThunk(
     'CreateLeave',
-    async (userId, userdata, thunkAPI) =>{ 
+    async (userdata, thunkAPI) => { 
+        console.log("Paload===>",userdata)
         try {
-            let result = await API.post(`api/create/leave-request?user_id=${userId}`, userdata);
+            let result = await API.post(`api/create/leave-request?user_id=${userdata.userId}`, JSON.stringify(userdata.userData));
+            console.log("RES===>",result)
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage };
             } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage)});
             }
         } catch (error) {
-            console.log("Error >>>", error.response?.data || error.message);
+            console.log("Error >>>", error.response?.data || error?.message);
             return thunkAPI.rejectWithValue({
                 error: errorMassage(error.response?.data?.errorMessage || error?.message)
             });
@@ -295,28 +297,23 @@ export const CategoryList = createAsyncThunk(
 );
 export const CreateExpenses = createAsyncThunk(
     'CreateExpenses',
-    async (userdata, thunkAPI) => {
-        console.log('CreateExpenses userdata >>', userdata);
+     async (userdata, thunkAPI) =>{ 
+        console.log("userdata===>",userdata)
         try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: 'hr/expenses',
-                headers: Authheader,
-                data: userdata,
-            });
-            // console.log('CreateExpenses result.data >>', result.data);
+            let result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userdata);
             if (result.data.success) {
-                return result.data;
+                return { ...result.data.data, message: result?.data.successMessage };
             } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage)});
             }
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ CreateExpenses ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Error >>>", error.response?.data || error?.message);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.errorMessage || error?.message)
+            });
         }
     },
+    
 );
 // =====================================================================
 
@@ -332,7 +329,7 @@ export const GetExpenseList = createAsyncThunk(
                 // headers: Authheader,
                 params: userdata,
             });
-            // console.log('GetExpenseList result.data >>', result.data);
+            console.log('GetExpenseList result.data >>', result.data);
             if (result.data.success) {
                 return result.data.records;
             } else {

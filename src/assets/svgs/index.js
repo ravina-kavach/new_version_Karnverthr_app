@@ -25,6 +25,8 @@ import PaySlipIcon from './homeMenu/Payslip.svg';
 import ReportIcon from './homeMenu/Report.svg';
 import ShiftIcon from './homeMenu/ShiftIcon.svg';
 import BackIcon from './BackIcon.svg';
+import PlusIcon from './PlusIcon.svg';
+import ExpensePlaceHolder from './ExpensePlaceHolder.svg'
 
 
 export {
@@ -54,5 +56,7 @@ export {
   PaySlipIcon,
   ReportIcon,
   ShiftIcon,
-  BackIcon
+  BackIcon,
+  PlusIcon,
+  ExpensePlaceHolder
 };
