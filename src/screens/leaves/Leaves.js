@@ -60,6 +60,7 @@ const Leaves = () => {
 
           <View style={styles.card}>
             <FlatList
+              nestedScrollEnabled
               refreshControl={
                 <RefreshControl
                   refreshing={isGetLeaveListFetching}

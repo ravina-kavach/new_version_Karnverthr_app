@@ -29,7 +29,7 @@ const Home = () => {
         />
         <FlatList
           data={MENUDATA}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id.toString()}
           numColumns={3}
           contentContainerStyle={styles.container}
           renderItem={({ item }) => (

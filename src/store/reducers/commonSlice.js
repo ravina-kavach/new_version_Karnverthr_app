@@ -274,7 +274,7 @@ export const ForgotPassword = createAsyncThunk(
 export const CategoryList = createAsyncThunk(
     'CategoryList',
      async (userdata, thunkAPI) => {
-        console.log('CategoryList userdata >>', userdata.id);
+        console.log('CategoryList userdata >>', userdata);
         try {
             let result = await API.get(`employee/expense-category?user_id=${userdata.id}`);
             console.log('CategoryList result.data >>', result);
@@ -296,7 +296,7 @@ export const CategoryList = createAsyncThunk(
 export const CreateExpenses = createAsyncThunk(
     'CreateExpenses',
      async (userdata, thunkAPI) =>{ 
-        // console.log("CreateExpenses Payload===>",userdata.userId,userdata.userData)
+        console.log("CreateExpenses Payload===>",userdata.userId,userdata.userData)
         try {
             let result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userData);
                 // console.log("result===>",result)
@@ -321,23 +321,19 @@ export const GetExpenseList = createAsyncThunk(
     async (userdata, thunkAPI) => {
         console.log('GetExpenseList userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_expense',
-                // headers: Authheader,
-                params: userdata,
-            });
-            console.log('GetExpenseList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.records;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
+            let result = await API.get(`employee/expense?user_id=${userdata.id}`);
+            console.log('GetExpenseList result.data >>', result);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
             }
+                return result.data.data;
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetExpenseList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
         }
     },
 );

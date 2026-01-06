@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   FlatList,
   StyleSheet,
   StatusBar,
+  RefreshControl,
   Dimensions
 } from 'react-native';
 import { Calendar as CalendarView } from 'react-native-big-calendar';
@@ -44,7 +45,7 @@ export default function Calendar() {
   const dispatch = useDispatch();
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [reminderEvents, setRemaiderEvents] = useState([])
-  const { GetCalendarEventsData, UsersigninData } = useSelector(CommonSelector);
+  const { GetCalendarEventsData, isGetCalendarEventsDataFetching, UsersigninData } = useSelector(CommonSelector);
   // Mock Data for the Calendar (Top)
 
   useEffect(() => {
@@ -55,6 +56,13 @@ export default function Calendar() {
       dispatch(GetCalendarEvents(userData))
     }
   }, [IsFocused])
+
+  const onRefresh = useCallback(() => {
+     const userData = {
+        id: UsersigninData.user_id
+      }
+      dispatch(GetCalendarEvents(userData))
+    }, []);
 
   useEffect(() => {
     if (GetCalendarEventsData) {
@@ -260,6 +268,12 @@ export default function Calendar() {
         data={reminderEvents}
         keyExtractor={(item) => item.id}
         renderItem={renderListItem}
+        refreshControl={
+          <RefreshControl
+            refreshing={isGetCalendarEventsDataFetching}
+            onRefresh={onRefresh}
+          />
+        }
         contentContainerStyle={{ paddingBottom: 100, marginTop: 30 }}
         ListHeaderComponent={
           <>
