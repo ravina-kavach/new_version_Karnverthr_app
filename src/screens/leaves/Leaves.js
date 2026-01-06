@@ -58,45 +58,69 @@ const Leaves = () => {
 
           <Text style={styles.sectionTitle}>Submitted Leaves</Text>
 
-          <View style={styles.card}>
-            <FlatList
-              nestedScrollEnabled
-              refreshControl={
-                <RefreshControl
-                  refreshing={isGetLeaveListFetching}
-                  onRefresh={onRefresh}
-                />
-              }
-              data={GetLeaveListData}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.leaveItem}>
-                  <View style={styles.rowBetween}>
-                    <Text style={styles.leaveType}>Leave Type - {item.leave_type_name}</Text>
-                    <View style={[styles.statusDot, { backgroundColor: getStatusColor(item.status) }]} />
-                    <Text style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+
+          <FlatList
+            nestedScrollEnabled
+            refreshControl={
+              <RefreshControl
+                refreshing={isGetLeaveListFetching}
+                onRefresh={onRefresh}
+              />
+            }
+            data={GetLeaveListData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.leaveCard}>
+
+                {/* Header Row */}
+                <View style={styles.headerRow}>
+                  <Text style={styles.leaveType}>
+                    Leave Type - {item.leave_type_name}
+                  </Text>
+
+                  <View style={styles.statusBadge}>
+                    <View
+                      style={[
+                        styles.statusDot,
+                        { backgroundColor: getStatusColor(item.status) },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.statusText,
+                        { color: getStatusColor(item.status) },
+                      ]}
+                    >
                       {item.status}
                     </Text>
                   </View>
-                  <View style={styles.dateRow}>
-                    <View>
-                      <Text style={styles.label}>From-To</Text>
-                      <Text style={styles.value}>{moment(item?.validity?.from).format("DD-MM-YYYY")} - {moment(item?.validity?.to).format("DD-MM-YYYY")}</Text>
-                    </View>
+                </View>
 
-                    <View>
-                      <Text style={styles.label}>Total</Text>
-                      <Text style={styles.days}>{item.duration_days} Day</Text>
-                    </View>
+                {/* Inner Box */}
+                <View style={styles.innerBox}>
+                  <View>
+                    <Text style={styles.label}>From-To</Text>
+                    <Text style={styles.value}>
+                      {moment(item?.validity?.from).format('DD MMM')} -{' '}
+                      {moment(item?.validity?.to).format('DD MMM')}
+                    </Text>
+                  </View>
+
+                  <View style={styles.totalBox}>
+                    <Text style={styles.label}>Total</Text>
+                    <Text style={styles.days}>
+                      {item.duration_days} {item.duration_days > 1 ? 'Days' : 'Day'}
+                    </Text>
                   </View>
                 </View>
-              )}
-            />
-          </View>
+
+              </View>
+            )}
+          />
+
 
         </ScrollView>
-
-        <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={()=>handleOpenModal()}>
+        <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={() => handleOpenModal()}>
           <Text style={styles.fabText}>Apply Leave  +</Text>
         </TouchableOpacity>
       </View>
@@ -137,13 +161,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F7F7F7',
-    padding: 15,
   },
 
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     marginVertical: responsiveHeight(3),
+    marginHorizontal: 20,
     color: COLOR.TextSecondary,
   },
 
@@ -189,14 +213,7 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 80,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    marginHorizontal: 16,
   },
 
   leaveItem: {
@@ -211,23 +228,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  totalBox: {
+    alignItems: 'flex-end',
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    backgroundColor: '#F9FAFB',
+  },
 
   leaveType: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    flex: 1,
+    color: '#1F2937',
   },
 
   statusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 50,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     marginRight: 6,
   },
 
   statusText: {
+    fontSize: 12,
     fontWeight: '600',
   },
+  innerBox: {
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    padding: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#FAFAFA',
+  },
+
 
   dateRow: {
     flexDirection: 'row',
@@ -243,12 +282,14 @@ const styles = StyleSheet.create({
 
   value: {
     fontSize: 15,
+    color: '#111827',
     fontWeight: '600',
   },
 
   days: {
     fontSize: 16,
     fontWeight: '700',
+    color: '#111827',
   },
 
   fab: {
@@ -267,6 +308,23 @@ const styles = StyleSheet.create({
     ...GlobalFonts.subtitle,
     fontWeight: '600',
     fontSize: 15,
+  },
+  leaveCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 14,
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+    elevation: 1,
+    marginHorizontal: 20,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
 });
 

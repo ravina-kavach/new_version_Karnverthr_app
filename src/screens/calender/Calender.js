@@ -175,7 +175,6 @@ export default function Calendar() {
           {item.title || 'Meeting Invitation'}
         </Text>
         <View style={styles.cardBox}>
-
           <View style={{ flex: 1 }}>
             <Text style={styles.cardLabel}>From-To</Text>
 
@@ -187,7 +186,7 @@ export default function Calendar() {
               {timeRange}
             </Text>
             <View style={{ flex: 1 }}>
-              <Text style={[styles.cardLabel, { paddingTop: 5 }]}>Description</Text>
+              <Text style={[styles.cardLabel, { paddingTop: 10 }]}>Description</Text>
               <Text style={styles.cardDate}>
                 {item?.description.replace(/<[^>]+>/g, '')}
               </Text>
@@ -355,11 +354,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     marginHorizontal: 16,
     padding: 16,
-    elevation: 2, // Android shadow
-    shadowColor: '#000', // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
     marginBottom: 20,
   },
 

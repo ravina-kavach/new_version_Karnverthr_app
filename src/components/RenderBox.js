@@ -33,7 +33,6 @@ export const RenderBox = ({ image, title, screen }) => {
     >
       <View
         style={[
-          commonStyle.shodowBox,
           styles.container,
           !isEnabled && styles.disabledCard,
         ]}
@@ -54,6 +53,7 @@ export const RenderBox = ({ image, title, screen }) => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: COLOR.White1,
     padding: 20,
     width:responsiveWidth(28),
     height:responsiveHeight(14),
