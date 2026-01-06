@@ -90,11 +90,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingHorizontal:25,
     marginHorizontal: 10,
-    marginVertical: 16,
-    shadowColor: COLOR.Secondary,
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+    marginVertical: 16
   },
 
   headerRow: {

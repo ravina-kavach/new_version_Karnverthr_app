@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { COLOR } from '../theme/theme';
-import { CommonView } from '../utils/common';
 import { BackIcon } from '../assets/svgs';
 import { useNavigation } from '@react-navigation/native';
 import { responsiveHeight } from '../utils/metrics';
@@ -40,7 +39,7 @@ const styles = StyleSheet.create({
     height: Platform.OS === 'android'? responsiveHeight(10): responsiveHeight(5),
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLOR.GrayBorder,
     paddingTop:Platform.OS ==='android'? 20 : 0,
