@@ -54,7 +54,11 @@ export const useLeaves = () => {
     return COLOR.Red
   };
   const handleModal = () => {
-    setVisibleModel(!visibleModal)
+    setVisibleModel(false)
+  }
+
+   const handleOpenModal = () => {
+    setVisibleModel(true)
   }
 
   const onChangeStartDate = (event, selectedDate) => {
@@ -74,7 +78,7 @@ export const useLeaves = () => {
       "date_from": moment(selectStartDate).format("YYYY-MM-DD"),
       "date_to": moment(selectEndDate).format("YYYY-MM-DD"),
       "reason": resonText
-    };
+    }
     const obj = {
       userid: UsersigninData.user_id,
       userData: data
@@ -97,6 +101,7 @@ export const useLeaves = () => {
     getStatusColor,
     visibleModal,
     handleModal,
+    handleOpenModal,
     saveLeave,
     GetLeavetypeData,
     selectedLeaveType,

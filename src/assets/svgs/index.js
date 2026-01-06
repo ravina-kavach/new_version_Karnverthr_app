@@ -27,8 +27,9 @@ import ShiftIcon from './homeMenu/ShiftIcon.svg';
 import BackIcon from './BackIcon.svg';
 import PlusIcon from './PlusIcon.svg';
 import ExpensePlaceHolder from './ExpensePlaceHolder.svg'
-
-
+import DayCalIcon from './DayCalIcon.svg'
+import MonthCalIcon from './MonthCalIcon.svg'
+import WeekCalIcon from './WeekCalIcon.svg'
 export {
   Check,
   FillCheck,
@@ -58,5 +59,8 @@ export {
   ShiftIcon,
   BackIcon,
   PlusIcon,
-  ExpensePlaceHolder
+  ExpensePlaceHolder,
+  DayCalIcon,
+  MonthCalIcon,
+  WeekCalIcon
 };
