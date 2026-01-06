@@ -74,20 +74,10 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
 
-  badge: {
-    position: "absolute",
-    top: 10,
-    // right: 12,
-    backgroundColor: "#FFE4D6",
-    marginVertical:2,
-    paddingHorizontal: 2,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-
   badgeText: {
     color: COLOR.LightOrange,
     fontSize: FontSize.Font10,
+    bottom:5,
     fontWeight: "600",
   },
 });

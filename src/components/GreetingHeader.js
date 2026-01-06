@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { CommonSelector } from '../store/reducers/commonSlice';
 import { responsiveHeight } from '../utils/metrics';
 
-const GreetingHeader = ({ name = '', avatar,containerStyle }) => {
+const GreetingHeader = ({ name = '', navigateScreen , desc, avatar,containerStyle }) => {
   const { t } = useTranslation();
 const { UsersigninData } = useSelector(CommonSelector);
   const Navigation = useNavigation();
@@ -42,9 +42,9 @@ const { UsersigninData } = useSelector(CommonSelector);
   const initials = getInitials(UsersigninData.full_name || UsersigninData.name);
 
   const navigateProfile = () =>{
-    return Navigation.navigate('profile')
+    const screen = navigateScreen ? navigateScreen : "profile"
+    return Navigation.navigate(screen)
   }
-
   return (
     <TouchableOpacity activeOpacity={1} onPress={()=>{}} style={[styles.container,containerStyle]}>
       {avatar ? (
@@ -55,8 +55,8 @@ const { UsersigninData } = useSelector(CommonSelector);
         </View>
       )}
       <View>
-        <Text style={styles.title}>{t('comman.Hello')} {UsersigninData.name}.</Text>
-        <Text style={styles.subtitle}>{t('comman.Welcome')}</Text>
+        <Text style={styles.title}>{t('comman.Hello')} {UsersigninData.full_name}</Text>
+        <Text style={styles.subtitle}>{ desc? desc : t('comman.Welcome')}</Text>
       </View>
     </TouchableOpacity>
   );
