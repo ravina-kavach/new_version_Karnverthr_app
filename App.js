@@ -14,6 +14,7 @@ const Root = () =>{
   const dispatch = useDispatch();
 
   React.useEffect(() => {
+    
     const init = async () => {
       try {
         await dispatch(UserToken({ user_name: 'john' })).unwrap();

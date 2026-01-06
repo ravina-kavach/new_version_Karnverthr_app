@@ -91,9 +91,9 @@ const TabNavigation = () => {
       <Tab.Screen
         name="leaves"
         component={Leaves}
-        listeners={{
-          tabPress: e => e.preventDefault(),
-        }}
+        // listeners={{
+        //   tabPress: e => e.preventDefault(),
+        // }}
         options={{
           header: () => (
             <CommonHeader
@@ -114,9 +114,9 @@ const TabNavigation = () => {
       <Tab.Screen
         name="calender"
         component={Calender}
-        listeners={{
-          tabPress: e => e.preventDefault(),
-        }}
+        // listeners={{
+        //   tabPress: e => e.preventDefault(),
+        // }}
         options={{
           header: () => (
             <CommonHeader

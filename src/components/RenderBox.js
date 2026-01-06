@@ -4,21 +4,21 @@ import { useNavigation } from '@react-navigation/native'
 
 import { commonStyle } from '../utils/common'
 import { COLOR } from "../theme/theme"
-import { FontSize, responsiveHeight, responsiveWidth } from "../utils/metrics"
+import { FontSize } from "../utils/metrics"
 import { GlobalFonts } from "../theme/typography"
 
 export const RenderBox = ({ image, title, screen }) => {
     const Navigation = useNavigation();
     // return (Navigation.navigate(onClick)
     const onPress = () => {
-        if (screen === "attendance" || screen === "leaves" || screen === "expenses") {
+        if (screen === "attendance" || screen === "leaves" || screen === "expenses" || screen === "calender") {
             return Navigation.navigate(screen)
         }
     }
     return (
         <TouchableWithoutFeedback onPress={() => onPress()} >
             <View style={[commonStyle.shodowBox, styles.container]}>
-                {screen !== "attendance" && <Text style={styles.comingText}>Coming soon</Text>}
+                {(screen !== "attendance" &&  screen !== "leaves" && screen !== "expenses" && screen !== "calender") && <Text style={styles.comingText}>Coming soon</Text>}
                 {image}
                 <Text numberOfLines={1} style={styles.titleContainer}>{title}</Text>
             </View>

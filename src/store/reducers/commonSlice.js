@@ -3,6 +3,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
+import { showMessage } from 'react-native-flash-message';
 
 const errorMassage = (error) => {
     if (error === "Network Error") {
@@ -272,35 +273,33 @@ export const ForgotPassword = createAsyncThunk(
 // =====================================================================
 export const CategoryList = createAsyncThunk(
     'CategoryList',
-    async (userdata, thunkAPI) => {
-        // console.log('CategoryList userdata >>', userdata);
+     async (userdata, thunkAPI) => {
+        console.log('CategoryList userdata >>', userdata.id);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'product/category',
-                // headers: Authheader,
-                // data: userdata,
-            });
-            // console.log('CategoryList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+            let result = await API.get(`employee/expense-category?user_id=${userdata.id}`);
+            console.log('CategoryList result.data >>', result);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
             }
+                return result.data.data;
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ CategoryList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
         }
     },
 );
+
 export const CreateExpenses = createAsyncThunk(
     'CreateExpenses',
      async (userdata, thunkAPI) =>{ 
-        console.log("userdata===>",userdata)
+        // console.log("CreateExpenses Payload===>",userdata.userId,userdata.userData)
         try {
-            let result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userdata);
+            let result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userData);
+                // console.log("result===>",result)
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage };
             } else {
@@ -424,14 +423,8 @@ export const GetCalendarEvents = createAsyncThunk(
     async (userdata, thunkAPI) => {
         console.log('GetCalendarEvents userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_own_calendar',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetCalendarEvents result.data >>', result.data);
+            let result = await API.get(`employee/calendar?user_id=${userdata.id}`);
+            console.log('GetCalendarEvents result.data >>', result);
             if (result.data.success) {
                 return result.data.data;
             } else {
@@ -552,16 +545,10 @@ export const CreateNewMeeting = createAsyncThunk(
     async (userdata, thunkAPI) => {
         console.log('CreateNewMeeting userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: `api/create_calendar_event`,
-                // headers: Authheader,
-                data: userdata,
-            });
-            // console.log('CreateNewMeeting result.data >>', result.data);
+            let result = await API.post(`employee/create/calendar?user_id=${userdata.id}`, userdata.data);
+            console.log('CreateNewMeeting result.data >>', result.data);
             if (result.data.success) {
-                return result.data;
+                return result.data
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
             }
@@ -1538,8 +1525,8 @@ export const CommonSlice = createSlice({
         builder.addCase(GetCalendarEvents.fulfilled, (state, { payload }) => {
             // console.log("[GetCalendarEvents.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetCalendarEventsData = payload.events;
-                state.GetCalendarEventsDataTotalCount = payload.total_events;
+                state.GetCalendarEventsData = payload;
+                state.GetCalendarEventsDataTotalCount = payload.length;
                 state.isGetCalendarEventsData = true;
                 state.isGetCalendarEventsDataFetching = false;
                 state.isError = false;

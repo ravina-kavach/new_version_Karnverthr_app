@@ -75,14 +75,14 @@ const ApplyLeaveModal = ({
           </View>
 
           {/* Department */}
-          <Text style={styles.label}>Department Name</Text>
+          {/* <Text style={styles.label}>Department Name</Text>
           <View style={styles.dropdownBox}>
             <Dropdown
               DropdownData={departmentTypeData}
               setSelecteditem={setSelectedDeptType}
               Selecteditem={selectedDeptType}
             />
-          </View>
+          </View> */}
 
           <View style={styles.row}>
             <View style={styles.flex}>
@@ -110,7 +110,7 @@ const ApplyLeaveModal = ({
             multiline
           />
 
-          <TouchableOpacity activeOpacity={1} style={styles.leavetypeContainer} onPress={() => setIsPublicLeave(!isPublicLeave)}>
+          {/* <TouchableOpacity activeOpacity={1} style={styles.leavetypeContainer} onPress={() => setIsPublicLeave(!isPublicLeave)}>
             <Image width={12} height={12} source={isPublicLeave ? FillCheckbox : CheckBox} />
             <Text style={styles.leaveTypeText}>Include Public Holiday</Text>
           </TouchableOpacity >
@@ -121,7 +121,7 @@ const ApplyLeaveModal = ({
           <TouchableOpacity activeOpacity={1} style={styles.leavetypeContainer} onPress={() => setIsEarnedLeave(!isEarnedLeave)}>
             <Image width={12} height={12} source={isEarnedLeave ? FillCheckbox : CheckBox} />
             <Text style={styles.leaveTypeText}>Eearned Leave</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>

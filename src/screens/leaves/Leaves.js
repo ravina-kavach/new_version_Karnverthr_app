@@ -39,13 +39,14 @@ const Leaves = () => {
     isOverTimeLeave,
     setIsOverTimeLeave,
     isEarnedLeave,
-    setIsEarnedLeave
+    setIsEarnedLeave,
+    handleOpenModal
   } = useLeaves();
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
       <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.summaryCard}>
+        <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
+          {/* <View style={styles.summaryCard}>
             {leavesSummary.map((item, index) => (
               <View key={index} style={styles.leaveBox}>
                 <Text style={styles.leaveTitle}>{item.title}</Text>
@@ -53,7 +54,7 @@ const Leaves = () => {
                 <Text style={styles.leftText}>Left: {item.left}</Text>
               </View>
             ))}
-          </View>
+          </View> */}
 
           <Text style={styles.sectionTitle}>Submitted Leaves</Text>
 
@@ -94,7 +95,7 @@ const Leaves = () => {
 
         </ScrollView>
 
-        <TouchableOpacity style={styles.fab} onPress={handleModal}>
+        <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={()=>handleOpenModal()}>
           <Text style={styles.fabText}>Apply Leave  +</Text>
         </TouchableOpacity>
       </View>

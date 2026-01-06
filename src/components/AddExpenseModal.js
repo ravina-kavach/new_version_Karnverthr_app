@@ -33,12 +33,10 @@ export const AddExpenseModal = ({
     setFormdata,
     selectedId,
     setSelectedId,
+    selectCategoryType,     
+    setSelectedCategoryType,
     t,
 }) => {
-    //   const onChangeDate = (event, selectedDate) => {
-    //     setShowDate(false);
-    //     if (selectedDate) setStartDate(selectedDate);
-    //   };
 
     return (
         <Modal animationType="fade" transparent visible={visible}>
@@ -114,6 +112,9 @@ export const AddExpenseModal = ({
                             <Text style={styles.label}>{t('Expenses.Catagory')}</Text>
                             <Dropdown
                                 DropdownData={CategoryListData}
+                                setSelecteditem={setSelectedCategoryType}
+                                Selecteditem={selectCategoryType}
+
                             />
 
                             <Text style={styles.label}>{t('Expenses.Expense_Date')}</Text>

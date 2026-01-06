@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: COLOR.GrayBorder,
+    paddingTop:Platform.OS ==='android'? 20 : 0,
     paddingBottom:Platform.OS ==='android'? 0 : 20
   },
   left: {

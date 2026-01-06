@@ -23,7 +23,6 @@ export default function Expenses() {
     t,
     IsStartdatepickeropen,
     startDate,
-    Catagory,
     selectedId,
     FileObj,
     Formdata,
@@ -41,12 +40,13 @@ export default function Expenses() {
     isGetExpenseListFetching,
     setSelectedId,
     Validator,
-    setCatagory,
     setIsExoensemodal,
     heandleonCamera,
     setIsStartdatepickeropen,
     setPreviewVisible,
-    setFormdata
+    setFormdata,
+    selectCategoryType,
+    setSelectedCategoryType
   } = useExpenses()
 
   // ==========================
@@ -173,6 +173,8 @@ export default function Expenses() {
           setFormdata={setFormdata}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
+          selectCategoryType ={selectCategoryType}
+          setSelectedCategoryType={setSelectedCategoryType}
         />
         {/* Full-Screen Preview Modal */}
         {/* <Modal visible={PreviewVisible} transparent={true}>
