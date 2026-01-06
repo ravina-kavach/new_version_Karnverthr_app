@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import moment from 'moment';
+import { GlobalFonts } from '../theme/typography';
+import { COLOR } from '../theme/theme';
 
 const stripHtml = (html) =>
   html?.replace(/<\/?[^>]+(>|$)/g, '');
@@ -84,8 +86,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#555',
+    color: COLOR.Black1,
     marginBottom: 10,
+    ...GlobalFonts.subtitle,
   },
   row: {
     flexDirection: 'row',
@@ -113,6 +116,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   bold: {
+    // width:'100%',
     fontSize: 13,
     fontWeight: '600',
     color: '#222',

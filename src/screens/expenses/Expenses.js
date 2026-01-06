@@ -14,7 +14,6 @@ import { useExpenses } from './ExpensesController'
 import NodataFound from '../../components/NodataFound'
 import { CommonView } from '../../utils/common'
 import { PlusIcon } from '../../assets/svgs';
-import { ArrowDown } from '../../assets/icons';
 import AddExpenseModal from '../../components/AddExpenseModal'
 
 export default function Expenses() {
