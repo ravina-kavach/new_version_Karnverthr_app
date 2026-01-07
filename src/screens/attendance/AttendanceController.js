@@ -14,7 +14,6 @@ export const useAttendance = () => {
   const currentMonth = moment().month() + 1;
   const months = React.useMemo(() => {
     return [
-      { id: '', name: t("Attendance.Select_Month") },
       { id: '1', name: t("Attendance.January") },
       { id: '2', name: t("Attendance.February") },
       { id: '3', name: t("Attendance.March") },
@@ -33,7 +32,7 @@ export const useAttendance = () => {
     const startYear = currentYear;
     const endYear = 2007;
 
-    const years = [{ id: '', name: t("Attendance.Select_Year") }];
+    const years = [];
 
     let id = 1;
     for (let year = startYear; year >= endYear; year--) {

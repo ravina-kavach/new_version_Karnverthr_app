@@ -111,35 +111,49 @@ export const useHome = () => {
   }, [isFocused]);
 
   const syncAttendance = async () => {
-    try {
-      const cached = await Service.GetAsyncAttendanceData();
-      if (cached) {
-        setAttendance(cached);
-      }
-
-      const res = await dispatch(
-        CheckAttandanceStatus({ email: UsersigninData.email })
-      ).unwrap();
-
-      if (res?.status === "CHECK_IN") {
-        const data = {
-          check_in_time: res.action_time,
-          check_in_image: res.action_image,
-          action: "CHECK_IN",
-        };
-
-        setAttendance(data);
-        await Service.setAsyncAttendanceData(data);
-        BackgroundHandler.startTracking();
-      } else {
-        setAttendance(null);
-        await Service.removeAsyncAttendanceData();
-        BackgroundHandler.stopTracking();
-      }
-    } catch (err) {
-      console.log("Attendance sync failed", err);
+  try {
+    // 1️⃣ Load cached attendance FIRST
+    const cached = await Service.GetAsyncAttendanceData();
+    if (cached) {
+      setAttendance(cached);
     }
-  };
+
+    // 2️⃣ Fetch latest status from API
+    const res = await dispatch(
+      CheckAttandanceStatus({ email: UsersigninData.email })
+    ).unwrap();
+
+    // 3️⃣ API confirms CHECK-IN
+    if (res?.status === "CHECK_IN") {
+      const data = {
+        check_in_time: res.action_time,
+        check_in_image: res.action_image,
+        action: "CHECK_IN",
+      };
+
+      setAttendance(data);
+      await Service.setAsyncAttendanceData(data);
+      BackgroundHandler.startTracking();
+      return;
+    }
+
+    // 4️⃣ API confirms CHECK-OUT
+    if (res?.status === "CHECK_OUT") {
+      setAttendance(null);
+      await Service.removeAsyncAttendanceData();
+      BackgroundHandler.stopTracking();
+      return;
+    }
+
+    // 5️⃣ Fallback: KEEP cached data (DO NOTHING)
+    console.log("Attendance status unchanged");
+
+  } catch (err) {
+    console.log("Attendance sync failed", err);
+    // ❗ Do NOT clear attendance on error
+  }
+};
+
 
   useEffect(() => {
     if (isFocused && UsersigninData?.email) {

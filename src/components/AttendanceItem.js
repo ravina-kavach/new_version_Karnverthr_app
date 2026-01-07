@@ -4,30 +4,23 @@ import dayjs from "dayjs";
 import { COLOR } from "../theme/theme";
 import { RowView } from "../utils/common";
 import { AttendancIcon } from "../assets/icons/index.js";
-import utc from 'dayjs/plugin/utc';
-
-dayjs.extend(utc);
+;
 const AttendanceItem = ({ item, t, getDuration }) => {
   const dateTitle = item?.check_in
-    ? dayjs
-      .utc(item.check_in, 'YYYY-MM-DD HH:mm:ss')
-      .local()
+  ? dayjs(item.check_in, 'YYYY-MM-DD HH:mm:ss')
       .format('DD MMMM YYYY')
-    : '';
+  : '';
 
-  const checkIn = item?.check_in
-    ? dayjs
-      .utc(item.check_in, 'YYYY-MM-DD HH:mm:ss')
-      .local()
+const checkIn = item?.check_in
+  ? dayjs(item.check_in, 'YYYY-MM-DD HH:mm:ss')
       .format('hh:mm A')
-    : '--';
+  : '--';
 
-  const checkOut = item?.check_out
-    ? dayjs
-      .utc(item.check_out, 'YYYY-MM-DD HH:mm:ss')
-      .local()
+const checkOut = item?.check_out
+  ? dayjs(item.check_out, 'YYYY-MM-DD HH:mm:ss')
       .format('hh:mm A')
-    : '--';
+  : '--';
+
 
 
 
