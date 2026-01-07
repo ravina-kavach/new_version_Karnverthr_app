@@ -1,230 +1,249 @@
-import React, { useCallback, useEffect } from 'react';
-import { BackHandler } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { CommonSelector, UserAttendance,CheckAttandanceStatus, updateState } from '../../store/reducers/commonSlice';
-import { useFocusEffect } from '@react-navigation/native';
-import { permission } from '../../utils/permission';
-import { showMessage } from 'react-native-flash-message';
-import { useTranslation } from 'react-i18next';
-import Service from '../../utils/service';
+import React, { useCallback, useEffect, useState } from "react";
+import { BackHandler } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import {
-    ApprovelsIcon,
-    AttendanceIcon,
-    CalendarIcon,
-    DeclarationIcon,
-    ExpenseIcon,
-    LeaveMenuIcon,
-    PaySlipIcon,
-    ReportIcon,
-    ShiftIcon,
-} from '../../assets/svgs'
-import BackgroundGeolocation from 'react-native-background-geolocation';
-import BackgroundHandler from '../../utils/BackgroundHandler';
-import { useIsFocused } from '@react-navigation/native';
+  CommonSelector,
+  UserAttendance,
+  CheckAttandanceStatus,
+  updateState,
+} from "../../store/reducers/commonSlice";
+import {
+  useFocusEffect,
+  useIsFocused,
+} from "@react-navigation/native";
+import { permission } from "../../utils/permission";
+import { showMessage } from "react-native-flash-message";
+import { useTranslation } from "react-i18next";
+import Service from "../../utils/service";
+import BackgroundGeolocation from "react-native-background-geolocation";
+import BackgroundHandler from "../../utils/BackgroundHandler";
+
+import {
+  ApprovelsIcon,
+  AttendanceIcon,
+  CalendarIcon,
+  DeclarationIcon,
+  ExpenseIcon,
+  LeaveMenuIcon,
+  PaySlipIcon,
+  ReportIcon,
+  ShiftIcon,
+} from "../../assets/svgs";
+
 export const useHome = () => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const IsFocused = useIsFocused();
-    const [localAttendanceData, setLocalAttendanceData] = React.useState({});
-    const [latestLocation, setLatestLocation] = React.useState({ latitude: 0, longitude: 0 });
-    const { UsersigninData, isError, errorMessage, UserAttendanceData, isAttendanceFetching } = useSelector(CommonSelector);
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const isFocused = useIsFocused();
 
-    const MENUDATA = [
-        { id: '1', image: <AttendanceIcon/>, title: t('Home.Attendance'), screen: 'attendance' },
-        { id: '2', image: <ExpenseIcon/>, title: t('Home.Expense'), screen: 'expenses' },
-        { id: '3', image: <LeaveMenuIcon/>, title: t('Home.Leave'), screen: 'leaves' },
-        { id: '4', image: <CalendarIcon/>, title: t('Home.Calendar'), screen: 'calender' },
-        { id: '5', image: <ReportIcon/>, title: t('Home.Reports'), screen: 'reports' },
-        { id: '6', image: <PaySlipIcon/>, title: t('Home.PaySlip'), screen: 'payslip' },
-        { id: '7', image: <DeclarationIcon/>, title: t('Home.Announcement'), screen: 'announcement' },
-        { id: '8', image: <ShiftIcon/>, title: t('Home.Shift_Timings'), screen: 'shiftTiming' },
-        { id: '9', image: <ApprovelsIcon/>, title: t('Home.Approvals'), screen: 'approvals' },
-    ];
+  const {
+    UsersigninData,
+    isError,
+    errorMessage,
+    UserAttendanceData,
+    isAttendanceFetching,
+  } = useSelector(CommonSelector);
 
-    useFocusEffect(
 
-        useCallback(() => {
-            const backHandler = BackHandler.addEventListener("hardwareBackPress", () => true);
-            return () => backHandler.remove();
-        }, [])
-    );
+  const [attendance, setAttendance] = useState(null);
+  const [location, setLocation] = useState(null);
 
-    useEffect(() => {
-        if (IsFocused) {
-            const initLocation = async () => {
-                try {
-                    const state = await BackgroundGeolocation.ready({
-                        desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-                        distanceFilter: 10,
-                        stopOnTerminate: false,
-                        startOnBoot: true,
-                    });
 
-                    const location = await BackgroundGeolocation.getCurrentPosition({
-                        persist: false,
-                        samples: 1,
-                        maximumAge: 0,
-                        desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-                        timeout: 30,
-                    });
+  const MENUDATA = [
+    { id: "1", image: <AttendanceIcon />, title: t("Home.Attendance"), screen: "attendance" },
+    { id: "2", image: <ExpenseIcon />, title: t("Home.Expense"), screen: "expenses" },
+    { id: "3", image: <LeaveMenuIcon />, title: t("Home.Leave"), screen: "leaves" },
+    { id: "4", image: <CalendarIcon />, title: t("Home.Calendar"), screen: "calender" },
+    { id: "5", image: <ReportIcon />, title: t("Home.Reports"), screen: "reports" },
+    { id: "6", image: <PaySlipIcon />, title: t("Home.PaySlip"), screen: "payslip" },
+    { id: "7", image: <DeclarationIcon />, title: t("Home.Announcement"), screen: "announcement" },
+    { id: "8", image: <ShiftIcon />, title: t("Home.Shift_Timings"), screen: "shiftTiming" },
+    { id: "9", image: <ApprovelsIcon />, title: t("Home.Approvals"), screen: "approvals" },
+  ];
 
-                    setLatestLocation({
-                        latitude: location.coords.latitude,
-                        longitude: location.coords.longitude,
-                    });
 
-                    // Subscribe to updates
-                    const subscription = BackgroundGeolocation.onLocation(
-                        loc => {
-                            setLatestLocation({
-                                latitude: loc.coords.latitude,
-                                longitude: loc.coords.longitude,
-                            });
-                        },
-                        error => console.log('Location error:', error)
-                    );
+  useFocusEffect(
+    useCallback(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => true
+      );
+      return () => backHandler.remove();
+    }, [])
+  );
 
-                    return () => subscription.remove();
-                } catch (err) {
-                    console.log('Error initializing location:', err.message);
-                }
-            };
+  useEffect(() => {
+    if (!isFocused) return;
 
-            initLocation();
-        }
+    const initLocation = async () => {
+      try {
+        await BackgroundGeolocation.ready({
+          desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+          distanceFilter: 10,
+          stopOnTerminate: false,
+          startOnBoot: true,
+        });
+
+        const pos = await BackgroundGeolocation.getCurrentPosition({
+          samples: 1,
+          persist: false,
+          timeout: 30,
+        });
+
+        setLocation({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+
+        const subscription = BackgroundGeolocation.onLocation(loc =>
+          setLocation({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+          })
+        );
+
+        return () => subscription.remove();
+      } catch (err) {
+        console.log("Location error:", err?.message);
+      }
+    };
+
+    initLocation();
+  }, [isFocused]);
+
+  const syncAttendance = async () => {
+    try {
+      const cached = await Service.GetAsyncAttendanceData();
+      if (cached) {
+        setAttendance(cached);
+      }
+
+      const res = await dispatch(
+        CheckAttandanceStatus({ email: UsersigninData.email })
+      ).unwrap();
+
+      if (res?.status === "CHECK_IN") {
+        const data = {
+          check_in_time: res.action_time,
+          check_in_image: res.action_image,
+          action: "CHECK_IN",
+        };
+
+        setAttendance(data);
+        await Service.setAsyncAttendanceData(data);
         BackgroundHandler.startTracking();
-    }, [IsFocused]);
+      } else {
+        setAttendance(null);
+        await Service.removeAsyncAttendanceData();
+        BackgroundHandler.stopTracking();
+      }
+    } catch (err) {
+      console.log("Attendance sync failed", err);
+    }
+  };
 
-const getCheckInData = async () => {
-  const checkindata = await Service.GetAsyncAttendanceData();
-  if (checkindata) {
-    setLocalAttendanceData(checkindata);
-  } else {
-    const data = {
+  useEffect(() => {
+    if (isFocused && UsersigninData?.email) {
+      syncAttendance();
+    }
+  }, [isFocused, UsersigninData?.email]);
+
+  const handleAttendance = async (type, imageBase64) => {
+    if (!location || !UsersigninData?.email) return;
+
+    const timeNow = new Date().toISOString();
+
+    const payload = {
       email: UsersigninData.email,
+      Image: imageBase64,
+      Latitude: String(location.latitude),
+      Longitude: String(location.longitude),
+      action: type,
+      ...(type === "CHECK_IN"
+        ? { check_in: timeNow }
+        : { check_out: timeNow }),
     };
 
     try {
-      const result = await dispatch(CheckAttandanceStatus(data)).unwrap();
-  
-      if (result?.status === "CheckedIn") {
-        const obj = {
-          check_in_image: result.action_image,
-          check_in_time: result.action_time,
-          action: result.status === "CHECK_IN",
+      await dispatch(UserAttendance(payload)).unwrap();
+
+      if (type === "CHECK_IN") {
+        const data = {
+          check_in_time: timeNow,
+          check_in_image: imageBase64,
+          action: "CHECK_IN",
         };
 
-        setLocalAttendanceData(obj);
-        await Service.setAsyncAttendanceData(obj);
-      }else{
-        setLocalAttendanceData({});
-        await Service.removeAsyncAttendanceData()
+        setAttendance(data);
+        await Service.setAsyncAttendanceData(data);
+        BackgroundHandler.startTracking();
+      } else {
+        setAttendance(null);
+        await Service.removeAsyncAttendanceData();
+        BackgroundHandler.stopTracking();
       }
-    } catch (error) {
-      console.error("Attendance check failed", error);
+
+      showMessage({
+        icon: "success",
+        message:
+          type === "CHECK_IN"
+            ? t("messages.Check_in")
+            : t("messages.Check_out"),
+        type: "success",
+        duration: 2000,
+      });
+    } catch (err) {
+      showMessage({
+        icon: "danger",
+        message: "Attendance failed. Please try again.",
+        type: "danger",
+        duration: 2000,
+      });
     }
-  }
-};
+  };
 
 
-    useEffect(() => {
-        if(IsFocused){
-            getCheckInData();
-        }
-    }, [IsFocused]);
-
-    useEffect(() => {
-        if (isError) {
-            showMessage({
-                icon: "danger",
-                message: errorMessage,
-                type: "danger",
-                duration: 2000
-            });
-            dispatch(updateState({ isError: false, errorMessage: "" }));
-        }
-    }, [isError]);
-
-    useEffect(() => {
-        if (UserAttendanceData?.action) {
-            if (UserAttendanceData.action === "CHECK_IN") {
-                showMessage({ icon: "success", message: t('messages.Check_in'), type: "success" });
-            } else {
-                showMessage({ icon: "success", message: t('messages.Check_out'), type: "success" });
-            }
-        }
-    }, [UserAttendanceData]);
-
-    const handleAttendance = async (type, imageBase64) => {
-        if (UsersigninData && latestLocation.longitude && latestLocation.latitude) {
-            const attendanceData = await Service.GetAsyncAttendanceData();
-            const timeNow = new Date().toISOString();
-            let payload = {
-                Image: imageBase64,
-                email: UsersigninData.email,
-                Longitude: String(latestLocation.longitude),
-                Latitude: String(latestLocation.latitude),
-            };
-
-            if (type === "CHECK_IN") {
-
-                payload = { ...payload, check_in: timeNow, action: "CHECK_IN" };
-                setLocalAttendanceData({
-                    check_in_image: imageBase64,
-                    check_in_time: timeNow,
-                    action: "CHECK_IN",
-                })
-            } else {
-                payload = {
-                    ...payload,
-                    check_out: timeNow,
-                    check_in: attendanceData?.check_in_time || "",
-                    action: "CHECK_OUT",
-                };
-            }
-            try {
-                const res = await dispatch(UserAttendance(payload)).unwrap();
-                if (type === "CHECK_IN") {
-
-                    await Service.setAsyncAttendanceData({
-                        ...attendanceData,
-                        check_in_image: imageBase64,
-                        check_in_time: timeNow,
-                        action: "CHECK_IN",
-                    });
-
-                } else {
-                    await Service.removeAsyncAttendanceData();
-                    BackgroundHandler.stopTracking();
-                }
-
-            } catch (err) {
-                if (type === "CHECK_IN") {
-                    setLocalAttendanceData({})
-                } else {
-                    await Service.setAsyncAttendanceData({
-                        ...attendanceData,
-                    });
-                }
-            }
-            getCheckInData();
-        }
-    };
-
-    const takeImage = async (value) => {
-        const result = await permission.heandleOnCamera();
-        if (result.success && result.image) {
-            handleAttendance(value, result.image.base64);
-        }
-    };
+  const takeImage = async type => {
+    const result = await permission.heandleOnCamera();
+    if (result.success && result.image) {
+      handleAttendance(type, result.image.base64);
+    }
+  };
 
 
-    return {
-        MENUDATA,
-        UsersigninData,
-        takeImage,
-        isAttendanceFetching,
-        localAttendanceData,
-        latestLocation,
-    };
+  useEffect(() => {
+    if (isError) {
+      showMessage({
+        icon: "danger",
+        message: errorMessage,
+        type: "danger",
+        duration: 2000,
+      });
+      dispatch(updateState({ isError: false, errorMessage: "" }));
+    }
+  }, [isError]);
+
+
+  useEffect(() => {
+    if (UserAttendanceData?.action) {
+      showMessage({
+        icon: "success",
+        message:
+          UserAttendanceData.action === "CHECK_IN"
+            ? t("messages.Check_in")
+            : t("messages.Check_out"),
+        type: "success",
+        duration: 2000,
+      });
+    }
+  }, [UserAttendanceData]);
+
+
+  return {
+    MENUDATA,
+    UsersigninData,
+    attendance,
+    isAttendanceFetching,
+    takeImage,
+    location,
+  };
 };
