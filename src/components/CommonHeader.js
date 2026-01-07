@@ -36,14 +36,13 @@ export default CommonHeader;
 
 const styles = StyleSheet.create({
   header: {
-    height: Platform.OS === 'android'? responsiveHeight(10): responsiveHeight(5),
+    height: Platform.OS === 'android'? responsiveHeight(10): responsiveHeight(14),
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLOR.GrayBorder,
-    paddingTop:Platform.OS ==='android'? 20 : 0,
-    paddingBottom:Platform.OS ==='android'? 0 : 20
+    paddingTop:Platform.OS ==='android'? 20 : 30,
   },
   left: {
     width: 40,

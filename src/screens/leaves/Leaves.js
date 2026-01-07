@@ -314,10 +314,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.5,
-    shadowRadius: 15,
-    elevation: 1,
     marginHorizontal: 20,
   },
   headerRow: {

@@ -8,19 +8,11 @@ import {GlobalFonts} from '../theme/typography'
 
 export const CommonView = props => {
   return (
-    <>
-    {Platform.OS === 'ios'?
-    <SafeAreaView style={GlobalStyle.flexContainer} edges={ props.edges?props.edges:['top']}>
-      <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
-      {props.children}
-    </SafeAreaView>
-    :
-    <View style={GlobalStyle.flexContainer}>
+    <View style={[GlobalStyle.flexContainer]}>
       <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
       {props.children}
     </View>
-    }
-    </>
+  
   );
 };
 

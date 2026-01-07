@@ -17,7 +17,7 @@ const ProfileItem = ({ title, subtitle }) => (
       <Text style={styles.rowTitle}>{title}</Text>
       {subtitle && <Text style={styles.rowSub}>{subtitle}</Text>}
     </View>
-    <Text style={styles.arrow}>›</Text>
+    {/* <Text style={styles.arrow}>›</Text> */}
   </View>
 );
 
@@ -39,19 +39,19 @@ export default function Profile() {
         </View>
 
         {/* Professional Info */}
-        <Text style={styles.section}>Professional Information</Text>
+        {/* <Text style={styles.section}>Professional Information</Text>
         <View style={styles.card}>
           <ProfileItem title="Current Role" subtitle="Developer" />
           <ProfileItem title="Department" subtitle="Creative Administrative" />
           <ProfileItem title="Reporting Manager" subtitle="David" />
-        </View>
+        </View> */}
 
         {/* Employment */}
-        <Text style={styles.section}>Employment History</Text>
+        {/* <Text style={styles.section}>Employment History</Text>
         <View style={styles.card}>
           <ProfileItem title="Joining Date" subtitle="12/10/2020" />
           <ProfileItem title="Job tenure" subtitle="3 Years" />
-        </View>
+        </View> */}
       </ScrollView>
     </CommonView>
   );
