@@ -47,8 +47,6 @@ export default function Expenses() {
 
   // ==========================
 
-  console.log("GetExpenseListData==>",GetExpenseListData)
-
   const renderItem = ({ item }) => {
     return (
       <View style={styles.card}>

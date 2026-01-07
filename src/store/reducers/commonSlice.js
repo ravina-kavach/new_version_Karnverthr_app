@@ -292,9 +292,9 @@ export const CategoryList = createAsyncThunk(
 
 export const AccountList = createAsyncThunk(
     'AccountList',
-     async (thunkAPI) => {
+     async (userdata,thunkAPI) => {
         try {
-            let result = await API.get(`employee/expense-account`);
+            let result = await API.get(`employee/expense-account?user_id=${userdata.id}`);
             // console.log('AccountList result.data >>', result);
             if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
@@ -445,7 +445,7 @@ export const ExpenseApprove = createAsyncThunk(
 export const GetCalendarEvents = createAsyncThunk(
     'GetCalendarEvents',
     async (userdata, thunkAPI) => {
-        console.log('GetCalendarEvents userdata >>', userdata);
+        // console.log('GetCalendarEvents userdata >>', userdata);
         try {
             let result = await API.get(`employee/calendar?user_id=${userdata.id}`);
             console.log('GetCalendarEvents result.data >>', result);

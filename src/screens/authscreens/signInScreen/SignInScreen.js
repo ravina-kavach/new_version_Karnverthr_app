@@ -12,7 +12,7 @@ import {
   Image,
 } from 'react-native';
 import { useSignInScreen } from './SignInScreenController.js'
-import { commonStyle, CommonView, H4,H3, Valide, Label } from '../../../utils/common';
+import { commonStyle, CommonView, H4, H3, Valide, Label } from '../../../utils/common';
 import { CheckBox, FignerScan, Sms, Emp, Phone, Eye, EyeSlash, FillCheckbox, FaceIdIcon, BiometricIcon } from '../../../assets/icons/index.js';
 import CommonButton from '../../../components/CommonButton';
 import { COLOR } from '../../../theme/theme';
@@ -53,8 +53,8 @@ function SignInScreen() {
         <ScrollView contentContainerStyle={styles.container}>
           <Image style={styles.appLogo} source={AppLogo} />
           <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
-          <View style={[styles.inputContainer,{borderColor:Formdata.email && Validator.current.errorMessages?.email?COLOR.Red:COLOR.GrayBorder}]}>
-            <Image source={Sms} style={styles.icon}/>
+          <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
+            <Image source={Sms} style={styles.icon} />
             <TextInput
               placeholder={t("placeholders.Enter_your_registered_email")}
               placeholderTextColor={COLOR.TextPlaceholder}
@@ -70,7 +70,7 @@ function SignInScreen() {
             {Validator.current.message('email', Formdata.email, 'required')}
           </Valide>
 
-          <View style={[styles.inputContainer,{borderColor:Formdata.password && Validator.current.errorMessages.password?COLOR.Red:COLOR.GrayBorder}]}>
+          <View style={[styles.inputContainer, { borderColor: Formdata.password && Validator.current.errorMessages.password ? COLOR.Red : COLOR.GrayBorder }]}>
             <Image source={FignerScan} style={styles.icon} />
             <TextInput
               placeholder={t("placeholders.Enter_your_password")}
@@ -98,13 +98,13 @@ function SignInScreen() {
           <View style={styles.rowContainer}>
             <View style={styles.row}>
               <TouchableOpacity onPress={() => setisChecked(!isChecked)}>
-                <Image  source={isChecked ? FillCheckbox : CheckBox} />
+                <Image source={isChecked ? FillCheckbox : CheckBox} />
               </TouchableOpacity>
               <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
             </View>
             <TouchableOpacity style={styles.colmnCotainer} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
               <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
-              <View style={styles.lineContainer}/>
+              <View style={styles.lineContainer} />
             </TouchableOpacity>
           </View>
 
@@ -128,7 +128,7 @@ function SignInScreen() {
             <EmailVerificationModal
               visible={isVisibleVerifiedModal}
               onSubmit={handleVerificationModal}
-              isVerifiedFetching ={isVerifiedFetching}
+              isVerifiedFetching={isVerifiedFetching}
             />}
           {IsReSetmodalvisible &&
             <ForgotPasswordModal
@@ -144,25 +144,25 @@ function SignInScreen() {
               <TouchableWithoutFeedback
                 onPress={() => BiometricLogin()}
                 disabled={isSigninFetching}>
-            
-                  <View style={styles.rowsContainer}>
-                    <View style={{paddingRight:20}}>
-                      <Label>{t('Button.LoginWithFigerprint')}</Label>
-                    </View>
-                    <View style={{ flex: 0 }}>
-                      {isSigninFetching ? (
-                        <ActivityIndicator
-                          animating={isSigninFetching}
-                          color={COLOR.Secondary}
-                          size={30}
-                        />
-                      ) : (
-                        <Image
-                          style={{ marginEnd: 8, marginTop: 4, tintColor:COLOR.Secondary }}
-                          source={BiometricIcon}
-                        />
-                      )}
-                    </View>
+
+                <View style={styles.rowsContainer}>
+                  <View style={{ paddingRight: 20 }}>
+                    <Label>{t('Button.LoginWithFigerprint')}</Label>
+                  </View>
+                  <View style={{ flex: 0 }}>
+                    {isSigninFetching ? (
+                      <ActivityIndicator
+                        animating={isSigninFetching}
+                        color={COLOR.Secondary}
+                        size={30}
+                      />
+                    ) : (
+                      <Image
+                        style={{ marginEnd: 8, marginTop: 4, tintColor: COLOR.Secondary }}
+                        source={BiometricIcon}
+                      />
+                    )}
+                  </View>
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -172,24 +172,24 @@ function SignInScreen() {
               <TouchableWithoutFeedback
                 onPress={() => FacelockLogin()}
                 disabled={isSigninFetching}>
-                  <View style={styles.rowsContainer}>
-                    <View style={{paddingRight:20}}>
-                      <Label>{t('Button.LoginWithFaceId')}</Label>
-                    </View>
-                    <View style={{ flex: 0 }}>
-                      {isSigninFetching ? (
-                        <ActivityIndicator
-                          animating={isSigninFetching}
-                          color={COLOR.Primary1}
-                          size={30}
-                        />
-                      ) : (
-                        <Image
-                          style={{ marginEnd: 8, marginTop: 4, tintColor:COLOR.Secondary }}
-                          source={FaceIdIcon}
-                        />
-                      )}
-                    </View>
+                <View style={styles.rowsContainer}>
+                  <View style={{ paddingRight: 20 }}>
+                    <Label>{t('Button.LoginWithFaceId')}</Label>
+                  </View>
+                  <View style={{ flex: 0 }}>
+                    {isSigninFetching ? (
+                      <ActivityIndicator
+                        animating={isSigninFetching}
+                        color={COLOR.Primary1}
+                        size={30}
+                      />
+                    ) : (
+                      <Image
+                        style={{ marginEnd: 8, marginTop: 4, tintColor: COLOR.Secondary }}
+                        source={FaceIdIcon}
+                      />
+                    )}
+                  </View>
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -207,24 +207,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingBottom: 40,
     alignItems: 'center',
-    paddingTop:responsiveHeight(10),
+    paddingTop: responsiveHeight(10),
   },
-   appLogo: {
+  appLogo: {
+    width: responsiveWidth(50),
+    height: responsiveHeight(20),
     alignSelf: 'center',
-    paddingVertical:responsiveHeight(10),
     resizeMode: 'contain',
+    marginBottom: responsiveHeight(4),
   },
   titleContainer: {
     marginBottom: responsiveHeight(3),
   },
-  lineContainer:{backgroundColor:COLOR.TextPlaceholder, height:1.5},
-  biometricContainer:{ 
-    flex:1,
+  lineContainer: { backgroundColor: COLOR.TextPlaceholder, height: 1.5 },
+  biometricContainer: {
+    flex: 1,
     // justifyContent:'center',
-    paddingTop:responsiveHeight(20),
-    alignItems:'center',
-    backgroundColor:COLOR.White1,
-    paddingHorizontal:30
+    paddingTop: responsiveHeight(20),
+    alignItems: 'center',
+    backgroundColor: COLOR.White1,
+    paddingHorizontal: 30
     // marginVertical: 20, 
     // marginHorizontal: 30 
   },
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     color: COLOR.Secondary,
     marginBottom: 6,
   },
-  icon:{width:25, height:25, tintColor:COLOR.Secondary},
+  icon: { width: 25, height: 25, tintColor: COLOR.Secondary },
   valid: {
     color: COLOR.Red,
 
@@ -254,7 +256,7 @@ const styles = StyleSheet.create({
     height: 60,
     // marginTop: responsiveHeight(2),
     borderWidth: 1.2,
-    borderColor:COLOR.GrayBorder,
+    borderColor: COLOR.GrayBorder,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
@@ -275,9 +277,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: responsiveWidth(2),
     fontFamily: font('Medium'),
-    fontWeight:'500',
+    fontWeight: '500',
     fontSize: FontSize.Font16,
-    color:COLOR.Secondary
+    color: COLOR.Secondary
   },
 
   row: {
@@ -285,21 +287,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 25,
   },
-  colmnCotainer:{
-    flexDirection:'column',
+  colmnCotainer: {
+    flexDirection: 'column',
     // alignItems: 'center',
     marginBottom: 25,
   },
-   rowsContainer: {
-      flexDirection: "row",
-      marginHorizontal:30,
-      height:50,
-      alignItems: "center",
-   },
-   colContainer: {
-      flex: 1,
-      paddingHorizontal: 5,
-   },
+  rowsContainer: {
+    flexDirection: "row",
+    marginHorizontal: 30,
+    height: 50,
+    alignItems: "center",
+  },
+  colContainer: {
+    flex: 1,
+    paddingHorizontal: 5,
+  },
 
   rowContainer: {
     width: '100%',
@@ -310,19 +312,19 @@ const styles = StyleSheet.create({
 
   rememberText: {
     marginLeft: 6,
-   fontFamily: font('Medium'),
-    fontWeight:'500',
+    fontFamily: font('Medium'),
+    fontWeight: '500',
     fontSize: FontSize.Font16,
-    color:COLOR.TextPlaceholder,
-    lineHeight:22
+    color: COLOR.TextPlaceholder,
+    lineHeight: 22
   },
 
   forgotText: {
-   fontFamily: font('Medium'),
-    fontWeight:'500',
+    fontFamily: font('Medium'),
+    fontWeight: '500',
     fontSize: FontSize.Font16,
-    color:COLOR.TextPlaceholder,
-    lineHeight:22
+    color: COLOR.TextPlaceholder,
+    lineHeight: 22
   },
 
   signInBtn: {
