@@ -33,7 +33,7 @@ export const useExpenses = () => {
     if (IsFocused) {
 
       dispatch(CategoryList({ id: Number(UsersigninData?.user_id) }))
-      dispatch(AccountList())
+      dispatch(AccountList({ id: Number(UsersigninData?.user_id) }))
       dispatch(GetExpenseList({ id: Number(UsersigninData?.user_id) }))
     }
   }, [IsFocused])
