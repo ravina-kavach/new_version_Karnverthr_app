@@ -35,6 +35,9 @@ export const AddExpenseModal = ({
     setSelectedId,
     selectCategoryType,     
     setSelectedCategoryType,
+    AccountListData,
+    selectAccountType,
+    setSelectedAccountType,
     t,
 }) => {
 
@@ -114,6 +117,14 @@ export const AddExpenseModal = ({
                                 DropdownData={CategoryListData}
                                 setSelecteditem={setSelectedCategoryType}
                                 Selecteditem={selectCategoryType}
+
+                            />
+
+                            <Text style={styles.label}>{t('Expenses.Account')}</Text>
+                            <Dropdown
+                                DropdownData={AccountListData}
+                                setSelecteditem={setSelectedAccountType}
+                                Selecteditem={selectAccountType}
 
                             />
 

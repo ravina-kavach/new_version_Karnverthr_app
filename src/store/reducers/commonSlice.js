@@ -3,7 +3,6 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
-import { showMessage } from 'react-native-flash-message';
 
 const errorMassage = (error) => {
     if (error === "Network Error") {
@@ -179,19 +178,17 @@ export const GetDepartmentType = createAsyncThunk(
 export const CreateLeave = createAsyncThunk(
     'CreateLeave',
     async (userdata, thunkAPI) => { 
-        console.log("Paload===>",userdata)
         try {
-            let result = await API.post(`api/create/leave-request?user_id=${userdata.userId}`, JSON.stringify(userdata.userData));
-            console.log("RES===>",result)
+            let result = await API.post(`api/create/leave-request?user_id=${userdata.userid}`, userdata.userData);
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage };
             } else {
                 return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage)});
             }
         } catch (error) {
-            console.log("Error >>>", error.response?.data || error?.message);
+            console.log("Error >>>", error.response?.data?.message);
             return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.errorMessage || error?.message)
+                error: errorMassage(error.response?.data?.message || error?.message)
             });
         }
     },
@@ -274,10 +271,10 @@ export const ForgotPassword = createAsyncThunk(
 export const CategoryList = createAsyncThunk(
     'CategoryList',
      async (userdata, thunkAPI) => {
-        console.log('CategoryList userdata >>', userdata);
+        // console.log('CategoryList userdata >>', userdata);
         try {
             let result = await API.get(`employee/expense-category?user_id=${userdata.id}`);
-            console.log('CategoryList result.data >>', result);
+            // console.log('CategoryList result.data >>', result);
             if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result.data.message)
@@ -293,36 +290,66 @@ export const CategoryList = createAsyncThunk(
     },
 );
 
-export const CreateExpenses = createAsyncThunk(
-    'CreateExpenses',
-     async (userdata, thunkAPI) =>{ 
-        console.log("CreateExpenses Payload===>",userdata.userId,userdata.userData)
+export const AccountList = createAsyncThunk(
+    'AccountList',
+     async (thunkAPI) => {
         try {
-            let result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userData);
-                // console.log("result===>",result)
-            if (result.data.success) {
-                return { ...result.data.data, message: result?.data.successMessage };
-            } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage)});
+            let result = await API.get(`employee/expense-account`);
+            // console.log('AccountList result.data >>', result);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
             }
+                return result.data.data;
         } catch (error) {
-            console.log("Error >>>", error.response?.data || error?.message);
+            console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.errorMessage || error?.message)
+                error: errorMassage(error.response?.data?.message || error.message)
             });
         }
     },
-    
 );
+export const CreateExpenses = createAsyncThunk(
+  'CreateExpenses',
+  async (userdata, thunkAPI) => {
+    // console.log("userdata===>",userdata)
+    try {
+      const result = await API.post(
+        `employee/create/expense?user_id=${userdata.userId}`,
+        userdata.userData
+      );
+      console.log()
+      if (result.data.status === "success") {
+        return {
+          status: result.data.status,
+          message: result.data.message,
+          data: result.data.data,
+        };
+      } else {
+        return thunkAPI.rejectWithValue({
+          error: errorMassage(result.data.message),
+        });
+      }
+    } catch (error) {
+      return thunkAPI.rejectWithValue({
+        error: errorMassage(
+          error.response?.data?.message || error.message
+        ),
+      });
+    }
+  }
+);
+
 // =====================================================================
 
 export const GetExpenseList = createAsyncThunk(
     'GetExpenseList',
     async (userdata, thunkAPI) => {
-        console.log('GetExpenseList userdata >>', userdata);
+        // console.log('GetExpenseList userdata >>', userdata);
         try {
             let result = await API.get(`employee/expense?user_id=${userdata.id}`);
-            console.log('GetExpenseList result.data >>', result);
+            // console.log('GetExpenseList result.data >>', result);
             if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result.data.message)
@@ -412,6 +439,7 @@ export const ExpenseApprove = createAsyncThunk(
         }
     },
 );
+
 
 //==== GEt Calendar event
 export const GetCalendarEvents = createAsyncThunk(
@@ -779,6 +807,8 @@ export const CommonSlice = createSlice({
         CategoryListData: [],
         isCategoryList: false,
         isCategoryListFetching: false,
+
+        AccountListData: [],
 
         CreateExpensesData: {},
         isCreateExpenses: false,
@@ -1156,7 +1186,41 @@ export const CommonSlice = createSlice({
         builder.addCase(CategoryList.pending, state => {
             state.isCategoryListFetching = true;
         });
-        //========= CategoryList
+        //========= AccountList
+
+        builder.addCase(AccountList.fulfilled, (state, { payload }) => {
+            // console.log("[AccountList.fulfilled]>>>payload>>>", payload)
+            try {
+                state.AccountListData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: AccountList.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(AccountList.rejected, (state, { payload }) => {
+            console.log("[AccountList.rejected]>>>", payload)
+            try {
+                state.AccountListData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [AccountList.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(AccountList.pending, state => {
+            return state
+        });
+
+        //========= CreateExpenses
         builder.addCase(CreateExpenses.fulfilled, (state, { payload }) => {
             // console.log("[CreateExpenses.fulfilled]>>>payload>>>", payload)
             try {

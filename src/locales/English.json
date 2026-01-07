@@ -57,6 +57,7 @@
     "Expense_Name": "Expense Name",
     "Amount": "Amount",
     "Catagory": "Category",
+    "Account":"Account",
     "Expense_Date": "Expense Date"
   },
   "Attendance": {
