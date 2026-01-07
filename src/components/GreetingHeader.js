@@ -4,9 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next'
 import { CommonSelector } from '../store/reducers/commonSlice';
-import { responsiveHeight } from '../utils/metrics';
+import { FontSize, responsiveHeight } from '../utils/metrics';
+import { GlobalFonts } from '../theme/typography';
+import { EditIcon } from '../assets/svgs';
 
-const GreetingHeader = ({ name = '', navigateScreen , desc, avatar,containerStyle }) => {
+const GreetingHeader = ({ name = '', screenName , desc, avatar,containerStyle }) => {
   const { t } = useTranslation();
 const { UsersigninData } = useSelector(CommonSelector);
   const Navigation = useNavigation();
@@ -41,17 +43,24 @@ const { UsersigninData } = useSelector(CommonSelector);
   const bgColor = getAvatarColor(UsersigninData.full_name || UsersigninData.name);
   const initials = getInitials(UsersigninData.full_name || UsersigninData.name);
 
-  const navigateProfile = () =>{
-    const screen = navigateScreen ? navigateScreen : "profile"
-    return Navigation.navigate(screen)
+  const navigateProfile = () => {
+    return Navigation.navigate("profile")
   }
   return (
     <TouchableOpacity activeOpacity={1} onPress={()=>navigateProfile()} style={[styles.container,containerStyle]}>
       {avatar ? (
         <Image source={{ uri: avatar }} style={styles.avatar} />
       ) : (
+        <View>
         <View style={[styles.initialAvatar, { backgroundColor: bgColor }]}>
           <Text style={styles.initialText}>{initials}</Text>
+        </View>
+         {screenName=== "editProfile" && 
+         <TouchableOpacity style={{position:'absolute', top:27,right:2}}>
+         <EditIcon width={25} height={25}/>
+         </TouchableOpacity>
+         
+         }
         </View>
       )}
       <View>
@@ -79,7 +88,7 @@ const styles = StyleSheet.create({
   initialAvatar: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 25,
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -90,12 +99,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   title: {
-    fontSize: 18,
+    fontSize: FontSize.Font18,
+    ...GlobalFonts.subtitle,
     fontWeight: '600',
     color: '#111',
   },
   subtitle: {
-    fontSize: 14,
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font15,
     color: '#777',
     marginTop: 2,
   },

@@ -20,7 +20,7 @@ const Input = ({ label, value }) => (
 export default function EditProfile() {
   return (
     <CommonView>
-      <CommonHeader title="Profile" />
+      <CommonHeader title="Edit Profile" />
 
       <View style={styles.card}>
         <Input label="First Name" value="Jane" />

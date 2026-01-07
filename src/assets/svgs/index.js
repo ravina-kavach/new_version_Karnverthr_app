@@ -30,6 +30,15 @@ import ExpensePlaceHolder from './ExpensePlaceHolder.svg'
 import DayCalIcon from './DayCalIcon.svg'
 import MonthCalIcon from './MonthCalIcon.svg'
 import WeekCalIcon from './WeekCalIcon.svg'
+import ProfileIcon from './ProfileIcons/ProfileIcon.svg'
+import ChangePwd from './ProfileIcons/ChangePwd.svg'
+import DepartIcon from './ProfileIcons/DepartIcon.svg'
+import EmryIcon from './ProfileIcons/EmryIcon.svg'
+import GovIcon from './ProfileIcons/GovIcon.svg'
+import EditIcon from './ProfileIcons/EditIcon.svg'
+import ReportMnrIcon from './ProfileIcons/ReportMnrIcon.svg'
+import RoleIcon from './ProfileIcons/RoleIcon.svg'
+import RightArrow from './RightArrow.svg'
 export {
   Check,
   FillCheck,
@@ -62,5 +71,14 @@ export {
   ExpensePlaceHolder,
   DayCalIcon,
   MonthCalIcon,
-  WeekCalIcon
+  WeekCalIcon,
+  ProfileIcon,
+  ChangePwd,
+  DepartIcon,
+  EmryIcon,
+  GovIcon,
+  EditIcon,
+  ReportMnrIcon,
+  RoleIcon,
+  RightArrow
 };
