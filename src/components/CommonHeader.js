@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import { COLOR } from '../theme/theme';
 import { BackIcon } from '../assets/svgs';
 import { useNavigation } from '@react-navigation/native';
-import { responsiveHeight } from '../utils/metrics';
+import { FontSize, responsiveHeight } from '../utils/metrics';
 
 const CommonHeader = ({
   title = '',
@@ -23,7 +23,7 @@ const CommonHeader = ({
           {leftIcon || <BackIcon height={40} width={40} />}
         </TouchableOpacity>
         <View style={styles.center}>
-          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
         </View>
         <TouchableOpacity style={styles.right} onPress={rightIconPress}>
           {rightIcon || null}
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontSize: 16,
+    fontSize: FontSize.Font18,
     fontWeight: '600',
     color: '#000',
   },

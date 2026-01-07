@@ -10,11 +10,12 @@ import { CommonSelector } from '../..//store/reducers/commonSlice'
 const useProfile = () => {
   const { UsersigninData } = useSelector(CommonSelector);
   const Navigation = useNavigation()
-  // const navigationEditProfile=()=>{
-  //   Navigation.navigate('editProfile')
-  // }
+  const navigationEditProfile=()=>{
+    Navigation.navigate('editProfile')
+  }
   return {
-    UsersigninData
+    UsersigninData,
+    navigationEditProfile
   }
 }
 
