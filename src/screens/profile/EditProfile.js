@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import CommonHeader from "../../components/CommonHeader";
+import { CommonView } from "../../utils/common";
 
 const Input = ({ label, value }) => (
   <View style={{ marginBottom: 16 }}>
@@ -17,8 +19,8 @@ const Input = ({ label, value }) => (
 
 export default function EditProfile() {
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Edit Profile</Text>
+    <CommonView>
+      <CommonHeader title="Profile" />
 
       <View style={styles.card}>
         <Input label="First Name" value="Jane" />
@@ -39,7 +41,7 @@ export default function EditProfile() {
           <Text style={{ color: "#fff" }}>Save Changes</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </CommonView>
   );
 }
 

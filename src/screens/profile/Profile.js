@@ -27,7 +27,7 @@ export default function Profile() {
       <CommonHeader title="Profile" />
       <ScrollView style={styles.container}>
         <View style={styles.profilecard}>
-          <GreetingHeader />
+          <GreetingHeader  navigateScreen={"editProfile"}/>
         </View>
 
         {/* Account & Identity */}

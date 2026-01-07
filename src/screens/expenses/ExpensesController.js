@@ -155,53 +155,75 @@ export const useExpenses = () => {
 
   const SubmitExpense = async () => {
     const formvalid = Validator.current.allValid();
+    const rawBase64 = FileObj?.base64?.includes(",")
+      ? FileObj.base64.split(",")[1]
+      : FileObj?.base64;
+
     const dataObj = {
       name: Formdata.ExpenseName || "",
       account_id: selectAccountType.id,
       product_id: selectCategoryType.id,
       total_amount_currency: Formdata.Amount || "",
-      attachment: "",
-      fileName: FileObj?.fileName || "",
+      attachment: rawBase64,
+      fileName: FileObj.fileName || "expense_receipt.jpg",
       date: startDate
         ? moment(startDate).format('YYYY-MM-DD')
         : moment().format('YYYY-MM-DD'),
       payment_mode: selectedId === 1 ? 'own_account' : 'company_account',
     };
-    if (!FileObj?.base64) {
+
+    if (!rawBase64) {
       showMessage({
         icon: "danger",
         message: `${t('messages.Expanse_image')}`,
         type: "danger",
-      })
-    } else if (!startDate) {
+      });
+      return;
+    }
+
+    if (!startDate) {
       showMessage({
         icon: "danger",
         message: `${t('messages.Expanse_Date')}`,
         type: "danger",
-      })
-    } else if (formvalid) {
+      });
+      return;
+    }
+
+    if (formvalid) {
       Validator.current.hideMessages();
       forceUpdate(0);
+
       const obj = {
         userId: UsersigninData.user_id,
         userData: dataObj
+      };
+      console.log("OBJ====>",JSON.stringify(obj,null,2))
+      try {
+        const result = await dispatch(CreateExpenses(obj)).unwrap();
+        if (result.status === "success") {
+          showMessage({
+            icon: "success",
+            message: result.message,
+            type: "success",
+          });
+          closeModal();
+          onRefresh();
+        } else {
+          showMessage({
+            icon: "danger",
+            message: result.message || "Failed to save",
+            type: "danger",
+          });
+        }
+      } catch (error) {
+        console.error("API Error:", error);
       }
-      const result = await dispatch(CreateExpenses(obj)).unwrap();
-      if (result.status === "success") {
-        showMessage({
-          icon: "success",
-          message: result.message,
-          type: "success",
-        });
-        closeModal();
-        onRefresh();
-      }
-
     } else {
       Validator.current.showMessages();
       forceUpdate(1);
     }
-  }
+  };
 
 
   const closeModal = () => {

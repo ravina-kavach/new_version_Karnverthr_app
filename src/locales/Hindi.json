@@ -37,6 +37,7 @@
         "Shift_Timings": "शिफ्ट का समय"
     },
     "Expenses": {
+        "Approvals":"स्वीकृति",
         "Name": "नाम",
         "Expense": "खर्च",
         "employee": "कर्मचारी",
