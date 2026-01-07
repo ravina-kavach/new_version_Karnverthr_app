@@ -10,7 +10,7 @@ const Home = () => {
     MENUDATA,
     UsersigninData,
     takeImage,
-    localAttendanceData,
+    attendance,
     isAttendanceFetching,
   } = useHome();
   return(
@@ -23,7 +23,7 @@ const Home = () => {
       >
         <WorkingHoursCard
           usersigninData={UsersigninData}
-          localAttendanceData={localAttendanceData}
+          localAttendanceData={attendance}
           onPress={takeImage}
           loading={isAttendanceFetching}
         />
