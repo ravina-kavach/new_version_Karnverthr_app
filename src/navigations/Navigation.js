@@ -14,6 +14,7 @@ import ShiftTiming from '../screens/shiftTiming/ShiftTiming'
 import Attendance from '../screens/attendance/Attendance'
 import CalendarList from '../screens/calender/CalenderList'
 import Approvals from '../screens/approvels/Approvals'
+import EditProfile from '../screens/profile/EditProfile'
 import TabNavigation from './TabNavigation'
 //------ Auth screen
 
@@ -43,6 +44,8 @@ function Navigation({ props }) {
           <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }}/>   
             <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 
             <Stack.Screen name="profile" component={Profile} />
+            <Stack.Screen name="editProfile" component={EditProfile} />
+
             <Stack.Screen name="shiftTiming" component={ShiftTiming} />
             <Stack.Screen name="attendance" component={Attendance} />
             <Stack.Screen name="leaves" component={Leaves} />

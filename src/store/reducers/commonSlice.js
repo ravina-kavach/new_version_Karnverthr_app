@@ -313,13 +313,8 @@ export const AccountList = createAsyncThunk(
 export const CreateExpenses = createAsyncThunk(
   'CreateExpenses',
   async (userdata, thunkAPI) => {
-    // console.log("userdata===>",userdata)
     try {
-      const result = await API.post(
-        `employee/create/expense?user_id=${userdata.userId}`,
-        userdata.userData
-      );
-      console.log()
+      const result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userData);
       if (result.data.status === "success") {
         return {
           status: result.data.status,
@@ -346,7 +341,7 @@ export const CreateExpenses = createAsyncThunk(
 export const GetExpenseList = createAsyncThunk(
     'GetExpenseList',
     async (userdata, thunkAPI) => {
-        // console.log('GetExpenseList userdata >>', userdata);
+        console.log('GetExpenseList userdata >>', userdata);
         try {
             let result = await API.get(`employee/expense?user_id=${userdata.id}`);
             // console.log('GetExpenseList result.data >>', result);
@@ -587,20 +582,14 @@ export const CreateNewMeeting = createAsyncThunk(
 export const ApprovalList = createAsyncThunk(
     'ApprovalList',
     async (userdata, thunkAPI) => {
-        console.log('ApprovalList userdata >>', userdata);
+        // console.log('ApprovalList userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'approvals/requests/api',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('ApprovalList result.data >>', result.data);
+            let result = await API.get(`/api/admin/requests?user_id=${userdata.id}`);
+            console.log('ApprovalList result.data >>', result);
             if (result.data.success) {
-                return result.data;
+                return result.data.data;
             } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+                return thunkAPI.rejectWithValue({ error: result.data.error });
             }
         } catch (error) {
             console.log("error>>>", error)
@@ -609,6 +598,47 @@ export const ApprovalList = createAsyncThunk(
         }
     },
 );
+
+export const ApproveActionApprove = createAsyncThunk(
+    'ApproveActionApprove',
+     async (userdata, thunkAPI) => {
+        console.log('ApproveActionApprove userdata >>', userdata);
+        try {
+            let result = await API.post(`/api/admin/approve`, userdata);
+            console.log('ApproveActionApprove result.data >>', result.data);
+            if (result.data.success) {
+                return result.data
+            } else {
+                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+            }
+        } catch (error) {
+            console.log("error>>>", error)
+            console.log('try catch [ ApproveActionApprove ] error.message >>', error.message,);
+            return thunkAPI.rejectWithValue({ error: error.message });
+        }
+    },
+);
+
+export const ApproveActionReject = createAsyncThunk(
+    'ApproveActionReject',
+     async (userdata, thunkAPI) => {
+        console.log('ApproveActionReject userdata >>', userdata);
+        try {
+            let result = await API.post(`/api/admin/reject`, userdata);
+            console.log('ApproveActionReject result.data >>', result.data);
+            if (result.data.success) {
+                return result.data
+            } else {
+                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+            }
+        } catch (error) {
+            console.log("error>>>", error)
+            console.log('try catch [ ApproveActionReject ] error.message >>', error.message,);
+            return thunkAPI.rejectWithValue({ error: error.message });
+        }
+    },
+);
+
 export const ApprovalListMore = createAsyncThunk(
     'ApprovalListMore',
     async (userdata, thunkAPI) => {
@@ -630,31 +660,6 @@ export const ApprovalListMore = createAsyncThunk(
         } catch (error) {
             console.log("error>>>", error)
             console.log('try catch [ ApprovalListMore ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-export const ApproveAction = createAsyncThunk(
-    'ApproveAction',
-    async (userdata, thunkAPI) => {
-        console.log('ApproveAction userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: 'approvals/action/api',
-                // headers: Authheader,
-                data: userdata,
-            });
-            // console.log('ApproveAction result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ ApproveAction ] error.message>>', error.message);
             return thunkAPI.rejectWithValue({ error: error.message });
         }
     },
@@ -1874,9 +1879,9 @@ export const CommonSlice = createSlice({
             state.isGetApprovalListDataMoreFetching = true;
         });
 
-        //==== approvals actions
-        builder.addCase(ApproveAction.fulfilled, (state, { payload }) => {
-            // console.log("[ApproveAction.fulfilled]>>>payload>>>", payload)
+        //==== approvals accept action
+        builder.addCase(ApproveActionApprove.fulfilled, (state, { payload }) => {
+            // console.log("[ApproveActionApprove.fulfilled]>>>payload>>>", payload)
             try {
                 state.isApproveAction = true;
                 state.isApproveActionFetching = false;
@@ -1884,11 +1889,11 @@ export const CommonSlice = createSlice({
                 state.errorMessage = '';
                 return state;
             } catch (error) {
-                console.log('Error: ApproveAction.fulfilled try catch error >>', error);
+                console.log('Error: ApproveActionApprove.fulfilled try catch error >>', error);
             }
         });
-        builder.addCase(ApproveAction.rejected, (state, { payload }) => {
-            console.log("[ApproveAction.rejected]>>>", payload)
+        builder.addCase(ApproveActionApprove.rejected, (state, { payload }) => {
+            console.log("[ApproveActionApprove.rejected]>>>", payload)
             try {
                 state.isApproveAction = false;
                 state.isApproveActionFetching = false;
@@ -1900,12 +1905,47 @@ export const CommonSlice = createSlice({
                     : (state.errorMessage = 'API Response Invalid. Please Check API');
             } catch (error) {
                 console.log(
-                    'Error: [ApproveAction.rejected] try catch error >>',
+                    'Error: [ApproveActionApprove.rejected] try catch error >>',
                     error,
                 );
             }
         });
-        builder.addCase(ApproveAction.pending, state => {
+        builder.addCase(ApproveActionApprove.pending, state => {
+            state.isApproveActionFetching = true;
+        });
+
+        //==== approvals reject action
+         builder.addCase(ApproveActionReject.fulfilled, (state, { payload }) => {
+            // console.log("[ApproveActionReject.fulfilled]>>>payload>>>", payload)
+            try {
+                state.isApproveAction = true;
+                state.isApproveActionFetching = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: ApproveActionReject.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(ApproveActionReject.rejected, (state, { payload }) => {
+            console.log("[ApproveActionReject.rejected]>>>", payload)
+            try {
+                state.isApproveAction = false;
+                state.isApproveActionFetching = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [ApproveActionReject.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(ApproveActionReject.pending, state => {
             state.isApproveActionFetching = true;
         });
 

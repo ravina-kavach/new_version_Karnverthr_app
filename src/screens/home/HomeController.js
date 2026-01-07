@@ -53,11 +53,11 @@ export const useHome = () => {
     { id: "2", image: <ExpenseIcon />, title: t("Home.Expense"), screen: "expenses" },
     { id: "3", image: <LeaveMenuIcon />, title: t("Home.Leave"), screen: "leaves" },
     { id: "4", image: <CalendarIcon />, title: t("Home.Calendar"), screen: "calender" },
-    { id: "5", image: <ReportIcon />, title: t("Home.Reports"), screen: "reports" },
-    { id: "6", image: <PaySlipIcon />, title: t("Home.PaySlip"), screen: "payslip" },
-    { id: "7", image: <DeclarationIcon />, title: t("Home.Announcement"), screen: "announcement" },
-    { id: "8", image: <ShiftIcon />, title: t("Home.Shift_Timings"), screen: "shiftTiming" },
-    { id: "9", image: <ApprovelsIcon />, title: t("Home.Approvals"), screen: "approvals" },
+    { id: "5", image: <ApprovelsIcon />, title: t("Home.Approvals"), screen: "approvals" },
+    { id: "6", image: <ReportIcon />, title: t("Home.Reports"), screen: "reports" },
+    { id: "7", image: <PaySlipIcon />, title: t("Home.PaySlip"), screen: "payslip" },
+    { id: "8", image: <DeclarationIcon />, title: t("Home.Announcement"), screen: "announcement" },
+    { id: "9", image: <ShiftIcon />, title: t("Home.Shift_Timings"), screen: "shiftTiming" },
   ];
 
 

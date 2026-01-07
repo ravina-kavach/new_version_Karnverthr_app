@@ -122,6 +122,7 @@
     "Tax": "Tax"
   },
   "Approvals": {
+    "Approvals":"Approvals",
     "Subject": "Subject",
     "Owner": "Owner",
     "Category": "Category",
