@@ -9,33 +9,65 @@ import {
 import { CommonView } from "../../utils/common";
 import CommonHeader from "../../components/CommonHeader";
 import GreetingHeader from "../../components/GreetingHeader";
+import {
+  ProfileIcon,
+  ChangePwd,
+  DepartIcon,
+  EmryIcon,
+  GovIcon,
+  EditIcon,
+  ReportMnrIcon,
+  RoleIcon,
+  RightArrow,
+} from '../../assets/svgs/index'
+import { GlobalFonts } from "../../theme/typography";
+import { COLOR } from "../../theme/theme";
+import { FontSize } from "../../utils/metrics";
+import useProfile from './ProfileController'
 
-const ProfileItem = ({ title, subtitle }) => (
+const ProfileItem = ({ icon, title, subtitle }) => (
   <View style={styles.row}>
-    <View style={styles.icon} />
+    <View style={styles.icon}>
+      {icon}
+    </View>
     <View style={{ flex: 1 }}>
       <Text style={styles.rowTitle}>{title}</Text>
       {subtitle && <Text style={styles.rowSub}>{subtitle}</Text>}
     </View>
-    {/* <Text style={styles.arrow}>›</Text> */}
+    <TouchableOpacity activeOpacity={1}>
+      <RightArrow />
+    </TouchableOpacity>
   </View>
 );
 
 export default function Profile() {
+  const { UsersigninData } = useProfile()
+  // console.log("UsersigninData===>",UsersigninData)
+  // { status: 'success', 
+  //   message: 'You are logged in as an Employee User. Plan is active.', 
+  //   user_id: 3138, 
+  //   email: 'kevaltest@gmail.com', 
+  //   full_name: 'Keval Testing', 
+  //   user_role: 'EMPLOYEE_RELATED_OWN_USER', 
+  //   plan_status: 'ACTIVE', 
+  //   is_client_employee_user: true, 
+  //   employee_id: 16626, 
+  //   admin_user_id: 3145 
+  // }
   return (
     <CommonView>
       <CommonHeader title="Profile" />
       <ScrollView style={styles.container}>
         <View style={styles.profilecard}>
-          <GreetingHeader  navigateScreen={"editProfile"}/>
+          <GreetingHeader screenName={"editProfile"} desc={UsersigninData.email} />
         </View>
 
         {/* Account & Identity */}
-        <Text style={styles.section}>Account & Identity</Text>
         <View style={styles.card}>
-          <ProfileItem title="Edit Profile" subtitle="Change name, photo, contact" />
-          <ProfileItem title="Government ID" subtitle="View Aadhaar, request update" />
-          <ProfileItem title="Change Password" subtitle="Change or update password" />
+          <Text style={styles.section}>Account & Identity</Text>
+          <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, photo, contact" />
+          <ProfileItem icon={<GovIcon />} title="Government ID" subtitle="View Aadhaar, request update" />
+          <ProfileItem icon={<ChangePwd />} title="Change Password" subtitle="Change or update password" />
         </View>
 
         {/* Professional Info */}
@@ -85,9 +117,9 @@ const styles = StyleSheet.create({
   name: { fontSize: 16, fontWeight: "600" },
   email: { color: "#6B7280", fontSize: 12 },
   section: {
-    fontSize: 14,
+    ...GlobalFonts.subtitle,
     fontWeight: "600",
-    color: "#6B7280",
+    color: COLOR.Black1,
     marginBottom: 8,
   },
   row: {
@@ -96,13 +128,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   icon: {
-    width: 32,
-    height: 32,
+    width: 35,
+    height: 35,
     borderRadius: 8,
-    backgroundColor: "#E5E7EB",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLOR.dark5,
     marginRight: 12,
   },
-  rowTitle: { fontSize: 14, fontWeight: "500" },
-  rowSub: { fontSize: 12, color: "#6B7280" },
-  arrow: { fontSize: 22, color: "#9CA3AF" },
+  rowTitle: { ...GlobalFonts.subtitle, fontSize: FontSize.Font16 },
+  rowSub: { ...GlobalFonts.subtitle, fontSize: FontSize.Font16, color: COLOR.Placeholder }
 });
