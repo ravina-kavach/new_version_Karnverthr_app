@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { PermissionsAndroid, Linking } from 'react-native'
 import { useIsFocused } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
-import { CommonSelector, CategoryList, CreateExpenses, GetExpenseList, updateState } from '../../store/reducers/commonSlice'
+import { CommonSelector, CategoryList, CreateExpenses, GetExpenseList, AccountList, updateState } from '../../store/reducers/commonSlice'
 import { launchCamera } from 'react-native-image-picker'
 import { showMessage } from 'react-native-flash-message'
 import SimpleReactValidator from 'simple-react-validator'
@@ -23,15 +23,17 @@ export const useExpenses = () => {
   const [PreviewVisible, setPreviewVisible] = React.useState(false);
   const [PreviewImage, setPreviewImage] = React.useState(false);
   const [selectCategoryType, setSelectedCategoryType] = useState({ id: 0, name: "Select category" })
+  const [selectAccountType, setSelectedAccountType] = useState({ id: 0, name: "Select account" })
 
   const Validator = React.useRef(new SimpleReactValidator({}));
   const [, forceUpdate] = React.useState();
-  const { CategoryListData, UsersigninData, isCreateExpensesFetching, isCreateExpenses, GetExpenseListData, isGetExpenseList, isGetExpenseListFetching } = useSelector(CommonSelector);
+  const { CategoryListData, UsersigninData, AccountListData, isCreateExpensesFetching, isCreateExpenses, GetExpenseListData, isGetExpenseList, isGetExpenseListFetching } = useSelector(CommonSelector);
 
   React.useEffect(() => {
     if (IsFocused) {
 
       dispatch(CategoryList({ id: Number(UsersigninData?.user_id) }))
+      dispatch(AccountList())
       dispatch(GetExpenseList({ id: Number(UsersigninData?.user_id) }))
     }
   }, [IsFocused])
@@ -151,29 +153,18 @@ export const useExpenses = () => {
     }
   };
 
-  const SubmitExpense = () => {
+  const SubmitExpense = async () => {
     const formvalid = Validator.current.allValid();
-    // const formdata = new FormData();
-    // formdata.append("email", UsersigninData?.email)
-    // formdata.append("name", Formdata.ExpenseName || "")
-    // formdata.append("account_id", selectCategoryType.expense_account_id)
-    // formdata.append("product_id",45)
-    // formdata.append("total_amount_currency", Formdata.Amount || "")
-    // formdata.append("attachment", FileObj.base64)
-    // formdata.append("fileName", FileObj.fileName)
-    // formdata.append("date", startDate ? moment(startDate).format('MM/DD/YYYY') : moment().format('MM/DD/YYYY'))
-    // formdata.append("payment_mode", selectedId == 1 ? 'own_account' : 'company_account')
     const dataObj = {
-      email: UsersigninData?.email || "",
       name: Formdata.ExpenseName || "",
-      account_id: selectCategoryType?.expense_account_id || null,
-      product_id: 45,
+      account_id: selectAccountType.id,
+      product_id: selectCategoryType.id,
       total_amount_currency: Formdata.Amount || "",
-      attachment: FileObj?.base64 || "",
+      attachment: "",
       fileName: FileObj?.fileName || "",
       date: startDate
-        ? moment(startDate).format('MM/DD/YYYY')
-        : moment().format('MM/DD/YYYY'),
+        ? moment(startDate).format('YYYY-MM-DD')
+        : moment().format('YYYY-MM-DD'),
       payment_mode: selectedId === 1 ? 'own_account' : 'company_account',
     };
     if (!FileObj?.base64) {
@@ -195,17 +186,29 @@ export const useExpenses = () => {
         userId: UsersigninData.user_id,
         userData: dataObj
       }
-      dispatch(CreateExpenses(obj))
+      const result = await dispatch(CreateExpenses(obj)).unwrap();
+      if (result.status === "success") {
+        showMessage({
+          icon: "success",
+          message: result.message,
+          type: "success",
+        });
+        closeModal();
+        onRefresh();
+      }
+
     } else {
       Validator.current.showMessages();
       forceUpdate(1);
     }
   }
+
+
   const closeModal = () => {
     setIsExoensemodal(false);
   };
   const onRefresh = () => {
-    dispatch(GetExpenseList({ "email": UsersigninData.email }))
+    dispatch(GetExpenseList({ id: Number(UsersigninData?.user_id) }))
   }
   const openImage = (uri) => {
     setPreviewImage(uri);
@@ -240,7 +243,10 @@ export const useExpenses = () => {
     setPreviewVisible,
     setFormdata,
     selectCategoryType,
-    setSelectedCategoryType
+    setSelectedCategoryType,
+    selectAccountType,
+    setSelectedAccountType,
+    AccountListData
   }
 
 }

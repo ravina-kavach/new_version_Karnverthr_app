@@ -54,11 +54,11 @@ export const useLeaves = () => {
     return COLOR.Red
   };
   const handleModal = () => {
-    setVisibleModel(false)
+   return  setVisibleModel(false)
   }
 
-   const handleOpenModal = () => {
-    setVisibleModel(true)
+  const handleOpenModal = () => {
+    return setVisibleModel(true)
   }
 
   const onChangeStartDate = (event, selectedDate) => {
@@ -72,24 +72,52 @@ export const useLeaves = () => {
   };
 
   const saveLeave = async () => {
+  try {
     let data = {
-      // "employee_id": UsersigninData.employee_id,
-      "holiday_status_id": selectedLeaveType.id,
-      "date_from": moment(selectStartDate).format("YYYY-MM-DD"),
-      "date_to": moment(selectEndDate).format("YYYY-MM-DD"),
-      "reason": resonText
-    }
+      holiday_status_id: selectedLeaveType.id,
+      date_from: moment(selectStartDate).format("YYYY-MM-DD"),
+      date_to: moment(selectEndDate).format("YYYY-MM-DD"),
+      reason: resonText,
+    };
+
     const obj = {
       userid: UsersigninData.user_id,
-      userData: data
-    }
-    const result = await dispatch(CreateLeave(obj)).unwrap()
-    if (result) {
+      userData: data,
+    };
+
+    const result = await dispatch(CreateLeave(obj)).unwrap();
+    if (result?.success) {
+      showMessage({
+        icon: "success",
+        message: result.successMessage || "Leave applied successfully",
+        type: "success",
+      });
+
+      handleModal();
       setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
-      selectedDeptType({ id: '', name: t("Leaves.Select_Department_Type") });
-      await dispatch(GetLeaveList(data))
+      await dispatch(GetLeaveList());
+    } else {
+      handleModal();
+      showMessage({
+        icon: "danger",
+        message: result?.message || "Failed to apply leave",
+        type: "danger",
+      });
     }
+
+  } catch (error) {
+    handleModal();
+    showMessage({
+      icon: "danger",
+      message:
+        error?.message ||
+        error?.error ||
+        "Something went wrong. Please try again.",
+      type: "danger",
+    });
   }
+};
+
   const onRefresh = useCallback(() => {
     dispatch(GetLeaveList(data))
   }, []);
