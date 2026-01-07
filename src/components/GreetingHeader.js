@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    marginTop:Platform.OS === 'android' ? responsiveHeight(3) : 0
+    marginTop:Platform.OS === 'android' ? responsiveHeight(3) : responsiveHeight(6)
   },
   avatar: {
     width: 44,

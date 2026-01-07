@@ -13,6 +13,7 @@ import Profile from '../screens/profile/Profile'
 import ShiftTiming from '../screens/shiftTiming/ShiftTiming'
 import Attendance from '../screens/attendance/Attendance'
 import CalendarList from '../screens/calender/CalenderList'
+import Approvals from '../screens/approvels/Approvals'
 import TabNavigation from './TabNavigation'
 //------ Auth screen
 
@@ -46,10 +47,10 @@ function Navigation({ props }) {
             <Stack.Screen name="attendance" component={Attendance} />
             <Stack.Screen name="leaves" component={Leaves} />
             <Stack.Screen name="calendarList" component={CalendarList} />
+            <Stack.Screen name="approvals" component={Approvals} />
           {/* <Stack.Screen name="MyProfile" component={MyProfile} />
           <Stack.Screen name="Approve" component={Approve} />
           <Stack.Screen name="NewMeeting" component={NewMeeting} />
-          <Stack.Screen name="Approvals" component={Approvals} />
           <Stack.Screen name="Reports" component={Reports} />
           <Stack.Screen name="Payslip" component={Payslip} />
           <Stack.Screen name="Announcement" component={Announcement} />

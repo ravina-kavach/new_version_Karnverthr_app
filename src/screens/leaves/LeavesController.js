@@ -119,7 +119,7 @@ export const useLeaves = () => {
 };
 
   const onRefresh = useCallback(() => {
-    dispatch(GetLeaveList(data))
+    dispatch(GetLeaveList())
   }, []);
 
   return {
