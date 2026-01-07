@@ -1,9 +1,9 @@
 import React from 'react';
-import { CommonView, H4 } from '../../utils/common';
-import { ScrollView,FlatList, View, StyleSheet } from 'react-native';
+import { CommonView } from '../../utils/common';
+import { ScrollView, FlatList, View, StyleSheet } from 'react-native';
 import WorkingHoursCard from '../../components/WorkingHoursCard';
 import { useHome } from './HomeController.js';
-import {RenderBox} from '../../components/RenderBox.js'
+import { RenderBox } from '../../components/RenderBox.js'
 import GreetingHeader from '../../components/GreetingHeader.js'
 const Home = () => {
   const {
@@ -13,13 +13,13 @@ const Home = () => {
     attendance,
     isAttendanceFetching,
   } = useHome();
-  return(
+  return (
     <CommonView>
-      <GreetingHeader/>
-      <ScrollView 
-      showsVerticalScrollIndicator={false}
-      style={styles.mainContainer}
-      nestedScrollEnabled
+      <GreetingHeader />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.mainContainer}
+        nestedScrollEnabled
       >
         <WorkingHoursCard
           usersigninData={UsersigninData}
@@ -47,11 +47,11 @@ const Home = () => {
   );
 };
 const styles = StyleSheet.create({
-  container:{
-    paddingVertical:20
+  container: {
+    paddingVertical: 20
   },
-  mainContainer:{paddingHorizontal:10},
-  itemContainer:{ flex: 1, alignItems: 'center', marginBottom: 20 }
+  mainContainer: { paddingHorizontal: 10 },
+  itemContainer: { flex: 1, alignItems: 'center', marginBottom: 20 }
 })
 
 export default Home;
