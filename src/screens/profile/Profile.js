@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from "react-native";
 import { CommonView } from "../../utils/common";
 import CommonHeader from "../../components/CommonHeader";
@@ -15,33 +16,33 @@ import {
   DepartIcon,
   EmryIcon,
   GovIcon,
-  EditIcon,
   ReportMnrIcon,
   RoleIcon,
   RightArrow,
+  JoiningDateIcon,
+  TenureIcon
 } from '../../assets/svgs/index'
 import { GlobalFonts } from "../../theme/typography";
 import { COLOR } from "../../theme/theme";
 import { FontSize } from "../../utils/metrics";
 import useProfile from './ProfileController'
+import { responsiveHeight } from "../../utils/metrics";
 
-const ProfileItem = ({ icon, title, subtitle }) => (
-  <View style={styles.row}>
+const ProfileItem = ({ icon, title, subtitle, onPress }) => (
+  <TouchableOpacity style={styles.row} activeOpacity={1} onPress={onPress}>
     <View style={styles.icon}>
       {icon}
     </View>
     <View style={{ flex: 1 }}>
-      <Text style={styles.rowTitle}>{title}</Text>
-      {subtitle && <Text style={styles.rowSub}>{subtitle}</Text>}
+      <Text style={styles.rowTitle} numberOfLines={1}>{title}</Text>
+      {subtitle && <Text style={styles.rowSub} numberOfLines={1}>{subtitle}</Text>}
     </View>
-    <TouchableOpacity activeOpacity={1}>
-      <RightArrow />
-    </TouchableOpacity>
-  </View>
+    {onPress && <RightArrow />}
+  </TouchableOpacity>
 );
 
 export default function Profile() {
-  const { UsersigninData } = useProfile()
+  const { UsersigninData, navigationEditProfile } = useProfile()
   // console.log("UsersigninData===>",UsersigninData)
   // { status: 'success', 
   //   message: 'You are logged in as an Employee User. Plan is active.', 
@@ -57,32 +58,41 @@ export default function Profile() {
   return (
     <CommonView>
       <CommonHeader title="Profile" />
-      <ScrollView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.profilecard}>
-          <GreetingHeader screenName={"editProfile"} desc={UsersigninData.email} />
+          <GreetingHeader containerStyle={styles.headerContainer}screenName={"editProfile"} desc={UsersigninData.email} />
         </View>
 
         {/* Account & Identity */}
         <View style={styles.card}>
           <Text style={styles.section}>Account & Identity</Text>
-          <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, photo, contact" />
-          <ProfileItem icon={<GovIcon />} title="Government ID" subtitle="View Aadhaar, request update" />
-          <ProfileItem icon={<ChangePwd />} title="Change Password" subtitle="Change or update password" />
+          <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, photo, contact" onPress={() => { }} />
+          <ProfileItem icon={<GovIcon />} title="Government ID" subtitle="View Aadhaar, request update" onPress={() => { }} />
+          <ProfileItem icon={<ChangePwd />} title="Change Password" subtitle="Change or update password" onPress={() => { }} />
+          <ProfileItem icon={<EmryIcon />} title="Emergency Contact" subtitle="Change or update emergency contact" onPress={() => { }} />
         </View>
 
         {/* Professional Info */}
-        {/* <Text style={styles.section}>Professional Information</Text>
         <View style={styles.card}>
-          <ProfileItem title="Current Role" subtitle="Developer" />
-          <ProfileItem title="Department" subtitle="Creative Administrative" />
-          <ProfileItem title="Reporting Manager" subtitle="David" />
-        </View> */}
+        <Text style={styles.section}>Professional Information</Text>
+          <ProfileItem icon={<RoleIcon/>} title="Current Role" subtitle="Developer" />
+          <ProfileItem icon={<DepartIcon/>} title="Department" subtitle="Creative Administrative" />
+          <ProfileItem icon={<ReportMnrIcon/>} title="Reporting Manager" subtitle="David" />
+        </View>
 
         {/* Employment */}
         {/* <Text style={styles.section}>Employment History</Text>
         <View style={styles.card}>
-          <ProfileItem title="Joining Date" subtitle="12/10/2020" />
-          <ProfileItem title="Job tenure" subtitle="3 Years" />
+          <ProfileItem icon={<JoiningDateIcon/>} title="Joining Date" subtitle="12/10/2020" />
+          <ProfileItem icon={<TenureIcon/>} title="Job tenure" subtitle="3 Years" />
+        </View> */}
+
+        {/* <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => { }}>
+            <Text style={styles.text}>Log out</Text>
+          </TouchableOpacity>
         </View> */}
       </ScrollView>
     </CommonView>
@@ -90,13 +100,16 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: "#F4F4F5", padding: 16 },
+  container: { backgroundColor: "#F4F4F5", padding: 16, paddingBottom: 80, },
   header: { fontSize: 18, fontWeight: "700", marginBottom: 16 },
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
+  },
+  headerContainer:{ 
+    marginTop:Platform.OS === 'android' ? responsiveHeight(3) : responsiveHeight(3)
   },
   profilecard: {
     backgroundColor: "#fff",
@@ -137,5 +150,25 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   rowTitle: { ...GlobalFonts.subtitle, fontSize: FontSize.Font16 },
-  rowSub: { ...GlobalFonts.subtitle, fontSize: FontSize.Font16, color: COLOR.Placeholder }
+  rowSub: { ...GlobalFonts.subtitle, fontSize: FontSize.Font16, color: COLOR.Placeholder },
+  buttonContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+
+  button: {
+    height: 50,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: COLOR.Black1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  text: {
+    fontSize: FontSize.Font18,
+    fontWeight: '500',
+    color: COLOR.Black1,
+  },
+
 });

@@ -39,6 +39,8 @@ import EditIcon from './ProfileIcons/EditIcon.svg'
 import ReportMnrIcon from './ProfileIcons/ReportMnrIcon.svg'
 import RoleIcon from './ProfileIcons/RoleIcon.svg'
 import RightArrow from './RightArrow.svg'
+import JoiningDateIcon from './ProfileIcons/JoinDate.svg'
+import TenureIcon from './ProfileIcons/Tenure.svg'
 export {
   Check,
   FillCheck,
@@ -80,5 +82,7 @@ export {
   EditIcon,
   ReportMnrIcon,
   RoleIcon,
-  RightArrow
+  RightArrow,
+  JoiningDateIcon,
+  TenureIcon
 };
