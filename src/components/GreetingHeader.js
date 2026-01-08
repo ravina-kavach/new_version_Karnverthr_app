@@ -1,75 +1,104 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableWithoutFeedback, TouchableOpacity, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
 import { CommonSelector } from '../store/reducers/commonSlice';
 import { FontSize, responsiveHeight } from '../utils/metrics';
 import { GlobalFonts } from '../theme/typography';
 import { EditIcon } from '../assets/svgs';
 
-const GreetingHeader = ({ name = '', screenName , desc, avatar,containerStyle }) => {
+const GreetingHeader = ({
+  desc,
+  avatar,
+  containerStyle,
+  screenName,
+  onAvatarPress,
+}) => {
   const { t } = useTranslation();
-const { UsersigninData } = useSelector(CommonSelector);
-  const Navigation = useNavigation();
+  const { UsersigninData } = useSelector(CommonSelector);
+  const navigation = useNavigation();
+
+  const navigateProfile = () => {
+    if (screenName !== 'editProfile') {
+      navigation.navigate('profile');
+    }
+  };
+
   const getInitials = (fullName) => {
     if (!fullName) return '';
     const words = fullName.trim().split(' ');
-    if (words.length === 1) return words[0][0].toUpperCase();
-    return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+    return words.length === 1
+      ? words[0][0].toUpperCase()
+      : (words[0][0] + words[words.length - 1][0]).toUpperCase();
   };
 
   const getAvatarColor = (name) => {
-    const colors = [
-      '#F97316', 
-      '#3B82F6', 
-      '#10B981',
-      '#8B5CF6', 
-      '#EF4444', 
-      '#14B8A6', 
-      '#F59E0B', 
-    ];
-
-    if (!name) return colors[0];
-
+    const colors = ['#F97316', '#3B82F6', '#10B981', '#8B5CF6', '#EF4444'];
     let hash = 0;
-    for (let i = 0; i < name.length; i++) {
+    for (let i = 0; i < name?.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }
-
     return colors[Math.abs(hash) % colors.length];
   };
 
-  const bgColor = getAvatarColor(UsersigninData.full_name || UsersigninData.name);
-  const initials = getInitials(UsersigninData.full_name || UsersigninData.name);
+  const initials = getInitials(
+    UsersigninData.full_name || UsersigninData.name
+  );
+  const bgColor = getAvatarColor(initials);
 
-  const navigateProfile = () => {
-    return Navigation.navigate("profile")
-  }
   return (
-    <TouchableOpacity activeOpacity={1} onPress={()=>navigateProfile()} style={[styles.container,containerStyle]}>
-      {avatar ? (
-        <Image source={{ uri: avatar }} style={styles.avatar} />
-      ) : (
-        <View>
-        <View style={[styles.initialAvatar, { backgroundColor: bgColor }]}>
-          <Text style={styles.initialText}>{initials}</Text>
-        </View>
-         {screenName=== "editProfile" && 
-         <TouchableOpacity style={{position:'absolute', top:27,right:2}}>
-         <EditIcon width={25} height={25}/>
-         </TouchableOpacity>
-         
-         }
-        </View>
-      )}
+    <TouchableOpacity
+      activeOpacity={1}
+      style={[styles.container, containerStyle]}
+      onPress={navigateProfile}
+    >
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={screenName === 'editProfile' ? onAvatarPress : undefined}
+      >
+        {avatar ? (
+          <Image source={{ uri: avatar }} style={styles.avatar} />
+        ) : (
+          <View style={[styles.initialAvatar, { backgroundColor: bgColor }]}>
+            <Text style={styles.initialText}>{initials}</Text>
+          </View>
+        )}
+
+        {screenName === 'editProfile' && (
+          <TouchableOpacity
+            style={styles.editIcon}
+            onPress={onAvatarPress}
+          >
+            <EditIcon width={22} height={22} />
+          </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+
       <View>
-        <Text style={styles.title}>{t('comman.Hello')} {UsersigninData.full_name}</Text>
-        <Text style={styles.subtitle}>{ desc? desc : t('comman.Welcome')}</Text>
+        <Text style={styles.title}>
+          {screenName === 'editProfile'
+            ? UsersigninData.full_name
+            : `${t('comman.Hello')} ${UsersigninData.full_name}`
+          }
+        </Text>
+        <Text style={styles.subtitle}>
+          {desc || t('comman.Welcome')}
+        </Text>
       </View>
     </TouchableOpacity>
   );
 };
+
+export default GreetingHeader;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -77,7 +106,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    marginTop:Platform.OS === 'android' ? responsiveHeight(3) : responsiveHeight(6)
+    marginTop:
+      Platform.OS === 'android'
+        ? responsiveHeight(3)
+        : responsiveHeight(6),
   },
   avatar: {
     width: 44,
@@ -88,7 +120,7 @@ const styles = StyleSheet.create({
   initialAvatar: {
     width: 44,
     height: 44,
-    borderRadius: 25,
+    borderRadius: 22,
     marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
@@ -98,11 +130,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  editIcon: {
+    position: 'absolute',
+    bottom: -4,
+    right: 6,
+  },
   title: {
     fontSize: FontSize.Font18,
     ...GlobalFonts.subtitle,
     fontWeight: '600',
-    color: '#111',
   },
   subtitle: {
     ...GlobalFonts.subtitle,
@@ -111,6 +147,3 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
-
-
-export default GreetingHeader;

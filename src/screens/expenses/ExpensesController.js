@@ -24,6 +24,8 @@ export const useExpenses = () => {
   const [PreviewImage, setPreviewImage] = React.useState(false);
   const [selectCategoryType, setSelectedCategoryType] = useState({ id: 0, name: "Select category" })
   const [selectAccountType, setSelectedAccountType] = useState({ id: 0, name: "Select account" })
+  const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
+
 
   const Validator = React.useRef(new SimpleReactValidator({}));
   const [, forceUpdate] = React.useState();
@@ -180,7 +182,6 @@ export const useExpenses = () => {
       });
       return;
     }
-
     if (!startDate) {
       showMessage({
         icon: "danger",
@@ -198,7 +199,6 @@ export const useExpenses = () => {
         userId: UsersigninData.user_id,
         userData: dataObj
       };
-      console.log("OBJ====>",JSON.stringify(obj,null,2))
       try {
         const result = await dispatch(CreateExpenses(obj)).unwrap();
         if (result.status === "success") {
@@ -237,6 +237,10 @@ export const useExpenses = () => {
     setPreviewVisible(true);
   };
 
+  const onImagePicked = (image) => {
+  setFileObj(image); // image has base64, uri, fileName, type
+};
+
   return {
     t,
     IsStartdatepickeropen,
@@ -268,7 +272,10 @@ export const useExpenses = () => {
     setSelectedCategoryType,
     selectAccountType,
     setSelectedAccountType,
-    AccountListData
+    AccountListData,
+    onImagePicked,
+    isImagePickerVisible,
+    setIsImagePickerVisible,
   }
 
 }

@@ -122,16 +122,23 @@
     "Tax": "Tax"
   },
   "Approvals": {
-    "Approvals":"Approvals",
-    "Subject": "Subject",
-    "Owner": "Owner",
-    "Category": "Category",
-    "Start": "Start",
-    "To": "To",
-    "Status": "Status",
-    "Action": "Action",
-    "User": "User"
-  },
+  "Approvals": "Approvals",
+  "Approved": "Approved",
+  "Rejected": "Rejected",
+  "Submitted": "Submitted",
+  "Pending": "Pending",
+  "Approve": "Approve",
+  "Reject": "Reject",
+  "Subject": "Subject",
+  "Owner": "Owner",
+  "Category": "Category",
+  "Start": "Start",
+  "To": "To",
+  "Status": "Status",
+  "Action": "Action",
+  "User": "User"
+},
+
   "Welcome1": {
     "title": "Workforce Management, Simplified",
     "subtitle": "Attendance, leave, and approvals in one reliable platform."
