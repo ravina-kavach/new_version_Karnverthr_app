@@ -44,6 +44,7 @@ import TenureIcon from './ProfileIcons/Tenure.svg'
 import DateApproval from './DateApproval.svg'
 import CameraIcon from './CameraIcon.svg'
 import UploadIcon from './UploadIcon.svg'
+import EmptyExpense from './EmptyExpense.svg'
 export {
   Check,
   FillCheck,
@@ -90,5 +91,6 @@ export {
   RightArrow,
   JoiningDateIcon,
   TenureIcon,
-  DateApproval
+  DateApproval,
+  EmptyExpense
 };

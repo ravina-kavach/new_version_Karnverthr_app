@@ -1,16 +1,17 @@
-import { View, Text, ScrollView, Modal, TouchableWithoutFeedback, Dimensions, Image, FlatList, RefreshControl, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Modal, TouchableWithoutFeedback, Dimensions, Image, FlatList, RefreshControl, Pressable, StyleSheet } from 'react-native'
 import React from 'react'
-import { ColView, RowView } from '../../utils/common'
 import { COLOR, STATE } from '../../theme/theme';
 import moment from 'moment'
 import Dropdown from '../../components/Dropdown'
 import { useExpenses } from './ExpensesController'
 import NodataFound from '../../components/NodataFound'
 import { CommonView } from '../../utils/common'
-import { PlusIcon } from '../../assets/svgs';
+import { PlusIcon,EmptyExpense } from '../../assets/svgs';
 import AddExpenseModal from '../../components/AddExpenseModal'
 import Config from 'react-native-config';
 import ImagePickerSheet from '../../components/ImagePickerSheet';
+import { GlobalFonts } from '../../theme/typography';
+import { FontSize } from '../../utils/metrics';
 
 
 export default function Expenses() {
@@ -52,75 +53,45 @@ export default function Expenses() {
 
   const renderItem = ({ item }) => {
     const BASE_URL = Config.BASE_URL;
-   
+    const imageUri =
+      item.attachment_ids?.length > 0
+        ? `${BASE_URL}${item.attachment_ids[0].url}`
+        : null;
+    const stateKey = item.state?.toLowerCase();
     return (
       <View style={styles.card}>
-        <RowView>
-          <ColView>
-            <Text style={styles.labelText}>
-              {t('Expenses.Name')}:{' '}
-              <Text style={styles.valueText}>{item.name}</Text>
-            </Text>
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <Text style={styles.title}>{item.name}</Text>
 
-            {item.description && (
-              <Text style={styles.description}>{item.description}</Text>
+          <View style={styles.statusWrap}>
+            <Text style={[styles.statusText, { color: STATE[stateKey] }]}>{item.state}</Text>
+            <View style={[styles.statusDot, { backgroundColor: STATE[stateKey] }]} />
+          </View>
+        </View>
+
+        <View style={styles.contentRow}>
+          <View style={styles.imageBox}>
+            {!imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.image} />
+            ) : (
+              <View style={styles.placeholder}>
+                <EmptyExpense color={COLOR.dark5}/>
+              </View>
             )}
+          </View>
 
-            <Text style={styles.labelText}>
-              {t('Expenses.Amount')}:{' '}
-              <Text style={styles.amountText}>
-                ₹ {item.total_amount_currency?.toFixed(2)}
-              </Text>
+          <View style={styles.rightInfo}>
+            <Text style={styles.amount}>₹ {item.total_amount_currency?.toFixed(2)}</Text>
+            <Text style={styles.date}>
+              {moment(item.date).format('DD-MM-YYYY')}
             </Text>
-
-            <View style={styles.statusRow}>
-              <Text style={styles.labelText}>
-                {t('Expenses.Status')}:
-              </Text>
-              <Text
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: STATE[item.state] },
-                ]}>
-                {item.state}
-              </Text>
-            </View>
-          </ColView>
-
-          <ColView style={styles.rightColumn}>
-            <Text style={styles.dateText}>
-              {moment(item.date).format('DD-MM-yyyy')}
-            </Text>
-
-            {item.attachment_ids?.length > 0 && (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={styles.attachmentScroll}
-              >
-                {item.attachment_ids.map((img, idx) => {
-                  const uri = `${BASE_URL}${img.url}`;
-                   console.log("item===>",uri)
-                  return (
-                    <TouchableWithoutFeedback
-                      key={idx}
-                      onPress={() => openImage(uri)}
-                    >
-                      <Image
-                        source={{ uri }}
-                        style={styles.attachmentImage}
-                        resizeMode="cover"
-                      />
-                    </TouchableWithoutFeedback>
-                  );
-                })}
-              </ScrollView>
-            )}
-          </ColView>
-        </RowView>
+          </View>
+        </View>
       </View>
-    )
+    );
   };
+
 
 
   return (
@@ -137,6 +108,7 @@ export default function Expenses() {
               <RefreshControl refreshing={isGetExpenseListFetching} onRefresh={onRefresh} />
             }
             contentContainerStyle={styles.contentContainer}
+            ListHeaderComponent={() => <Text style={styles.sectionTitle}>All Expenses</Text>}
             ListEmptyComponent={() => (
               <View style={styles.placeHoldeContainer}>
                 <NodataFound titleText={"Add expenses"} />
@@ -157,7 +129,7 @@ export default function Expenses() {
           SubmitExpense={SubmitExpense}
           isCreateExpensesFetching={isCreateExpensesFetching}
           FileObj={FileObj}
-          heandleonCamera={()=>setIsImagePickerVisible(true)}
+          heandleonCamera={() => setIsImagePickerVisible(true)}
           CategoryListData={CategoryListData}
           Dropdown={Dropdown}
           COLOR={COLOR}
@@ -191,34 +163,72 @@ export default function Expenses() {
           </View>
         </Modal>
       </View>
-      {isImagePickerVisible && 
-      <ImagePickerSheet
-        visible={isImagePickerVisible}
-        onClose={() => setIsImagePickerVisible(false)}
-        onResult={onImagePicked}
-      />}
+      {isImagePickerVisible &&
+        <ImagePickerSheet
+          visible={isImagePickerVisible}
+          onClose={() => setIsImagePickerVisible(false)}
+          onResult={onImagePicked}
+        />}
     </CommonView>
   )
 }
 const styles = StyleSheet.create({
   card: {
     backgroundColor: COLOR.White1,
-    borderRadius: 12,
-    padding: 10,
-    paddingHorizontal: 25,
-    marginBottom: 10,
-    marginVertical: 20
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   flexContainer: { flex: 1 },
   iconContainer: { backgroundColor: COLOR.Black1, padding: 12, borderRadius: 5, overflow: 'hidden' },
   container: { marginHorizontal: 20 },
-  contentContainer: { paddingVertical: 10 },
+  contentContainer: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, backgroundColor: COLOR.White1, borderRadius: 20 },
   labelText: {
+    ...GlobalFonts.subtitle,
     fontWeight: '600',
     fontSize: 16,
     color: COLOR.Black1,
     marginBottom: 5,
     textTransform: 'capitalize',
+  },
+  statusText: {
+    fontSize: 13,
+    marginRight: 6,
+    fontWeight: '500',
+    ...GlobalFonts.subtitle,
+  },
+
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLOR.Black1,
+    ...GlobalFonts.subtitle,
+  },
+
+  statusWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+
+  sectionTitle: {
+    ...GlobalFonts.subtitle,
+    fontWeight: '600',
+    marginVertical: 10,
+    marginBottom: 20,
+
   },
 
   plusContainer: { position: "absolute", right: 20, bottom: 30 },
@@ -227,15 +237,18 @@ const styles = StyleSheet.create({
     color: COLOR.dark2,
     fontWeight: '500',
     textTransform: 'capitalize',
+    ...GlobalFonts.subtitle,
   },
 
   description: {
+    ...GlobalFonts.subtitle,
     fontSize: 14,
     color: '#444',
     marginVertical: 2,
   },
 
   amountText: {
+    ...GlobalFonts.subtitle,
     color: COLOR.button,
     fontWeight: '500',
   },
@@ -265,6 +278,7 @@ const styles = StyleSheet.create({
 
   dateText: {
     fontSize: 16,
+    ...GlobalFonts.subtitle,
     color: COLOR.Black1,
     textAlign: 'center',
     marginVertical: 2,
@@ -281,5 +295,53 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 8,
     backgroundColor: '#eee',
+  },
+  contentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  imageBox: {
+    width: 56,
+    height: 56,
+    borderRadius: 10,
+    backgroundColor: COLOR.dark5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+
+  placeholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#E5E7EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  rightInfo: {
+    flex: 1,
+    alignItems: 'flex-end',
+    marginLeft: 12,
+  },
+
+  amount: {
+    ...GlobalFonts.subtitle,
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.Black1,
+  },
+
+  date: {
+    ...GlobalFonts.subtitle,
+    marginTop: 4,
+    fontSize: FontSize.Font14,
+    color: '#6B7280',
   },
 });
