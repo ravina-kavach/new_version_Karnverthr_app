@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     bottom: 20,
     backgroundColor: '#000',
-    borderRadius: 30,
+    borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 20,
   },

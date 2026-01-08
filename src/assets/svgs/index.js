@@ -45,6 +45,7 @@ import DateApproval from './DateApproval.svg'
 import CameraIcon from './CameraIcon.svg'
 import UploadIcon from './UploadIcon.svg'
 import EmptyExpense from './EmptyExpense.svg'
+import CheckOut from './CheckOut.svg'
 export {
   Check,
   FillCheck,
@@ -55,6 +56,7 @@ export {
   Sms,
   FingerScan,
   CheckIn,
+  CheckOut,
   CalenderIcon,
   ExpensesIcon,
   HomeIcon,

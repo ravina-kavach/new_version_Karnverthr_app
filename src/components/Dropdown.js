@@ -1,52 +1,123 @@
-import React from 'react'
-import { View , Image} from 'react-native'
-import { ColView, Label, RowView } from '../utils/common';
-import { COLOR } from '../theme/theme';
-import SelectDropdown from 'react-native-select-dropdown';
-import { ArrowDown } from '../assets/icons/index.js';
-import { GlobalFonts } from '../theme/typography.js';
-// import Entypo from 'react-native-vector-icons/dist/Entypo';
+import React from "react";
+import { View, Image, StyleSheet } from "react-native";
+import SelectDropdown from "react-native-select-dropdown";
+import { RowView, Label } from "../utils/common";
+import { COLOR } from "../theme/theme";
+import { ArrowDown } from "../assets/icons";
+import { GlobalFonts } from "../theme/typography";
+import { FontSize } from "../utils/metrics";
 
-function Dropdown({ DropdownData = [], Style, Selecteditem, setSelecteditem }) {
-      
-    return (
-        <View>
-            {DropdownData.length > 0 && (
-                <SelectDropdown
-                    data={DropdownData}
-                    defaultValue={DropdownData[0]}
-                    defaultValueByIndex={0}
-                    onSelect={(selectedItem, index) => {
-                        setSelecteditem(selectedItem);
-                    }}
-                    dropdownStyle={{borderRadius:15,maxHeight:150}}
-                    dropdownOverlayColor={"rgba(0,0,0,0.1)"}
-                    renderButton={(selectedItem, isOpened) => {
-                        return (
-                            <View style={{ width: 'auto', borderRadius: 10,  height: 45, paddingTop: 10, paddingHorizontal: 10, backgroundColor:COLOR.White1}}>
-                                <RowView>
-                                    <ColView>
-                                        <Label style={{ ... GlobalFonts.small,color: COLOR.Black1, fontSize: 15, marginRight: 10 }}>{Selecteditem ? Selecteditem.name : DropdownData[0]?.name}</Label>
-                                    </ColView>
-                                    <ColView style={{ flex: 0 }}>
-                                            <Image source={ArrowDown} size={26} style={{ transform: [{ rotate: isOpened ? '180deg': '0deg' }] }}/>
-                                    </ColView>
-                                </RowView>
-                            </View>
-                        );
-                    }}
-                    renderItem={(item, index, isSelected) => {
-                        return (
-                            <View style={{ borderBottomWidth: 0.5, borderEndColor: COLOR.Black1, backgroundColor: isSelected ? COLOR.background2 : "rgba(0,0,0,0.2)"}}>
-                                <Label style={{ textAlign: "center", paddingVertical: 5, color: isSelected ? COLOR.White1 : COLOR.Black1 }}>{item.name}</Label>
-                            </View>
-                        );
-                    }}
-                    showsVerticalScrollIndicator={false}
-                />
-            )}
+function Dropdown({ DropdownData = [], Selecteditem, setSelecteditem }) {
+  if (!DropdownData.length) return null;
+
+  return (
+    <SelectDropdown
+      data={DropdownData}
+      defaultValue={DropdownData[0]}
+      onSelect={(selectedItem) => setSelecteditem(selectedItem)}
+      dropdownStyle={styles.dropdown}
+      dropdownOverlayColor='transparent'
+      showsVerticalScrollIndicator={false}
+      renderButton={(selectedItem, isOpened) => (
+        <View style={styles.button}>
+          <RowView style={styles.buttonRow}>
+            <Label style={styles.text}>
+              {selectedItem?.name}
+            </Label>
+
+            <Image
+              source={ArrowDown}
+              style={[
+                styles.arrow,
+                { transform: [{ rotate: isOpened ? "180deg" : "0deg" }] },
+              ]}
+            />
+          </RowView>
         </View>
-    )
+      )}
+      renderItem={(item, index, isSelected) => (
+       <View
+    style={[
+      styles.item,
+      isSelected && styles.selectedItem,
+      index !== DropdownData.length - 1 && styles.separator,
+    ]}
+  >
+    <Label
+      style={[
+        styles.itemText,
+        isSelected && styles.selectedText,
+      ]}
+    >
+      {item.name}
+    </Label>
+  </View>
+      )}
+    />
+  );
 }
 
-export default Dropdown
+export default Dropdown;
+
+const styles = StyleSheet.create({
+  button: {
+    height: 46,
+    backgroundColor: COLOR.White1,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+
+  buttonRow: {
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  text: {
+    ...GlobalFonts.small,
+    fontSize: FontSize.Font14,
+    color: "#111827",
+    fontWeight: "500",
+  },
+
+  arrow: {
+    width: 16,
+    height: 16,
+    tintColor: "#6B7280",
+  },
+
+  dropdown: {
+    borderRadius: 12,
+    backgroundColor: COLOR.White1,
+    paddingVertical: 6,
+  },
+
+  item: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: COLOR.White1,
+  },
+
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+  },
+
+  selectedItem: {
+    backgroundColor: "#F9FAFB", // light, not dark
+  },
+
+  itemText: {
+    ...GlobalFonts.small,
+    fontSize: FontSize.Font14,
+    fontSize: 14,
+    color: COLOR.Black1
+  },
+
+  selectedText: {
+    fontWeight: "600",
+  },
+});
+

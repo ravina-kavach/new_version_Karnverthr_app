@@ -94,6 +94,25 @@ export const UserAttendance = createAsyncThunk(
     },
 );
 
+export const UserAttendanceRegularization = createAsyncThunk(
+    'UserAttendanceRegularization',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.post('api/employee/attandence', userdata);
+            if (result.data.success) {
+                return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
+            } else {
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
+            }
+        } catch (error) {
+            console.log("Error >>>", error.response?.data || error.message);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.errorMessage || error?.message)
+            });
+        }
+    },
+);
+
 export const GetAttandanceList = createAsyncThunk(
     'GetAttandanceList',
     async (userdata, thunkAPI) => {
@@ -1159,7 +1178,7 @@ export const CommonSlice = createSlice({
         builder.addCase(CategoryList.fulfilled, (state, { payload }) => {
             // console.log("[CategoryList.fulfilled]>>>payload>>>", payload)
             try {
-                state.CategoryListData = payload;
+                state.CategoryListData = [{ id: 0, name: "Select category" }, ...payload];
                 state.isCategoryList = true;
                 state.isCategoryListFetching = false;
                 state.isError = false;
@@ -1196,7 +1215,7 @@ export const CommonSlice = createSlice({
         builder.addCase(AccountList.fulfilled, (state, { payload }) => {
             // console.log("[AccountList.fulfilled]>>>payload>>>", payload)
             try {
-                state.AccountListData = payload;
+                state.AccountListData = [{ id: 0, name: "Select account" },...payload];
                 state.isError = false;
                 state.errorMessage = '';
                 return state;

@@ -22,8 +22,8 @@ export const useExpenses = () => {
   const [IsExoensemodal, setIsExoensemodal] = React.useState(false);
   const [PreviewVisible, setPreviewVisible] = React.useState(false);
   const [PreviewImage, setPreviewImage] = React.useState(false);
-  const [selectCategoryType, setSelectedCategoryType] = useState({ id: 0, name: "Select category" })
-  const [selectAccountType, setSelectedAccountType] = useState({ id: 0, name: "Select account" })
+  const [selectCategoryType, setSelectedCategoryType] = useState({})
+  const [selectAccountType, setSelectedAccountType] = useState({})
   const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
 
 
