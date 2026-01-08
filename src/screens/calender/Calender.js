@@ -265,6 +265,7 @@ export default function Calendar() {
     <CommonView>
       <FlatList
         data={reminderEvents}
+        showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         renderItem={renderListItem}
         refreshControl={
@@ -344,7 +345,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.bg,
   },
   headerTitle: {
-    fontSize: 18,
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font16,
     fontWeight: '600',
     color: COLORS.textMain,
   },
@@ -393,6 +395,7 @@ const styles = StyleSheet.create({
 
   // Date Title
   currentDateTitle: {
+    ...GlobalFonts.subtitle,
     fontSize: 22,
     fontWeight: '700',
     color: COLORS.textMain,
@@ -423,6 +426,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     color: COLORS.textMuted,
+    ...GlobalFonts.subtitle,
   },
 
   // Floating Action Button
@@ -456,6 +460,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   weekDayText: {
+    ...GlobalFonts.subtitle,
     fontSize: 12,
     color: '#999',
     width: 40,
@@ -478,6 +483,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1E1E1E',
   },
   dateText: {
+    ...GlobalFonts.subtitle,
     fontSize: 14,
     color: '#333',
   },
@@ -499,8 +505,8 @@ const styles = StyleSheet.create({
   },
 
   listItemTitle: {
-    fontSize: FontSize.Font16,
     ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font16,
     fontWeight: '600',
     marginBottom: 8,
     color: '#111',

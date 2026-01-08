@@ -4,6 +4,7 @@ import { ColView, Label, RowView } from '../utils/common';
 import { COLOR } from '../theme/theme';
 import SelectDropdown from 'react-native-select-dropdown';
 import { ArrowDown } from '../assets/icons/index.js';
+import { GlobalFonts } from '../theme/typography.js';
 // import Entypo from 'react-native-vector-icons/dist/Entypo';
 
 function Dropdown({ DropdownData = [], Style, Selecteditem, setSelecteditem }) {
@@ -25,7 +26,7 @@ function Dropdown({ DropdownData = [], Style, Selecteditem, setSelecteditem }) {
                             <View style={{ width: 'auto', borderRadius: 10,  height: 45, paddingTop: 10, paddingHorizontal: 10, backgroundColor:COLOR.White1}}>
                                 <RowView>
                                     <ColView>
-                                        <Label style={{ color: COLOR.Black1, marginRight: 10 }}>{Selecteditem ? Selecteditem.name : DropdownData[0]?.name}</Label>
+                                        <Label style={{ ... GlobalFonts.small,color: COLOR.Black1, fontSize: 15, marginRight: 10 }}>{Selecteditem ? Selecteditem.name : DropdownData[0]?.name}</Label>
                                     </ColView>
                                     <ColView style={{ flex: 0 }}>
                                             <Image source={ArrowDown} size={26} style={{ transform: [{ rotate: isOpened ? '180deg': '0deg' }] }}/>
