@@ -98,9 +98,28 @@ export const UserAttendanceRegularization = createAsyncThunk(
     'UserAttendanceRegularization',
     async (userdata, thunkAPI) => {
         try {
-            let result = await API.post('api/employee/attandence', userdata);
+            let result = await API.post('api/create/regularization', userdata);
             if (result.data.success) {
-                return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
+                return { ...result.data.data, message: result?.data.successMessage };
+            } else {
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
+            }
+        } catch (error) {
+            console.log("Error >>>", error.response?.data || error.message);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.errorMessage || error?.message)
+            });
+        }
+    },
+);
+
+export const UserAttendanceRegcategories = createAsyncThunk(
+    'UserAttendanceRegularization',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.post(`api/regcategories?user_id=${userdata.id}`);
+            if (result.data.success) {
+                return { ...result.data.data, message: result?.data.successMessage};
             } else {
                 return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
@@ -842,6 +861,8 @@ export const CommonSlice = createSlice({
         isGetAttandanceList: false,
         isGetAttandanceListFetching: false,
 
+        UserAttendanceRegcategoriesData:[],
+
         GetExpenseListData: [],
         isGetExpenseList: false,
         isGetExpenseListFetching: false,
@@ -1315,6 +1336,39 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(GetAttandanceList.pending, state => {
             state.isGetAttandanceListFetching = true;
+        });
+
+        //========= UserAttendanceRegcategories
+        builder.addCase(UserAttendanceRegcategories.fulfilled, (state, { payload }) => {
+            // console.log("[UserAttendanceRegcategories.fulfilled]>>>payload>>>", payload)
+            try {
+                state.UserAttendanceRegcategoriesData = [{ id: 0, name: "Select Regcategories" },...payload];
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: UserAttendanceRegcategories.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(UserAttendanceRegcategories.rejected, (state, { payload }) => {
+            console.log("[UserAttendanceRegcategories.rejected]>>>", payload)
+            try {
+                state.UserAttendanceRegcategoriesData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [UserAttendanceRegcategories.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(UserAttendanceRegcategories.pending, state => {
+                return state
         });
         //========= GetExpenseList
         builder.addCase(GetExpenseList.fulfilled, (state, { payload }) => {

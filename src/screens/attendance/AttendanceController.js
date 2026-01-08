@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonSelector, GetAttandanceList } from '../../store/reducers/commonSlice';
+import { CommonSelector, GetAttandanceList,UserAttendanceRegcategories } from '../../store/reducers/commonSlice';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -53,8 +53,10 @@ export const useAttendance = () => {
     months.find(m => Number(m.id) === currentMonth)
   );
 
-  const { GetAttandanceListData, isGetAttandanceListFetching, UsersigninData } = useSelector(CommonSelector);
 
+  const { GetAttandanceListData, isGetAttandanceListFetching,UserAttendanceRegcategoriesData, UsersigninData } = useSelector(CommonSelector);
+
+   const [selectRegcategory, setSelectedRegcategory] = useState({})
 
   React.useEffect(() => {
 
@@ -65,6 +67,7 @@ export const useAttendance = () => {
         year: SelectedYear?.name ? Number(SelectedYear.name) : ""
       }
       dispatch(GetAttandanceList(data))
+      dispatch(UserAttendanceRegcategories({id: Number(UsersigninData?.user_id)}))
     }
   }, [IsFocused, Selectedmonth, SelectedYear])
 
@@ -119,5 +122,8 @@ export const useAttendance = () => {
     Selectedmonth,
     SelectedYear,
     handleModal,
+    UserAttendanceRegcategoriesData,
+    selectRegcategory,
+    setSelectedRegcategory
   }
 }
