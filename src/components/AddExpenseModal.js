@@ -15,6 +15,7 @@ import moment from 'moment';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { COLOR } from '../theme/theme';
+import { GlobalFonts } from '../theme/typography';
 
 export const AddExpenseModal = ({
     visible,
@@ -197,6 +198,7 @@ const styles = StyleSheet.create({
     },
 
     title: {
+        ...GlobalFonts.subtitle,
         fontSize: 18,
         fontWeight: '600',
         textAlign: 'center',
@@ -204,6 +206,7 @@ const styles = StyleSheet.create({
     },
 
     label: {
+        ...GlobalFonts.subtitle,
         fontSize: 14,
         fontWeight: '500',
         marginTop: 12,
@@ -248,6 +251,7 @@ const styles = StyleSheet.create({
     },
 
     cancelBtn: {
+        ...GlobalFonts.buttonText,
         flex: 1,
         borderWidth: 1,
         borderColor: '#000',
@@ -258,6 +262,7 @@ const styles = StyleSheet.create({
     },
 
     saveBtn: {
+        ...GlobalFonts.buttonText,
         flex: 1,
         backgroundColor: '#000',
         padding: 12,

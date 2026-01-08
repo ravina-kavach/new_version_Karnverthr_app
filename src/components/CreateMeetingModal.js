@@ -10,8 +10,9 @@ import {
     Modal
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
-import { CloseIcon } from '../assets/icons/index';
+import { COLOR } from '../theme/theme';
+import { GlobalFonts } from '../theme/typography';
+import { FontSize } from '../utils/metrics';
 
 const { width } = Dimensions.get('window');
 
@@ -253,7 +254,7 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
                     </ScrollView>
 
                     <TouchableOpacity style={styles.createButton} onPress={() => handleCreateMeeting()}>
-                        <Text style={styles.createButtonText}>Create New Meeting +</Text>
+                        <Text style={styles.createButtonText}>Create New Meeting  +</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -282,12 +283,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     label: {
-        fontSize: 13,
-        color: '#6B7280',
+        ...GlobalFonts.subtitle,
+        fontSize: FontSize.Font16,
+        color: COLOR.Black1,
         marginBottom: 6,
         marginTop: 10,
     },
     input: {
+        ...GlobalFonts.subtitle,
         backgroundColor: '#F3F4F6',
         borderRadius: 12,
         paddingHorizontal: 12,
@@ -322,6 +325,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     createButtonText: {
+        ...GlobalFonts.subtitle,
         color: '#fff',
         fontSize: 16,
         fontWeight: '700',
@@ -335,7 +339,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignSelf: 'center',
-        marginBottom: 6,
+         marginTop: 30,
+        // marginBottom: 6,
     },
     overlay: {
         flex: 1,

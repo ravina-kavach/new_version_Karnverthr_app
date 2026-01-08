@@ -52,7 +52,7 @@ export default function Expenses() {
 
   const renderItem = ({ item }) => {
     const BASE_URL = Config.BASE_URL;
-    // console.log("item===>",JSON.stringify(item,null,2))
+   
     return (
       <View style={styles.card}>
         <RowView>
@@ -100,7 +100,7 @@ export default function Expenses() {
               >
                 {item.attachment_ids.map((img, idx) => {
                   const uri = `${BASE_URL}${img.url}`;
-
+                   console.log("item===>",uri)
                   return (
                     <TouchableWithoutFeedback
                       key={idx}
@@ -151,7 +151,6 @@ export default function Expenses() {
             </View>
           </View>
         </TouchableWithoutFeedback>
-        {/* ----- create expense modal ------ */}
         <AddExpenseModal
           visible={IsExoensemodal}
           closeModal={closeModal}

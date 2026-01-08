@@ -6,6 +6,7 @@ import { useLeaves } from './LeavesController'
 import { GlobalFonts } from '../../theme/typography'
 import { FontSize, responsiveHeight, responsiveWidth } from '../../utils/metrics'
 import ApplyLeaveModal from '../../components/ApplyLeaveModal'
+import NodataFound from '../../components/NodataFound'
 import moment from 'moment'
 const Leaves = () => {
   const { t,
@@ -56,9 +57,7 @@ const Leaves = () => {
             ))}
           </View> */}
 
-          <Text style={styles.sectionTitle}>Submitted Leaves</Text>
-
-
+        
           <FlatList
             nestedScrollEnabled
             refreshControl={
@@ -69,6 +68,7 @@ const Leaves = () => {
             }
             data={GetLeaveListData}
             keyExtractor={(item, index) => index.toString()}
+            // ListHeaderComponent={()=>  <Text style={styles.sectionTitle}>Submitted Leaves</Text>}
             renderItem={({ item }) => (
               <View style={styles.leaveCard}>
 
@@ -114,6 +114,11 @@ const Leaves = () => {
                   </View>
                 </View>
 
+              </View>
+            )}
+             ListEmptyComponent={() => (
+              <View style={styles.placeHoldeContainer}>
+                <NodataFound titleText={"Add Leaves"} />
               </View>
             )}
           />
@@ -174,6 +179,8 @@ const styles = StyleSheet.create({
   summaryCard: {
     backgroundColor: '#fff',
     borderRadius: 14,
+    marginTop:20,
+    marginHorizontal:20,
     padding: 15,
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -244,6 +251,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#1F2937',
+  },
+
+  placeHoldeContainer: {
+    flex: 1,
+    top: 100,
+    height: 800
   },
 
   statusDot: {
