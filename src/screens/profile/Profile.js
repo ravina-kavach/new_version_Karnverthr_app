@@ -43,7 +43,7 @@ const ProfileItem = ({ icon, title, subtitle, onPress }) => (
 );
 
 export default function Profile() {
-  const { UsersigninData, navigationEditProfile, handleProfileUpload, pickerVisible,setPickerVisible,avatar } = useProfile()
+  const { UsersigninData, navigationEditProfile,handleOnLogout, handleProfileUpload, pickerVisible,setPickerVisible,avatar } = useProfile()
   return (
     <CommonView>
       <CommonHeader title="Profile" />
@@ -86,7 +86,7 @@ export default function Profile() {
         </View> */}
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => { }}>
+          <TouchableOpacity style={styles.button} onPress={()=>handleOnLogout()}>
             <Text style={styles.text}>Log out</Text>
           </TouchableOpacity>
         </View>

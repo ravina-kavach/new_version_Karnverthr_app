@@ -344,7 +344,7 @@ export const GetExpenseList = createAsyncThunk(
         console.log('GetExpenseList userdata >>', userdata);
         try {
             let result = await API.get(`employee/expense?user_id=${userdata.id}`);
-            // console.log('GetExpenseList result.data >>', result);
+            console.log('GetExpenseList result.data >>', result);
             if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result.data.message)

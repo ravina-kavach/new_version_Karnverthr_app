@@ -78,12 +78,7 @@ const styles = StyleSheet.create({
     padding: 16,
 
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    borderColor: "#E5E7EB"
   },
 
   row: {
