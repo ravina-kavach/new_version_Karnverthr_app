@@ -39,6 +39,7 @@ export const COLOR = {
     
     info2: "#89f3f5",
     button: '#71639e',
+    
 }
 
 export const STATE = {
@@ -57,6 +58,7 @@ export const STATE = {
     approved: '#28a745',
     done: '#fd7e14',
     refused: '#6f42c1',
+    
 }
 
 export const APPROVALS = {

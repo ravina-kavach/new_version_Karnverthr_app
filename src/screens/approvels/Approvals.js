@@ -114,8 +114,9 @@ export default function Approvals() {
       case 'rejected':
         return APPROVALS.rejected;
       case 'submitted':
-      case 'pending':
         return APPROVALS.submitted;
+      case 'pending':
+        return APPROVALS.pending;
       default:
         return COLOR.Primary1;
     }
