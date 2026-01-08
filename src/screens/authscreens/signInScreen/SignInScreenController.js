@@ -148,27 +148,31 @@ export const useSignInScreen = () => {
     Navigation.navigate('myTab');
     await Service.setisFirstime('true');
   };
+
   const Getdata = async () => {
-    const isVerifiedUser = await Service.GetisVerified();
-    setIsVisibleVerifiedModal(!isVerifiedUser);
+  const isVerifiedUser = await Service.GetisVerified();
+  setIsVisibleVerifiedModal(!isVerifiedUser);
 
-    const rememberedUser = await Service.GetRemember();
-    setRememberData(rememberedUser);
+  const rememberedUser = await Service.GetRemember();
+  setRememberData(rememberedUser);
 
-    const biometricEnabled = await Service.GetisBiomatic();
+  const biometricEnabled = await Service.GetisBiomatic();
 
-    const shouldShowBiometric =
-      biometricEnabled === 'true' &&
-      rememberedUser?.email &&
-      rememberedUser?.password;
+  const shouldShowBiometric =
+    biometricEnabled === 'true' &&
+    rememberedUser?.email &&
+    rememberedUser?.password;
 
-    setisChecked(biometricEnabled === 'true');
-    setisShowbiomatric(shouldShowBiometric);
+  setisChecked(biometricEnabled === 'true');
 
-    if (shouldShowBiometric) {
-      setFormdata(rememberedUser);
-    }
-  };
+  if (shouldShowBiometric) {
+    setFormdata(rememberedUser);
+
+    setTimeout(() => {
+      setisShowbiomatric(true);
+    }, 300);
+  }
+};
 
 
   const GetDevicedata = async () => {
@@ -234,6 +238,7 @@ export const useSignInScreen = () => {
           password: RememberData.password,
         }),
       );
+      setisShowbiomatric(false)
     }
   };
 
@@ -263,6 +268,7 @@ export const useSignInScreen = () => {
             password: RememberData.password,
           }),
         );
+        setisShowbiomatric(false)
       } else {
         console.log('Keys do not exist or were deleted');
       }

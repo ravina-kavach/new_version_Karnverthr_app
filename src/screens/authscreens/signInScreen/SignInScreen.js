@@ -21,6 +21,7 @@ import EmailVerificationModal from '../../../components/EmailVerificationModal.j
 import ForgotPasswordModal from '../../../components/ForgotPasswordModal.js'
 import { font } from '../../../theme/typography.js';
 import { AppLogo } from '../../../assets/images/index.js';
+import BiometricModal from '../../../components/BiometricModal.js'
 function SignInScreen() {
   const {
     t,
@@ -35,6 +36,7 @@ function SignInScreen() {
     IsPassVisible,
     setIsPassVisible,
     isShowbiomatric,
+    setisShowbiomatric,
     isForgotPasswordFetching,
     isChecked,
     setisChecked,
@@ -49,72 +51,71 @@ function SignInScreen() {
   } = useSignInScreen();
   return (
     <CommonView>
-      {!isShowbiomatric ? (
-        <ScrollView contentContainerStyle={styles.container}>
-          <Image style={styles.appLogo} source={AppLogo} />
-          <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
-          <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
-            <Image source={Sms} style={styles.icon} />
-            <TextInput
-              placeholder={t("placeholders.Enter_your_registered_email")}
-              placeholderTextColor={COLOR.TextPlaceholder}
-              cursorColor={COLOR.Gray}
-              style={styles.input}
-              onChangeText={value =>
-                setFormdata({ ...Formdata, email: value })
-              }
-              value={Formdata.email}
-            />
-          </View>
-          <Valide style={styles.valid}>
-            {Validator.current.message('email', Formdata.email, 'required')}
-          </Valide>
-
-          <View style={[styles.inputContainer, { borderColor: Formdata.password && Validator.current.errorMessages.password ? COLOR.Red : COLOR.GrayBorder }]}>
-            <Image source={FignerScan} style={styles.icon} />
-            <TextInput
-              placeholder={t("placeholders.Enter_your_password")}
-              secureTextEntry={IsPassVisible}
-              placeholderTextColor={COLOR.TextPlaceholder}
-              style={styles.input}
-              cursorColor={COLOR.Gray}
-              onChangeText={value =>
-                setFormdata({ ...Formdata, password: value })
-              }
-              maxLength={15}
-              value={Formdata.password}
-            />
-            <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
-              <Image source={IsPassVisible ? EyeSlash : Eye} style={styles.icon} />
-            </TouchableOpacity>
-          </View>
-          <Valide style={styles.valid}>
-            {Validator.current.message(
-              'password',
-              Formdata.password,
-              'required',
-            )}
-          </Valide>
-          <View style={styles.rowContainer}>
-            <View style={styles.row}>
-              <TouchableOpacity onPress={() => setisChecked(!isChecked)}>
-                <Image source={isChecked ? FillCheckbox : CheckBox} />
-              </TouchableOpacity>
-              <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
-            </View>
-            <TouchableOpacity style={styles.colmnCotainer} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
-              <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
-              <View style={styles.lineContainer} />
-            </TouchableOpacity>
-          </View>
-
-          <CommonButton
-            loading={isSigninFetching}
-            onPress={() => heandleonSignin()}
-            title={t('Button.Sign_In')}
+      <ScrollView contentContainerStyle={styles.container}>
+        <Image style={styles.appLogo} source={AppLogo} />
+        <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
+        <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
+          <Image source={Sms} style={styles.icon} />
+          <TextInput
+            placeholder={t("placeholders.Enter_your_registered_email")}
+            placeholderTextColor={COLOR.TextPlaceholder}
+            cursorColor={COLOR.Gray}
+            style={styles.input}
+            onChangeText={value =>
+              setFormdata({ ...Formdata, email: value })
+            }
+            value={Formdata.email}
           />
+        </View>
+        <Valide style={styles.valid}>
+          {Validator.current.message('email', Formdata.email, 'required')}
+        </Valide>
 
-          {/* <Text style={styles.or}>OR</Text>
+        <View style={[styles.inputContainer, { borderColor: Formdata.password && Validator.current.errorMessages.password ? COLOR.Red : COLOR.GrayBorder }]}>
+          <Image source={FignerScan} style={styles.icon} />
+          <TextInput
+            placeholder={t("placeholders.Enter_your_password")}
+            secureTextEntry={IsPassVisible}
+            placeholderTextColor={COLOR.TextPlaceholder}
+            style={styles.input}
+            cursorColor={COLOR.Gray}
+            onChangeText={value =>
+              setFormdata({ ...Formdata, password: value })
+            }
+            maxLength={15}
+            value={Formdata.password}
+          />
+          <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
+            <Image source={IsPassVisible ? EyeSlash : Eye} style={styles.icon} />
+          </TouchableOpacity>
+        </View>
+        <Valide style={styles.valid}>
+          {Validator.current.message(
+            'password',
+            Formdata.password,
+            'required',
+          )}
+        </Valide>
+        <View style={styles.rowContainer}>
+          <View style={styles.row}>
+            <TouchableOpacity onPress={() => setisChecked(!isChecked)}>
+              <Image source={isChecked ? FillCheckbox : CheckBox} />
+            </TouchableOpacity>
+            <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
+          </View>
+          <TouchableOpacity style={styles.colmnCotainer} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
+            <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
+            <View style={styles.lineContainer} />
+          </TouchableOpacity>
+        </View>
+
+        <CommonButton
+          loading={!isShowbiomatric && isSigninFetching}
+          onPress={() => heandleonSignin()}
+          title={t('Button.Sign_In')}
+        />
+
+        {/* <Text style={styles.or}>OR</Text>
           <TouchableOpacity style={styles.outlineBtn}>
             <Image source={Emp} />
             <Text style={styles.outlineText}>Sign in With Employee ID</Text>
@@ -124,78 +125,34 @@ function SignInScreen() {
             <Image source={Phone} />
             <Text style={styles.outlineText}>Sign in With Phone</Text>
           </TouchableOpacity> */}
-          {isVisibleVerifiedModal &&
-            <EmailVerificationModal
-              visible={isVisibleVerifiedModal}
-              onSubmit={handleVerificationModal}
-              isVerifiedFetching={isVerifiedFetching}
-            />}
-          {IsReSetmodalvisible &&
-            <ForgotPasswordModal
-              visible={IsReSetmodalvisible}
-              onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
-            />}
-        </ScrollView>
-      ) : (
-        <View style={styles.biometricContainer}>
-          <Image style={styles.appLogo} source={AppLogo} />
-          {Platform.OS == 'android' && (
-            <View style={[commonStyle.shodowBox, { marginBottom: 10 }]}>
-              <TouchableWithoutFeedback
-                onPress={() => BiometricLogin()}
-                disabled={isSigninFetching}>
-
-                <View style={styles.rowsContainer}>
-                  <View style={{ paddingRight: 20 }}>
-                    <Label>{t('Button.LoginWithFigerprint')}</Label>
-                  </View>
-                  <View style={{ flex: 0 }}>
-                    {isSigninFetching ? (
-                      <ActivityIndicator
-                        animating={isSigninFetching}
-                        color={COLOR.Secondary}
-                        size={30}
-                      />
-                    ) : (
-                      <Image
-                        style={{ marginEnd: 8, marginTop: 4, tintColor: COLOR.Secondary }}
-                        source={BiometricIcon}
-                      />
-                    )}
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          )}
-          {Platform.OS == 'ios' && (
-            <View style={[commonStyle.shodowBox, { marginBottom: 10 }]}>
-              <TouchableWithoutFeedback
-                onPress={() => FacelockLogin()}
-                disabled={isSigninFetching}>
-                <View style={styles.rowsContainer}>
-                  <View style={{ paddingRight: 20 }}>
-                    <Label>{t('Button.LoginWithFaceId')}</Label>
-                  </View>
-                  <View style={{ flex: 0 }}>
-                    {isSigninFetching ? (
-                      <ActivityIndicator
-                        animating={isSigninFetching}
-                        color={COLOR.Primary1}
-                        size={30}
-                      />
-                    ) : (
-                      <Image
-                        style={{ marginEnd: 8, marginTop: 4, tintColor: COLOR.Secondary }}
-                        source={FaceIdIcon}
-                      />
-                    )}
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          )}
-        </View>
-      )}
+        {isVisibleVerifiedModal &&
+          <EmailVerificationModal
+            visible={isVisibleVerifiedModal}
+            onSubmit={handleVerificationModal}
+            isVerifiedFetching={isVerifiedFetching}
+          />}
+        {IsReSetmodalvisible &&
+          <ForgotPasswordModal
+            visible={IsReSetmodalvisible}
+            onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
+          />}
+      </ScrollView>
+      <BiometricModal
+        visible={isShowbiomatric}
+        onClose={() => setisShowbiomatric(false)}
+        isSigninFetching={isSigninFetching}
+        onBiometricPress={() =>
+          Platform.OS === 'android'
+            ? BiometricLogin()
+            : FacelockLogin()
+        }
+        icon={Platform.OS === 'android' ? BiometricIcon : FaceIdIcon}
+        title={
+          Platform.OS === 'android'
+            ? t('Button.LoginWithFigerprint')
+            : t('Button.LoginWithFaceId')
+        }
+      />
     </CommonView>
   );
 }
@@ -219,17 +176,33 @@ const styles = StyleSheet.create({
   titleContainer: {
     marginBottom: responsiveHeight(3),
   },
+  biometricIcon: {
+    width: 26,
+    height: 26,
+    tintColor: '#FFFFFF',
+  },
+
+  biometricText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111',
+  },
+
   lineContainer: { backgroundColor: COLOR.TextPlaceholder, height: 1.5 },
   biometricContainer: {
-    flex: 1,
-    // justifyContent:'center',
-    paddingTop: responsiveHeight(20),
     alignItems: 'center',
-    backgroundColor: COLOR.White1,
-    paddingHorizontal: 30
-    // marginVertical: 20, 
-    // marginHorizontal: 30 
+    marginTop: 30,
   },
+  iconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: '#1C1C1E',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+
   title: {
     fontSize: 28,
     fontWeight: '800',
@@ -302,6 +275,19 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 5,
   },
+  biometricCard: {
+    width: '90%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 26,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+
 
   rowContainer: {
     width: '100%',
