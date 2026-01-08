@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ export const useAttendance = () => {
   const { t, i18n } = useTranslation();
   const IsFocused = useIsFocused();
   const dispatch = useDispatch();
+  const [visible, setVisible] = useState(false)
   const currentYear = moment().year();
   const currentMonth = moment().month() + 1;
   const months = React.useMemo(() => {
@@ -76,21 +77,34 @@ export const useAttendance = () => {
       })
     }
   }, [GetAttandanceListData?.message])
+
   const getDuration = (checkIn, checkOut) => {
+    if (!checkIn || !checkOut) return "00:00";
+
     const inTime = moment(checkIn, "YYYY-MM-DD HH:mm:ss");
     const outTime = moment(checkOut, "YYYY-MM-DD HH:mm:ss");
-    if (!inTime.isValid() || !outTime.isValid()) return " ";
+
+    if (!inTime.isValid() || !outTime.isValid()) return "00:00";
 
     const duration = moment.duration(outTime.diff(inTime));
+
+    if (duration.asMilliseconds() <= 0) return "00:00";
+
     const hours = Math.floor(duration.asHours());
     const minutes = Math.floor(duration.asMinutes()) % 60;
 
-    return `${hours}h : ${minutes}m`;
+    const hh = String(hours).padStart(2, "0");
+    const mm = String(minutes).padStart(2, "0");
+
+    return `${hh}:${mm}`;
   };
   const onRefresh = useCallback(() => {
     setSelectedmonth(months.find(i => i.name == moment().format('MMMM')))
     setSelectedYear(YEARDATA.find(i => i.name == moment().format('YYYY')))
   }, []);
+  const handleModal = () => {
+    setVisible(!visible)
+  }
 
   return {
     t,
@@ -104,7 +118,6 @@ export const useAttendance = () => {
     setSelectedYear,
     Selectedmonth,
     SelectedYear,
-
-
+    handleModal,
   }
 }

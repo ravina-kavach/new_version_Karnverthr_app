@@ -72,7 +72,7 @@ export default function Approvals() {
 
   useEffect(() => {
     if (isFocused && UsersigninData?.user_id) {
-      dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
+      // dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
     }
   }, [isFocused]);
 
