@@ -27,6 +27,7 @@ import { COLOR } from "../../theme/theme";
 import { FontSize } from "../../utils/metrics";
 import useProfile from './ProfileController'
 import { responsiveHeight } from "../../utils/metrics";
+import ImagePickerSheet from '../../components/ImagePickerSheet'
 
 const ProfileItem = ({ icon, title, subtitle, onPress }) => (
   <TouchableOpacity style={styles.row} activeOpacity={1} onPress={onPress}>
@@ -42,19 +43,7 @@ const ProfileItem = ({ icon, title, subtitle, onPress }) => (
 );
 
 export default function Profile() {
-  const { UsersigninData, navigationEditProfile } = useProfile()
-  // console.log("UsersigninData===>",UsersigninData)
-  // { status: 'success', 
-  //   message: 'You are logged in as an Employee User. Plan is active.', 
-  //   user_id: 3138, 
-  //   email: 'kevaltest@gmail.com', 
-  //   full_name: 'Keval Testing', 
-  //   user_role: 'EMPLOYEE_RELATED_OWN_USER', 
-  //   plan_status: 'ACTIVE', 
-  //   is_client_employee_user: true, 
-  //   employee_id: 16626, 
-  //   admin_user_id: 3145 
-  // }
+  const { UsersigninData, navigationEditProfile, handleProfileUpload, pickerVisible,setPickerVisible,avatar } = useProfile()
   return (
     <CommonView>
       <CommonHeader title="Profile" />
@@ -62,7 +51,14 @@ export default function Profile() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.profilecard}>
-          <GreetingHeader containerStyle={styles.headerContainer}screenName={"editProfile"} desc={UsersigninData.email} />
+          <GreetingHeader 
+          editProfile={pickerVisible} 
+          containerStyle={styles.headerContainer} 
+          screenName={"editProfile"} 
+          desc={UsersigninData.email} 
+          avatar={avatar}
+          onAvatarPress={() => setPickerVisible(true)}
+          />
         </View>
 
         {/* Account & Identity */}
@@ -76,10 +72,10 @@ export default function Profile() {
 
         {/* Professional Info */}
         <View style={styles.card}>
-        <Text style={styles.section}>Professional Information</Text>
-          <ProfileItem icon={<RoleIcon/>} title="Current Role" subtitle="Developer" />
-          <ProfileItem icon={<DepartIcon/>} title="Department" subtitle="Creative Administrative" />
-          <ProfileItem icon={<ReportMnrIcon/>} title="Reporting Manager" subtitle="David" />
+          <Text style={styles.section}>Professional Information</Text>
+          <ProfileItem icon={<RoleIcon />} title="Current Role" subtitle="Developer" />
+          <ProfileItem icon={<DepartIcon />} title="Department" subtitle="Creative Administrative" />
+          <ProfileItem icon={<ReportMnrIcon />} title="Reporting Manager" subtitle="David" />
         </View>
 
         {/* Employment */}
@@ -89,12 +85,17 @@ export default function Profile() {
           <ProfileItem icon={<TenureIcon/>} title="Job tenure" subtitle="3 Years" />
         </View> */}
 
-        {/* <View style={styles.buttonContainer}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => { }}>
             <Text style={styles.text}>Log out</Text>
           </TouchableOpacity>
-        </View> */}
+        </View>
       </ScrollView>
+      <ImagePickerSheet
+        visible={pickerVisible}
+        onClose={() => setPickerVisible(false)}
+        onResult={(image) => handleProfileUpload(image)}
+      />
     </CommonView>
   );
 }
@@ -108,8 +109,8 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 20,
   },
-  headerContainer:{ 
-    marginTop:Platform.OS === 'android' ? responsiveHeight(3) : responsiveHeight(3)
+  headerContainer: {
+    marginTop: Platform.OS === 'android' ? responsiveHeight(3) : responsiveHeight(3)
   },
   profilecard: {
     backgroundColor: "#fff",

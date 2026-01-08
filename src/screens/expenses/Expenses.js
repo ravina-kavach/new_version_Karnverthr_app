@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableWithoutFeedback, Image, FlatList, RefreshControl, Pressable, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, Modal, TouchableWithoutFeedback, Dimensions, Image, FlatList, RefreshControl, Pressable, StyleSheet } from 'react-native'
 import React from 'react'
 import { ColView, RowView } from '../../utils/common'
 import { COLOR, STATE } from '../../theme/theme';
@@ -9,6 +9,9 @@ import NodataFound from '../../components/NodataFound'
 import { CommonView } from '../../utils/common'
 import { PlusIcon } from '../../assets/svgs';
 import AddExpenseModal from '../../components/AddExpenseModal'
+import Config from 'react-native-config';
+import ImagePickerSheet from '../../components/ImagePickerSheet';
+
 
 export default function Expenses() {
 
@@ -34,20 +37,22 @@ export default function Expenses() {
     setSelectedId,
     Validator,
     setIsExoensemodal,
-    heandleonCamera,
     setIsStartdatepickeropen,
     setPreviewVisible,
     setFormdata,
     selectCategoryType,
     setSelectedCategoryType,
-    selectAccountType, 
+    selectAccountType,
     setSelectedAccountType,
-    AccountListData
+    AccountListData,
+    onImagePicked,
+    isImagePickerVisible,
+    setIsImagePickerVisible,
   } = useExpenses()
 
-  // ==========================
-
   const renderItem = ({ item }) => {
+    const BASE_URL = Config.BASE_URL;
+    // console.log("item===>",JSON.stringify(item,null,2))
     return (
       <View style={styles.card}>
         <RowView>
@@ -87,28 +92,26 @@ export default function Expenses() {
               {moment(item.date).format('DD-MM-yyyy')}
             </Text>
 
-            {item.attachments?.length > 0 && (
+            {item.attachment_ids?.length > 0 && (
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                style={styles.attachmentScroll}>
-                {item.attachments.map((img, idx) => {
-                  const uri = img.data
-                    ? `data:${img.mimetype};base64,${img.data}`
-                    : null;
+                style={styles.attachmentScroll}
+              >
+                {item.attachment_ids.map((img, idx) => {
+                  const uri = `${BASE_URL}${img.url}`;
 
                   return (
-                    uri && (
-                      <TouchableWithoutFeedback
-                        key={idx}
-                        onPress={() => openImage(uri)}>
-                        <Image
-                          source={{ uri }}
-                          resizeMode="cover"
-                          style={styles.attachmentImage}
-                        />
-                      </TouchableWithoutFeedback>
-                    )
+                    <TouchableWithoutFeedback
+                      key={idx}
+                      onPress={() => openImage(uri)}
+                    >
+                      <Image
+                        source={{ uri }}
+                        style={styles.attachmentImage}
+                        resizeMode="cover"
+                      />
+                    </TouchableWithoutFeedback>
                   );
                 })}
               </ScrollView>
@@ -155,7 +158,7 @@ export default function Expenses() {
           SubmitExpense={SubmitExpense}
           isCreateExpensesFetching={isCreateExpensesFetching}
           FileObj={FileObj}
-          heandleonCamera={heandleonCamera}
+          heandleonCamera={()=>setIsImagePickerVisible(true)}
           CategoryListData={CategoryListData}
           Dropdown={Dropdown}
           COLOR={COLOR}
@@ -171,11 +174,11 @@ export default function Expenses() {
           selectCategoryType={selectCategoryType}
           setSelectedCategoryType={setSelectedCategoryType}
           AccountListData={AccountListData}
-           selectAccountType={selectAccountType}
+          selectAccountType={selectAccountType}
           setSelectedAccountType={setSelectedAccountType}
         />
         {/* Full-Screen Preview Modal */}
-        {/* <Modal visible={PreviewVisible} transparent={true}>
+        <Modal visible={PreviewVisible} transparent={true}>
           <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center', }}>
             <Pressable onPress={() => setPreviewVisible(false)} style={{ position: 'absolute', top: 40, right: 20, zIndex: 1 }}>
               <Text style={{ color: COLOR.White1, fontSize: 18 }}>{t('Button.Close')} ✕</Text>
@@ -187,8 +190,14 @@ export default function Expenses() {
               />
             )}
           </View>
-        </Modal> */}
+        </Modal>
       </View>
+      {isImagePickerVisible && 
+      <ImagePickerSheet
+        visible={isImagePickerVisible}
+        onClose={() => setIsImagePickerVisible(false)}
+        onResult={onImagePicked}
+      />}
     </CommonView>
   )
 }
@@ -197,6 +206,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.White1,
     borderRadius: 12,
     padding: 10,
+    paddingHorizontal: 25,
     marginBottom: 10,
     marginVertical: 20
   },

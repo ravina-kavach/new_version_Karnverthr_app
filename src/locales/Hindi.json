@@ -37,15 +37,15 @@
         "Shift_Timings": "शिफ्ट का समय"
     },
     "Expenses": {
-        "Approvals":"स्वीकृति",
+        "Approvals": "स्वीकृति",
         "Name": "नाम",
         "Expense": "खर्च",
         "employee": "कर्मचारी",
         "Status": "स्थिति",
-        "Upload_Document":"दस्तावेज़ अपलोड करें",
+        "Upload_Document": "दस्तावेज़ अपलोड करें",
         "Create_Expense": "व्यय बनाएँ",
         "Payment_Mode": "भुगतान विधि",
-        "Account":"खाता",
+        "Account": "खाता",
         "Own_account": "अपना खाता",
         "Compnay": "कंपनी",
         "Expense_Name": "व्यय का नाम",
@@ -122,7 +122,9 @@
         "To": "से",
         "Status": "स्थिति",
         "Action": "क्रिया",
-        "User": "उपयोगकर्ता"
+        "User": "उपयोगकर्ता",
+        "Approved": "अनुमत",
+        "Rejected": "अस्वीकार"
     },
     "Welcome1": {
         "title": "कार्यबल प्रबंधन, सरलीकृत",
@@ -160,7 +162,7 @@
     "Button": {
         "Update_Profile": "प्रोफ़ाइल अपडेट करें",
         "Close": "बंद करना",
-        "Cancel":"रद्द करना",
+        "Cancel": "रद्द करना",
         "Discard": "खारिज करना",
         "Submit": "जमा करना",
         "Save": "सहेजें",

@@ -40,8 +40,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR.GrayBorder,
     paddingTop:Platform.OS ==='android'? 20 : 30,
   },
   left: {

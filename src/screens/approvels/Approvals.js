@@ -1,63 +1,80 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   FlatList,
   RefreshControl,
-  ScrollView,
-  Text,
-  TouchableWithoutFeedback,
   StyleSheet,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { showMessage } from 'react-native-flash-message';
+
 import CommonHeader from '../../components/CommonHeader';
+import NodataFound from '../../components/NodataFound';
+import { CommonView } from '../../utils/common';
+import { GlobalFonts } from '../../theme/typography';
 
 import {
   ApprovalList,
   ApproveActionApprove,
   ApproveActionReject,
   CommonSelector,
-  updateState,
 } from '../../store/reducers/commonSlice';
-
-import { APPROVALS, COLOR } from '../../theme/theme';
-import NodataFound from '../../components/NodataFound';
-import { CommonView, RowView, ColView, Label } from '../../utils/common';
-import { responsiveHeight } from '../../utils/metrics';
+import { DateApproval } from '../../assets/svgs';
+import { COLOR, APPROVALS } from '../../theme/theme';
+import { FontSize, responsiveHeight } from '../../utils/metrics';
 
 export default function Approvals() {
-  const { t,i18n } = useTranslation();
   const dispatch = useDispatch();
-  const IsFocused = useIsFocused();
-  
+  const isFocused = useIsFocused();
+  const { t } = useTranslation();
+
   const {
     UsersigninData,
     GetApprovalListData,
-    isApproveAction,
     isGetApprovalListFetching,
+    isApproveAction,
   } = useSelector(CommonSelector);
+  
+  const STATIC_APPROVAL_LIST = [
+    {
+      id: 101,
+      request_owner: 'Rahul Sharma',
+      request_status: 'Submitted',
+      approval_subject: 'Leave Request (Casual Leave)',
+      request_start: '12 Jan 2026',
+    },
+    {
+      id: 102,
+      request_owner: 'Priya Patel',
+      request_status: 'Approved',
+      approval_subject: 'Expense Approval – Travel',
+      request_start: '10 Jan 2026',
+    },
+    {
+      id: 103,
+      request_owner: 'Amit Verma',
+      request_status: 'Rejected',
+      approval_subject: 'Work From Home Request',
+      request_start: '08 Jan 2026',
+    },
+    {
+      id: 104,
+      request_owner: 'Neha Singh',
+      request_status: 'Pending',
+      approval_subject: 'Shift Change Request',
+      request_start: '07 Jan 2026',
+    },
+  ];
 
-  const [SelectedCatagory, setSelectedCatagory] = useState('All');
-  const [Catagoryfilterdata, setCatagoryfilterdata] = useState([]);
-
-  useEffect(async () => {
-    if (IsFocused && UsersigninData.user_id) {
-     await dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
+  useEffect(() => {
+    if (isFocused && UsersigninData?.user_id) {
+      dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
     }
-  }, [IsFocused]);
-
-//   useEffect(() => {
-//     if (SelectedCatagory === 'All') {
-//       setCatagoryfilterdata(GetApprovalListData);
-//     } else {
-//       const filtered = GetApprovalListData.filter(
-//         i => i.category === SelectedCatagory
-//       );
-//       setCatagoryfilterdata(filtered);
-//     }
-//   }, [SelectedCatagory, GetApprovalListData]);
+  }, [isFocused]);
 
   useEffect(() => {
     if (isApproveAction) {
@@ -66,7 +83,6 @@ export default function Approvals() {
         message: t('messages.Approve_request'),
         type: 'success',
       });
-      // dispatch(updateState({ isApproveAction: false }));
     }
   }, [isApproveAction]);
 
@@ -74,192 +90,272 @@ export default function Approvals() {
     dispatch(ApprovalList({ id: Number(UsersigninData?.user_id) }));
   };
 
-  const columns = [
-    { key: 'approval_subject', label: t('Approvals.Subject'), width: 120 },
-    { key: 'request_owner', label: t('Approvals.Owner'), width: 120 },
-    { key: 'category', label: t('Approvals.Category'), width: 140 },
-    { key: 'request_start', label: t('Approvals.Start'), width: 100 },
-    { key: 'request_to', label: t('Approvals.To'), width: 100 },
-    { key: 'request_status', label: t('Approvals.Status'), width: 100 },
-    { key: 'approval_action', label: t('Approvals.Action'), width: 100 },
-    { key: 'user', label: t('Approvals.User'), width: 100 },
-  ];
-
-  const renderHeader = () => (
-    <RowView style={styles.headerRow}>
-      {columns.map(col => (
-        <View key={col.key} style={[styles.headerCell, { width: col.width }]}>
-          <Text style={styles.headerText}>{col.label}</Text>
-        </View>
-      ))}
-    </RowView>
-  );
-
-  const handleOnApproveAction = async (id, status) => {
-    if (status === '1') {
-      await dispatch(
-        ApproveActionApprove({
-          approval_request_id: id,
-          user_id: UsersigninData.user_id,
-        })
-      );
-    } else {
-      await dispatch(
-        ApproveActionReject({
-          approval_request_id: id,
-          user_id: UsersigninData.user_id,
-          remarks: 'Not eligible for this date',
-        })
-      );
+  const getStatusLabel = (status) => {
+    if (!status) return '';
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return t('Approvals.Approved');
+      case 'rejected':
+        return t('Approvals.Rejected');
+      case 'submitted':
+        return t('Approvals.Submitted');
+      case 'pending':
+        return t('Approvals.Pending');
+      default:
+        return status;
     }
   };
 
-  const renderTableRow = ({ item }) => (
-    <View style={styles.row}>
-      {columns.map(col => (
-        <View key={col.key} style={[styles.cell, { width: col.width }]}>
-          {col.key === 'request_status' ? (
+  const getStatusColor = (status) => {
+    if (!status) return COLOR.Primary1;
+    switch (status.toLowerCase()) {
+      case 'approved':
+        return APPROVALS.approved;
+      case 'rejected':
+        return APPROVALS.rejected;
+      case 'submitted':
+      case 'pending':
+        return APPROVALS.submitted;
+      default:
+        return COLOR.Primary1;
+    }
+  };
+
+  const handleApprove = (id) => {
+    dispatch(
+      ApproveActionApprove({
+        approval_request_id: id,
+        user_id: UsersigninData.user_id,
+      })
+    );
+  };
+
+  const handleReject = (id) => {
+    dispatch(
+      ApproveActionReject({
+        approval_request_id: id,
+        user_id: UsersigninData.user_id,
+        remarks: 'Rejected by approver',
+      })
+    );
+  };
+
+  const renderItem = ({ item }) => {
+    const status = item.request_status?.toLowerCase();
+    const isPending = status === 'submitted' || status === 'pending';
+    const isRejected = status === 'rejected';
+    const statusColor = getStatusColor(item.request_status);
+
+    return (
+      <View style={styles.card}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.name}>{item.request_owner}</Text>
+          <View style={styles.statusWrap}>
+            <Text style={[styles.status, { color: statusColor }]}>
+              {getStatusLabel(item.request_status)}
+            </Text>
+            <View style={[styles.dot, { backgroundColor: statusColor }]} />
+          </View>
+        </View>
+
+        {/* Subject */}
+        <Text numberOfLines={2} style={styles.desc}>{item.approval_subject}</Text>
+
+        {/* Meta */}
+        <View style={styles.meta}>
+          <View style={styles.dateContainer}>
+          <DateApproval/>
+          <Text style={styles.date}>{item.request_start}</Text>
+          </View>
+          <Text style={styles.id}>ID: {item.id}</Text>
+        </View>
+
+        {isPending &&<View style={styles.actions}>
+          <TouchableOpacity
+            style={[
+              styles.btn,
+              styles.approveBtn,
+            ]}
+            onPress={() => handleApprove(item.id)}
+          >
+            <Text style={styles.approveText}>
+              {t('Approvals.Approve')}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.btn,
+              styles.rejectBtn,
+            ]}
+            onPress={() => handleReject(item.id)}
+          >
             <Text
               style={[
-                styles.statusBadge,
-                { backgroundColor: APPROVALS[item.request_status] },
+                styles.rejectText,
               ]}
             >
-              {item.request_status}
+              {t('Approvals.Reject')}
             </Text>
-          ) : (
-            <Text style={styles.cellText}>{item[col.key]}</Text>
-          )}
-
-          {item.request_status === 'pending' &&
-            col.key === 'approval_action' && (
-              <RowView style={styles.actionRow}>
-                <TouchableWithoutFeedback
-                  onPress={() => handleOnApproveAction(item.id, '1')}
-                >
-                  <View style={styles.approveBtn} />
-                </TouchableWithoutFeedback>
-
-                <TouchableWithoutFeedback
-                  onPress={() => handleOnApproveAction(item.id, '0')}
-                >
-                  <View style={styles.rejectBtn} />
-                </TouchableWithoutFeedback>
-              </RowView>
-            )}
-        </View>
-      ))}
-    </View>
-  );
+          </TouchableOpacity>
+        </View>}
+      </View>
+    );
+  };
 
   return (
     <CommonView>
-        <CommonHeader
-          title={t('Approvals.Approvals')}
-        />
-      <View style={styles.tableContainer}>
-        <ScrollView horizontal>
-          <View>
-            {renderHeader()}
-            <FlatList
-              data={GetApprovalListData}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderTableRow}
-              contentContainerStyle={styles.listContent}
-              refreshControl={
-                <RefreshControl
-                  refreshing={isGetApprovalListFetching}
-                  onRefresh={onRefresh}
-                />
-              }
-              ListEmptyComponent={() => (
-                <View style={styles.emptyContainer}>
-                  <NodataFound />
-                </View>
-              )}
-            />
+      <CommonHeader title={t('Approvals.Approvals')} />
+      
+      <FlatList
+        // data={GetApprovalListData}
+        data={STATIC_APPROVAL_LIST}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={isGetApprovalListFetching}
+            onRefresh={onRefresh}
+          />
+        }
+        ListHeaderComponent={()=><Text style={styles.section}>Approval Requests</Text>}
+        ListEmptyComponent={
+          <View style={{ paddingTop: responsiveHeight(30) }}>
+            <NodataFound titleText={t('comman.No_records_found')} />
           </View>
-        </ScrollView>
-      </View>
+        }
+      />
     </CommonView>
   );
 }
 
 const styles = StyleSheet.create({
-  tableContainer: {
-    flex: 1,
-  },
-
-  headerRow: {
-    backgroundColor: COLOR.background1,
-    flexDirection: 'row',
-  },
-
-  headerCell: {
-    padding: 8,
-    borderRightWidth: 1,
-    borderColor: '#eee',
-    justifyContent: 'center',
-  },
-
-  headerText: {
-    fontWeight: 'bold',
-    color: COLOR.White1,
-    textAlign: 'center',
-  },
-
-  row: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderColor: COLOR.dark4,
+  listContent: {
+    paddingVertical: 20,
+    paddingBottom: 30,
+    marginHorizontal:20,
+    borderRadius: 16,
     backgroundColor: COLOR.White1,
   },
+  dateContainer:{flexDirection:'row',justifyContent:'center',alignItems:'center'},
+  section: {
+      ...GlobalFonts.subtitle,
+      fontWeight: "600",
+      color: COLOR.Black1,
+      paddingHorizontal:20,
+      paddingVertical:20,
+      marginBottom: 8,
+    },
 
-  cell: {
-    padding: 8,
-    borderRightWidth: 1,
-    borderColor: COLOR.dark5,
-    justifyContent: 'center',
+  card: {
+    backgroundColor: COLOR.White1,
+    marginHorizontal:20,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    borderColor:COLOR.Placeholder,
+    borderWidth:0.5
   },
 
-  cellText: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  name: {
+    fontSize: FontSize.Font16,
+    ...GlobalFonts.subtitle,
+    fontWeight: '600',
     color: COLOR.Black1,
   },
 
-  statusBadge: {
-    color: COLOR.White1,
-    borderRadius: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    textAlign: 'center',
+  statusWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
-  actionRow: {
+  status: {
+    fontSize: FontSize.Font12,
+    marginRight: 6,
+    fontWeight: '500',
+  },
+
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+
+  desc: {
+    marginTop: 8,
+    fontSize: FontSize.Font12,
+    ...GlobalFonts.small,
+    color: COLOR.TextPlaceholder,
+  },
+
+  meta: {
     flexDirection: 'row',
-    marginTop: 4,
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+
+  date: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
+    color: COLOR.Black1,
+    paddingLeft:5
+  },
+
+  id: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
+    color: COLOR.Black1,
+  },
+
+  actions: {
+    flexDirection: 'row',
+    marginTop: 16,
+  },
+
+  btn: {
+    flex: 1,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   approveBtn: {
-    backgroundColor: '#d3f2dc',
-    padding: 6,
-    borderRadius: 20,
-    marginRight: 6,
+    borderWidth: 1,
+    borderColor: COLOR.Black1,
+    marginRight: 10,
   },
 
   rejectBtn: {
-    backgroundColor: '#f2d3d3',
-    padding: 6,
-    borderRadius: 20,
+    backgroundColor: APPROVALS.rejected,
   },
 
-  listContent: {
-    paddingVertical: 10,
+  rejectFilled: {
+    backgroundColor: COLOR.Danger,
   },
 
-  emptyContainer: {
-    // flex:1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: responsiveHeight(30),
+  approveText: {
+    ...GlobalFonts.small,
+    fontSize: FontSize.Font14,
+    fontWeight: '500',
+  },
+
+  rejectText: {
+    ...GlobalFonts.small,
+    fontSize: FontSize.Font14,
+    fontWeight: '500',
+    color: COLOR.White1,
+  },
+
+  disabled: {
+    opacity: 0.4,
   },
 });

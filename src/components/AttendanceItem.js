@@ -31,7 +31,7 @@ const checkOut = item?.check_out
         <RowView style={styles.titleContainer}>
           <Image
             source={AttendancIcon}
-            tintColor={COLOR.Primary1}
+            tintColor={COLOR.Placeholder}
           />
           <Text numberOfLines={1} style={styles.dateTitle}>{dateTitle}</Text>
         </RowView>

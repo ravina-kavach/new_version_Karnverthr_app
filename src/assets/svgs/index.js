@@ -41,6 +41,9 @@ import RoleIcon from './ProfileIcons/RoleIcon.svg'
 import RightArrow from './RightArrow.svg'
 import JoiningDateIcon from './ProfileIcons/JoinDate.svg'
 import TenureIcon from './ProfileIcons/Tenure.svg'
+import DateApproval from './DateApproval.svg'
+import CameraIcon from './CameraIcon.svg'
+import UploadIcon from './UploadIcon.svg'
 export {
   Check,
   FillCheck,
@@ -76,6 +79,8 @@ export {
   WeekCalIcon,
   ProfileIcon,
   ChangePwd,
+  CameraIcon,
+  UploadIcon,
   DepartIcon,
   EmryIcon,
   GovIcon,
@@ -84,5 +89,6 @@ export {
   RoleIcon,
   RightArrow,
   JoiningDateIcon,
-  TenureIcon
+  TenureIcon,
+  DateApproval
 };

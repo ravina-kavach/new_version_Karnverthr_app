@@ -2,7 +2,7 @@ import Geolocation from 'react-native-geolocation-service';
 import { request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
 import { PermissionsAndroid, Alert, Platform } from 'react-native';
 import Service from './service';
-import { launchCamera } from 'react-native-image-picker';
+import { launchCamera ,launchImageLibrary } from 'react-native-image-picker';
 
 const requestLocationPermission = async () => {
   try {
@@ -114,6 +114,64 @@ const heandleOnCamera = async () => {
   }
 };
 
+const handleOnGallery = async () => {
+  try {
+    let hasPermission = true;
+
+    // 🔹 Android storage permission
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES ||
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+      );
+      hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+    }
+
+    // 🔹 iOS photo library permission
+    if (Platform.OS === 'ios') {
+      const result = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+      hasPermission = result === RESULTS.GRANTED;
+    }
+
+    if (!hasPermission) {
+      showSettingsAlert();
+      return { success: false };
+    }
+
+    return new Promise((resolve) => {
+      launchImageLibrary(
+        {
+          mediaType: 'photo',
+          selectionLimit: 1,
+          includeBase64: true,
+          quality: 0.8,
+        },
+        (response) => {
+          if (response?.didCancel || response?.errorCode) {
+            return resolve({ success: false });
+          }
+
+          const asset = response.assets?.[0];
+
+          resolve({
+            success: true,
+            image: {
+              base64: asset.base64,
+              uri: asset.uri,
+              fileName: asset.fileName,
+              type: asset.type,
+            },
+          });
+        }
+      );
+    });
+  } catch (error) {
+    console.log('handleOnGallery error:', error);
+    return { success: false };
+  }
+};
+
+
 const showSettingsAlert = () => {
   Alert.alert(
     'Permission Required',
@@ -130,4 +188,5 @@ export const permission = {
   showPermissionSettingsAlert,
   showSettingsAlert,
   heandleOnCamera,
+  handleOnGallery
 };

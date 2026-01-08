@@ -149,7 +149,6 @@ export const AddExpenseModal = ({
                                 />
                             )}
 
-                            {/* Footer */}
                             <View style={styles.footer}>
                                 <TouchableOpacity
                                     style={styles.cancelBtn}
