@@ -4,10 +4,10 @@ import Dropdown from '../../components/Dropdown'
 import { COLOR } from '../../theme/theme';
 import NodataFound from '../../components/NodataFound'
 import { useAttendance } from './AttendanceController';
-import { RowView, ColView, CommonView } from '../../utils/common';
+import { RowView, CommonView } from '../../utils/common';
 import AttendanceItem from '../../components/AttendanceItem'
 import CommonHeader from '../../components/CommonHeader';
-import { responsiveHeight } from '../../utils/metrics';
+import AttendanceRegModal from '../../components/AttendanceRegModal'
 import { GlobalFonts } from '../../theme/typography';
 
 export default function Attendance() {
@@ -19,11 +19,15 @@ export default function Attendance() {
     YEARDATA,
     GetAttandanceListData,
     isGetAttandanceListFetching,
+    UserAttendanceRegcategoriesData,
+    isFeatchAttendanceReguration,
     getDuration,
     onRefresh,
     setSelectedmonth,
     setSelectedYear,
-    handleModal
+    visible,
+    handleModal,
+    onCreateRegularization
   } = useAttendance();
 
   return (
@@ -73,6 +77,13 @@ export default function Attendance() {
       <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={() => handleModal()}>
         <Text style={styles.fabText}>Attendance Regularization</Text>
       </TouchableOpacity>
+      <AttendanceRegModal
+        visible={visible}
+        data={UserAttendanceRegcategoriesData}
+        onClose={() => handleModal()}
+        onCreateReq={onCreateRegularization}
+        loading={isFeatchAttendanceReguration}
+      />
     </CommonView>
   );
 }

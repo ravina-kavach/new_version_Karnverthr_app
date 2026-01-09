@@ -40,7 +40,7 @@ export const Usersignin = createAsyncThunk(
                 email: userdata.email,
                 password: userdata.password,
             });
-    
+
             if (result.data.status === 'error') {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result?.data?.message),
@@ -68,8 +68,8 @@ export const UserVerification = createAsyncThunk(
             }
         } catch (error) {
             if (error.message) {
-             const errorMessage = error?.response?.data?.message || error?.message;
-            return thunkAPI.rejectWithValue({ error: errorMassage(errorMessage) });
+                const errorMessage = error?.response?.data?.message || error?.message;
+                return thunkAPI.rejectWithValue({ error: errorMassage(errorMessage) });
             }
         }
     },
@@ -95,31 +95,40 @@ export const UserAttendance = createAsyncThunk(
 );
 
 export const UserAttendanceRegularization = createAsyncThunk(
-    'UserAttendanceRegularization',
-    async (userdata, thunkAPI) => {
-        try {
-            let result = await API.post('api/create/regularization', userdata);
-            if (result.data.success) {
-                return { ...result.data.data, message: result?.data.successMessage };
-            } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
-            }
-        } catch (error) {
-            console.log("Error >>>", error.response?.data || error.message);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.errorMessage || error?.message)
-            });
-        }
-    },
+  'UserAttendanceRegularization',
+  async (userdata, thunkAPI) => {
+    try {
+      const result = await API.post(
+        `api/create/regularization?user_id=${userdata.id}`,
+        userdata.data
+      );
+
+      if (result.data.status === "success") {
+        return result.data;
+      }
+
+      return thunkAPI.rejectWithValue({
+        error: result.data.message,
+      });
+    } catch (error) {
+      return thunkAPI.rejectWithValue({
+        error:
+          error.response?.data?.message ||
+          error.message ||
+          "Something went wrong",
+      });
+    }
+  }
 );
 
+
 export const UserAttendanceRegcategories = createAsyncThunk(
-    'UserAttendanceRegularization',
+    'UserAttendanceRegcategories',
     async (userdata, thunkAPI) => {
         try {
-            let result = await API.post(`api/regcategories?user_id=${userdata.id}`);
-            if (result.data.success) {
-                return { ...result.data.data, message: result?.data.successMessage};
+            let result = await API.get(`api/regcategories?user_id=${userdata.id}`);
+            if (result.data.status === 'success') {
+                return result.data.data
             } else {
                 return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
@@ -162,7 +171,7 @@ export const CheckAttandanceStatus = createAsyncThunk(
                     error: errorMassage(result.data.message)
                 });
             }
-                return result.data;
+            return result.data;
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
@@ -184,7 +193,7 @@ export const GetLeavetype = createAsyncThunk(
                     error: errorMassage(result.data.message)
                 });
             }
-                return result.data.data;
+            return result.data.data;
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
@@ -204,7 +213,7 @@ export const GetDepartmentType = createAsyncThunk(
                     error: errorMassage(result.data.message)
                 });
             }
-                return result.data.data;
+            return result.data.data;
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
@@ -215,13 +224,13 @@ export const GetDepartmentType = createAsyncThunk(
 );
 export const CreateLeave = createAsyncThunk(
     'CreateLeave',
-    async (userdata, thunkAPI) => { 
+    async (userdata, thunkAPI) => {
         try {
             let result = await API.post(`api/create/leave-request?user_id=${userdata.userid}`, userdata.userData);
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage };
             } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage)});
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
         } catch (error) {
             console.log("Error >>>", error.response?.data?.message);
@@ -308,7 +317,7 @@ export const ForgotPassword = createAsyncThunk(
 // =====================================================================
 export const CategoryList = createAsyncThunk(
     'CategoryList',
-     async (userdata, thunkAPI) => {
+    async (userdata, thunkAPI) => {
         // console.log('CategoryList userdata >>', userdata);
         try {
             let result = await API.get(`employee/expense-category?user_id=${userdata.id}`);
@@ -318,7 +327,7 @@ export const CategoryList = createAsyncThunk(
                     error: errorMassage(result.data.message)
                 });
             }
-                return result.data.data;
+            return result.data.data;
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
@@ -330,7 +339,7 @@ export const CategoryList = createAsyncThunk(
 
 export const AccountList = createAsyncThunk(
     'AccountList',
-     async (userdata,thunkAPI) => {
+    async (userdata, thunkAPI) => {
         try {
             let result = await API.get(`employee/expense-account?user_id=${userdata.id}`);
             // console.log('AccountList result.data >>', result);
@@ -339,7 +348,7 @@ export const AccountList = createAsyncThunk(
                     error: errorMassage(result.data.message)
                 });
             }
-                return result.data.data;
+            return result.data.data;
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
@@ -349,29 +358,29 @@ export const AccountList = createAsyncThunk(
     },
 );
 export const CreateExpenses = createAsyncThunk(
-  'CreateExpenses',
-  async (userdata, thunkAPI) => {
-    try {
-      const result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userData);
-      if (result.data.status === "success") {
-        return {
-          status: result.data.status,
-          message: result.data.message,
-          data: result.data.data,
-        };
-      } else {
-        return thunkAPI.rejectWithValue({
-          error: errorMassage(result.data.message),
-        });
-      }
-    } catch (error) {
-      return thunkAPI.rejectWithValue({
-        error: errorMassage(
-          error.response?.data?.message || error.message
-        ),
-      });
+    'CreateExpenses',
+    async (userdata, thunkAPI) => {
+        try {
+            const result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userData);
+            if (result.data.status === "success") {
+                return {
+                    status: result.data.status,
+                    message: result.data.message,
+                    data: result.data.data,
+                };
+            } else {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message),
+                });
+            }
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(
+                    error.response?.data?.message || error.message
+                ),
+            });
+        }
     }
-  }
 );
 
 // =====================================================================
@@ -388,7 +397,7 @@ export const GetExpenseList = createAsyncThunk(
                     error: errorMassage(result.data.message)
                 });
             }
-                return result.data.data;
+            return result.data.data;
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
@@ -639,7 +648,7 @@ export const ApprovalList = createAsyncThunk(
 
 export const ApproveActionApprove = createAsyncThunk(
     'ApproveActionApprove',
-     async (userdata, thunkAPI) => {
+    async (userdata, thunkAPI) => {
         console.log('ApproveActionApprove userdata >>', userdata);
         try {
             let result = await API.post(`/api/admin/approve`, userdata);
@@ -659,7 +668,7 @@ export const ApproveActionApprove = createAsyncThunk(
 
 export const ApproveActionReject = createAsyncThunk(
     'ApproveActionReject',
-     async (userdata, thunkAPI) => {
+    async (userdata, thunkAPI) => {
         console.log('ApproveActionReject userdata >>', userdata);
         try {
             let result = await API.post(`/api/admin/reject`, userdata);
@@ -861,7 +870,9 @@ export const CommonSlice = createSlice({
         isGetAttandanceList: false,
         isGetAttandanceListFetching: false,
 
-        UserAttendanceRegcategoriesData:[],
+        UserAttendanceRegcategoriesData: [],
+        UserAttendanceRegurationData: [],
+        isFeatchAttendanceReguration:false,
 
         GetExpenseListData: [],
         isGetExpenseList: false,
@@ -883,7 +894,7 @@ export const CommonSlice = createSlice({
         isGetLeaveListFetching: false,
 
         GetLeavetypeData: [],
-        GetDepartmentTypeData:[],
+        GetDepartmentTypeData: [],
         isGetLeavetype: false,
         isGetLeavetypeFetching: false,
 
@@ -955,7 +966,7 @@ export const CommonSlice = createSlice({
             state.isVerified = payload.isVerified !== undefined ? payload.isVerified : state.isVerified
             state.isGetAttandanceList = payload.isGetAttandanceList !== undefined ? payload.isGetAttandanceList : state.isGetAttandanceList;
             state.isGetExpenseList = payload.isGetExpenseList !== undefined ? payload.isGetExpenseList : state.isGetExpenseList;
-
+            state.isFeatchAttendanceReguration = payload.isFeatchAttendanceReguration !== undefined ? payload.isFeatchAttendanceReguration : state.isFeatchAttendanceReguration;
             state.isForgotPassword = payload.isForgotPassword !== undefined ? payload.isForgotPassword : state.isForgotPassword;
             state.isProfileUpdate = payload.isProfileUpdate !== undefined ? payload.isProfileUpdate : state.isProfileUpdate;
 
@@ -1094,7 +1105,7 @@ export const CommonSlice = createSlice({
 
         //========= CheckAttandanceStatus 
 
-            builder.addCase(CheckAttandanceStatus.fulfilled, (state, { payload }) => {
+        builder.addCase(CheckAttandanceStatus.fulfilled, (state, { payload }) => {
             //console.log("[CheckAttandanceStatus.fulfilled]>>>payload>>>", payload)
             try {
                 state.attandanceStatusData = payload;
@@ -1236,7 +1247,7 @@ export const CommonSlice = createSlice({
         builder.addCase(AccountList.fulfilled, (state, { payload }) => {
             // console.log("[AccountList.fulfilled]>>>payload>>>", payload)
             try {
-                state.AccountListData = [{ id: 0, name: "Select account" },...payload];
+                state.AccountListData = [{ id: 0, name: "Select account" }, ...payload];
                 state.isError = false;
                 state.errorMessage = '';
                 return state;
@@ -1338,11 +1349,45 @@ export const CommonSlice = createSlice({
             state.isGetAttandanceListFetching = true;
         });
 
+        //========= UserAttendanceRegularization
+        builder.addCase(UserAttendanceRegularization.fulfilled, (state, { payload }) => {
+            // console.log("[UserAttendanceRegularization.fulfilled]>>>payload>>>", payload)
+            try {
+                state.UserAttendanceRegurationData = payload;
+                state.isFeatchAttendanceReguration = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: UserAttendanceRegularization.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(UserAttendanceRegularization.rejected, (state, { payload }) => {
+            console.log("[UserAttendanceRegularization.rejected]>>>", payload)
+            try {
+                state.UserAttendanceRegurationData = [];
+                state.isFeatchAttendanceReguration = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [UserAttendanceRegularization.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(UserAttendanceRegularization.pending, state => {
+            state.isFeatchAttendanceReguration = true;
+        });
+
         //========= UserAttendanceRegcategories
         builder.addCase(UserAttendanceRegcategories.fulfilled, (state, { payload }) => {
-            // console.log("[UserAttendanceRegcategories.fulfilled]>>>payload>>>", payload)
             try {
-                state.UserAttendanceRegcategoriesData = [{ id: 0, name: "Select Regcategories" },...payload];
+                state.UserAttendanceRegcategoriesData = [{ id: 0, type: "Select Regularization", client_id:[] }, ...payload];
                 state.isError = false;
                 state.errorMessage = '';
                 return state;
@@ -1368,7 +1413,7 @@ export const CommonSlice = createSlice({
             }
         });
         builder.addCase(UserAttendanceRegcategories.pending, state => {
-                return state
+            return state
         });
         //========= GetExpenseList
         builder.addCase(GetExpenseList.fulfilled, (state, { payload }) => {
@@ -1591,7 +1636,7 @@ export const CommonSlice = createSlice({
         });
 
         //===== Department type
-        
+
         builder.addCase(GetDepartmentType.fulfilled, (state, { payload }) => {
             // console.log("[GetDepartmentType.fulfilled]>>>payload>>>", payload)
             try {
@@ -1988,7 +2033,7 @@ export const CommonSlice = createSlice({
         });
 
         //==== approvals reject action
-         builder.addCase(ApproveActionReject.fulfilled, (state, { payload }) => {
+        builder.addCase(ApproveActionReject.fulfilled, (state, { payload }) => {
             // console.log("[ApproveActionReject.fulfilled]>>>payload>>>", payload)
             try {
                 state.isApproveAction = true;

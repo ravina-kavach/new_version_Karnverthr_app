@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonSelector, GetAttandanceList,UserAttendanceRegcategories } from '../../store/reducers/commonSlice';
+import { CommonSelector, GetAttandanceList, UserAttendanceRegcategories, UserAttendanceRegularization } from '../../store/reducers/commonSlice';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -54,9 +54,9 @@ export const useAttendance = () => {
   );
 
 
-  const { GetAttandanceListData, isGetAttandanceListFetching,UserAttendanceRegcategoriesData, UsersigninData } = useSelector(CommonSelector);
+  const { GetAttandanceListData, isGetAttandanceListFetching, UserAttendanceRegcategoriesData, UsersigninData, isFeatchAttendanceReguration } = useSelector(CommonSelector);
 
-   const [selectRegcategory, setSelectedRegcategory] = useState({})
+  const [selectRegcategory, setSelectedRegcategory] = useState({})
 
   React.useEffect(() => {
 
@@ -67,7 +67,7 @@ export const useAttendance = () => {
         year: SelectedYear?.name ? Number(SelectedYear.name) : ""
       }
       dispatch(GetAttandanceList(data))
-      dispatch(UserAttendanceRegcategories({id: Number(UsersigninData?.user_id)}))
+      dispatch(UserAttendanceRegcategories({ id: Number(UsersigninData.user_id) }))
     }
   }, [IsFocused, Selectedmonth, SelectedYear])
 
@@ -105,9 +105,41 @@ export const useAttendance = () => {
     setSelectedmonth(months.find(i => i.name == moment().format('MMMM')))
     setSelectedYear(YEARDATA.find(i => i.name == moment().format('YYYY')))
   }, []);
+
   const handleModal = () => {
     setVisible(!visible)
   }
+
+  const onCreateRegularization = async (payload) => {
+    try {
+      const userData = {
+        id: UsersigninData.user_id,
+        data: { ...payload, employee_id: UsersigninData.employee_id },
+      };
+
+      const result = await dispatch(
+        UserAttendanceRegularization(userData)
+      ).unwrap();
+
+      showMessage({
+        icon: "success",
+        message: result.message || "Regularization request submitted successfully",
+        type: "success",
+      });
+
+      setVisible(false);
+    } catch (err) {
+      // console.log("Regularization Error:", err);
+
+      showMessage({
+        icon: "danger",
+        message: err.error,
+        type: "danger",
+      });
+      setVisible(false);
+    }
+  };
+
 
   return {
     t,
@@ -124,6 +156,9 @@ export const useAttendance = () => {
     handleModal,
     UserAttendanceRegcategoriesData,
     selectRegcategory,
-    setSelectedRegcategory
+    setSelectedRegcategory,
+    visible,
+    onCreateRegularization,
+    isFeatchAttendanceReguration,
   }
 }
