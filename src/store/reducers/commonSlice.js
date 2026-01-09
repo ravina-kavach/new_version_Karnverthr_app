@@ -629,11 +629,11 @@ export const CreateNewMeeting = createAsyncThunk(
 export const ApprovalList = createAsyncThunk(
     'ApprovalList',
     async (userdata, thunkAPI) => {
-        // console.log('ApprovalList userdata >>', userdata);
+        console.log('ApprovalList userdata >>', userdata);
         try {
             let result = await API.get(`/api/admin/requests?user_id=${userdata.id}`);
-            console.log('ApprovalList result.data >>', result);
-            if (result.data.success) {
+            console.log('ApprovalList result.data >>', result.data);
+            if (result.data.status === "success") {
                 return result.data.data;
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.error });
@@ -649,11 +649,11 @@ export const ApprovalList = createAsyncThunk(
 export const ApproveActionApprove = createAsyncThunk(
     'ApproveActionApprove',
     async (userdata, thunkAPI) => {
-        console.log('ApproveActionApprove userdata >>', userdata);
+         console.log('ApproveActionApprove payload >>', JSON.stringify(payload));
         try {
             let result = await API.post(`/api/admin/approve`, userdata);
             console.log('ApproveActionApprove result.data >>', result.data);
-            if (result.data.success) {
+            if (result.data.status === "success") {
                 return result.data
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
@@ -673,7 +673,7 @@ export const ApproveActionReject = createAsyncThunk(
         try {
             let result = await API.post(`/api/admin/reject`, userdata);
             console.log('ApproveActionReject result.data >>', result.data);
-            if (result.data.success) {
+            if (result.data.status === "success") {
                 return result.data
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
@@ -919,8 +919,6 @@ export const CommonSlice = createSlice({
         GetApprovalListData: [],
         isGetApprovalList: false,
         isGetApprovalListFetching: false,
-        GetApprovalListDataPageNumber: 2,
-        GetApprovalListDataTotalCount: "",
         isGetApprovalListDataMoreFetching: false,
 
         GetApprovalCategoryListData: [],
@@ -1602,7 +1600,7 @@ export const CommonSlice = createSlice({
         builder.addCase(GetLeavetype.fulfilled, (state, { payload }) => {
             // console.log("[GetLeavetype.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetLeavetypeData = [{ "display_name": "All", value: 0, }, ...payload];
+                state.GetLeavetypeData = [{ "name": "All", value: 0, }, ...payload];
                 state.isGetLeavetype = true;
                 state.isGetLeavetypeFetching = false;
                 state.isError = false;
@@ -1927,9 +1925,7 @@ export const CommonSlice = createSlice({
         builder.addCase(ApprovalList.fulfilled, (state, { payload }) => {
             // console.log("[ApprovalList.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetApprovalListData = payload.approvals;
-                state.GetApprovalListDataTotalCount = payload.total_record;
-                state.isGetApprovalList = true;
+                state.GetApprovalListData = payload;
                 state.isGetApprovalListFetching = false;
                 state.isError = false;
                 state.errorMessage = '';
@@ -1942,8 +1938,6 @@ export const CommonSlice = createSlice({
             console.log("[ApprovalList.rejected]>>>", payload)
             try {
                 state.GetApprovalListData = [];
-                state.GetApprovalListDataTotalCount = "";
-                state.isGetApprovalList = false;
                 state.isGetApprovalListFetching = false;
                 state.isError = true;
                 payload
@@ -1964,7 +1958,7 @@ export const CommonSlice = createSlice({
         builder.addCase(ApprovalListMore.fulfilled, (state, { payload }) => {
             // console.log("[ApprovalListMore.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetApprovalListData = [...state.GetApprovalListData, ...payload.approvals];
+                state.GetApprovalListData = payload;
                 state.GetApprovalListDataPageNumber = state.GetApprovalListDataPageNumber + 1;
                 state.isGetApprovalListDataMoreFetching = false;
                 state.isError = false;
