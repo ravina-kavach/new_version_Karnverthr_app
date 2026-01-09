@@ -51,46 +51,58 @@ export default function Expenses() {
     setIsImagePickerVisible,
   } = useExpenses()
 
-  const renderItem = ({ item }) => {
-    const BASE_URL = Config.BASE_URL;
-    const imageUri =
-      item.attachment_ids?.length > 0
-        ? `${BASE_URL}${item.attachment_ids[0].url}`
-        : null;
-    const stateKey = item.state?.toLowerCase();
-    return (
-      <View style={styles.card}>
-        {/* Header */}
-        <View style={styles.headerRow}>
-          <Text style={styles.title}>{item.name}</Text>
+ const renderItem = ({ item }) => {
+  const stateKey = item.state?.toLowerCase();
 
-          <View style={styles.statusWrap}>
-            <Text style={[styles.statusText, { color: STATE[stateKey] }]}>{item.state}</Text>
-            <View style={[styles.statusDot, { backgroundColor: STATE[stateKey] }]} />
-          </View>
-        </View>
+  const imageUri =
+    item.attachment_ids?.length > 0 &&
+    item.attachment_ids[0]?.base64
+      ? `data:${item.attachment_ids[0].mimetype};base64,${item.attachment_ids[0].base64}`
+      : null;
 
-        <View style={styles.contentRow}>
-          <View style={styles.imageBox}>
-            {!imageUri ? (
-              <Image source={{ uri: imageUri }} style={styles.image} />
-            ) : (
-              <View style={styles.placeholder}>
-                <EmptyExpense color={COLOR.dark5}/>
-              </View>
-            )}
-          </View>
+  return (
+    <View style={styles.card}>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>{item.name}</Text>
 
-          <View style={styles.rightInfo}>
-            <Text style={styles.amount}>₹ {item.total_amount_currency?.toFixed(2)}</Text>
-            <Text style={styles.date}>
-              {moment(item.date).format('DD-MM-YYYY')}
-            </Text>
-          </View>
+        <View style={styles.statusWrap}>
+          <Text style={[styles.statusText, { color: STATE[stateKey] }]}>
+            {item.state}
+          </Text>
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: STATE[stateKey] },
+            ]}
+          />
         </View>
       </View>
-    );
-  };
+      <View style={styles.contentRow}>
+        <View style={styles.imageBox}>
+          {imageUri ? (
+            <Pressable style={styles.imageBox} onPress={() => openImage(imageUri)}>
+            <Image source={{ uri: imageUri }} style={styles.image} />
+            </Pressable>
+          ) : (
+            <View style={styles.placeholder}>
+              <EmptyExpense color={COLOR.dark5} />
+            </View>
+          )}
+        </View>
+
+        <View style={styles.rightInfo}>
+          <Text style={styles.amount}>
+            ₹ {Number(item.total_amount).toFixed(2)}
+          </Text>
+          <Text style={styles.date}>
+            {moment(item.date).format('DD-MM-YYYY')}
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
 
 
 

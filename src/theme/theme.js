@@ -69,6 +69,8 @@ export const APPROVALS = {
     validate2:"#f2af3a",
     cancel: "#FF0000",
     submitted: '#17a2b8',
+    draft: '#1F2937',
+
     // tosubmit: '#17a2b8',
     rejected : '#FF0000',
     pending: '#f2af3a'

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   FlatList,
@@ -6,12 +6,14 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Modal,
+  TextInput,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { showMessage } from 'react-native-flash-message';
-
 import CommonHeader from '../../components/CommonHeader';
 import NodataFound from '../../components/NodataFound';
 import { CommonView } from '../../utils/common';
@@ -23,6 +25,7 @@ import {
   ApproveActionReject,
   CommonSelector,
 } from '../../store/reducers/commonSlice';
+
 import { DateApproval } from '../../assets/svgs';
 import { COLOR, APPROVALS } from '../../theme/theme';
 import { FontSize, responsiveHeight } from '../../utils/metrics';
@@ -38,41 +41,15 @@ export default function Approvals() {
     isGetApprovalListFetching,
     isApproveAction,
   } = useSelector(CommonSelector);
-  
-  const STATIC_APPROVAL_LIST = [
-    {
-      id: 101,
-      request_owner: 'Rahul Sharma',
-      request_status: 'Submitted',
-      approval_subject: 'Leave Request (Casual Leave)',
-      request_start: '12 Jan 2026',
-    },
-    {
-      id: 102,
-      request_owner: 'Priya Patel',
-      request_status: 'Approved',
-      approval_subject: 'Expense Approval – Travel',
-      request_start: '10 Jan 2026',
-    },
-    {
-      id: 103,
-      request_owner: 'Amit Verma',
-      request_status: 'Rejected',
-      approval_subject: 'Work From Home Request',
-      request_start: '08 Jan 2026',
-    },
-    {
-      id: 104,
-      request_owner: 'Neha Singh',
-      request_status: 'Pending',
-      approval_subject: 'Shift Change Request',
-      request_start: '07 Jan 2026',
-    },
-  ];
+
+
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [selectedApprovalId, setSelectedApprovalId] = useState(null);
 
   useEffect(() => {
     if (isFocused && UsersigninData?.user_id) {
-      // dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
+      dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
     }
   }, [isFocused]);
 
@@ -83,11 +60,12 @@ export default function Approvals() {
         message: t('messages.Approve_request'),
         type: 'success',
       });
+      setRejectModalVisible(false);
     }
   }, [isApproveAction]);
 
   const onRefresh = () => {
-    dispatch(ApprovalList({ id: Number(UsersigninData?.user_id) }));
+    dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
   };
 
   const getStatusLabel = (status) => {
@@ -95,12 +73,14 @@ export default function Approvals() {
     switch (status.toLowerCase()) {
       case 'approved':
         return t('Approvals.Approved');
-      case 'rejected':
+      case 'reject':
         return t('Approvals.Rejected');
-      case 'submitted':
+      case 'submit':
         return t('Approvals.Submitted');
       case 'pending':
         return t('Approvals.Pending');
+      case 'draft':
+        return t('Approvals.Draft');
       default:
         return status;
     }
@@ -111,96 +91,168 @@ export default function Approvals() {
     switch (status.toLowerCase()) {
       case 'approved':
         return APPROVALS.approved;
-      case 'rejected':
+      case 'reject':
         return APPROVALS.rejected;
-      case 'submitted':
+      case 'submit':
         return APPROVALS.submitted;
       case 'pending':
         return APPROVALS.pending;
+      case 'draft':
+        return APPROVALS.draft;
       default:
         return COLOR.Primary1;
     }
   };
 
-  const handleApprove = (id) => {
-    dispatch(
-      ApproveActionApprove({
-        approval_request_id: id,
-        user_id: UsersigninData.user_id,
-      })
-    );
-  };
+  const handleApprove = async (id) => {
+  try {
+    const payload = {
+      approval_request_id: id,
+      user_id: UsersigninData.user_id,
+    };
 
-  const handleReject = (id) => {
-    dispatch(
-      ApproveActionReject({
-        approval_request_id: id,
-        user_id: UsersigninData.user_id,
-        remarks: 'Rejected by approver',
-      })
-    );
-  };
+    const result = await dispatch(
+      ApproveActionApprove(payload)
+    ).unwrap();
+
+    if (result?.success) {
+      showMessage({
+        icon: 'success',
+        message: result?.message || 'Approval successful',
+        type: 'success',
+      });
+
+      // Refresh approval list
+      dispatch(ApprovalList({ id: UsersigninData.user_id }));
+    } else {
+      showMessage({
+        icon: 'danger',
+        message: result?.message || 'Failed to approve request',
+        type: 'danger',
+      });
+    }
+  } catch (error) {
+    showMessage({
+      icon: 'danger',
+      message:
+        error?.message ||
+        error?.error ||
+        'Something went wrong. Please try again.',
+      type: 'danger',
+    });
+  }
+};
+
+
+  const handleRejectPress = (id) => {
+  setSelectedApprovalId(id);
+  setRejectReason('');
+  setRejectModalVisible(true);
+};
+
+ const confirmReject = async () => {
+  if (!rejectReason.trim()) {
+    showMessage({
+      icon: 'danger',
+      message: 'Please enter rejection reason',
+      type: 'danger',
+    });
+    return;
+  }
+
+  try {
+    const payload = {
+      approval_request_id: selectedApprovalId,
+      user_id: UsersigninData.user_id,
+      remarks: rejectReason,
+    };
+
+    const result = await dispatch(
+      ApproveActionReject(payload)
+    ).unwrap();
+    console.log("result===>",result)
+    if (result?.success) {
+      showMessage({
+        icon: 'success',
+        message: result?.successMessage,
+        type: 'success',
+      });
+
+      setRejectModalVisible(false);
+      setRejectReason('');
+
+      // Refresh list
+      dispatch(ApprovalList({ id: UsersigninData.user_id }));
+    } else {
+      showMessage({
+        icon: 'danger',
+        message: result?.message || 'Failed to reject request',
+        type: 'danger',
+      });
+    }
+  } catch (error) {
+    showMessage({
+      icon: 'danger',
+      message:
+        error?.message ||
+        error?.error ||
+        'Something went wrong. Please try again.',
+      type: 'danger',
+    });
+  }
+};
+
 
   const renderItem = ({ item }) => {
-    const status = item.request_status?.toLowerCase();
-    const isPending = status === 'submitted' || status === 'pending';
-    const isRejected = status === 'rejected';
-    const statusColor = getStatusColor(item.request_status);
-
+    const status = item.state?.toLowerCase();
+    const isPending = status === 'submit';
+    const statusColor = getStatusColor(item.state);
     return (
       <View style={styles.card}>
-        {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.name}>{item.request_owner}</Text>
+          <Text style={styles.name} numberOfLines={2}>
+            {`${item.req_employee_id?.[0]} ${item.req_employee_id?.[1]}` || 'N/A'}
+          </Text>
+
           <View style={styles.statusWrap}>
             <Text style={[styles.status, { color: statusColor }]}>
-              {getStatusLabel(item.request_status)}
+              {getStatusLabel(item.state)}
             </Text>
             <View style={[styles.dot, { backgroundColor: statusColor }]} />
           </View>
         </View>
 
-        {/* Subject */}
-        <Text numberOfLines={2} style={styles.desc}>{item.approval_subject}</Text>
+        <Text numberOfLines={2} style={styles.desc}>
+          {item.description}
+        </Text>
 
-        {/* Meta */}
         <View style={styles.meta}>
           <View style={styles.dateContainer}>
-          <DateApproval/>
-          <Text style={styles.date}>{item.request_start}</Text>
+            <DateApproval />
+            <Text style={[styles.id,{paddingLeft:5}]}>
+              {item.description?.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '--'}
+            </Text>
           </View>
-          <Text style={styles.id}>ID: {item.id}</Text>
+          <Text style={styles.id}>ID: {item.name}</Text>
         </View>
 
-        {isPending &&<View style={styles.actions}>
-          <TouchableOpacity
-            style={[
-              styles.btn,
-              styles.approveBtn,
-            ]}
-            onPress={() => handleApprove(item.id)}
-          >
-            <Text style={styles.approveText}>
-              {t('Approvals.Approve')}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.btn,
-              styles.rejectBtn,
-            ]}
-            onPress={() => handleReject(item.id)}
-          >
-            <Text
-              style={[
-                styles.rejectText,
-              ]}
+        {isPending && (
+          <View style={styles.actions}>
+            <TouchableOpacity
+              style={[styles.btn, styles.approveBtn]}
+              onPress={() => handleApprove(item.id)}
             >
-              {t('Approvals.Reject')}
-            </Text>
-          </TouchableOpacity>
-        </View>}
+              <Text style={styles.approveText}>{t('Approvals.Approve')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.btn, styles.rejectBtn]}
+              onPress={() => handleRejectPress(item.id)}
+            >
+              <Text style={styles.rejectText}>{t('Approvals.Reject')}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   };
@@ -208,10 +260,9 @@ export default function Approvals() {
   return (
     <CommonView>
       <CommonHeader title={t('Approvals.Approvals')} />
-      
+
       <FlatList
-        // data={GetApprovalListData}
-        data={STATIC_APPROVAL_LIST}
+        data={GetApprovalListData}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
@@ -221,13 +272,60 @@ export default function Approvals() {
             onRefresh={onRefresh}
           />
         }
-        ListHeaderComponent={()=><Text style={styles.section}>Approval Requests</Text>}
         ListEmptyComponent={
           <View style={{ paddingTop: responsiveHeight(30) }}>
             <NodataFound titleText={t('comman.No_records_found')} />
           </View>
         }
       />
+
+      <Modal transparent animationType="fade" visible={rejectModalVisible}>
+        <TouchableWithoutFeedback onPress={() => setRejectModalVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContainer}>
+                <View style={styles.modalHeader}>
+                  <Text style={styles.modalTitle}>Reject Approval ?</Text>
+                  <TouchableOpacity
+                    onPress={() => setRejectModalVisible(false)}
+                  >
+                    <Text style={styles.closeIcon}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={styles.modalDesc}>
+                  Are you sure want to reject this action can’t be undone.
+                </Text>
+
+                <Text style={styles.reasonLabel}>Reason</Text>
+                <TextInput
+                  placeholder="Enter Reason"
+                  value={rejectReason}
+                  onChangeText={setRejectReason}
+                  multiline
+                  style={styles.reasonInput}
+                />
+
+                <View style={styles.modalActions}>
+                  <TouchableOpacity
+                    style={styles.modalCloseBtn}
+                    onPress={() => setRejectModalVisible(false)}
+                  >
+                    <Text style={styles.modalCloseText}>Close</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.modalRejectBtn}
+                    onPress={confirmReject}
+                  >
+                    <Text style={styles.modalRejectText}>Reject</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </CommonView>
   );
 }
@@ -236,41 +334,34 @@ const styles = StyleSheet.create({
   listContent: {
     paddingVertical: 20,
     paddingBottom: 30,
-    marginHorizontal:20,
-    borderRadius: 16,
-    backgroundColor: COLOR.White1,
   },
-  dateContainer:{flexDirection:'row',justifyContent:'center',alignItems:'center'},
+
   section: {
-      ...GlobalFonts.subtitle,
-      fontWeight: "600",
-      color: COLOR.Black1,
-      paddingHorizontal:20,
-      paddingVertical:20,
-      marginBottom: 8,
-    },
+    ...GlobalFonts.subtitle,
+    fontWeight: '600',
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
 
   card: {
     backgroundColor: COLOR.White1,
-    marginHorizontal:20,
+    marginHorizontal: 20,
     borderRadius: 16,
     padding: 16,
     marginBottom: 16,
-    borderColor:COLOR.Placeholder,
-    borderWidth:0.5
+    borderWidth: 0.5,
+    borderColor: COLOR.Placeholder,
   },
 
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
 
   name: {
     fontSize: FontSize.Font16,
-    ...GlobalFonts.subtitle,
     fontWeight: '600',
-    color: COLOR.Black1,
+    maxWidth: '70%',
   },
 
   statusWrap: {
@@ -279,9 +370,9 @@ const styles = StyleSheet.create({
   },
 
   status: {
-    fontSize: FontSize.Font12,
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
     marginRight: 6,
-    fontWeight: '500',
   },
 
   dot: {
@@ -292,8 +383,8 @@ const styles = StyleSheet.create({
 
   desc: {
     marginTop: 8,
-    fontSize: FontSize.Font12,
-    ...GlobalFonts.small,
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
     color: COLOR.TextPlaceholder,
   },
 
@@ -303,17 +394,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
 
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
   date: {
-    ...GlobalFonts.subtitle,
-    fontSize: FontSize.Font14,
-    color: COLOR.Black1,
-    paddingLeft:5
+    marginLeft: 6,
   },
 
   id: {
     ...GlobalFonts.subtitle,
-    fontSize: FontSize.Font14,
     color: COLOR.Black1,
+    fontSize: FontSize.Font14,
   },
 
   actions: {
@@ -331,7 +424,6 @@ const styles = StyleSheet.create({
 
   approveBtn: {
     borderWidth: 1,
-    borderColor: COLOR.Black1,
     marginRight: 10,
   },
 
@@ -339,24 +431,103 @@ const styles = StyleSheet.create({
     backgroundColor: APPROVALS.rejected,
   },
 
-  rejectFilled: {
-    backgroundColor: COLOR.Danger,
-  },
-
   approveText: {
-    ...GlobalFonts.small,
+    ...GlobalFonts.subtitle,
     fontSize: FontSize.Font14,
-    fontWeight: '500',
   },
 
   rejectText: {
-    ...GlobalFonts.small,
-    fontSize: FontSize.Font14,
-    fontWeight: '500',
     color: COLOR.White1,
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
   },
 
-  disabled: {
-    opacity: 0.4,
+  /* MODAL */
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalContainer: {
+    width: '85%',
+    backgroundColor: COLOR.White1,
+    borderRadius: 16,
+    padding: 20,
+  },
+
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  modalTitle: {
+    fontSize: FontSize.Font16,
+    fontWeight: '600',
+  },
+
+  closeIcon: {
+    fontSize: 18,
+  },
+
+  modalDesc: {
+    marginTop: 10,
+    ...GlobalFonts.normalText,
+    fontSize: FontSize.Font15,
+    color: COLOR.TextPlaceholder,
+  },
+
+  reasonLabel: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
+    marginTop: 16,
+    fontWeight: '500',
+  },
+
+  reasonInput: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
+    height: 90,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    marginTop: 8,
+    textAlignVertical: 'top',
+  },
+
+  modalActions: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+
+  modalCloseBtn: {
+    flex: 1,
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+
+  modalRejectBtn: {
+    flex: 1,
+    height: 44,
+    backgroundColor: APPROVALS.rejected,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalCloseText: {
+    ...GlobalFonts.buttonText,
+    fontSize: FontSize.Font14,
+  },
+
+  modalRejectText: {
+    ...GlobalFonts.buttonText,
+    fontSize: FontSize.Font14,
+    color: COLOR.White1,
   },
 });
