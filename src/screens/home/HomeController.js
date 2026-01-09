@@ -112,19 +112,16 @@ export const useHome = () => {
 
   const syncAttendance = async () => {
   try {
-    // 1️⃣ Load cached attendance FIRST
     const cached = await Service.GetAsyncAttendanceData();
     if (cached) {
       setAttendance(cached);
     }
 
-    // 2️⃣ Fetch latest status from API
     const res = await dispatch(
       CheckAttandanceStatus({ email: UsersigninData.email })
     ).unwrap();
 
-    // 3️⃣ API confirms CHECK-IN
-    if (res?.status === "CHECK_IN") {
+    if (res?.status === "CheckedIn") {
       const data = {
         check_in_time: res.action_time,
         check_in_image: res.action_image,
@@ -138,7 +135,7 @@ export const useHome = () => {
     }
 
     // 4️⃣ API confirms CHECK-OUT
-    if (res?.status === "CHECK_OUT") {
+    if (res?.status === "CheckedOut") {
       setAttendance(null);
       await Service.removeAsyncAttendanceData();
       BackgroundHandler.stopTracking();
