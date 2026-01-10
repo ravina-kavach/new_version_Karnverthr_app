@@ -131,7 +131,7 @@ export default function Expenses() {
         <TouchableWithoutFeedback onPress={() => setIsExoensemodal(true)}>
           <View style={styles.plusContainer}>
             <View style={styles.iconContainer}>
-              <PlusIcon />
+              <PlusIcon width={28} height={28}/>
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
   },
   flexContainer: { flex: 1 },
-  iconContainer: { backgroundColor: COLOR.Black1, padding: 12, borderRadius: 5, overflow: 'hidden' },
+  iconContainer: { backgroundColor: COLOR.Black1, padding: 13, borderRadius: 14, overflow: 'hidden' },
   container: { marginHorizontal: 20 },
   contentContainer: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, backgroundColor: COLOR.White1, borderRadius: 20 },
   labelText: {
