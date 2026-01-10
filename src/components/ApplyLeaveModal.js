@@ -63,13 +63,20 @@ const ApplyLeaveModal = ({
 
           {/* Leave Type */}
           <Text style={styles.label}>Leave Type</Text>
+            {leaveTypeData?.length > 0 ? (
           <View style={styles.dropdownBox}>
-            <Dropdown
-              DropdownData={leaveTypeData}
-              setSelecteditem={setSelectedLeaveType}
-              Selecteditem={selectedLeaveType}
-            />
+              <Dropdown
+                DropdownData={leaveTypeData}
+                setSelecteditem={setSelectedLeaveType}
+                Selecteditem={selectedLeaveType}
+              />
           </View>
+            ) : (
+              <Text style={styles.noDataText}>
+                No Leave Type available
+              </Text>
+            )}
+
 
           <View style={styles.row}>
             <View style={styles.flex}>
@@ -177,6 +184,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingTop: 10,
     alignItems: 'center'
+  },
+  noDataText: {
+    ...GlobalFonts.subtitle,
+    marginTop: 10,
+    marginTop: 10,
+    color: COLOR.TextPlaceholder,
+    fontSize: 14,
+    textAlign: 'center',
   },
   title: {
     fontSize: 18,
