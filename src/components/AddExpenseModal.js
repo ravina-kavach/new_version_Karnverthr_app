@@ -60,13 +60,13 @@ export const AddExpenseModal = ({
                                         id: 1,
                                         label: t('Expenses.Own_account'),
                                         value: 'own',
-                                        color: COLOR.button,
+                                        color: COLOR.Black1,
                                     },
                                     {
                                         id: 2,
                                         label: t('Expenses.Compnay'),
                                         value: 'company',
-                                        color: COLOR.button,
+                                        color: COLOR.Black1,
                                     },
                                 ]}
                                 onPress={setSelectedId}
@@ -89,6 +89,25 @@ export const AddExpenseModal = ({
                                     </Text>
                                 )}
                             </TouchableOpacity>
+
+                           {CategoryListData && 
+                           <>
+                           <Text style={styles.label}>{t('Expenses.Catagory')}</Text>
+                            <Dropdown
+                                DropdownData={CategoryListData}
+                                setSelecteditem={setSelectedCategoryType}
+                                Selecteditem={selectCategoryType}
+                                />
+                            </>
+                            }
+
+                            <Text style={styles.label}>{t('Expenses.Account')}</Text>
+                            <Dropdown
+                                DropdownData={AccountListData}
+                                setSelecteditem={setSelectedAccountType}
+                                Selecteditem={selectAccountType}
+
+                            />
 
                             <Text style={styles.label}>{t('Expenses.Expense_Name')}</Text>
                             <TextInput
@@ -113,21 +132,7 @@ export const AddExpenseModal = ({
                                 }
                             />
 
-                            <Text style={styles.label}>{t('Expenses.Catagory')}</Text>
-                            <Dropdown
-                                DropdownData={CategoryListData}
-                                setSelecteditem={setSelectedCategoryType}
-                                Selecteditem={selectCategoryType}
-
-                            />
-
-                            <Text style={styles.label}>{t('Expenses.Account')}</Text>
-                            <Dropdown
-                                DropdownData={AccountListData}
-                                setSelecteditem={setSelectedAccountType}
-                                Selecteditem={selectAccountType}
-
-                            />
+                           
 
                             <Text style={styles.label}>{t('Expenses.Expense_Date')}</Text>
                             <TouchableOpacity

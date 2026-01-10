@@ -2,14 +2,14 @@ import { useEffect, useCallback, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonSelector, GetLeavetype, GetDepartmentType, CreateLeave, GetLeaveList } from '../../store/reducers/commonSlice';
+import { CommonSelector, GetLeavetype,GetLeaveAllocation, CreateLeave, GetLeaveList } from '../../store/reducers/commonSlice';
 import moment from 'moment';
 import { APPROVALS, COLOR } from '../../theme/theme';
 import { showMessage } from 'react-native-flash-message';
 
 export const useLeaves = () => {
   const { t } = useTranslation();
-  const { UsersigninData, GetLeavetypeData, GetDepartmentTypeData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
+  const { UsersigninData, GetLeavetypeData,GetLeaveAllocationData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
   const dispatch = useDispatch();
   const IsFocused = useIsFocused();
   const [visibleModal, setVisibleModel] = useState(false)
@@ -23,10 +23,11 @@ export const useLeaves = () => {
   const [isPublicLeave, setIsPublicLeave] = useState(false)
   const [isOverTimeLeave, setIsOverTimeLeave] = useState(false)
   const [isEarnedLeave, setIsEarnedLeave] = useState(false)
+  const [leavesSummary, setLeavesSummary] = useState([]);
 
   useEffect(() => {
     if (!IsFocused || !UsersigninData) return;
-
+   
     const data = {
       id: Number(UsersigninData.user_id),
     };
@@ -34,16 +35,32 @@ export const useLeaves = () => {
     Promise.all([
       dispatch(GetLeaveList(data)),
       dispatch(GetLeavetype(data)),
-      dispatch(GetDepartmentType(data)),
+      dispatch(GetLeaveAllocation(data)),
     ]);
   }, [IsFocused, UsersigninData]);
+  
+  useEffect(() => {
+  if (GetLeaveAllocationData?.success && IsFocused) {
+    updateLeaveSummary(GetLeaveAllocationData);
+  } else {
+    setLeavesSummary([]); // optional fallback
+  }
+}, [IsFocused, GetLeaveAllocationData]);
 
-  const leavesSummary = [
-    { title: 'Annual', used: '05', total: '12', left: 7 },
-    { title: 'Medical', used: '04', total: '10', left: 6 },
-    { title: 'Casual', used: '01', total: '06', left: 5 },
-    { title: 'Others', used: '02', total: '04', left: 2 },
-  ];
+
+const updateLeaveSummary = (res) => {
+  const cards = res?.cards ?? [];
+
+  const mappedData = cards.map(item => ({
+    title: leaveTypeMap[item.leave_type] || item.leave_type,
+    used: String(item?.used ?? 0).padStart(2, "0"),
+    total: String(item?.total ?? 0).padStart(2, "0"),
+    left: item?.remaining ?? 0,
+  }));
+
+  setLeavesSummary(mappedData);
+};
+
 
   const getStatusColor = (status) => {
     if (status === 'confirm') return APPROVALS.confirm
@@ -135,7 +152,7 @@ export const useLeaves = () => {
     GetLeavetypeData,
     selectedLeaveType,
     setSelectedLeaveType,
-    GetDepartmentTypeData,
+ 
     selectedDeptType,
     setSelectedDeptType,
     selectStartDate,
@@ -157,6 +174,7 @@ export const useLeaves = () => {
     setIsOverTimeLeave,
     isEarnedLeave,
     setIsEarnedLeave,
+    GetLeaveAllocationData,
 
   }
 }

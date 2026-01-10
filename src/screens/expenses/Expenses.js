@@ -120,7 +120,7 @@ export default function Expenses() {
               <RefreshControl refreshing={isGetExpenseListFetching} onRefresh={onRefresh} />
             }
             contentContainerStyle={styles.contentContainer}
-            ListHeaderComponent={() => <Text style={styles.sectionTitle}>All Expenses</Text>}
+            // ListHeaderComponent={() => <Text style={styles.sectionTitle}>All Expenses</Text>}
             ListEmptyComponent={() => (
               <View style={styles.placeHoldeContainer}>
                 <NodataFound titleText={"Add expenses"} />

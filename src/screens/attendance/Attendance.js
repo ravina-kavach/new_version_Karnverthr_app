@@ -58,13 +58,15 @@ export default function Attendance() {
       <FlatList
         data={GetAttandanceListData?.attandancelist}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <AttendanceItem
-            item={item}
-            t={t}
-            getDuration={getDuration}
-          />
-        )}
+        renderItem={({ item }) => {
+          return (
+            <AttendanceItem
+              item={item}
+              t={t}
+              getDuration={getDuration}
+            />
+          )
+        }}
         refreshControl={
           <RefreshControl
             refreshing={isGetAttandanceListFetching}
@@ -91,13 +93,13 @@ export default function Attendance() {
 
 const styles = StyleSheet.create({
   filterContainer: {
-  paddingHorizontal: 20,
-  marginTop: 12,
-  marginBottom: 8,
-},
-filterRow: {
-  justifyContent: "space-between",
-},
+    paddingHorizontal: 20,
+    marginTop: 12,
+    marginBottom: 8,
+  },
+  filterRow: {
+    justifyContent: "space-between",
+  },
   dropdownBox: {
     marginBottom: 10,
     backgroundColor: COLOR.White1,
@@ -108,8 +110,8 @@ filterRow: {
     elevation: 5,
   },
   filterItem: {
-  width: "48%",
-},
+    width: "48%",
+  },
 
   fab: {
     flex: 1,

@@ -25,6 +25,8 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
     const [description, setDescription] = useState('');
     const [showStartPicker, setShowStartPicker] = useState(false);
     const [pickerMode, setPickerMode] = useState(null);
+    const MIN_DESC_LENGTH = 10;
+    const MAX_DESC_LENGTH = 250;
 
     const updatedData = data.map(({ type, ...rest }) => ({
         ...rest,
@@ -125,7 +127,12 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
 
         setPickerMode(null);
     };
-
+    const formatUIDate = (date) => {
+        const d = String(date.getDate()).padStart(2, '0');
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const y = date.getFullYear();
+        return `${d}/${m}/${y}`;
+    };
 
     return (
         <Modal
@@ -148,8 +155,6 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                             Selecteditem={regCategories}
 
                         />
-
-                        {/* Start Date & Time */}
                         <Text style={styles.label}>Check In</Text>
                         <View style={styles.row}>
                             <TouchableOpacity
@@ -157,7 +162,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                 onPress={() => setPickerMode('startDate')}
                             >
                                 <Text style={styles.dateTimeText}>
-                                    {startDate.toLocaleDateString()}
+                                    {formatUIDate(startDate)}
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -174,6 +179,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                 value={startDate}
                                 mode="datetime"
                                 display="default"
+                                // dateFormat='day month year'
                                 onChange={(event, selectedDate) => {
                                     if (event.type === 'dismissed') {
                                         setShowStartPicker(false);
@@ -196,7 +202,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                 onPress={() => setPickerMode('endDate')}
                             >
                                 <Text style={styles.dateTimeText}>
-                                    {endDate.toLocaleDateString()}
+                                    {formatUIDate(endDate)}
                                 </Text>
                             </TouchableOpacity>
                             <TouchableOpacity
@@ -219,13 +225,24 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                         )}
 
                         <Text style={styles.label}>Description</Text>
+
                         <TextInput
                             placeholder="Add a description"
                             value={description}
-                            onChangeText={setDescription}
+                            onChangeText={(text) => {
+                                if (text.length <= MAX_DESC_LENGTH) {
+                                    setDescription(text);
+                                }
+                            }}
                             style={[styles.input, { height: 80 }]}
                             multiline
+                            maxLength={MAX_DESC_LENGTH}
                         />
+
+                        <Text style={styles.charCount}>
+                            {description.length}/{MAX_DESC_LENGTH}
+                        </Text>
+
                     </ScrollView>
 
                     <View style={styles.footer}>
@@ -273,6 +290,13 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         textAlign: 'center',
     },
+    charCount: {
+        fontSize: 12,
+        color: COLOR.TextSecondary,
+        alignSelf: 'flex-end',
+        marginTop: 4,
+    },
+
     label: {
         ...GlobalFonts.subtitle,
         fontSize: FontSize.Font16,
@@ -309,12 +333,11 @@ const styles = StyleSheet.create({
         color: '#666',
     },
     header: {
-        flex: 1,
         flexDirection: 'row',
         justifyContent: 'center',
         alignSelf: 'center',
         marginTop: 30,
-        // marginBottom: 6,
+        marginBottom: 6,
     },
     overlay: {
         flex: 1,

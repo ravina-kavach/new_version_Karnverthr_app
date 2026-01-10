@@ -21,9 +21,6 @@ const ApplyLeaveModal = ({
   leaveTypeData,
   setSelectedLeaveType,
   selectedLeaveType,
-  departmentTypeData,
-  setSelectedDeptType,
-  selectedDeptType,
   visible,
   onClose,
   onSave,
@@ -60,7 +57,7 @@ const ApplyLeaveModal = ({
 
           {/* Employee */}
           <Text style={styles.label}>Employee</Text>
-          <View style={styles.input}>
+          <View style={styles.userInput}>
             <Text style={styles.placeholder}>{UsersigninData?.full_name}</Text>
           </View>
 
@@ -73,16 +70,6 @@ const ApplyLeaveModal = ({
               Selecteditem={selectedLeaveType}
             />
           </View>
-
-          {/* Department */}
-          {/* <Text style={styles.label}>Department Name</Text>
-          <View style={styles.dropdownBox}>
-            <Dropdown
-              DropdownData={departmentTypeData}
-              setSelecteditem={setSelectedDeptType}
-              Selecteditem={selectedDeptType}
-            />
-          </View> */}
 
           <View style={styles.row}>
             <View style={styles.flex}>
@@ -210,6 +197,13 @@ const styles = StyleSheet.create({
     height: 45,
     borderWidth: 1,
     borderColor: '#E2E2E2',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    backgroundColor: COLOR.White1,
+  },
+  userInput: {
+    height: 45,
     borderRadius: 10,
     paddingHorizontal: 12,
     justifyContent: 'center',
