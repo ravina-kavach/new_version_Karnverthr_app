@@ -386,7 +386,7 @@ export default function Calendar() {
         keyExtractor={(item) => item.id}
         renderItem={renderListItem}
         refreshControl={<RefreshControl refreshing={isGetCalendarEventsDataFetching} onRefresh={onRefresh} />}
-        contentContainerStyle={{ paddingBottom: 100, marginTop: 30 }}
+        contentContainerStyle={{ paddingBottom: 100, marginTop: 10 }}
         ListHeaderComponent={
           <>
             <View style={styles.calendarCard}>
