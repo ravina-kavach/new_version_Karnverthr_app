@@ -134,7 +134,6 @@ export const UserAttendanceRegularization = createAsyncThunk(
   }
 );
 
-
 export const UserAttendanceRegcategories = createAsyncThunk(
     'UserAttendanceRegcategories',
     async (userdata, thunkAPI) => {
@@ -531,7 +530,7 @@ export const GetCalendarEvents = createAsyncThunk(
         } catch (error) {
             console.log("error>>>", error)
             console.log('try catch [ GetCalendarEvents ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            return error;
         }
     },
 );
@@ -664,16 +663,15 @@ export const ApprovalList = createAsyncThunk(
         console.log('ApprovalList userdata >>', userdata);
         try {
             let result = await API.get(`/api/admin/requests?user_id=${userdata.id}`);
-            console.log('ApprovalList result.data >>', result.data);
+            console.log('ApprovalList result.data >>', result);
             if (result.data.status === "success") {
                 return result.data.data;
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.error });
             }
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ ApprovalList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+
+            return error
         }
     },
 );
