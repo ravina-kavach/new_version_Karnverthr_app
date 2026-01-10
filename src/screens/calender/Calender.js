@@ -79,7 +79,6 @@ export default function Calendar() {
     setRemaiderEvents(meetingsThisMonth);
   }, [calendarEvents, currentDate]);
 
-  // Pull-to-refresh
   const onRefresh = useCallback(() => {
     const userData = { id: UsersigninData.user_id };
     dispatch(GetCalendarEvents(userData));
