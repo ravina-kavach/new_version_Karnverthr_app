@@ -92,12 +92,12 @@ export default function Calendar() {
 
   useEffect(() => {
     let attendanceEvents = [];
-    if (GetAttandanceListData?.attandancelist) {
+    if (GetAttandanceListData?.attandancelist && GetAttandanceListData?.attandancelist.length > 0) {
       attendanceEvents = buildAttendanceEvents(GetAttandanceListData.attandancelist);
     }
 
     let meetingEvents = [];
-    if (GetCalendarEventsData) {
+    if (GetCalendarEventsData && GetCalendarEventsData.length > 0) {
       meetingEvents = GetCalendarEventsData.map(item => ({
         title: "",
         start: new Date(item.start.replace(' ', 'T')),
