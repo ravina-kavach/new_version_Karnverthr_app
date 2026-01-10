@@ -9,6 +9,7 @@ import store from './src/store';
 import './src/utils/i18n';
 import { UserToken } from './src/store/reducers/commonSlice';
 import GlobalStyle from './src/theme/globalstyle';
+import {checkAppVersion} from './src/components/VersionCheck'
 
 const Root = () =>{ 
   const dispatch = useDispatch();
@@ -26,6 +27,10 @@ const Root = () =>{
 
     init();
   }, [dispatch]);
+
+  React.useEffect(() => {
+    checkAppVersion();
+  }, []);
 
   return (
     <SafeAreaProvider>
