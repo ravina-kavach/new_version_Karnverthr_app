@@ -34,8 +34,10 @@ export const UserToken = createAsyncThunk(
 export const GetUserDetails = createAsyncThunk(
     'GetUserDetails',
     async (userdata, thunkAPI) => {
+        console.log("userdata===>",userdata)
         try {
             const result = await API.get(`employee/employees?user_id=${userdata.id}`);
+            console.log("result===>",result)
             if (result.data.status === 'error') {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result?.data?.message),
@@ -125,10 +127,7 @@ export const UserAttendanceRegularization = createAsyncThunk(
       if (result.data.status === "success") {
         return result.data;
       }
-
-      return thunkAPI.rejectWithValue({
-        error: result.data.message,
-      });
+      return;
     } catch (error) {
       return thunkAPI.rejectWithValue({
         error:
@@ -223,25 +222,23 @@ export const GetLeavetype = createAsyncThunk(
 );
 
 export const GetLeaveAllocation = createAsyncThunk(
-    'GetLeaveAllocation',
-    async (userdata, thunkAPI) => {
-        try {
-            let result = await API.get(`employee/employee-dashboard?user_id=${userdata.id}`);
-            // console.log("result===>",result)
-            if (result.data.status === "error") {
-                return thunkAPI.rejectWithValue({
-                    error: errorMassage(result.data.message)
-                });
-            }
-            return result.data.data;
-        } catch (error) {
-            console.log("Axios Error:", error);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error?.response?.data?.message || error.message)
-            });
-        }
-    },
+  'GetLeaveAllocation',
+  async (userdata, thunkAPI) => {
+    try {
+      const result = await API.get(
+        `employee/employee-dashboard?user_id=${userdata.id}`
+      );
+
+      return result.data.data;
+
+    } catch (error) {
+      console.log("Axios Error:", error.response || error);
+
+      return;
+    }
+  }
 );
+
 
 export const GetDepartmentType = createAsyncThunk(
     'GetDepartmentType',
@@ -885,6 +882,9 @@ export const CommonSlice = createSlice({
         isSignin: false,
         isSigninFetching: false,
 
+        UserDetailsData:{},
+        isUserDetailsFetching:false,
+
         UserAttendanceData: {},
         isAttendanceFetching: false,
 
@@ -1074,39 +1074,39 @@ export const CommonSlice = createSlice({
 
         //===== GetUserDetails
 
-        //  builder.addCase(Usersignin.fulfilled, (state, { payload }) => {
-        //     //console.log("[Usersignin.fulfilled]>>>payload>>>", payload)
-        //     try {
-        //         state.UserDetailsData = payload;
-        //         state.isSigninFetching = false;
-        //         state.isError = false;
-        //         state.errorMessage = '';
-        //         return state;
-        //     } catch (error) {
-        //         console.log('Error: Usersignin.fulfilled try catch error >>', error);
-        //     }
-        // });
-        // builder.addCase(Usersignin.rejected, (state, { payload }) => {
-        //     console.log("[Usersignin.rejected]>>>", payload)
-        //     try {
-        //         state.UsersigninData = {};
-        //         state.isSignin = false;
-        //         state.isSigninFetching = false;
-        //         state.isError = true;
-        //         payload
-        //             ? (state.errorMessage = payload.error?.message
-        //                 ? payload.error?.message
-        //                 : (payload.error || "Oops! It seems like either your username or password is incorrect")) : "Oops! It seems like either your username or password is incorrect";
-        //     } catch (error) {
-        //         console.log(
-        //             'Error: [Usersignin.rejected] try catch error >>',
-        //             error,
-        //         );
-        //     }
-        // });
-        // builder.addCase(Usersignin.pending, state => {
-        //     state.isSigninFetching = true;
-        // });
+         builder.addCase(GetUserDetails.fulfilled, (state, { payload }) => {
+            //console.log("[GetUserDetails.fulfilled]>>>payload>>>", payload)
+            try {
+                state.UserDetailsData = payload;
+                state.isUserDetailsFetching = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetUserDetails.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetUserDetails.rejected, (state, { payload }) => {
+            console.log("[GetUserDetails.rejected]>>>", payload)
+            try {
+                state.UserDetailsData = {};
+                state.isUserDetailsFetching = false;
+                state.isSigninFetching = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : (payload.error || "Oops! It seems like either your username or password is incorrect")) : "Oops! It seems like either your username or password is incorrect";
+            } catch (error) {
+                console.log(
+                    'Error: [Usersignin.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetUserDetails.pending, state => {
+            state.isUserDetailsFetching = true;
+        });
 
         //===== UserVerification
         builder.addCase(UserVerification.fulfilled, (state, { payload }) => {

@@ -149,12 +149,17 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                     <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
                         {/* Meeting Subject */}
                         <Text style={styles.label}>Regularization</Text>
-                        <Dropdown
-                            DropdownData={updatedData}
-                            setSelecteditem={setRegCategories}
-                            Selecteditem={regCategories}
-
-                        />
+                        {updatedData?.length > 0 ? (
+                            <Dropdown
+                                DropdownData={updatedData}
+                                setSelecteditem={setRegCategories}
+                                Selecteditem={regCategories}
+                            />
+                        ) : (
+                            <Text style={styles.noDataText}>
+                                No Regularization available
+                            </Text>
+                        )}
                         <Text style={styles.label}>Check In</Text>
                         <View style={styles.row}>
                             <TouchableOpacity
@@ -283,6 +288,13 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         maxHeight: '90%',
+    },
+    noDataText: {
+        ...GlobalFonts.subtitle,
+        marginTop: 10,
+        color: COLOR.TextPlaceholder,
+        fontSize: 14,
+        textAlign: 'center',
     },
     modalTitle: {
         fontSize: 18,
