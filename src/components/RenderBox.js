@@ -12,7 +12,8 @@ import { COLOR } from "../theme/theme";
 import { FontSize, responsiveHeight, responsiveWidth } from "../utils/metrics";
 import { GlobalFonts } from "../theme/typography";
 
-const ENABLED_SCREENS = ["attendance", "leaves", "expenses", "calender", "approvals"];
+const ENABLED_SCREENS = ["attendance", "leaves","expenses", "calender", "approvals"];
+// const ENABLED_SCREENS = ["attendance", "leaves", "expenses", "calender", "approvals"];
 
 export const RenderBox = ({ image, title, screen }) => {
   const navigation = useNavigation();
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
     padding: 20,
     width:responsiveWidth(28),
     height:responsiveHeight(14),
+    maxHeight:300,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "space-around",

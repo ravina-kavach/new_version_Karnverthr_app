@@ -57,26 +57,26 @@ export default function Profile() {
           screenName={"editProfile"} 
           desc={UsersigninData.email} 
           avatar={avatar}
-          onAvatarPress={() => setPickerVisible(true)}
+          // onAvatarPress={() => setPickerVisible(true)}
           />
         </View>
 
         {/* Account & Identity */}
-        <View style={styles.card}>
+        {/* <View style={styles.card}>
           <Text style={styles.section}>Account & Identity</Text>
           <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, photo, contact" onPress={() => { }} />
           <ProfileItem icon={<GovIcon />} title="Government ID" subtitle="View Aadhaar, request update" onPress={() => { }} />
           <ProfileItem icon={<ChangePwd />} title="Change Password" subtitle="Change or update password" onPress={() => { }} />
           <ProfileItem icon={<EmryIcon />} title="Emergency Contact" subtitle="Change or update emergency contact" onPress={() => { }} />
-        </View>
+        </View> */}
 
         {/* Professional Info */}
-        <View style={styles.card}>
+        {/* <View style={styles.card}>
           <Text style={styles.section}>Professional Information</Text>
           <ProfileItem icon={<RoleIcon />} title="Current Role" subtitle="Developer" />
           <ProfileItem icon={<DepartIcon />} title="Department" subtitle="Creative Administrative" />
           <ProfileItem icon={<ReportMnrIcon />} title="Reporting Manager" subtitle="David" />
-        </View>
+        </View> */}
 
         {/* Employment */}
         {/* <Text style={styles.section}>Employment History</Text>
