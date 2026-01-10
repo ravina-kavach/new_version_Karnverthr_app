@@ -49,6 +49,7 @@
     "react-native-select-dropdown": "^4.0.1",
     "react-native-svg": "^15.15.1",
     "react-native-vector-image": "^0.6.0",
+    "react-native-version-check": "^3.5.0",
     "react-native-walkthrough-tooltip": "^1.6.0",
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
