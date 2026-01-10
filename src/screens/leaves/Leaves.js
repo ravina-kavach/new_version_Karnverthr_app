@@ -1,24 +1,30 @@
 import React from 'react'
-import { View, ScrollView, Text, FlatList, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native'
+import {
+  View,
+  ScrollView,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  RefreshControl
+} from 'react-native'
 import { COLOR } from '../../theme/theme'
 import { CommonView } from '../../utils/common'
 import { useLeaves } from './LeavesController'
 import { GlobalFonts } from '../../theme/typography'
-import { FontSize, responsiveHeight, responsiveWidth } from '../../utils/metrics'
+import { FontSize, responsiveHeight } from '../../utils/metrics'
 import ApplyLeaveModal from '../../components/ApplyLeaveModal'
 import NodataFound from '../../components/NodataFound'
 import moment from 'moment'
+
 const Leaves = () => {
-  const { t,
+  const {
     leavesSummary,
     getStatusColor,
     visibleModal,
     handleModal,
     saveLeave,
     GetLeavetypeData,
-    GetDepartmentTypeData,
-    setSelectedDeptType,
-    selectedDeptType,
     UsersigninData,
     setSelectedLeaveType,
     selectedLeaveType,
@@ -42,22 +48,33 @@ const Leaves = () => {
     isEarnedLeave,
     setIsEarnedLeave,
     handleOpenModal
-  } = useLeaves();
+  } = useLeaves()
+
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
-          {/* <View style={styles.summaryCard}>
-            {leavesSummary.map((item, index) => (
-              <View key={index} style={styles.leaveBox}>
-                <Text style={styles.leaveTitle}>{item.title}</Text>
-                <Text style={styles.leaveCount}>{item.used}/{item.total}</Text>
-                <Text style={styles.leftText}>Left: {item.left}</Text>
-              </View>
-            ))}
-          </View> */}
 
-        
+          {leavesSummary.length === 0 ? (
+            <View style={styles.summaryEmpty}>
+              <Text style={styles.summaryEmptyText}>
+                No leave allocation available
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.summaryCard}>
+              {leavesSummary.map((item, index) => (
+                <View key={index} style={styles.leaveBox}>
+                  <Text style={styles.leaveTitle}>{item.title}</Text>
+                  <Text style={styles.leaveCount}>
+                    {item.used}/{item.total}
+                  </Text>
+                  <Text style={styles.leftText}>Left: {item.left}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
           <FlatList
             nestedScrollEnabled
             refreshControl={
@@ -68,11 +85,12 @@ const Leaves = () => {
             }
             data={GetLeaveListData}
             keyExtractor={(item, index) => index.toString()}
-            // ListHeaderComponent={()=>  <Text style={styles.sectionTitle}>Submitted Leaves</Text>}
+            ListHeaderComponent={() => (
+              <Text style={styles.sectionTitle}>Submitted Leaves</Text>
+            )}
             renderItem={({ item }) => (
               <View style={styles.leaveCard}>
 
-                {/* Header Row */}
                 <View style={styles.headerRow}>
                   <Text style={styles.leaveType}>
                     Leave Type - {item.leave_type_name}
@@ -96,7 +114,6 @@ const Leaves = () => {
                   </View>
                 </View>
 
-                {/* Inner Box */}
                 <View style={styles.innerBox}>
                   <View>
                     <Text style={styles.label}>From-To</Text>
@@ -109,33 +126,35 @@ const Leaves = () => {
                   <View style={styles.totalBox}>
                     <Text style={styles.label}>Total</Text>
                     <Text style={styles.days}>
-                      {item.duration_days} {item.duration_days > 1 ? 'Days' : 'Day'}
+                      {item.duration_days}{' '}
+                      {item.duration_days > 1 ? 'Days' : 'Day'}
                     </Text>
                   </View>
                 </View>
 
               </View>
             )}
-             ListEmptyComponent={() => (
+            ListEmptyComponent={() => (
               <View style={styles.placeHoldeContainer}>
-                <NodataFound titleText={"Add Leaves"} />
+                <NodataFound titleText="Add Leaves" />
               </View>
             )}
           />
-
-
         </ScrollView>
-        <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={() => handleOpenModal()}>
+
+        <TouchableOpacity
+          style={styles.fab}
+          activeOpacity={0.8}
+          onPress={handleOpenModal}
+        >
           <Text style={styles.fabText}>Apply Leave  +</Text>
         </TouchableOpacity>
       </View>
-      {visibleModal &&
+
+      {visibleModal && (
         <ApplyLeaveModal
           UsersigninData={UsersigninData}
           leaveTypeData={GetLeavetypeData}
-          departmentTypeData={GetDepartmentTypeData}
-          setSelectedDeptType={setSelectedDeptType}
-          selectedDeptType={selectedDeptType}
           setSelectedLeaveType={setSelectedLeaveType}
           selectedLeaveType={selectedLeaveType}
           selectStartDate={selectStartDate}
@@ -157,10 +176,13 @@ const Leaves = () => {
           setIsOverTimeLeave={setIsOverTimeLeave}
           isEarnedLeave={isEarnedLeave}
           setIsEarnedLeave={setIsEarnedLeave}
-        />}
+        />
+      )}
     </CommonView>
   )
 }
+
+export default Leaves
 
 const styles = StyleSheet.create({
   container: {
@@ -179,16 +201,30 @@ const styles = StyleSheet.create({
   summaryCard: {
     backgroundColor: '#fff',
     borderRadius: 14,
-    marginTop:20,
-    marginHorizontal:20,
+    marginTop: 20,
+    marginHorizontal: 20,
     padding: 15,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
     elevation: 4,
+  },
+
+  summaryEmpty: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    marginTop: 20,
+    marginHorizontal: 20,
+    padding: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+  },
+
+  summaryEmptyText: {
+    fontSize: 14,
+    color: COLOR.TextSecondary,
+    ...GlobalFonts.subtitle,
   },
 
   leaveBox: {
@@ -208,43 +244,34 @@ const styles = StyleSheet.create({
 
   leaveCount: {
     fontSize: FontSize.Font24,
-    ...GlobalFonts.small,
     fontWeight: '700',
     marginVertical: 4,
   },
 
   leftText: {
-    ...GlobalFonts.small,
     fontSize: 13,
     color: COLOR.TextSecondary,
   },
 
-  card: {
-    marginHorizontal: 16,
+  placeHoldeContainer: {
+    flex: 1,
+    top: 100,
+    height: 800,
   },
 
-  leaveItem: {
-    borderWidth: 1,
-    borderColor: '#eee',
-    padding: 12,
-    borderRadius: 10,
-    marginVertical: 6,
+  leaveCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 14,
+    marginHorizontal: 20,
   },
 
-  rowBetween: {
+  headerRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  totalBox: {
-    alignItems: 'flex-end',
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 20,
-    backgroundColor: '#F9FAFB',
+    marginBottom: 12,
   },
 
   leaveType: {
@@ -253,10 +280,13 @@ const styles = StyleSheet.create({
     color: '#1F2937',
   },
 
-  placeHoldeContainer: {
-    flex: 1,
-    top: 100,
-    height: 800
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    backgroundColor: '#F9FAFB',
   },
 
   statusDot: {
@@ -270,6 +300,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
+
   innerBox: {
     borderWidth: 1,
     borderColor: '#E5E7EB',
@@ -280,23 +311,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
   },
 
-
-  dateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-  },
-
   label: {
     fontSize: 13,
-    ...GlobalFonts.subtitle,
     color: COLOR.TextSecondary,
   },
 
   value: {
     fontSize: 15,
-    color: '#111827',
     fontWeight: '600',
+    color: '#111827',
+  },
+
+  totalBox: {
+    alignItems: 'flex-end',
   },
 
   days: {
@@ -306,7 +333,6 @@ const styles = StyleSheet.create({
   },
 
   fab: {
-    flex: 1,
     position: 'absolute',
     alignSelf: 'center',
     bottom: 20,
@@ -318,24 +344,7 @@ const styles = StyleSheet.create({
 
   fabText: {
     color: COLOR.White1,
-    ...GlobalFonts.subtitle,
     fontWeight: '600',
     fontSize: 15,
   },
-  leaveCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 14,
-    marginHorizontal: 20,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-});
-
-
-export default Leaves
+})

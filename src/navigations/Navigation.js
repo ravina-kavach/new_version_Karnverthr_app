@@ -45,7 +45,6 @@ function Navigation({ props }) {
             <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 
             <Stack.Screen name="profile" component={Profile} />
             <Stack.Screen name="editProfile" component={EditProfile} />
-
             <Stack.Screen name="shiftTiming" component={ShiftTiming} />
             <Stack.Screen name="attendance" component={Attendance} />
             <Stack.Screen name="leaves" component={Leaves} />

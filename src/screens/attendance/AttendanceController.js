@@ -30,21 +30,18 @@ export const useAttendance = () => {
     ];
   }, [t]);
   const YEARDATA = React.useMemo(() => {
-    const startYear = currentYear;
-    const endYear = 2007;
+  const startYear = currentYear;
+  const years = [];
 
-    const years = [];
+  for (let i = 0; i < 2; i++) {
+    years.push({
+      id: String(i + 1),
+      name: String(startYear - i),
+    });
+  }
 
-    let id = 1;
-    for (let year = startYear; year >= endYear; year--) {
-      years.push({
-        id: String(id++),
-        name: String(year),
-      });
-    }
-
-    return years;
-  }, [t]);
+  return years;
+}, [currentYear]);
   const [SelectedYear, setSelectedYear] = React.useState(() =>
     YEARDATA.find(y => y.name === String(currentYear))
   );

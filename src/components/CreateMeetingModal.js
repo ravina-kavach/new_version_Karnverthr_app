@@ -7,7 +7,9 @@ import {
     StyleSheet,
     Dimensions,
     ScrollView,
-    Modal
+    Modal,
+    Platform,
+    Alert,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLOR } from '../theme/theme';
@@ -17,57 +19,80 @@ import { FontSize } from '../utils/metrics';
 const { width } = Dimensions.get('window');
 
 const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
+    const now = new Date();
+    const initialEnd = new Date(now);
+    initialEnd.setMinutes(initialEnd.getMinutes() + 30);
+
     const [subject, setSubject] = useState('');
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startDate, setStartDate] = useState(now);
+    const [endDate, setEndDate] = useState(initialEnd);
     const [location, setLocation] = useState('');
     const [organizer, setOrganizer] = useState('');
-    // const [notification, setNotification] = useState('5 min');
     const [description, setDescription] = useState('');
-    const [showStartPicker, setShowStartPicker] = useState(false);
     const [pickerMode, setPickerMode] = useState(null);
 
-
+    /** 🔁 Keep end time always after start time */
     useEffect(() => {
         if (endDate <= startDate) {
-            const newEnd = new Date(startDate);
-            newEnd.setMinutes(newEnd.getMinutes() + 30);
-            setEndDate(newEnd);
+            const updatedEnd = new Date(startDate);
+            updatedEnd.setMinutes(updatedEnd.getMinutes() + 30);
+            setEndDate(updatedEnd);
         }
     }, [startDate]);
 
+    /** 🧹 Reset all states */
+    const resetForm = () => {
+        const resetNow = new Date();
+        const resetEnd = new Date(resetNow);
+        resetEnd.setMinutes(resetEnd.getMinutes() + 30);
+
+        setSubject('');
+        setLocation('');
+        setOrganizer('');
+        setDescription('');
+        setStartDate(resetNow);
+        setEndDate(resetEnd);
+        setPickerMode(null);
+    };
+
     const formatDateTime = (date) => {
         const pad = (n) => (n < 10 ? `0${n}` : n);
-
-        const day = pad(date.getDate());
-        const month = pad(date.getMonth() + 1);
-        const year = date.getFullYear();
-
-        const hours = pad(date.getHours());
-        const minutes = pad(date.getMinutes());
-        const seconds = pad(date.getSeconds());
-
-        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}
+      ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
     };
 
     const calculateDuration = (start, end) => {
-        const diffMs = end - start;
-        return +(diffMs / (1000 * 60 * 60)).toFixed(2); // hours
+        return +((end - start) / (1000 * 60 * 60)).toFixed(2);
     };
-    const handleCreateMeeting = () => {
 
-        let payload = {
+    /** 🚀 Create Meeting */
+    const handleCreateMeeting = () => {
+        if (!subject.trim()) {
+            Alert.alert('Validation', 'Meeting subject is required');
+            return;
+        }
+
+        if (startDate < new Date()) {
+            Alert.alert('Invalid Time', 'Meeting cannot start in the past');
+            return;
+        }
+
+        const payload = {
             name: subject,
             start: formatDateTime(startDate),
             stop: formatDateTime(endDate),
-            location: location,
+            location,
             duration: calculateDuration(startDate, endDate),
-            description: description,
+            description,
             privacy: 'private',
         };
-        onCreateMeeting(payload)
-    }
 
+        onCreateMeeting(payload);
+        resetForm();
+        onClose();
+    };
+
+    /** 📅 Picker handler */
     const onChangePicker = (event, selectedDate) => {
         if (event.type === 'dismissed') {
             setPickerMode(null);
@@ -76,185 +101,133 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
 
         if (!selectedDate) return;
 
-        if (pickerMode === 'startDate') {
+        const currentTime = new Date();
+
+        if (pickerMode === 'startDate' || pickerMode === 'startTime') {
             const updated = new Date(startDate);
-            updated.setFullYear(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate()
-            );
+
+            if (pickerMode === 'startDate') {
+                updated.setFullYear(
+                    selectedDate.getFullYear(),
+                    selectedDate.getMonth(),
+                    selectedDate.getDate()
+                );
+            } else {
+                updated.setHours(
+                    selectedDate.getHours(),
+                    selectedDate.getMinutes()
+                );
+            }
+
+            if (updated < currentTime) {
+                Alert.alert('Invalid Time', 'Cannot select past time');
+                setPickerMode(null);
+                return;
+            }
+
             setStartDate(updated);
         }
 
-        if (pickerMode === 'startTime') {
-            const updated = new Date(startDate);
-            updated.setHours(
-                selectedDate.getHours(),
-                selectedDate.getMinutes()
-            );
-            setStartDate(updated);
-        }
-
-        if (pickerMode === 'endDate') {
+        if (pickerMode === 'endDate' || pickerMode === 'endTime') {
             const updated = new Date(endDate);
-            updated.setFullYear(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate()
-            );
-            setEndDate(updated);
-        }
 
-        if (pickerMode === 'endTime') {
-            const updated = new Date(endDate);
-            updated.setHours(
-                selectedDate.getHours(),
-                selectedDate.getMinutes()
-            );
+            if (pickerMode === 'endDate') {
+                updated.setFullYear(
+                    selectedDate.getFullYear(),
+                    selectedDate.getMonth(),
+                    selectedDate.getDate()
+                );
+            } else {
+                updated.setHours(
+                    selectedDate.getHours(),
+                    selectedDate.getMinutes()
+                );
+            }
+
+            if (updated <= startDate) {
+                Alert.alert('Invalid Time', 'End time must be after start time');
+                setPickerMode(null);
+                return;
+            }
+
             setEndDate(updated);
         }
 
         setPickerMode(null);
     };
 
-
     return (
-        <Modal
-            visible={visible}
-        >
-            <View style={styles.overlay} >
+        <Modal visible={visible} transparent>
+            <View style={styles.overlay}>
                 <View style={styles.modalContent}>
+                    {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.title}>New Meeting</Text>
-                        <TouchableOpacity style={{ alignItems: 'flex-end'}} onPress={onClose}>
+                        <TouchableOpacity onPress={onClose}>
                             <Text style={styles.close}>✕</Text>
                         </TouchableOpacity>
                     </View>
-                    <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-                        {/* Meeting Subject */}
+
+                    <ScrollView>
                         <Text style={styles.label}>Meeting Subject</Text>
                         <TextInput
-                            placeholder="Enter Meeting Subject"
+                            style={styles.input}
                             value={subject}
                             onChangeText={setSubject}
-                            style={styles.input}
+                            placeholder="Enter meeting subject"
                         />
 
-                        {/* Start Date & Time */}
                         <Text style={styles.label}>From</Text>
                         <View style={styles.row}>
-                            <TouchableOpacity
-                                style={styles.dateTimeBox}
-                                onPress={() => setPickerMode('startDate')}
-                            >
-                                <Text style={styles.dateTimeText}>
-                                    {startDate.toLocaleDateString()}
-                                </Text>
+                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startDate')}>
+                                <Text>{startDate.toLocaleDateString()}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.dateTimeBox}
-                                onPress={() => setPickerMode('startTime')}
-                            >
-                                <Text style={styles.dateTimeText}>
-                                    {startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </Text>
+                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startTime')}>
+                                <Text>{startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                             </TouchableOpacity>
                         </View>
-                        {showStartPicker && (
-                            <DateTimePicker
-                                value={startDate}
-                                mode="datetime"
-                                display="default"
-                                onChange={(event, selectedDate) => {
-                                    if (event.type === 'dismissed') {
-                                        setShowStartPicker(false);
-                                        return;
-                                    }
 
-                                    if (event.type === 'set' && selectedDate) {
-                                        setShowStartPicker(false);
-                                        setStartDate(selectedDate);
-                                    }
-                                }}
-                            />
-                        )}
-
-                        {/* End Date & Time */}
                         <Text style={styles.label}>To</Text>
                         <View style={styles.row}>
-                            <TouchableOpacity
-                                style={styles.dateTimeBox}
-                                onPress={() => setPickerMode('endDate')}
-                            >
-                                <Text style={styles.dateTimeText}>
-                                    {endDate.toLocaleDateString()}
-                                </Text>
+                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endDate')}>
+                                <Text>{endDate.toLocaleDateString()}</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.dateTimeBox}
-                                onPress={() => setPickerMode('endTime')}
-                            >
-                                <Text style={styles.dateTimeText}>
-                                    {endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </Text>
+                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endTime')}>
+                                <Text>{endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                             </TouchableOpacity>
                         </View>
+
                         {pickerMode && (
                             <DateTimePicker
-                                value={
-                                    pickerMode.includes('start') ? startDate : endDate
-                                }
+                                value={pickerMode.includes('start') ? startDate : endDate}
                                 mode={pickerMode.includes('Date') ? 'date' : 'time'}
+                                minimumDate={pickerMode.includes('start') ? new Date() : startDate}
                                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                                 onChange={onChangePicker}
                             />
                         )}
 
-                        {/* Location */}
                         <Text style={styles.label}>Location</Text>
-                        <TextInput
-                            placeholder="Add Location"
-                            value={location}
-                            onChangeText={setLocation}
-                            style={styles.input}
-                        />
+                        <TextInput style={styles.input} placeholder='Enter Location' value={location} onChangeText={setLocation} />
 
-                        {/* Organizer */}
                         <Text style={styles.label}>Organizer</Text>
-                        <TextInput
-                            placeholder="Organizer Name"
-                            value={organizer}
-                            onChangeText={setOrganizer}
-                            style={styles.input}
-                        />
+                        <TextInput style={styles.input} value={organizer} placeholder='Enter Organizer' onChangeText={setOrganizer} />
 
-                        {/* Notification */}
-                        {/* <Text style={styles.label}>Notification</Text>
-                        <View style={styles.pickerBox}>
-                            <Picker
-                                selectedValue={notification}
-                                onValueChange={(itemValue) => setNotification(itemValue)}
-                            >
-                                <Picker.Item label="5 min" value="5 min" />
-                                <Picker.Item label="10 min" value="10 min" />
-                                <Picker.Item label="15 min" value="15 min" />
-                                <Picker.Item label="30 min" value="30 min" />
-                            </Picker>
-                        </View> */}
-
-                        {/* Description */}
                         <Text style={styles.label}>Description</Text>
                         <TextInput
-                            placeholder="Add a description"
-                            value={description}
-                            onChangeText={setDescription}
                             style={[styles.input, { height: 80 }]}
                             multiline
+                            placeholder='Enter Description'
+                            value={description}
+                            onChangeText={setDescription}
                         />
+                        <Text style={styles.charCount}>
+                            {description.length}/150
+                        </Text>
                     </ScrollView>
 
-                    <TouchableOpacity style={styles.createButton} onPress={() => handleCreateMeeting()}>
-                        <Text style={styles.createButtonText}>Create New Meeting  +</Text>
+                    <TouchableOpacity style={styles.createButton} onPress={handleCreateMeeting}>
+                        <Text style={styles.createButtonText}>Create New Meeting +</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -268,6 +241,14 @@ const styles = StyleSheet.create({
     modalContainer: {
         justifyContent: 'center',
         margin: 0,
+    },
+    charCount: {
+        ...GlobalFonts.subtitle,
+        alignSelf: 'flex-end',
+        marginTop: 5,
+        paddingRight:5,
+        fontSize: 12,
+        color: '#6B7280',
     },
     modalContent: {
         backgroundColor: '#fff',
@@ -339,7 +320,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignSelf: 'center',
-         marginTop: 30,
+        marginTop: 30,
         // marginBottom: 6,
     },
     overlay: {
@@ -352,7 +333,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 18,
         fontWeight: '600',
-        textAlign:'center',
+        textAlign: 'center',
         color: '#111',
     },
 });

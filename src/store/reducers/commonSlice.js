@@ -31,6 +31,26 @@ export const UserToken = createAsyncThunk(
         }
     }
 );
+export const GetUserDetails = createAsyncThunk(
+    'GetUserDetails',
+    async (userdata, thunkAPI) => {
+        try {
+            const result = await API.get(`employee/employees?user_id=${userdata.id}`);
+            if (result.data.status === 'error') {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result?.data?.message),
+                });
+            }
+
+            return result.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message),
+            });
+        }
+    }
+);
+
 
 export const Usersignin = createAsyncThunk(
     'Usersignin',
@@ -40,7 +60,6 @@ export const Usersignin = createAsyncThunk(
                 email: userdata.email,
                 password: userdata.password,
             });
-
             if (result.data.status === 'error') {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result?.data?.message),
@@ -197,7 +216,28 @@ export const GetLeavetype = createAsyncThunk(
         } catch (error) {
             console.log("Axios Error:", error);
             return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.message || error.message)
+                error: errorMassage(error?.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
+export const GetLeaveAllocation = createAsyncThunk(
+    'GetLeaveAllocation',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`employee/employee-dashboard?user_id=${userdata.id}`);
+            // console.log("result===>",result)
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+            return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error?.response?.data?.message || error.message)
             });
         }
     },
@@ -529,7 +569,7 @@ export const GetCalendarEventsMore = createAsyncThunk(
     },
 );
 
-//==== GEt attendees list
+//==== Get attendees list
 export const GetAttendeesList = createAsyncThunk(
     'GetAttendeesList',
     async (userdata, thunkAPI) => {
@@ -894,6 +934,7 @@ export const CommonSlice = createSlice({
         isGetLeaveListFetching: false,
 
         GetLeavetypeData: [],
+        GetLeaveAllocationData: [],
         GetDepartmentTypeData: [],
         isGetLeavetype: false,
         isGetLeavetypeFetching: false,
@@ -1030,6 +1071,42 @@ export const CommonSlice = createSlice({
         builder.addCase(Usersignin.pending, state => {
             state.isSigninFetching = true;
         });
+
+        //===== GetUserDetails
+
+        //  builder.addCase(Usersignin.fulfilled, (state, { payload }) => {
+        //     //console.log("[Usersignin.fulfilled]>>>payload>>>", payload)
+        //     try {
+        //         state.UserDetailsData = payload;
+        //         state.isSigninFetching = false;
+        //         state.isError = false;
+        //         state.errorMessage = '';
+        //         return state;
+        //     } catch (error) {
+        //         console.log('Error: Usersignin.fulfilled try catch error >>', error);
+        //     }
+        // });
+        // builder.addCase(Usersignin.rejected, (state, { payload }) => {
+        //     console.log("[Usersignin.rejected]>>>", payload)
+        //     try {
+        //         state.UsersigninData = {};
+        //         state.isSignin = false;
+        //         state.isSigninFetching = false;
+        //         state.isError = true;
+        //         payload
+        //             ? (state.errorMessage = payload.error?.message
+        //                 ? payload.error?.message
+        //                 : (payload.error || "Oops! It seems like either your username or password is incorrect")) : "Oops! It seems like either your username or password is incorrect";
+        //     } catch (error) {
+        //         console.log(
+        //             'Error: [Usersignin.rejected] try catch error >>',
+        //             error,
+        //         );
+        //     }
+        // });
+        // builder.addCase(Usersignin.pending, state => {
+        //     state.isSigninFetching = true;
+        // });
 
         //===== UserVerification
         builder.addCase(UserVerification.fulfilled, (state, { payload }) => {
@@ -1349,7 +1426,6 @@ export const CommonSlice = createSlice({
 
         //========= UserAttendanceRegularization
         builder.addCase(UserAttendanceRegularization.fulfilled, (state, { payload }) => {
-            // console.log("[UserAttendanceRegularization.fulfilled]>>>payload>>>", payload)
             try {
                 state.UserAttendanceRegurationData = payload;
                 state.isFeatchAttendanceReguration = false;
@@ -1632,7 +1708,38 @@ export const CommonSlice = createSlice({
         builder.addCase(GetLeavetype.pending, state => {
             state.isGetLeavetypeFetching = true;
         });
-
+        //===== GetLeaveAllocation
+        builder.addCase(GetLeaveAllocation.fulfilled, (state, { payload }) => {
+            try {
+                state.GetLeaveAllocationData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetLeaveAllocation.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetLeaveAllocation.rejected, (state, { payload }) => {
+            console.log("[GetLeaveAllocation.rejected]>>>", payload)
+            try {
+                state.GetLeavetypeData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetLeaveAllocation.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetLeaveAllocation.pending, state => {
+            return state
+        });
+        
         //===== Department type
 
         builder.addCase(GetDepartmentType.fulfilled, (state, { payload }) => {

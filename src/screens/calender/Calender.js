@@ -1,37 +1,36 @@
-import React, { useState, useEffect,useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  StatusBar,
   RefreshControl,
   Dimensions
 } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Calendar as CalendarView } from 'react-native-big-calendar';
 import moment from 'moment';
 import { CommonView } from '../../utils/common';
 import { DayCalIcon, MonthCalIcon, WeekCalIcon } from '../../assets/svgs';
 import { COLOR } from '../../theme/theme';
-import NewMeetingModal from '../../components/CreateMeetingModal'
+import NewMeetingModal from '../../components/CreateMeetingModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { CommonSelector, GetCalendarEvents, CreateNewMeeting } from '../../store/reducers/commonSlice';
+import { CommonSelector, GetCalendarEvents, CreateNewMeeting, GetAttandanceList } from '../../store/reducers/commonSlice';
 import { showMessage } from 'react-native-flash-message';
 import { FontSize } from '../../utils/metrics';
 import { GlobalFonts } from '../../theme/typography';
-// THEME CONSTANTS
+
 const COLORS = {
-  bg: '#F3F4F6', // Light gray background
-  card: '#FFFFFF', // White card background
-  primary: '#000000', // Active tab / Black
-  textMain: '#111827', // Dark text
-  textMuted: '#6B7280', // Gray text
-  accentBlue: '#E0F2FE',// Event blue bg
-  accentBlueText: '#0284C7', // Event blue text
-  inputBg: '#F3F4F6', // Input/Card gray background
-  danger: '#EF4444', // Red indicator
+  bg: '#F3F4F6',
+  card: '#FFFFFF',
+  primary: '#000000',
+  textMain: '#111827',
+  textMuted: '#6B7280',
+  accentBlue: '#E0F2FE',
+  accentBlueText: '#0284C7',
+  inputBg: '#F3F4F6',
+  danger: '#EF4444',
 };
 
 const { width } = Dimensions.get('window');
@@ -39,98 +38,159 @@ const { width } = Dimensions.get('window');
 export default function Calendar() {
   const [mode, setMode] = useState('day');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [meetingModal, setMeetingModal] = useState(false)
-  const IsFocused = useIsFocused();
-  const Navigation = useNavigation();
-  const dispatch = useDispatch();
+  const [meetingModal, setMeetingModal] = useState(false);
   const [calendarEvents, setCalendarEvents] = useState([]);
-  const [reminderEvents, setRemaiderEvents] = useState([])
-  const { GetCalendarEventsData, isGetCalendarEventsDataFetching, UsersigninData } = useSelector(CommonSelector);
-  // Mock Data for the Calendar (Top)
+  const [reminderEvents, setRemaiderEvents] = useState([]);
+  const [visibleMonth, setVisibleMonth] = useState(moment().month() + 1);
+  const [visibleYear, setVisibleYear] = useState(moment().year());
+
+  const dispatch = useDispatch();
+  const Navigation = useNavigation();
+  const { GetCalendarEventsData, GetAttandanceListData, isGetCalendarEventsDataFetching, UsersigninData } = useSelector(CommonSelector);
+
+  // Fetch events when screen focused or month changes
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = () => {
+        if (!UsersigninData?.user_id) return;
+
+        const userData = { id: UsersigninData.user_id };
+        const data = {
+          id: Number(UsersigninData.user_id),
+          month: Number(visibleMonth),
+          year: Number(visibleYear),
+        };
+
+        dispatch(GetAttandanceList(data));
+        dispatch(GetCalendarEvents(userData));
+      };
+      fetchData();
+    }, [UsersigninData?.user_id, visibleMonth, visibleYear, dispatch])
+  );
 
   useEffect(() => {
-    if (IsFocused) {
-      const userData = {
-        id: UsersigninData.user_id
-      }
-      dispatch(GetCalendarEvents(userData))
-    }
-  }, [IsFocused])
+    const meetingsThisMonth = calendarEvents.filter(e => {
+      return (
+        e.attendanceType === 'meeting' &&
+        moment(e.start).month() === moment(currentDate).month() &&
+        moment(e.start).year() === moment(currentDate).year()
+      );
+    });
+    setRemaiderEvents(meetingsThisMonth);
+  }, [calendarEvents, currentDate]);
 
+  // Pull-to-refresh
   const onRefresh = useCallback(() => {
-     const userData = {
-        id: UsersigninData.user_id
-      }
-      dispatch(GetCalendarEvents(userData))
-    }, []);
+    const userData = { id: UsersigninData.user_id };
+    dispatch(GetCalendarEvents(userData));
+  }, [UsersigninData?.user_id, dispatch]);
 
   useEffect(() => {
+    setVisibleMonth(moment(currentDate).month() + 1);
+    setVisibleYear(moment(currentDate).year());
+  }, [currentDate]);
+
+  useEffect(() => {
+    let attendanceEvents = [];
+    if (GetAttandanceListData?.attandancelist) {
+      attendanceEvents = buildAttendanceEvents(GetAttandanceListData.attandancelist);
+    }
+
+    let meetingEvents = [];
     if (GetCalendarEventsData) {
-      const formattedEvents = GetCalendarEventsData.map(item => ({
-        title: item.name,
+      meetingEvents = GetCalendarEventsData.map(item => ({
+        title: "",
         start: new Date(item.start.replace(' ', 'T')),
         end: new Date(item.stop.replace(' ', 'T')),
+        attendanceType: 'meeting',
+        description: item.description || '',
       }));
-      setCalendarEvents(formattedEvents);
-
     }
-  }, [GetCalendarEventsData])
 
-  useEffect(() => {
+    setCalendarEvents([...meetingEvents, ...attendanceEvents]);
+  }, [GetCalendarEventsData, GetAttandanceListData, currentDate, visibleMonth, visibleYear]);
 
-    if (GetCalendarEventsData) {
-      const reminderEvents = GetCalendarEventsData
-        .filter(item =>
-          moment(item.start).month() === moment().month() &&
-          moment(item.start).year() === moment().year()
-        )
-        .map((item, index) => ({
-          id: String(index + 1),
-          title: item.name,
-          startDate: item.start,
-          endDate: item.stop,
-          type: item.location || 'Event',
-          description: item.description
-        }));
-      setRemaiderEvents(reminderEvents)
+
+  const buildAttendanceEvents = (attendanceList = []) => {
+    const monthStart = moment({ year: visibleYear, month: visibleMonth - 1 }).startOf('month');
+    const monthEnd = moment({ year: visibleYear, month: visibleMonth - 1 }).endOf('month');
+    const today = moment().startOf('day');
+
+    const attendanceMap = {};
+    attendanceList.forEach(item => {
+      attendanceMap[item.date] = item;
+    });
+
+    const events = [];
+    let day = monthStart.clone();
+
+    while (day.isSameOrBefore(monthEnd)) {
+      const dateStr = day.format('YYYY-MM-DD');
+      const attendance = attendanceMap[dateStr];
+      const isPastDay = day.isBefore(today, 'day');
+
+      const isWeekend = day.day() === 0 || day.day() === 6;
+
+      if (isWeekend) {
+        day.add(1, 'day');
+        continue;
+      }
+
+      if (attendance && attendance.is_late_in) {
+        events.push({
+          title: 'Late',
+          start: day.toDate(),
+          end: day.clone().add(30, 'minutes').toDate(),
+          attendanceType: 'late',
+          description: attendance.late_time_display,
+        });
+      } else if (!attendance && isPastDay) {
+        events.push({
+          title: 'Absent',
+          start: day.toDate(),
+          end: day.clone().add(30, 'minutes').toDate(),
+          attendanceType: 'absent',
+          description: 'Absent',
+        });
+      }
+
+      day.add(1, 'day');
     }
-  }, [GetCalendarEventsData])
+
+    return events;
+  };
+
+
+
 
   const onCreateMeeting = async (payload) => {
-    const userData = {
-      id: UsersigninData.user_id,
-      data: payload
-    }
-    const result = await dispatch(CreateNewMeeting(userData)).unwrap()
+    const userData = { id: UsersigninData.user_id, data: payload };
+    const result = await dispatch(CreateNewMeeting(userData)).unwrap();
     if (result.success) {
       showMessage({
         icon: "success",
         message: result.successMessage,
         type: "success",
-      })
-      setMeetingModal(false)
-
+      });
+      setMeetingModal(false);
+      buildAttendanceEvents()
     }
-  }
-  const currentMonth = moment().format('MMMM, YYYY');
+  };
+
+  const currentMonth = moment(currentDate).format('MMMM, YYYY');
 
   const renderIcon = (mode, isActive) => {
-    if (mode === 'day') {
-      <DayCalIcon color={isActive ? COLOR.Black1 : COLOR.Placeholder} />
-    }
-    if (mode === 'week') {
-      <WeekCalIcon color={isActive ? COLOR.Black1 : COLOR.Placeholder} />
-    }
-    if (mode === 'month') {
-      <MonthCalIcon color={isActive ? COLOR.Black1 : COLOR.Placeholder} />
-    }
-  }
+    if (mode === 'day') return <DayCalIcon color={isActive ? COLOR.Black1 : COLOR.Placeholder} />;
+    if (mode === 'week') return <WeekCalIcon color={isActive ? COLOR.Black1 : COLOR.Placeholder} />;
+    if (mode === 'month') return <MonthCalIcon color={isActive ? COLOR.Black1 : COLOR.Placeholder} />;
+  };
+
   const renderTabs = () => (
     <View style={styles.tabContainer}>
       {[
-        { key: 'day', label: 'Day', icon: <DayCalIcon /> },
-        { key: 'week', label: 'Week', icon: <WeekCalIcon /> },
-        { key: 'month', label: 'Month', icon: <MonthCalIcon /> },
+        { key: 'day', label: 'Day' },
+        { key: 'week', label: 'Week' },
+        { key: 'month', label: 'Month' },
       ].map((item) => {
         const isActive = mode === item.key;
         return (
@@ -141,8 +201,7 @@ export default function Calendar() {
             activeOpacity={0.7}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              {renderIcon(mode, isActive)}
-              <DayCalIcon />
+              {renderIcon(item.key, isActive)}
               <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
                 {item.label}
               </Text>
@@ -153,10 +212,10 @@ export default function Calendar() {
       })}
     </View>
   );
+
   const formatDateRange = (start, end) => {
     const startMoment = moment(start);
     const endMoment = moment(end);
-
     return {
       dayRange: `${startMoment.format('DD MMM')} - ${endMoment.format('DD MMM')}`,
       timeRange: `${startMoment.format('hh:mm A')} - ${endMoment.format('hh:mm A')}`,
@@ -164,101 +223,159 @@ export default function Calendar() {
   };
 
   const renderListItem = ({ item }) => {
-    const { dayRange, timeRange } = formatDateRange(
-      item.startDate,
-      item.endDate
-    );
-
+    const { dayRange, timeRange } = formatDateRange(item.start, item.end);
     return (
       <View style={styles.listItemContainer}>
-        <Text style={styles.listItemTitle}>
-          {item.title || 'Meeting Invitation'}
-        </Text>
+        <Text style={styles.listItemTitle}>{item.title || 'Meeting Invitation'}</Text>
         <View style={styles.cardBox}>
           <View style={{ flex: 1 }}>
             <Text style={styles.cardLabel}>From-To</Text>
-
-            <Text style={styles.cardDate}>
-              {dayRange}
-            </Text>
-
-            <Text style={styles.cardTime}>
-              {timeRange}
-            </Text>
+            <Text style={styles.cardDate}>{dayRange}</Text>
+            <Text style={styles.cardTime}>{timeRange}</Text>
             <View style={{ flex: 1 }}>
               <Text style={[styles.cardLabel, { paddingTop: 10 }]}>Description</Text>
-              <Text style={styles.cardDate}>
-                {item?.description.replace(/<[^>]+>/g, '')}
-              </Text>
+              <Text style={styles.cardDate}>{item?.description.replace(/<[^>]+>/g, '')}</Text>
             </View>
           </View>
-
           <View style={styles.linkIconContainer}>
             <Text style={styles.linkIcon}>🔗</Text>
           </View>
         </View>
-
       </View>
     );
   };
 
-
+  // Week view helper
   const getWeekDates = (date) => {
-    const startOfWeek = moment(date).startOf('week'); // Sunday start
-    return Array.from({ length: 7 }).map((_, i) =>
-      startOfWeek.clone().add(i, 'days')
-    );
+    const startOfWeek = moment(date).startOf('week'); // Sunday
+    return Array.from({ length: 7 }).map((_, i) => startOfWeek.clone().add(i, 'days'));
   };
 
   const renderWeek = () => {
     const weekDates = getWeekDates(currentDate);
-
     return (
       <View style={styles.weekContainer}>
-        {/* Day names */}
         <View style={styles.weekDayRow}>
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
-            <Text key={`${day}-${index}`} style={styles.weekDayText}>
-              {day}
-            </Text>
+            <Text key={index} style={styles.weekDayText}>{day}</Text>
           ))}
         </View>
-
-        {/* Dates */}
         <View style={styles.weekDateRow}>
           {weekDates.map(date => {
             const isSelected = moment(date).isSame(currentDate, 'day');
-            const hasEvent = calendarEvents?.some(e =>
-              moment(e.start).isSame(date, 'day')
-            );
+            const attendanceEvent = calendarEvents?.find(e => moment(e.start).isSame(date, 'day') && (e.attendanceType === 'late' || e.attendanceType === 'absent'));
+            const hasMeetingEvent = calendarEvents?.some(e => moment(e.start).isSame(date, 'day') && e.attendanceType === 'meeting');
 
             return (
               <TouchableOpacity
                 key={date.format('YYYY-MM-DD')}
-                // onPress={() => setCurrentDate(date.toDate())}
                 onPress={() => {
-                  setCurrentDate(date.toDate());
-                  Navigation.navigate("calendarList");
+                  if (hasMeetingEvent) Navigation.navigate("calendarList");
                 }}
-                style={[
-                  styles.dateCircle,
-                  isSelected && styles.activeDate
-                ]}
+                style={[styles.dateCircle, isSelected && styles.activeDate]}
               >
-                <Text style={[
-                  styles.dateText,
-                  isSelected && styles.activeDateText
-                ]}>
-                  {date.date()}
-                </Text>
-
-                {hasEvent && <View style={styles.dot} />}
+                <Text style={[styles.dateText, isSelected && styles.activeDateText]}>{date.date()}</Text>
+                {(attendanceEvent || hasMeetingEvent) && (
+                  <View style={styles.dotRow}>
+                    {attendanceEvent && <View style={[styles.dot, attendanceEvent.attendanceType === 'late' ? styles.lateDot : styles.absentDot]} />}
+                    {hasMeetingEvent && <View style={[styles.dot, styles.meetingDot]} />}
+                  </View>
+                )}
               </TouchableOpacity>
             );
           })}
         </View>
       </View>
     );
+  };
+
+  const renderMonth = () => {
+    const monthStart = moment(currentDate).startOf('month');
+    const monthEnd = moment(currentDate).endOf('month');
+    const startDate = monthStart.clone().startOf('week');
+    const endDate = monthEnd.clone().endOf('week');
+
+    const rows = [];
+    let day = startDate.clone();
+    const today = moment().startOf('day');
+
+    while (day.isSameOrBefore(endDate, 'day')) {
+      const weekDays = [];
+
+      for (let i = 0; i < 7; i++) {
+        const isCurrentMonth = day.month() === monthStart.month();
+        const isSelected = day.isSame(currentDate, 'day');
+
+        const attendanceEvent = calendarEvents?.find(
+          e => moment(e.start).isSame(day, 'day') && (e.attendanceType === 'late' || e.attendanceType === 'absent')
+        );
+
+        const hasMeetingEvent = calendarEvents?.some(
+          e => moment(e.start).isSame(day, 'day') && e.attendanceType === 'meeting'
+        );
+
+        weekDays.push(
+          <TouchableOpacity
+            key={day.format('YYYY-MM-DD')}
+            style={[
+              styles.dateCircle,
+              isSelected && styles.activeDate,
+              !isCurrentMonth && { opacity: 0.3 },
+            ]}
+            onPress={() => {
+              if (hasMeetingEvent) Navigation.navigate('calendarList');
+            }}
+          >
+            <Text style={[styles.dateText, isSelected && styles.activeDateText]}>
+              {day.date()}
+            </Text>
+            {(attendanceEvent || hasMeetingEvent) && (
+              <View style={styles.dotRow}>
+                {attendanceEvent && (
+                  <View
+                    style={[
+                      styles.dot,
+                      attendanceEvent.attendanceType === 'late'
+                        ? styles.lateDot
+                        : styles.absentDot,
+                    ]}
+                  />
+                )}
+                {hasMeetingEvent && <View style={[styles.dot, styles.meetingDot]} />}
+              </View>
+            )}
+          </TouchableOpacity>
+        );
+
+        day.add(1, 'day');
+      }
+
+      rows.push(
+        <View key={day.format('YYYY-MM-DD')} style={styles.weekDateRow}>
+          {weekDays}
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.weekContainer}>
+        <View style={styles.weekDayRow}>
+          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+            <Text key={i} style={styles.weekDayText}>
+              {d}
+            </Text>
+          ))}
+        </View>
+        {rows}
+      </View>
+    );
+  };
+
+
+  const calendarEventStyle = (event) => {
+    if (event.attendanceType === 'late') return { backgroundColor: '#F59E0B', borderLeftColor: '#F59E0B', borderLeftWidth: 3 };
+    if (event.attendanceType === 'absent') return { backgroundColor: '#EF4444', borderLeftColor: '#EF4444', borderLeftWidth: 3 };
+    return { backgroundColor: COLORS.accentBlue, borderLeftColor: COLORS.danger, borderLeftWidth: 3 };
   };
 
   return (
@@ -268,46 +385,45 @@ export default function Calendar() {
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         renderItem={renderListItem}
-        refreshControl={
-          <RefreshControl
-            refreshing={isGetCalendarEventsDataFetching}
-            onRefresh={onRefresh}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={isGetCalendarEventsDataFetching} onRefresh={onRefresh} />}
         contentContainerStyle={{ paddingBottom: 100, marginTop: 30 }}
         ListHeaderComponent={
           <>
             <View style={styles.calendarCard}>
               {renderTabs()}
-
-              <Text style={styles.currentDateTitle}>
-                {moment(currentDate).format('DD MMM YYYY')}
-              </Text>
-
-              {mode === 'week' ?
-                renderWeek()
-                :
+              <Text style={styles.currentDateTitle}>{moment(currentDate).format('DD MMM YYYY')}</Text>
+              {mode === 'week' ? renderWeek() : mode === 'month' ? renderMonth() :
                 <CalendarView
                   events={calendarEvents}
                   height={250}
                   mode={mode}
                   date={currentDate}
-                  onPressCell={() => Navigation.navigate("calendarList")}
+                  onPressEvent={(event) => { if (event?.attendanceType === "meeting") Navigation.navigate("calendarList"); }}
                   swipeToChangeMonth
-                  showTime={true}
+                  showTime
                   onSwipeEnd={setCurrentDate}
-                  eventCellStyle={styles.calendarEventStyle}
-                  calendarCellStyle={{ borderColor: 'transparent' }} // Cleaner look
+                  eventCellStyle={calendarEventStyle}
+                  calendarCellStyle={{ borderColor: 'transparent' }}
                   headerContainerStyle={{ display: 'none' }}
-                  hideNowIndicator={false}
                   nowIndicatorColor={COLORS.danger}
                   hourTextStyle={{ fontSize: 10, color: COLORS.textMuted }}
                 />
               }
-              {/* </View> */}
+              <View style={styles.legendContainer}>
+                <View style={styles.legendItem}>
+                  <View style={[styles.dot, styles.absentDot]} />
+                  <Text style={styles.legendText}>Absent</Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.dot, styles.lateDot]} />
+                  <Text style={styles.legendText}>Late</Text>
+                </View>
+                <View style={styles.legendItem}>
+                  <View style={[styles.dot, styles.meetingDot]} />
+                  <Text style={styles.legendText}>Events</Text>
+                </View>
+              </View>
             </View>
-
-            {/* List Section Title */}
             <View style={styles.listHeaderRow}>
               <Text style={styles.sectionTitle}>{currentMonth}</Text>
             </View>
@@ -315,21 +431,11 @@ export default function Calendar() {
         }
       />
 
-
-      <TouchableOpacity
-        style={styles.fab}
-        activeOpacity={0.8}
-        onPress={() => setMeetingModal(true)}
-      >
+      <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={() => setMeetingModal(true)}>
         <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
 
-      <NewMeetingModal
-        visible={meetingModal}
-        onClose={() => setMeetingModal(false)}
-        onCreateMeeting={onCreateMeeting}
-      />
-
+      <NewMeetingModal visible={meetingModal} onClose={() => setMeetingModal(false)} onCreateMeeting={onCreateMeeting} />
     </CommonView>
   );
 }
@@ -385,7 +491,7 @@ const styles = StyleSheet.create({
   },
   activeIndicator: {
     position: 'absolute',
-    bottom: -1, // Overlap the border
+    bottom: -1,
     width: '100%',
     height: 3,
     backgroundColor: COLORS.primary,
@@ -393,7 +499,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 3,
   },
 
-  // Date Title
   currentDateTitle: {
     ...GlobalFonts.subtitle,
     fontSize: 22,
@@ -402,20 +507,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  // Calendar Specifics
+
   calendarWrapper: {
-    // marginTop:20,
-    overflow: 'hidden', // Ensures events don't spill out
-  },
-  calendarEventStyle: {
-    backgroundColor: COLORS.accentBlue,
-    borderLeftWidth: 3,
-    borderLeftColor: COLORS.danger, // The red line on the left
-    borderRadius: 4,
-    opacity: 0.9,
+    overflow: 'hidden',
   },
 
-  // List Section
   listHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -429,7 +525,6 @@ const styles = StyleSheet.create({
     ...GlobalFonts.subtitle,
   },
 
-  // Floating Action Button
   fab: {
     position: 'absolute',
     bottom: 30,
@@ -460,9 +555,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   weekDayText: {
-    ...GlobalFonts.subtitle,
-    fontSize: 12,
-    color: '#999',
+    ...GlobalFonts.title,
+    fontSize: FontSize.Font14,
+    color: COLOR.Black1,
     width: 40,
     textAlign: 'center',
   },
@@ -554,4 +649,41 @@ const styles = StyleSheet.create({
     color: '#111',
     ...GlobalFonts.small,
   },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 12,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB', // light gray
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  legendText: {
+    marginLeft: 6,
+    fontSize: 12,
+    color: '#6B7280',
+    ...GlobalFonts.small,
+  },
+
+
+  dotRow: {
+    flexDirection: 'row',
+    marginTop: 3,
+  },
+
+  lateDot: {
+    backgroundColor: '#F59E0B', // Yellow
+  },
+
+  absentDot: {
+    backgroundColor: '#EF4444', // Red
+  },
+
+  meetingDot: {
+    backgroundColor: '#2D7DFF', // Blue
+  },
+
 });
