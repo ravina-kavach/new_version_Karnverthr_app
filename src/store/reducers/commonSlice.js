@@ -129,12 +129,7 @@ export const UserAttendanceRegularization = createAsyncThunk(
       }
       return;
     } catch (error) {
-      return thunkAPI.rejectWithValue({
-        error:
-          error.response?.data?.message ||
-          error.message ||
-          "Something went wrong",
-      });
+      return error;
     }
   }
 );
