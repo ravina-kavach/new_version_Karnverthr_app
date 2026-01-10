@@ -244,49 +244,97 @@ export default function Calendar() {
     );
   };
 
-  // Week view helper
   const getWeekDates = (date) => {
     const startOfWeek = moment(date).startOf('week'); // Sunday
     return Array.from({ length: 7 }).map((_, i) => startOfWeek.clone().add(i, 'days'));
   };
 
   const renderWeek = () => {
-    const weekDates = getWeekDates(currentDate);
-    return (
-      <View style={styles.weekContainer}>
-        <View style={styles.weekDayRow}>
-          {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
-            <Text key={index} style={styles.weekDayText}>{day}</Text>
-          ))}
-        </View>
-        <View style={styles.weekDateRow}>
-          {weekDates.map(date => {
-            const isSelected = moment(date).isSame(currentDate, 'day');
-            const attendanceEvent = calendarEvents?.find(e => moment(e.start).isSame(date, 'day') && (e.attendanceType === 'late' || e.attendanceType === 'absent'));
-            const hasMeetingEvent = calendarEvents?.some(e => moment(e.start).isSame(date, 'day') && e.attendanceType === 'meeting');
+  const weekDates = getWeekDates(currentDate);
 
-            return (
-              <TouchableOpacity
-                key={date.format('YYYY-MM-DD')}
-                onPress={() => {
-                  if (hasMeetingEvent) Navigation.navigate("calendarList");
-                }}
-                style={[styles.dateCircle, isSelected && styles.activeDate]}
-              >
-                <Text style={[styles.dateText, isSelected && styles.activeDateText]}>{date.date()}</Text>
-                {(attendanceEvent || hasMeetingEvent) && (
-                  <View style={styles.dotRow}>
-                    {attendanceEvent && <View style={[styles.dot, attendanceEvent.attendanceType === 'late' ? styles.lateDot : styles.absentDot]} />}
-                    {hasMeetingEvent && <View style={[styles.dot, styles.meetingDot]} />}
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+  return (
+    <View style={styles.weekContainer}>
+      {/* Week day labels */}
+      <View style={styles.weekDayRow}>
+        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
+          <Text key={index} style={styles.weekDayText}>
+            {day}
+          </Text>
+        ))}
       </View>
-    );
-  };
+
+      {/* Week dates */}
+      <View style={styles.weekDateRow}>
+        {weekDates.map(date => {
+          const isSelected = moment(date).isSame(currentDate, 'day');
+
+          const attendanceEvent = calendarEvents?.find(
+            e =>
+              moment(e.start).isSame(date, 'day') &&
+              (e.attendanceType === 'late' ||
+                e.attendanceType === 'absent')
+          );
+
+          const hasMeetingEvent = calendarEvents?.some(
+            e =>
+              moment(e.start).isSame(date, 'day') &&
+              e.attendanceType === 'meeting'
+          );
+
+          return (
+            <TouchableOpacity
+              key={date.format('YYYY-MM-DD')}
+              style={styles.dateWrapper}
+              activeOpacity={0.7}
+              onPress={() => {
+                if (hasMeetingEvent) {
+                  Navigation.navigate('calendarList');
+                }
+              }}
+            >
+              {/* Date circle */}
+              <View
+                style={[
+                  styles.dateCircle,
+                  isSelected && styles.activeDate,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.dateText,
+                    isSelected && styles.activeDateText,
+                  ]}
+                >
+                  {date.date()}
+                </Text>
+              </View>
+
+              {/* Dots BELOW circle */}
+              {(attendanceEvent || hasMeetingEvent) && (
+                <View style={styles.dotRow}>
+                  {attendanceEvent && (
+                    <View
+                      style={[
+                        styles.dot,
+                        attendanceEvent.attendanceType === 'late'
+                          ? styles.lateDot
+                          : styles.absentDot,
+                      ]}
+                    />
+                  )}
+                  {hasMeetingEvent && (
+                    <View style={[styles.dot, styles.meetingDot]} />
+                  )}
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+};
+
 
   const renderMonth = () => {
     const monthStart = moment(currentDate).startOf('month');
@@ -316,18 +364,28 @@ export default function Calendar() {
         weekDays.push(
           <TouchableOpacity
             key={day.format('YYYY-MM-DD')}
-            style={[
-              styles.dateCircle,
-              isSelected && styles.activeDate,
-              !isCurrentMonth && { opacity: 0.3 },
-            ]}
+            style={styles.dateWrapper}
             onPress={() => {
               if (hasMeetingEvent) Navigation.navigate('calendarList');
             }}
           >
-            <Text style={[styles.dateText, isSelected && styles.activeDateText]}>
-              {day.date()}
-            </Text>
+            <View
+              style={[
+                styles.dateCircle,
+                isSelected && styles.activeDate,
+                !isCurrentMonth && { opacity: 0.3 },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.dateText,
+                  isSelected && styles.activeDateText,
+                ]}
+              >
+                {day.date()}
+              </Text>
+            </View>
+
             {(attendanceEvent || hasMeetingEvent) && (
               <View style={styles.dotRow}>
                 {attendanceEvent && (
@@ -340,10 +398,13 @@ export default function Calendar() {
                     ]}
                   />
                 )}
-                {hasMeetingEvent && <View style={[styles.dot, styles.meetingDot]} />}
+                {hasMeetingEvent && (
+                  <View style={[styles.dot, styles.meetingDot]} />
+                )}
               </View>
             )}
           </TouchableOpacity>
+
         );
 
         day.add(1, 'day');
@@ -551,7 +612,7 @@ const styles = StyleSheet.create({
   weekDayRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
   },
   weekDayText: {
     ...GlobalFonts.title,
@@ -560,18 +621,23 @@ const styles = StyleSheet.create({
     width: 40,
     textAlign: 'center',
   },
+  dateWrapper: {
+    width: 40,
+    alignItems: 'center',
+  },
   weekDateRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    marginTop: 6,
+    paddingHorizontal: 10,
+    marginTop: 8,
   },
   dateCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+
   },
   activeDate: {
     backgroundColor: '#1E1E1E',
@@ -586,11 +652,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   dot: {
-    width: 5,
-    height: 5,
+    width: 6,
+    height: 6,
     borderRadius: 3,
-    backgroundColor: '#2D7DFF',
-    marginTop: 2,
   },
 
   listItemContainer: {
@@ -670,7 +734,9 @@ const styles = StyleSheet.create({
 
   dotRow: {
     flexDirection: 'row',
-    marginTop: 3,
+    marginTop: 4,
+    gap: 4,
+
   },
 
   lateDot: {

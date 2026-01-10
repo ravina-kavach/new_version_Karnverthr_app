@@ -146,9 +146,7 @@ export const UserAttendanceRegcategories = createAsyncThunk(
             }
         } catch (error) {
             console.log("Error >>>", error.response?.data || error.message);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.errorMessage || error?.message)
-            });
+            return error;
         }
     },
 );
