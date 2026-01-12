@@ -43,7 +43,7 @@ const ProfileItem = ({ icon, title, subtitle, onPress }) => (
 );
 
 export default function Profile() {
-  const { UsersigninData, navigationEditProfile,handleOnLogout, handleProfileUpload, pickerVisible,setPickerVisible,avatar } = useProfile()
+  const { UsersigninData, navigationEditProfile,UserDetailsData,handleOnLogout, handleProfileUpload, pickerVisible,setPickerVisible,avatar } = useProfile()
   return (
     <CommonView>
       <CommonHeader title="Profile" />

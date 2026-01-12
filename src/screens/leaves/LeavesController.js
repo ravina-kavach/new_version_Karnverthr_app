@@ -2,14 +2,14 @@ import { useEffect, useCallback, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { CommonSelector, GetLeavetype,GetLeaveAllocation, CreateLeave, GetLeaveList } from '../../store/reducers/commonSlice';
+import { CommonSelector, GetLeavetype, GetLeaveAllocation, CreateLeave, GetLeaveList } from '../../store/reducers/commonSlice';
 import moment from 'moment';
 import { APPROVALS, COLOR } from '../../theme/theme';
 import { showMessage } from 'react-native-flash-message';
 
 export const useLeaves = () => {
   const { t } = useTranslation();
-  const { UsersigninData, GetLeavetypeData,GetLeaveAllocationData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
+  const { UsersigninData, GetLeavetypeData, GetLeaveAllocationData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
   const dispatch = useDispatch();
   const IsFocused = useIsFocused();
   const [visibleModal, setVisibleModel] = useState(false)
@@ -27,7 +27,7 @@ export const useLeaves = () => {
 
   useEffect(() => {
     if (!IsFocused || !UsersigninData) return;
-   
+
     const data = {
       id: Number(UsersigninData.user_id),
     };
@@ -38,27 +38,44 @@ export const useLeaves = () => {
       dispatch(GetLeaveAllocation(data)),
     ]);
   }, [IsFocused, UsersigninData]);
-  
+
   useEffect(() => {
-  if (GetLeaveAllocationData?.success && IsFocused) {
-    updateLeaveSummary(GetLeaveAllocationData);
-  } else {
-    setLeavesSummary([]); // optional fallback
-  }
-}, [IsFocused, GetLeaveAllocationData]);
+    if (GetLeaveAllocationData?.success && IsFocused) {
+      updateLeaveSummary(GetLeaveAllocationData);
+    } else {
+      setLeavesSummary([]); // optional fallback
+    }
+  }, [IsFocused, GetLeaveAllocationData]);
 
 
-const updateLeaveSummary = (res) => {
-  const cards = res?.cards ?? [];
+  const updateLeaveSummary = (res) => {
+    const cards = res?.cards ?? [];
 
-  const mappedData = cards.map(item => ({
-    title: leaveTypeMap[item.leave_type] || item.leave_type,
-    used: String(item?.used ?? 0).padStart(2, "0"),
-    total: String(item?.total ?? 0).padStart(2, "0"),
-    left: item?.remaining ?? 0,
-  }));
+    const mappedData = cards.map(item => ({
+      title: leaveTypeMap[item.leave_type] || item.leave_type,
+      used: String(item?.used ?? 0).padStart(2, "0"),
+      total: String(item?.total ?? 0).padStart(2, "0"),
+      left: item?.remaining ?? 0,
+    }));
 
-  setLeavesSummary(mappedData);
+    setLeavesSummary(mappedData);
+  };
+
+  const resetLeaveForm = () => {
+  setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
+  setSelectedDeptType({ id: '', name: t("Leaves.Select_Department_Type") });
+
+  setSelectStartDate(new Date());
+  setSelectEndDate(new Date());
+
+  setOpenStartDatePicker(false);
+  setOpenEndDatePicker(false);
+
+  setResonText(null);
+
+  setIsPublicLeave(false);
+  setIsOverTimeLeave(false);
+  setIsEarnedLeave(false);
 };
 
 
@@ -72,11 +89,13 @@ const updateLeaveSummary = (res) => {
     return COLOR.Red
   };
   const handleModal = () => {
-   return  setVisibleModel(false)
+    setVisibleModel(false);
+    resetLeaveForm();
+
   }
 
   const handleOpenModal = () => {
-    return setVisibleModel(true)
+    setVisibleModel(true)
   }
 
   const onChangeStartDate = (event, selectedDate) => {
@@ -90,51 +109,52 @@ const updateLeaveSummary = (res) => {
   };
 
   const saveLeave = async () => {
-  try {
-    let data = {
-      holiday_status_id: selectedLeaveType.id,
-      date_from: moment(selectStartDate).format("YYYY-MM-DD"),
-      date_to: moment(selectEndDate).format("YYYY-MM-DD"),
-      reason: resonText,
-    };
+    try {
+      let data = {
+        holiday_status_id: selectedLeaveType.id,
+        date_from: moment(selectStartDate).format("YYYY-MM-DD"),
+        date_to: moment(selectEndDate).format("YYYY-MM-DD"),
+        reason: resonText,
+      };
 
-    const obj = {
-      userid: UsersigninData.user_id,
-      userData: data,
-    };
+      const obj = {
+        userid: UsersigninData.user_id,
+        userData: data,
+      };
 
-    const result = await dispatch(CreateLeave(obj)).unwrap();
-    if (result?.success) {
-      showMessage({
-        icon: "success",
-        message: result.successMessage || "Leave applied successfully",
-        type: "success",
-      });
+      const result = await dispatch(CreateLeave(obj)).unwrap();
+      if (result?.success) {
+        showMessage({
+          icon: "success",
+          message: result.successMessage || "Leave applied successfully",
+          type: "success",
+        });
 
-      handleModal();
-      setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
-      await dispatch(GetLeaveList());
-    } else {
+        handleModal();
+        setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
+        await dispatch(GetLeaveList());
+      } else {
+        handleModal();
+        showMessage({
+          icon: "danger",
+          message: result?.message || "Failed to apply leave",
+          type: "danger",
+        });
+      }
+
+    } catch (error) {
       handleModal();
       showMessage({
         icon: "danger",
-        message: result?.message || "Failed to apply leave",
+        message:
+          error?.message ||
+          error?.error ||
+          "Something went wrong. Please try again.",
         type: "danger",
       });
     }
-
-  } catch (error) {
     handleModal();
-    showMessage({
-      icon: "danger",
-      message:
-        error?.message ||
-        error?.error ||
-        "Something went wrong. Please try again.",
-      type: "danger",
-    });
-  }
-};
+  };
 
   const onRefresh = useCallback(() => {
     dispatch(GetLeaveList())
@@ -152,7 +172,7 @@ const updateLeaveSummary = (res) => {
     GetLeavetypeData,
     selectedLeaveType,
     setSelectedLeaveType,
- 
+
     selectedDeptType,
     setSelectedDeptType,
     selectStartDate,

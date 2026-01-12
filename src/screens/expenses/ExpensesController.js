@@ -155,6 +155,26 @@ export const useExpenses = () => {
     }
   };
 
+  const resetExpenseForm = () => {
+  setFormdata({});
+  setStartDate(null);
+  setSelectedId(1);
+
+  setFileObj({});
+  setPreviewImage(false);
+  setPreviewVisible(false);
+
+  setSelectedCategoryType({ id: 0, category_name: "Select category" });
+  setSelectedAccountType({ id: 0, name: "Select account" });
+
+  setIsStartdatepickeropen(false);
+  setIsImagePickerVisible(false);
+
+  // Reset validation messages
+  Validator.current.hideMessages();
+  forceUpdate(0);
+};
+
   const SubmitExpense = async () => {
     const formvalid = Validator.current.allValid();
     const rawBase64 = FileObj?.base64?.includes(",")
@@ -228,6 +248,7 @@ export const useExpenses = () => {
 
   const closeModal = () => {
     setIsExoensemodal(false);
+    resetExpenseForm();
   };
   const onRefresh = () => {
     dispatch(GetExpenseList({ id: Number(UsersigninData?.user_id) }))

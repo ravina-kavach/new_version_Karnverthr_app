@@ -49,6 +49,7 @@ const useProfile = () => {
 
   return {
     UsersigninData,
+    UserDetailsData,
     navigationEditProfile,
     pickerVisible,
     setPickerVisible,
