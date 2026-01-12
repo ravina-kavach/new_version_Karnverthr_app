@@ -58,7 +58,7 @@ export default function Termsofuse() {
           {/* INTRODUCTORY */}
           <ToUTitle title="Introductory" />
           <ToULabel
-            label="KAVACH GLOBAL KONNECTS PVT LTD is a company incorporated under the Companies Act, 1956 and having its registered office at A/53, 5th Floor, New York Tower, Thaltej, S G Highway, Ahmedabad – 380015, Gujarat, India (‘KAVACH’, which expression shall unless repugnant to the subject or context thereof mean and include its successors and assigns)."
+            label="KAVACH GLOBAL KONNECTS PRIVATE LIMITED is a company incorporated under the Companies Act, 1956 and having its registered office at Office-408, Colonade, Behind Iscon Temple Opp. Iscon Brts Bus Stand, Iscon Ambli Road,Ahmedabad - 380054, Gujarat, India ('KAVACH', which expression shall unless repugnant to the subject or context thereof mean and include its successors and assigns)."
           />
 
           <View style={{ marginBottom: 10 }}>

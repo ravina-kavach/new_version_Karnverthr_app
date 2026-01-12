@@ -50,7 +50,8 @@ export default function PrivacyPolicy() {
         <View style={{ marginHorizontal: 20 }}>
 
           <PrivacyLabel
-            label="KAVACH GLOBAL KONNECTS PVT LTD is an independent analytics company which provides its registered users (any person who is registered with KAVACH and accepts these terms and proceeds to use the Services offered by KAVACH) information and analytics services about corporate entities in India using publicly available information, including through its proprietary platform. Use of the Services shall be deemed to constitute sufficient proof that the Users have read, understood, and accepted this Privacy Policy."
+            label="
+KAVACH GLOBAL KONNECTS PRIVATE LIMITED is an independent analytics company which provides its registered users (any person who is registered with KAVACH and accepts these terms and proceeds to use the Services offered by KAVACH) information and analytics services about corporate entities in India using publicly available information, including through its proprietary platform. Use of the Services shall be deemed to constitute sufficient proof that the Users have read, understood, and accepted this Privacy Policy."
           />
 
           <PrivacyTitle title="1) Collection of Personal Information" />
