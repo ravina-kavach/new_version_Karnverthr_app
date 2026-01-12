@@ -287,6 +287,13 @@ export const useSignInScreen = () => {
       setIsVisibleVerifiedModal(!result);
     }
   };
+
+  const navigateTerms = ()=>{
+      Navigation.navigate('termsofuse')
+  }
+   const navigatePrivacyPolicy = ()=>{
+      Navigation.navigate('privacyPolicy')
+  }
   return {
     t,
     Formdata,
@@ -313,5 +320,7 @@ export const useSignInScreen = () => {
     setIsReSetmodalvisible,
     VerfiedUserData,
     isVerifiedFetching,
+    navigateTerms,
+    navigatePrivacyPolicy
   };
 };

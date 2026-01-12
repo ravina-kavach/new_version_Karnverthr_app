@@ -19,7 +19,7 @@ import { COLOR } from '../../../theme/theme';
 import { FontSize, responsiveHeight, responsiveWidth } from '../../../utils/metrics';
 import EmailVerificationModal from '../../../components/EmailVerificationModal.js'
 import ForgotPasswordModal from '../../../components/ForgotPasswordModal.js'
-import { font } from '../../../theme/typography.js';
+import { font, GlobalFonts } from '../../../theme/typography.js';
 import { AppLogo } from '../../../assets/images/index.js';
 import BiometricModal from '../../../components/BiometricModal.js'
 function SignInScreen() {
@@ -48,6 +48,8 @@ function SignInScreen() {
     isVisibleVerifiedModal,
     handleVerificationModal,
     isVerifiedFetching,
+    navigateTerms,
+    navigatePrivacyPolicy
   } = useSignInScreen();
   return (
     <CommonView>
@@ -153,6 +155,21 @@ function SignInScreen() {
             : t('Button.LoginWithFaceId')
         }
       />
+    <View style={styles.policyContainer}>
+    <Text
+      style={styles.linkText}
+      onPress={() => navigateTerms()}
+    >
+      Terms of Use
+    </Text>
+    <Text style={styles.policyText}>and</Text>
+    <Text
+      style={styles.linkText}
+      onPress={() => navigatePrivacyPolicy()}
+    >
+      Privacy Policy
+    </Text>
+</View>
     </CommonView>
   );
 }
@@ -356,6 +373,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#444',
   },
+  policyContainer: {
+  marginBottom: 25,
+  paddingHorizontal: 10,
+  justifyContent:'center',
+  alignItems: 'center',
+  flexDirection:'row'
+},
+
+policyText: {
+  ...GlobalFonts.subtitleText,
+  fontSize: FontSize.Font14,
+  color: COLOR.TextPlaceholder,
+  textAlign: 'center',
+  paddingHorizontal:10,
+  lineHeight: 20,
+},
+
+linkText: {
+  ...GlobalFonts.subtitleText,
+  fontSize:FontSize.Font14,
+  color: COLOR.Black1,
+  fontWeight: '600',
+  textDecorationLine: 'underline',
+},
 });
 
 export default SignInScreen;
