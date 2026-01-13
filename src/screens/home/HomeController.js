@@ -205,7 +205,8 @@ export const useHome = () => {
     } catch (err) {
       showMessage({
         icon: "danger",
-        message: "Attendance failed. Please try again.",
+        message: err.error || "Attendance failed. Please try again.",
+
         type: "danger",
         duration: 2000,
       });

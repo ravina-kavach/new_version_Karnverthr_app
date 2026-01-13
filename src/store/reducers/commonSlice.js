@@ -34,10 +34,10 @@ export const UserToken = createAsyncThunk(
 export const GetUserDetails = createAsyncThunk(
     'GetUserDetails',
     async (userdata, thunkAPI) => {
-        console.log("userdata===>",userdata)
+        // console.log("userdata===>",userdata)
         try {
             const result = await API.get(`employee/employees?user_id=${userdata.id}`);
-            console.log("result===>",result)
+            // console.log("result===>",result)
             if (result.data.status === 'error') {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result?.data?.message),
@@ -104,12 +104,11 @@ export const UserAttendance = createAsyncThunk(
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
             } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
+                return thunkAPI.rejectWithValue({ error: errorMassage(error.response?.data?.errorMessage) });
             }
         } catch (error) {
-            console.log("Error >>>", error.response?.data || error.message);
             return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.errorMessage || error?.message)
+                error: errorMassage(error.response?.data?.errorMessage )
             });
         }
     },

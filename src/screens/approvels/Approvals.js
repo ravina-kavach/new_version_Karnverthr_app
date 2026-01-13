@@ -170,7 +170,7 @@ export default function Approvals() {
     const result = await dispatch(
       ApproveActionReject(payload)
     ).unwrap();
-    console.log("result===>",result)
+
     if (result?.success) {
       showMessage({
         icon: 'success',
@@ -256,7 +256,7 @@ export default function Approvals() {
       </View>
     );
   };
-
+console.log("GetApprovalListData===>",JSON.stringify(GetApprovalListData,null,2))
   return (
     <CommonView>
       <CommonHeader title={t('Approvals.Approvals')} />
