@@ -42,6 +42,7 @@ target 'KonvertHR' do
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false,
+      # :hermes_enabled => true
       # :ccache_enabled => true
     )
   end

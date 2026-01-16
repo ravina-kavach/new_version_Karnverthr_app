@@ -207,13 +207,26 @@ export default function Approvals() {
     const status = item.state?.toLowerCase();
     const isPending = status === 'submit';
     const statusColor = getStatusColor(item.state);
+    const getApprovalType = (item) => {
+  if (item.hr_leave_id) {
+    return 'Leave';
+  }
+  if (item.hr_expense_id) {
+    return 'Expense';
+  }
+  return 'Attendance Regularization';
+};
     return (
       <View style={styles.card}>
         <View style={styles.header}>
+          <View>
           <Text style={styles.name} numberOfLines={2}>
             {`${item.req_employee_id?.[0]} ${item.req_employee_id?.[1]}` || 'N/A'}
           </Text>
-
+          <Text style={styles.type} numberOfLines={2}>
+            {`Type : ${getApprovalType(item)}` || 'N/A'}
+          </Text>
+          </View>
           <View style={styles.statusWrap}>
             <Text style={[styles.status, { color: statusColor }]}>
               {getStatusLabel(item.state)}
@@ -256,7 +269,6 @@ export default function Approvals() {
       </View>
     );
   };
-console.log("GetApprovalListData===>",JSON.stringify(GetApprovalListData,null,2))
   return (
     <CommonView>
       <CommonHeader title={t('Approvals.Approvals')} />
@@ -359,9 +371,17 @@ const styles = StyleSheet.create({
   },
 
   name: {
+    ...GlobalFonts.subtitle,
     fontSize: FontSize.Font16,
     fontWeight: '600',
-    maxWidth: '70%',
+    maxWidth: '100%',
+  },
+   type: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
+    color:COLOR.TextPlaceholder,
+    fontWeight: '600',
+    maxWidth: '100%',
   },
 
   statusWrap: {
