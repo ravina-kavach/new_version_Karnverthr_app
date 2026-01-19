@@ -30,7 +30,6 @@ export default function ChatBot() {
       ...prev,
       { id: Date.now() + 1, text: reply, from: "bot" }
     ]);
-
     setInput("");
   };
 
