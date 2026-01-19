@@ -195,6 +195,7 @@ export const useExpenses = () => {
     };
 
     if (!rawBase64) {
+      closeModal();
       showMessage({
         icon: "danger",
         message: `${t('messages.Expanse_image')}`,
@@ -203,6 +204,7 @@ export const useExpenses = () => {
       return;
     }
     if (!startDate) {
+      closeModal();
       showMessage({
         icon: "danger",
         message: `${t('messages.Expanse_Date')}`,
@@ -243,6 +245,7 @@ export const useExpenses = () => {
       Validator.current.showMessages();
       forceUpdate(1);
     }
+    closeModal();
   };
 
 

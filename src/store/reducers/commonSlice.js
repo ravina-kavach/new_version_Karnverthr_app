@@ -34,10 +34,8 @@ export const UserToken = createAsyncThunk(
 export const GetUserDetails = createAsyncThunk(
     'GetUserDetails',
     async (userdata, thunkAPI) => {
-        // console.log("userdata===>",userdata)
         try {
             const result = await API.get(`employee/employees?user_id=${userdata.id}`);
-            // console.log("result===>",result)
             if (result.data.status === 'error') {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result?.data?.message),
@@ -657,10 +655,8 @@ export const CreateNewMeeting = createAsyncThunk(
 export const ApprovalList = createAsyncThunk(
     'ApprovalList',
     async (userdata, thunkAPI) => {
-        console.log('ApprovalList userdata >>', userdata);
         try {
             let result = await API.get(`/api/admin/requests?user_id=${userdata.id}`);
-            console.log('ApprovalList result.data >>', result);
             if (result.data.status === "success") {
                 return result.data.data;
             } else {

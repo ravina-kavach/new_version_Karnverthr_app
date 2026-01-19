@@ -20,6 +20,7 @@ import PrivacyPolicy from '../screens/PrivacyPolicy/PrivacyPolicy'
 import TabNavigation from './TabNavigation'
 import SignInScreen from '../screens/authscreens/signInScreen/SignInScreen';
 import Leaves from '../screens/leaves/Leaves';
+import Chatbot from '../screens/chatbot/Chatbot';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,9 @@ function Navigation({ props }) {
             <Stack.Screen name="leaves" component={Leaves} />
             <Stack.Screen name="calendarList" component={CalendarList} />
             <Stack.Screen name="approvals" component={Approvals} />
+            <Stack.Screen name="chatbot" component={Chatbot} />
+
+            
         </Stack.Group>
         {/* ============ Bottom Tab ============= */}
          <Stack.Group        

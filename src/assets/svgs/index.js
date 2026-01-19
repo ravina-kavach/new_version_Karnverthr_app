@@ -46,6 +46,7 @@ import CameraIcon from './CameraIcon.svg'
 import UploadIcon from './UploadIcon.svg'
 import EmptyExpense from './EmptyExpense.svg'
 import CheckOut from './CheckOut.svg'
+import ChatBotIcon from './ChatBot.svg'
 export {
   Check,
   FillCheck,
@@ -94,5 +95,6 @@ export {
   JoiningDateIcon,
   TenureIcon,
   DateApproval,
-  EmptyExpense
+  EmptyExpense,
+  ChatBotIcon
 };

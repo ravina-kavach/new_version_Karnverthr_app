@@ -118,7 +118,7 @@
         "Subject": "विषय",
         "Owner": "स्वामी",
         "Category": "श्रेणी",
-        "Draft":"मसौदा",
+        "Draft": "मसौदा",
         "Start": "प्रारंभ",
         "To": "से",
         "Status": "स्थिति",
@@ -226,5 +226,23 @@
         "Expense": "खर्च",
         "Leaves": "छुटिया",
         "Calendar": "कैलेंडर"
+    },
+    "Validation": {
+        "Payment_Mode_Required": "कृपया भुगतान का तरीका चुनें।",
+        "Document_Required": "कृपया खर्च से संबंधित दस्तावेज़ अपलोड करें।",
+        "Category_Required": "कृपया श्रेणी चुनें।",
+        "Account_Required": "कृपया खाता चुनें।",
+        "Expense_Name_Required": "कृपया खर्च का नाम दर्ज करें।",
+        "Amount_Required": "कृपया राशि दर्ज करें।",
+        "Amount_Invalid": "कृपया मान्य संख्यात्मक राशि दर्ज करें।",
+        "Expense_Date_Required": "कृपया खर्च की तारीख चुनें।",
+        "subjectRequired": "मीटिंग का विषय आवश्यक है",
+        "subjectShort": "मीटिंग का विषय कम से कम 3 अक्षरों का होना चाहिए",
+        "startPast": "मीटिंग का समय वर्तमान से पहले नहीं हो सकता",
+        "endBeforeStart": "समाप्ति समय प्रारंभ समय के बाद होना चाहिए",
+        "locationRequired": "स्थान आवश्यक है",
+        "organizerRequired": "आयोजक का नाम आवश्यक है",
+        "descriptionTooLong": "विवरण 150 अक्षरों से अधिक नहीं हो सकता"
+       
     }
 }

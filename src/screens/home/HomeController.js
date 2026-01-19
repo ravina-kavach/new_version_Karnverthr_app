@@ -10,6 +10,7 @@ import {
 import {
   useFocusEffect,
   useIsFocused,
+  useNavigation,
 } from "@react-navigation/native";
 import { permission } from "../../utils/permission";
 import { showMessage } from "react-native-flash-message";
@@ -34,6 +35,7 @@ export const useHome = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
+  const Navigation = useNavigation();
 
   const {
     UsersigninData,
@@ -249,6 +251,10 @@ export const useHome = () => {
     }
   }, [UserAttendanceData]);
 
+  const navigateChatBot = () =>{
+    Navigation.navigate("chatbot")
+  }
+
 
   return {
     MENUDATA,
@@ -257,5 +263,6 @@ export const useHome = () => {
     isAttendanceFetching,
     takeImage,
     location,
+    navigateChatBot
   };
 };

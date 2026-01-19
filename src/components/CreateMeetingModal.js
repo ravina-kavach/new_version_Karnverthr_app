@@ -5,20 +5,16 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Dimensions,
     ScrollView,
     Modal,
     Platform,
-    Alert,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLOR } from '../theme/theme';
 import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
 
-const { width } = Dimensions.get('window');
-
-const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
+const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
     const now = new Date();
     const initialEnd = new Date(now);
     initialEnd.setMinutes(initialEnd.getMinutes() + 30);
@@ -30,8 +26,9 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
     const [organizer, setOrganizer] = useState('');
     const [description, setDescription] = useState('');
     const [pickerMode, setPickerMode] = useState(null);
+    const [errors, setErrors] = useState({});
 
-    /** 🔁 Keep end time always after start time */
+    /* 🔁 Ensure end time is always after start */
     useEffect(() => {
         if (endDate <= startDate) {
             const updatedEnd = new Date(startDate);
@@ -40,7 +37,7 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
         }
     }, [startDate]);
 
-    /** 🧹 Reset all states */
+    /* 🧹 Reset form */
     const resetForm = () => {
         const resetNow = new Date();
         const resetEnd = new Date(resetNow);
@@ -53,37 +50,47 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
         setStartDate(resetNow);
         setEndDate(resetEnd);
         setPickerMode(null);
+        setErrors({});
     };
 
     const formatDateTime = (date) => {
         const pad = (n) => (n < 10 ? `0${n}` : n);
         return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}
-      ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+        ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
     };
 
     const calculateDuration = (start, end) => {
         return +((end - start) / (1000 * 60 * 60)).toFixed(2);
     };
 
-    /** 🚀 Create Meeting */
-    const handleCreateMeeting = () => {
-        if (!subject.trim()) {
-            Alert.alert('Validation', 'Meeting subject is required');
-            return;
-        }
+    const validateForm = () => {
+        const newErrors = {};
 
-        if (startDate < new Date()) {
-            Alert.alert('Invalid Time', 'Meeting cannot start in the past');
-            return;
-        }
+        if (!subject.trim()) newErrors.subject = t('Validation.subjectRequired');
+        else if (subject.trim().length < 3) newErrors.subject = t('Validation.subjectShort');
+
+        if (startDate < new Date()) newErrors.startDate = t('Validation.startPast');
+        if (endDate <= startDate) newErrors.endDate = t('Validation.endBeforeStart');
+
+        if (!location.trim()) newErrors.location = t('Validation.locationRequired');
+        if (!organizer.trim()) newErrors.organizer = t('Validation.organizerRequired');
+
+        if (description.length > 150) newErrors.description = t('Validation.descriptionTooLong');
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleCreateMeeting = () => {
+        if (!validateForm()) return;
 
         const payload = {
-            name: subject,
+            name: subject.trim(),
             start: formatDateTime(startDate),
             stop: formatDateTime(endDate),
-            location,
+            location: location.trim(),
             duration: calculateDuration(startDate, endDate),
-            description,
+            description: description.trim(),
             privacy: 'private',
         };
 
@@ -92,7 +99,6 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
         onClose();
     };
 
-    /** 📅 Picker handler */
     const onChangePicker = (event, selectedDate) => {
         if (event.type === 'dismissed') {
             setPickerMode(null);
@@ -101,55 +107,33 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
 
         if (!selectedDate) return;
 
-        const currentTime = new Date();
-
         if (pickerMode === 'startDate' || pickerMode === 'startTime') {
             const updated = new Date(startDate);
-
-            if (pickerMode === 'startDate') {
-                updated.setFullYear(
-                    selectedDate.getFullYear(),
-                    selectedDate.getMonth(),
-                    selectedDate.getDate()
-                );
-            } else {
-                updated.setHours(
-                    selectedDate.getHours(),
-                    selectedDate.getMinutes()
-                );
-            }
-
-            if (updated < currentTime) {
-                Alert.alert('Invalid Time', 'Cannot select past time');
-                setPickerMode(null);
-                return;
-            }
-
+            pickerMode === 'startDate'
+                ? updated.setFullYear(
+                      selectedDate.getFullYear(),
+                      selectedDate.getMonth(),
+                      selectedDate.getDate()
+                  )
+                : updated.setHours(
+                      selectedDate.getHours(),
+                      selectedDate.getMinutes()
+                  );
             setStartDate(updated);
         }
 
         if (pickerMode === 'endDate' || pickerMode === 'endTime') {
             const updated = new Date(endDate);
-
-            if (pickerMode === 'endDate') {
-                updated.setFullYear(
-                    selectedDate.getFullYear(),
-                    selectedDate.getMonth(),
-                    selectedDate.getDate()
-                );
-            } else {
-                updated.setHours(
-                    selectedDate.getHours(),
-                    selectedDate.getMinutes()
-                );
-            }
-
-            if (updated <= startDate) {
-                Alert.alert('Invalid Time', 'End time must be after start time');
-                setPickerMode(null);
-                return;
-            }
-
+            pickerMode === 'endDate'
+                ? updated.setFullYear(
+                      selectedDate.getFullYear(),
+                      selectedDate.getMonth(),
+                      selectedDate.getDate()
+                  )
+                : updated.setHours(
+                      selectedDate.getHours(),
+                      selectedDate.getMinutes()
+                  );
             setEndDate(updated);
         }
 
@@ -157,26 +141,31 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
     };
 
     return (
-        <Modal visible={visible} transparent>
+        <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
             <View style={styles.overlay}>
                 <View style={styles.modalContent}>
-                    {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.title}>New Meeting</Text>
-                        <TouchableOpacity onPress={onClose}>
+                        <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
                             <Text style={styles.close}>✕</Text>
                         </TouchableOpacity>
                     </View>
 
-                    <ScrollView>
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {/* Subject */}
                         <Text style={styles.label}>Meeting Subject</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, errors.subject && styles.errorInput]}
                             value={subject}
-                            onChangeText={setSubject}
                             placeholder="Enter meeting subject"
+                            onChangeText={(text) => {
+                                setSubject(text);
+                                setErrors({ ...errors, subject: null });
+                            }}
                         />
+                        {errors.subject && <Text style={styles.errorText}>{errors.subject}</Text>}
 
+                        {/* From */}
                         <Text style={styles.label}>From</Text>
                         <View style={styles.row}>
                             <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startDate')}>
@@ -186,7 +175,9 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
                                 <Text>{startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                             </TouchableOpacity>
                         </View>
+                        {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
 
+                        {/* To */}
                         <Text style={styles.label}>To</Text>
                         <View style={styles.row}>
                             <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endDate')}>
@@ -196,34 +187,58 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
                                 <Text>{endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
                             </TouchableOpacity>
                         </View>
+                        {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
 
                         {pickerMode && (
                             <DateTimePicker
                                 value={pickerMode.includes('start') ? startDate : endDate}
                                 mode={pickerMode.includes('Date') ? 'date' : 'time'}
-                                minimumDate={pickerMode.includes('start') ? new Date() : startDate}
                                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                                 onChange={onChangePicker}
                             />
                         )}
 
+                        {/* Location */}
                         <Text style={styles.label}>Location</Text>
-                        <TextInput style={styles.input} placeholder='Enter Location' value={location} onChangeText={setLocation} />
+                        <TextInput
+                            style={[styles.input, errors.location && styles.errorInput]}
+                            placeholder="Enter Location"
+                            value={location}
+                            onChangeText={(text) => {
+                                setLocation(text);
+                                setErrors({ ...errors, location: null });
+                            }}
+                        />
+                        {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
 
+                        {/* Organizer */}
                         <Text style={styles.label}>Organizer</Text>
-                        <TextInput style={styles.input} value={organizer} placeholder='Enter Organizer' onChangeText={setOrganizer} />
+                        <TextInput
+                            style={[styles.input, errors.organizer && styles.errorInput]}
+                            placeholder="Enter Organizer"
+                            value={organizer}
+                            onChangeText={(text) => {
+                                setOrganizer(text);
+                                setErrors({ ...errors, organizer: null });
+                            }}
+                        />
+                        {errors.organizer && <Text style={styles.errorText}>{errors.organizer}</Text>}
 
+                        {/* Description */}
                         <Text style={styles.label}>Description</Text>
                         <TextInput
-                            style={[styles.input, { height: 80 }]}
+                            style={[styles.input, { height: 80 }, errors.description && styles.errorInput]}
                             multiline
-                            placeholder='Enter Description'
+                            maxLength={150}
+                            placeholder="Enter Description"
                             value={description}
-                            onChangeText={setDescription}
+                            onChangeText={(text) => {
+                                setDescription(text);
+                                setErrors({ ...errors, description: null });
+                            }}
                         />
-                        <Text style={styles.charCount}>
-                            {description.length}/150
-                        </Text>
+                        <Text style={styles.charCount}>{description.length}/150</Text>
+                        {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
                     </ScrollView>
 
                     <TouchableOpacity style={styles.createButton} onPress={handleCreateMeeting}>
@@ -237,38 +252,39 @@ const NewMeetingModal = ({ visible, onClose, onCreateMeeting }) => {
 
 export default NewMeetingModal;
 
+/* 🎨 Styles */
 const styles = StyleSheet.create({
-    modalContainer: {
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'center',
-        margin: 0,
-    },
-    charCount: {
-        ...GlobalFonts.subtitle,
-        alignSelf: 'flex-end',
-        marginTop: 5,
-        paddingRight:5,
-        fontSize: 12,
-        color: '#6B7280',
+        paddingHorizontal: 16,
     },
     modalContent: {
         backgroundColor: '#fff',
-        marginHorizontal: 16,
         borderRadius: 20,
         padding: 20,
         maxHeight: '90%',
     },
-    modalTitle: {
+    header: {
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    closeBtn: {
+        position: 'absolute',
+        right: 0,
+    },
+    title: {
         fontSize: 18,
-        fontWeight: '700',
-        marginBottom: 15,
-        textAlign: 'center',
+        fontWeight: '600',
+        color: '#111',
     },
     label: {
         ...GlobalFonts.subtitle,
         fontSize: FontSize.Font16,
         color: COLOR.Black1,
+        marginTop: 12,
         marginBottom: 6,
-        marginTop: 10,
     },
     input: {
         ...GlobalFonts.subtitle,
@@ -278,35 +294,40 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         fontSize: 15,
     },
+    errorInput: {
+        borderWidth: 1,
+        borderColor: '#DC2626',
+    },
+    errorText: {
+        color: '#DC2626',
+        fontSize: 12,
+        marginTop: 4,
+    },
     row: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        gap: 8,
     },
     dateTimeBox: {
         flex: 1,
         backgroundColor: '#F3F4F6',
         paddingVertical: 12,
-        paddingHorizontal: 10,
         borderRadius: 12,
-        marginRight: 8,
+        alignItems: 'center',
     },
-    dateTimeText: {
-        fontSize: 15,
-        color: '#111827',
-    },
-    pickerBox: {
-        backgroundColor: '#F3F4F6',
-        borderRadius: 12,
+    charCount: {
+        alignSelf: 'flex-end',
+        fontSize: 12,
+        color: '#6B7280',
+        marginTop: 4,
     },
     createButton: {
         backgroundColor: '#111827',
-        paddingVertical: 14,
-        borderRadius: 16,
-        marginTop: 10,
+        paddingVertical: 16,
+        borderRadius: 18,
+        marginTop: 12,
         alignItems: 'center',
     },
     createButtonText: {
-        ...GlobalFonts.subtitle,
         color: '#fff',
         fontSize: 16,
         fontWeight: '700',
@@ -315,26 +336,4 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#666',
     },
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        marginTop: 30,
-        // marginBottom: 6,
-    },
-    overlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.3)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    title: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: '600',
-        textAlign: 'center',
-        color: '#111',
-    },
 });
-

@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Dimensions
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Calendar as CalendarView } from 'react-native-big-calendar';
 import moment from 'moment';
@@ -36,6 +37,7 @@ const COLORS = {
 const { width } = Dimensions.get('window');
 
 export default function Calendar() {
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState('day');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [meetingModal, setMeetingModal] = useState(false);
@@ -495,7 +497,7 @@ export default function Calendar() {
         <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
 
-      <NewMeetingModal visible={meetingModal} onClose={() => setMeetingModal(false)} onCreateMeeting={onCreateMeeting} />
+      <NewMeetingModal t={t} visible={meetingModal} onClose={() => setMeetingModal(false)} onCreateMeeting={onCreateMeeting} />
     </CommonView>
   );
 }
