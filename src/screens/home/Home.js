@@ -1,32 +1,39 @@
 import React from 'react';
-import { CommonView, H4 } from '../../utils/common';
-import { ScrollView,FlatList, View, StyleSheet } from 'react-native';
-import { COLOR } from '../../theme/theme.js';
+import { CommonView } from '../../utils/common';
+import { ScrollView, FlatList, View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import WorkingHoursCard from '../../components/WorkingHoursCard';
 import { useHome } from './HomeController.js';
-import {RenderBox} from '../../components/RenderBox.js'
+import { RenderBox } from '../../components/RenderBox.js'
+import GreetingHeader from '../../components/GreetingHeader.js'
+import { COLOR } from '../../theme/theme.js';
+import { ChatBotIcon } from '../../assets/svgs/index.js';
 const Home = () => {
   const {
     MENUDATA,
     UsersigninData,
     takeImage,
-    localAttendanceData,
+    attendance,
     isAttendanceFetching,
+    navigateChatBot
   } = useHome();
   return (
-    <CommonView statusBarColor={COLOR.LightOrange}>
-      <ScrollView 
-      nestedScrollEnabled
+    <CommonView>
+      <GreetingHeader />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={styles.mainContainer}
+        nestedScrollEnabled
       >
         <WorkingHoursCard
           usersigninData={UsersigninData}
-          localAttendanceData={localAttendanceData}
+          localAttendanceData={attendance}
           onPress={takeImage}
           loading={isAttendanceFetching}
         />
         <FlatList
           data={MENUDATA}
-          keyExtractor={item => item.id}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.id.toString()}
           numColumns={3}
           contentContainerStyle={styles.container}
           renderItem={({ item }) => (
@@ -40,14 +47,23 @@ const Home = () => {
           )}
         />
       </ScrollView>
+      <TouchableWithoutFeedback onPress={() => navigateChatBot()}>
+        <View style={styles.plusContainer}>
+          <ChatBotIcon width={60} height={60} />
+        </View>
+      </TouchableWithoutFeedback>
     </CommonView>
   );
 };
 const styles = StyleSheet.create({
-  container:{
-    paddingVertical:20
+  container: {
+    paddingVertical: 20
   },
-  itemContainer:{ flex: 1, alignItems: 'center', marginBottom: 20 }
+  mainContainer: { paddingHorizontal: 10 },
+  itemContainer: { flex: 1, alignItems: 'center', marginBottom: 20 },
+  plusContainer: { position: "absolute", right: 20, bottom: 20 },
+  iconContainer: { backgroundColor: COLOR.Black1, padding: 13, borderRadius: 14, overflow: 'hidden' },
+
 })
 
 export default Home;

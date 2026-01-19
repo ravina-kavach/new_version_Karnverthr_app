@@ -31,6 +31,26 @@ export const UserToken = createAsyncThunk(
         }
     }
 );
+export const GetUserDetails = createAsyncThunk(
+    'GetUserDetails',
+    async (userdata, thunkAPI) => {
+        try {
+            const result = await API.get(`employee/employees?user_id=${userdata.id}`);
+            if (result.data.status === 'error') {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result?.data?.message),
+                });
+            }
+
+            return result.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message),
+            });
+        }
+    }
+);
+
 
 export const Usersignin = createAsyncThunk(
     'Usersignin',
@@ -40,7 +60,6 @@ export const Usersignin = createAsyncThunk(
                 email: userdata.email,
                 password: userdata.password,
             });
-    
             if (result.data.status === 'error') {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result?.data?.message),
@@ -62,13 +81,14 @@ export const UserVerification = createAsyncThunk(
         try {
             let result = await API.post('api/employee/device-register', payload);
             if (result.data.success) {
-                return { ...result.data.data, message: result.data.successMessage };
+                return { ...result.data.data, message: result.data?.successMessage };
             } else {
                 return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
         } catch (error) {
             if (error.message) {
-                return thunkAPI.rejectWithValue({ error: errorMassage(error?.response?.data?.message || error.message) });
+                const errorMessage = error?.response?.data?.message || error?.message;
+                return thunkAPI.rejectWithValue({ error: errorMassage(errorMessage) });
             }
         }
     },
@@ -82,13 +102,48 @@ export const UserAttendance = createAsyncThunk(
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
             } else {
+                return thunkAPI.rejectWithValue({ error: errorMassage(error.response?.data?.errorMessage) });
+            }
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.errorMessage )
+            });
+        }
+    },
+);
+
+export const UserAttendanceRegularization = createAsyncThunk(
+  'UserAttendanceRegularization',
+  async (userdata, thunkAPI) => {
+    try {
+      const result = await API.post(
+        `api/create/regularization?user_id=${userdata.id}`,
+        userdata.data
+      );
+
+      if (result.data.status === "success") {
+        return result.data;
+      }
+      return;
+    } catch (error) {
+      return error;
+    }
+  }
+);
+
+export const UserAttendanceRegcategories = createAsyncThunk(
+    'UserAttendanceRegcategories',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/regcategories?user_id=${userdata.id}`);
+            if (result.data.status === 'success') {
+                return result.data.data
+            } else {
                 return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
             }
         } catch (error) {
             console.log("Error >>>", error.response?.data || error.message);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.errorMessage || error?.message)
-            });
+            return error;
         }
     },
 );
@@ -112,6 +167,127 @@ export const GetAttandanceList = createAsyncThunk(
         }
     },
 );
+
+export const CheckAttandanceStatus = createAsyncThunk(
+    'CheckAttandanceStatus',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/checkin_checkout_status?email=${userdata.email}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+            return result.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
+
+//==== Get Leave Type 
+export const GetLeavetype = createAsyncThunk(
+    'GetLeavetype',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/leave-type?user_id=${userdata.id}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+            return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error?.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
+export const GetLeaveAllocation = createAsyncThunk(
+  'GetLeaveAllocation',
+  async (userdata, thunkAPI) => {
+    try {
+      const result = await API.get(
+        `employee/employee-dashboard?user_id=${userdata.id}`
+      );
+
+      return result.data.data;
+
+    } catch (error) {
+      console.log("Axios Error:", error.response || error);
+
+      return;
+    }
+  }
+);
+
+
+export const GetDepartmentType = createAsyncThunk(
+    'GetDepartmentType',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/department?user_id=${userdata.id}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+            return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+export const CreateLeave = createAsyncThunk(
+    'CreateLeave',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.post(`api/create/leave-request?user_id=${userdata.userid}`, userdata.userData);
+            if (result.data.success) {
+                return { ...result.data.data, message: result?.data.successMessage };
+            } else {
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
+            }
+        } catch (error) {
+            console.log("Error >>>", error.response?.data?.message);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error?.message)
+            });
+        }
+    },
+);
+
+export const GetLeaveList = createAsyncThunk(
+    'GetLeaveList',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/leave-request?user_id=${userdata.id}`);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+            return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
+
 
 export const ProfileUpdate = createAsyncThunk(
     'ProfileUpdate',
@@ -161,6 +337,7 @@ export const ForgotPassword = createAsyncThunk(
         }
     },
 );
+
 // =====================================================================
 
 // =====================================================================
@@ -169,51 +346,69 @@ export const CategoryList = createAsyncThunk(
     async (userdata, thunkAPI) => {
         // console.log('CategoryList userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'product/category',
-                // headers: Authheader,
-                // data: userdata,
-            });
-            // console.log('CategoryList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+            let result = await API.get(`employee/expense-category?user_id=${userdata.id}`);
+            // console.log('CategoryList result.data >>', result);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
             }
+            return result.data.data;
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ CategoryList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
+        }
+    },
+);
+
+export const AccountList = createAsyncThunk(
+    'AccountList',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`employee/expense-account?user_id=${userdata.id}`);
+            // console.log('AccountList result.data >>', result);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
+            }
+            return result.data.data;
+        } catch (error) {
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
         }
     },
 );
 export const CreateExpenses = createAsyncThunk(
     'CreateExpenses',
     async (userdata, thunkAPI) => {
-        console.log('CreateExpenses userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: 'hr/expenses',
-                headers: Authheader,
-                data: userdata,
-            });
-            // console.log('CreateExpenses result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
+            const result = await API.post(`employee/create/expense?user_id=${userdata.userId}`, userdata.userData);
+            if (result.data.status === "success") {
+                return {
+                    status: result.data.status,
+                    message: result.data.message,
+                    data: result.data.data,
+                };
             } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message),
+                });
             }
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ CreateExpenses ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(
+                    error.response?.data?.message || error.message
+                ),
+            });
         }
-    },
+    }
 );
+
 // =====================================================================
 
 export const GetExpenseList = createAsyncThunk(
@@ -221,23 +416,19 @@ export const GetExpenseList = createAsyncThunk(
     async (userdata, thunkAPI) => {
         console.log('GetExpenseList userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_expense',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetExpenseList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.records;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
+            let result = await API.get(`employee/expense?user_id=${userdata.id}`);
+            console.log('GetExpenseList result.data >>', result);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
             }
+            return result.data.data;
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetExpenseList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
         }
     },
 );
@@ -316,96 +507,16 @@ export const ExpenseApprove = createAsyncThunk(
         }
     },
 );
-export const GetLeaveList = createAsyncThunk(
-    'GetLeaveList',
-    async (userdata, thunkAPI) => {
-        console.log('GetLeaveList userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_leave',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetLeaveList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetLeaveList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-//==== Get Leave TYpe 
-export const GetLeavetype = createAsyncThunk(
-    'GetLeavetype',
-    async (userdata, thunkAPI) => {
-        console.log('GetLeavetype userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_leave_type',
-                headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetLeavetype result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.leave_types;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetLeavetype ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-export const CreateLeave = createAsyncThunk(
-    'CreateLeave',
-    async (userdata, thunkAPI) => {
-        console.log('CreateLeave userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: `api/create_leave`,
-                // headers: Authheader,
-                data: userdata,
-            });
-            // console.log('CreateLeave result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ CreateLeave ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
+
+
 //==== GEt Calendar event
 export const GetCalendarEvents = createAsyncThunk(
     'GetCalendarEvents',
     async (userdata, thunkAPI) => {
-        console.log('GetCalendarEvents userdata >>', userdata);
+        // console.log('GetCalendarEvents userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_own_calendar',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetCalendarEvents result.data >>', result.data);
+            let result = await API.get(`employee/calendar?user_id=${userdata.id}`);
+            console.log('GetCalendarEvents result.data >>', result);
             if (result.data.success) {
                 return result.data.data;
             } else {
@@ -414,7 +525,7 @@ export const GetCalendarEvents = createAsyncThunk(
         } catch (error) {
             console.log("error>>>", error)
             console.log('try catch [ GetCalendarEvents ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            return error;
         }
     },
 );
@@ -444,7 +555,7 @@ export const GetCalendarEventsMore = createAsyncThunk(
     },
 );
 
-//==== GEt attendees list
+//==== Get attendees list
 export const GetAttendeesList = createAsyncThunk(
     'GetAttendeesList',
     async (userdata, thunkAPI) => {
@@ -526,16 +637,10 @@ export const CreateNewMeeting = createAsyncThunk(
     async (userdata, thunkAPI) => {
         console.log('CreateNewMeeting userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: `api/create_calendar_event`,
-                // headers: Authheader,
-                data: userdata,
-            });
-            // console.log('CreateNewMeeting result.data >>', result.data);
+            let result = await API.post(`employee/create/calendar?user_id=${userdata.id}`, userdata.data);
+            console.log('CreateNewMeeting result.data >>', result.data);
             if (result.data.success) {
-                return result.data;
+                return result.data
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
             }
@@ -550,28 +655,60 @@ export const CreateNewMeeting = createAsyncThunk(
 export const ApprovalList = createAsyncThunk(
     'ApprovalList',
     async (userdata, thunkAPI) => {
-        console.log('ApprovalList userdata >>', userdata);
         try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'approvals/requests/api',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('ApprovalList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
+            let result = await API.get(`/api/admin/requests?user_id=${userdata.id}`);
+            if (result.data.status === "success") {
+                return result.data.data;
+            } else {
+                return thunkAPI.rejectWithValue({ error: result.data.error });
+            }
+        } catch (error) {
+
+            return error
+        }
+    },
+);
+
+export const ApproveActionApprove = createAsyncThunk(
+    'ApproveActionApprove',
+    async (userdata, thunkAPI) => {
+         console.log('ApproveActionApprove payload >>', JSON.stringify(payload));
+        try {
+            let result = await API.post(`/api/admin/approve`, userdata);
+            console.log('ApproveActionApprove result.data >>', result.data);
+            if (result.data.status === "success") {
+                return result.data
             } else {
                 return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
             }
         } catch (error) {
             console.log("error>>>", error)
-            console.log('try catch [ ApprovalList ] error.message>>', error.message);
+            console.log('try catch [ ApproveActionApprove ] error.message >>', error.message,);
             return thunkAPI.rejectWithValue({ error: error.message });
         }
     },
 );
+
+export const ApproveActionReject = createAsyncThunk(
+    'ApproveActionReject',
+    async (userdata, thunkAPI) => {
+        console.log('ApproveActionReject userdata >>', userdata);
+        try {
+            let result = await API.post(`/api/admin/reject`, userdata);
+            console.log('ApproveActionReject result.data >>', result.data);
+            if (result.data.status === "success") {
+                return result.data
+            } else {
+                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+            }
+        } catch (error) {
+            console.log("error>>>", error)
+            console.log('try catch [ ApproveActionReject ] error.message >>', error.message,);
+            return thunkAPI.rejectWithValue({ error: error.message });
+        }
+    },
+);
+
 export const ApprovalListMore = createAsyncThunk(
     'ApprovalListMore',
     async (userdata, thunkAPI) => {
@@ -593,31 +730,6 @@ export const ApprovalListMore = createAsyncThunk(
         } catch (error) {
             console.log("error>>>", error)
             console.log('try catch [ ApprovalListMore ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-export const ApproveAction = createAsyncThunk(
-    'ApproveAction',
-    async (userdata, thunkAPI) => {
-        console.log('ApproveAction userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: 'approvals/action/api',
-                // headers: Authheader,
-                data: userdata,
-            });
-            // console.log('ApproveAction result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ ApproveAction ] error.message>>', error.message);
             return thunkAPI.rejectWithValue({ error: error.message });
         }
     },
@@ -756,6 +868,9 @@ export const CommonSlice = createSlice({
         isSignin: false,
         isSigninFetching: false,
 
+        UserDetailsData:{},
+        isUserDetailsFetching:false,
+
         UserAttendanceData: {},
         isAttendanceFetching: false,
 
@@ -771,6 +886,8 @@ export const CommonSlice = createSlice({
         isCategoryList: false,
         isCategoryListFetching: false,
 
+        AccountListData: [],
+
         CreateExpensesData: {},
         isCreateExpenses: false,
         isCreateExpensesFetching: false,
@@ -778,6 +895,10 @@ export const CommonSlice = createSlice({
         GetAttandanceListData: [],
         isGetAttandanceList: false,
         isGetAttandanceListFetching: false,
+
+        UserAttendanceRegcategoriesData: [],
+        UserAttendanceRegurationData: [],
+        isFeatchAttendanceReguration:false,
 
         GetExpenseListData: [],
         isGetExpenseList: false,
@@ -799,6 +920,8 @@ export const CommonSlice = createSlice({
         isGetLeaveListFetching: false,
 
         GetLeavetypeData: [],
+        GetLeaveAllocationData: [],
+        GetDepartmentTypeData: [],
         isGetLeavetype: false,
         isGetLeavetypeFetching: false,
 
@@ -823,8 +946,6 @@ export const CommonSlice = createSlice({
         GetApprovalListData: [],
         isGetApprovalList: false,
         isGetApprovalListFetching: false,
-        GetApprovalListDataPageNumber: 2,
-        GetApprovalListDataTotalCount: "",
         isGetApprovalListDataMoreFetching: false,
 
         GetApprovalCategoryListData: [],
@@ -864,13 +985,13 @@ export const CommonSlice = createSlice({
     reducers: {
         updateState: (state, { payload }) => {
             state.isSignin = payload.isSignin !== undefined ? payload.isSignin : state.isSignin;
-            state.isGetCheckStatus = payload.isGetCheckStatus !== undefined ? payload.isGetCheckStatus : state.isGetCheckStatus;
+            state.attandanceStatusData = payload.attandanceStatusData !== undefined ? payload.attandanceStatusData : state.attandanceStatusData;
             state.isCategoryList = payload.isCategoryList !== undefined ? payload.isCategoryList : state.isCategoryList;
             state.isCreateExpenses = payload.isCreateExpenses !== undefined ? payload.isCreateExpenses : state.isCreateExpenses;
             state.isVerified = payload.isVerified !== undefined ? payload.isVerified : state.isVerified
             state.isGetAttandanceList = payload.isGetAttandanceList !== undefined ? payload.isGetAttandanceList : state.isGetAttandanceList;
             state.isGetExpenseList = payload.isGetExpenseList !== undefined ? payload.isGetExpenseList : state.isGetExpenseList;
-
+            state.isFeatchAttendanceReguration = payload.isFeatchAttendanceReguration !== undefined ? payload.isFeatchAttendanceReguration : state.isFeatchAttendanceReguration;
             state.isForgotPassword = payload.isForgotPassword !== undefined ? payload.isForgotPassword : state.isForgotPassword;
             state.isProfileUpdate = payload.isProfileUpdate !== undefined ? payload.isProfileUpdate : state.isProfileUpdate;
 
@@ -935,6 +1056,42 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(Usersignin.pending, state => {
             state.isSigninFetching = true;
+        });
+
+        //===== GetUserDetails
+
+         builder.addCase(GetUserDetails.fulfilled, (state, { payload }) => {
+            //console.log("[GetUserDetails.fulfilled]>>>payload>>>", payload)
+            try {
+                state.UserDetailsData = payload;
+                state.isUserDetailsFetching = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetUserDetails.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetUserDetails.rejected, (state, { payload }) => {
+            console.log("[GetUserDetails.rejected]>>>", payload)
+            try {
+                state.UserDetailsData = {};
+                state.isUserDetailsFetching = false;
+                state.isSigninFetching = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : (payload.error || "Oops! It seems like either your username or password is incorrect")) : "Oops! It seems like either your username or password is incorrect";
+            } catch (error) {
+                console.log(
+                    'Error: [Usersignin.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetUserDetails.pending, state => {
+            state.isUserDetailsFetching = true;
         });
 
         //===== UserVerification
@@ -1007,6 +1164,38 @@ export const CommonSlice = createSlice({
             state.isAttendanceFetching = true;
         });
 
+        //========= CheckAttandanceStatus 
+
+        builder.addCase(CheckAttandanceStatus.fulfilled, (state, { payload }) => {
+            //console.log("[CheckAttandanceStatus.fulfilled]>>>payload>>>", payload)
+            try {
+                state.attandanceStatusData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: CheckAttandanceStatus.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(CheckAttandanceStatus.rejected, (state, { payload }) => {
+            console.log("[CheckAttandanceStatus.rejected]>>>", payload)
+            try {
+                state.attandanceStatusData = null;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error.message
+                        : (payload.error)) : "Oops! It seems like either your verification code is incorrect";
+            } catch (error) {
+                console.log(
+                    'Error: [CheckAttandanceStatus.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(CheckAttandanceStatus.pending, state => {
+            return state
+        });
         //========= ProfileUpdate
         builder.addCase(ProfileUpdate.fulfilled, (state, { payload }) => {
             // console.log("[ProfileUpdate.fulfilled]>>>payload>>>", payload)
@@ -1082,7 +1271,7 @@ export const CommonSlice = createSlice({
         builder.addCase(CategoryList.fulfilled, (state, { payload }) => {
             // console.log("[CategoryList.fulfilled]>>>payload>>>", payload)
             try {
-                state.CategoryListData = payload;
+                state.CategoryListData = [{ id: 0, name: "Select category" }, ...payload];
                 state.isCategoryList = true;
                 state.isCategoryListFetching = false;
                 state.isError = false;
@@ -1114,7 +1303,41 @@ export const CommonSlice = createSlice({
         builder.addCase(CategoryList.pending, state => {
             state.isCategoryListFetching = true;
         });
-        //========= CategoryList
+        //========= AccountList
+
+        builder.addCase(AccountList.fulfilled, (state, { payload }) => {
+            // console.log("[AccountList.fulfilled]>>>payload>>>", payload)
+            try {
+                state.AccountListData = [{ id: 0, name: "Select account" }, ...payload];
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: AccountList.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(AccountList.rejected, (state, { payload }) => {
+            console.log("[AccountList.rejected]>>>", payload)
+            try {
+                state.AccountListData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [AccountList.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(AccountList.pending, state => {
+            return state
+        });
+
+        //========= CreateExpenses
         builder.addCase(CreateExpenses.fulfilled, (state, { payload }) => {
             // console.log("[CreateExpenses.fulfilled]>>>payload>>>", payload)
             try {
@@ -1185,6 +1408,72 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(GetAttandanceList.pending, state => {
             state.isGetAttandanceListFetching = true;
+        });
+
+        //========= UserAttendanceRegularization
+        builder.addCase(UserAttendanceRegularization.fulfilled, (state, { payload }) => {
+            try {
+                state.UserAttendanceRegurationData = payload;
+                state.isFeatchAttendanceReguration = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: UserAttendanceRegularization.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(UserAttendanceRegularization.rejected, (state, { payload }) => {
+            console.log("[UserAttendanceRegularization.rejected]>>>", payload)
+            try {
+                state.UserAttendanceRegurationData = [];
+                state.isFeatchAttendanceReguration = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [UserAttendanceRegularization.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(UserAttendanceRegularization.pending, state => {
+            state.isFeatchAttendanceReguration = true;
+        });
+
+        //========= UserAttendanceRegcategories
+        builder.addCase(UserAttendanceRegcategories.fulfilled, (state, { payload }) => {
+            try {
+                state.UserAttendanceRegcategoriesData = [{ id: 0, type: "Select Regularization", client_id:[] }, ...payload];
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: UserAttendanceRegcategories.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(UserAttendanceRegcategories.rejected, (state, { payload }) => {
+            console.log("[UserAttendanceRegcategories.rejected]>>>", payload)
+            try {
+                state.UserAttendanceRegcategoriesData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [UserAttendanceRegcategories.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(UserAttendanceRegcategories.pending, state => {
+            return state
         });
         //========= GetExpenseList
         builder.addCase(GetExpenseList.fulfilled, (state, { payload }) => {
@@ -1373,7 +1662,7 @@ export const CommonSlice = createSlice({
         builder.addCase(GetLeavetype.fulfilled, (state, { payload }) => {
             // console.log("[GetLeavetype.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetLeavetypeData = [{ "display_name": "All", value: 0, }, ...payload];
+                state.GetLeavetypeData = [{ "name": "All", value: 0, }, ...payload];
                 state.isGetLeavetype = true;
                 state.isGetLeavetypeFetching = false;
                 state.isError = false;
@@ -1404,6 +1693,71 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(GetLeavetype.pending, state => {
             state.isGetLeavetypeFetching = true;
+        });
+        //===== GetLeaveAllocation
+        builder.addCase(GetLeaveAllocation.fulfilled, (state, { payload }) => {
+            try {
+                state.GetLeaveAllocationData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetLeaveAllocation.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetLeaveAllocation.rejected, (state, { payload }) => {
+            console.log("[GetLeaveAllocation.rejected]>>>", payload)
+            try {
+                state.GetLeavetypeData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetLeaveAllocation.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetLeaveAllocation.pending, state => {
+            return state
+        });
+        
+        //===== Department type
+
+        builder.addCase(GetDepartmentType.fulfilled, (state, { payload }) => {
+            // console.log("[GetDepartmentType.fulfilled]>>>payload>>>", payload)
+            try {
+                state.GetDepartmentTypeData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetDepartmentType.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetDepartmentType.rejected, (state, { payload }) => {
+            console.log("[GetDepartmentType.rejected]>>>", payload)
+            try {
+                state.GetDepartmentTypeData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetDepartmentType.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetDepartmentType.pending, state => {
+            return state
         });
 
         //===== Create Leave
@@ -1445,8 +1799,8 @@ export const CommonSlice = createSlice({
         builder.addCase(GetCalendarEvents.fulfilled, (state, { payload }) => {
             // console.log("[GetCalendarEvents.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetCalendarEventsData = payload.events;
-                state.GetCalendarEventsDataTotalCount = payload.total_events;
+                state.GetCalendarEventsData = payload;
+                state.GetCalendarEventsDataTotalCount = payload.length;
                 state.isGetCalendarEventsData = true;
                 state.isGetCalendarEventsDataFetching = false;
                 state.isError = false;
@@ -1664,9 +2018,7 @@ export const CommonSlice = createSlice({
         builder.addCase(ApprovalList.fulfilled, (state, { payload }) => {
             // console.log("[ApprovalList.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetApprovalListData = payload.approvals;
-                state.GetApprovalListDataTotalCount = payload.total_record;
-                state.isGetApprovalList = true;
+                state.GetApprovalListData = payload;
                 state.isGetApprovalListFetching = false;
                 state.isError = false;
                 state.errorMessage = '';
@@ -1679,8 +2031,6 @@ export const CommonSlice = createSlice({
             console.log("[ApprovalList.rejected]>>>", payload)
             try {
                 state.GetApprovalListData = [];
-                state.GetApprovalListDataTotalCount = "";
-                state.isGetApprovalList = false;
                 state.isGetApprovalListFetching = false;
                 state.isError = true;
                 payload
@@ -1701,7 +2051,7 @@ export const CommonSlice = createSlice({
         builder.addCase(ApprovalListMore.fulfilled, (state, { payload }) => {
             // console.log("[ApprovalListMore.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetApprovalListData = [...state.GetApprovalListData, ...payload.approvals];
+                state.GetApprovalListData = payload;
                 state.GetApprovalListDataPageNumber = state.GetApprovalListDataPageNumber + 1;
                 state.isGetApprovalListDataMoreFetching = false;
                 state.isError = false;
@@ -1734,9 +2084,9 @@ export const CommonSlice = createSlice({
             state.isGetApprovalListDataMoreFetching = true;
         });
 
-        //==== approvals actions
-        builder.addCase(ApproveAction.fulfilled, (state, { payload }) => {
-            // console.log("[ApproveAction.fulfilled]>>>payload>>>", payload)
+        //==== approvals accept action
+        builder.addCase(ApproveActionApprove.fulfilled, (state, { payload }) => {
+            // console.log("[ApproveActionApprove.fulfilled]>>>payload>>>", payload)
             try {
                 state.isApproveAction = true;
                 state.isApproveActionFetching = false;
@@ -1744,11 +2094,11 @@ export const CommonSlice = createSlice({
                 state.errorMessage = '';
                 return state;
             } catch (error) {
-                console.log('Error: ApproveAction.fulfilled try catch error >>', error);
+                console.log('Error: ApproveActionApprove.fulfilled try catch error >>', error);
             }
         });
-        builder.addCase(ApproveAction.rejected, (state, { payload }) => {
-            console.log("[ApproveAction.rejected]>>>", payload)
+        builder.addCase(ApproveActionApprove.rejected, (state, { payload }) => {
+            console.log("[ApproveActionApprove.rejected]>>>", payload)
             try {
                 state.isApproveAction = false;
                 state.isApproveActionFetching = false;
@@ -1760,12 +2110,47 @@ export const CommonSlice = createSlice({
                     : (state.errorMessage = 'API Response Invalid. Please Check API');
             } catch (error) {
                 console.log(
-                    'Error: [ApproveAction.rejected] try catch error >>',
+                    'Error: [ApproveActionApprove.rejected] try catch error >>',
                     error,
                 );
             }
         });
-        builder.addCase(ApproveAction.pending, state => {
+        builder.addCase(ApproveActionApprove.pending, state => {
+            state.isApproveActionFetching = true;
+        });
+
+        //==== approvals reject action
+        builder.addCase(ApproveActionReject.fulfilled, (state, { payload }) => {
+            // console.log("[ApproveActionReject.fulfilled]>>>payload>>>", payload)
+            try {
+                state.isApproveAction = true;
+                state.isApproveActionFetching = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: ApproveActionReject.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(ApproveActionReject.rejected, (state, { payload }) => {
+            console.log("[ApproveActionReject.rejected]>>>", payload)
+            try {
+                state.isApproveAction = false;
+                state.isApproveActionFetching = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [ApproveActionReject.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(ApproveActionReject.pending, state => {
             state.isApproveActionFetching = true;
         });
 

@@ -39,6 +39,7 @@ export const COLOR = {
     
     info2: "#89f3f5",
     button: '#71639e',
+    
 }
 
 export const STATE = {
@@ -57,13 +58,20 @@ export const STATE = {
     approved: '#28a745',
     done: '#fd7e14',
     refused: '#6f42c1',
+    
 }
 
 export const APPROVALS = {
-
+    confirm : "#28a745",
     approved: '#28a745',
-    refused: '#5f636f',
-    submitted: '#f2af3a',
-    tosubmit: '#17a2b8',
+    refuse: '#5f636f',
+    validate :"#fd7e14",
+    validate2:"#f2af3a",
+    cancel: "#FF0000",
+    submitted: '#17a2b8',
+    draft: '#1F2937',
+
+    // tosubmit: '#17a2b8',
+    rejected : '#FF0000',
     pending: '#f2af3a'
 }

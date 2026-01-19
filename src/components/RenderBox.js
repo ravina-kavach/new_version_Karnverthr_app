@@ -1,35 +1,85 @@
-import React from "react"
-import { TouchableWithoutFeedback,Image, View, Text, StyleSheet } from "react-native"
-import { useNavigation } from '@react-navigation/native'
+import React from "react";
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  StyleSheet
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-import { commonStyle } from '../utils/common'
-import { COLOR } from "../theme/theme"
+import { commonStyle } from "../utils/common";
+import { COLOR } from "../theme/theme";
+import { FontSize, responsiveHeight, responsiveWidth } from "../utils/metrics";
+import { GlobalFonts } from "../theme/typography";
+
+const ENABLED_SCREENS = ["attendance", "leaves","expenses", "calender", "approvals"];
+// const ENABLED_SCREENS = ["attendance", "leaves", "expenses", "calender", "approvals"];
 
 export const RenderBox = ({ image, title, screen }) => {
-    const Navigation = useNavigation();
-    // return (Navigation.navigate(onClick)
-    const onPress = () =>{
-        if(screen === "attendance"){
-            return Navigation.navigate(screen)
-        }
+  const navigation = useNavigation();
+
+  const isEnabled = ENABLED_SCREENS.includes(screen);
+
+  const onPress = () => {
+    if (isEnabled) {
+      navigation.navigate(screen);
     }
-    return(
-        <TouchableWithoutFeedback onPress={()=> onPress()} >
-            <View style={[commonStyle.shodowBox, styles.container]}>
-                {screen !== "attendance" && <Text style={styles.comingText}>Coming soon</Text>}
-                <Image source={image} style={{ height: 60, width: 60, }} resizeMode='cover' />
-                <Text style={styles.titleContainer}>{title}</Text>
-            </View>
-        </TouchableWithoutFeedback>
-    )
-}
+  };
+
+  return (
+    <TouchableOpacity
+      activeOpacity={isEnabled ? 0.7 : 1}
+      onPress={onPress}
+      disabled={!isEnabled}
+    >
+      <View
+        style={[
+          styles.container,
+          !isEnabled && styles.disabledCard,
+        ]}
+      >
+        {!isEnabled && (
+            <Text style={styles.badgeText}>Coming soon</Text>
+        )}
+
+        {image}
+
+        <Text numberOfLines={1} style={styles.title}>
+          {title}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
-    comingText:{
-        color:COLOR.LightOrange,
-        fontWeight:'600',
-        bottom:3,
-    },
-    container: { height: 140, width: 110, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-    titleContainer: { color: COLOR.Black1, fontSize: 15, fontWeight: '600', marginTop: 20, textAlign: 'center' }
-})
+  container: {
+    backgroundColor: COLOR.White1,
+    padding: 20,
+    width:responsiveWidth(28),
+    height:responsiveHeight(14),
+    maxHeight:300,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "space-around",
+    position: "relative",
+  },
+
+  title: {
+    color: COLOR.Black1,
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
+    textAlign: "center",
+  },
+
+  disabledCard: {
+    opacity: 0.7,
+  },
+
+  badgeText: {
+    color: COLOR.LightOrange,
+    fontSize: FontSize.Font10,
+    bottom:5,
+    fontWeight: "600",
+  },
+});

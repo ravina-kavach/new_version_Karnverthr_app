@@ -18,7 +18,8 @@ API.interceptors.request.use(
       if (!skipAuthUrls.some((url) => config.url.includes(url)) && token) {
         config.headers = {
           ...config.headers,
-          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${token}`,
+          Authorization: token, 
         };
       }
       return config;

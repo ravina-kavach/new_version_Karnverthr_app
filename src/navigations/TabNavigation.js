@@ -1,170 +1,180 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import { COLOR } from '../theme/theme';
-import { HomeIcon,ReceiptIcon,ExpensesIcon,CalenderIcon,AttendancIcon,HomeClockIcon } from '../assets/icons';
+import { StyleSheet, View, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import CommonHeader from '../components/CommonHeader'
+import { useTranslation } from 'react-i18next';
+
+import { COLOR } from '../theme/theme';
+import { GlobalFonts } from '../theme/typography';
+import { FontSize, responsiveHeight, responsiveWidth } from '../utils/metrics';
+
+import {
+  HomeIcon,
+  ExpensesIcon,
+  LeaveIcon,
+  CalenderIcon,
+  FillHomeIcon,
+  FillExpensesIcon,
+  FillLeaveIcon,
+  FillCalenderIcon,
+} from '../assets/svgs';
+
 import Home from '../screens/home/Home';
 import Expenses from '../screens/expenses/Expenses';
 import Leaves from '../screens/leaves/Leaves';
-import Attendance from '../screens/attendance/Attendance';
 import Calender from '../screens/calender/Calender';
+import CommonHeader from '../components/CommonHeader';
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
+  const { t } = useTranslation();
+
+  const renderTabIcon = (focused, ActiveIcon, InactiveIcon, label) => (
+    <View style={styles.tabItem}>
+      <View style={{marginVertical:2}}>
+      {focused ? <ActiveIcon /> : <InactiveIcon />}
+      </View>
+      <Text style={[styles.tabText, focused && styles.activeText]}>
+        {label}
+      </Text>
+      {focused && <View style={styles.activeIndicator} />}
+    </View>
+  );
+
   return (
     <Tab.Navigator
       screenOptions={{
-        // headerShown:false,
+        // headerShown: false,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
         tabBarStyle: styles.tabBar,
-   }}
-  
+      }}
     >
       <Tab.Screen
         name="home"
         component={Home}
         options={{
-          // headerShown:false,
-          header: () => (
-            <CommonHeader
-              title="Let’s Clock-In!"
-              subtitle="Don’t miss your clock in schedule"
-              rightIcon={HomeClockIcon}
-            />
-          ),
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabContainer, focused && styles.activeTab]}>
-              <Image
-                source={HomeIcon}
-                tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
-              />
-            </View>
-          ),
-        }}
-      />
-
-    
-
-      <Tab.Screen
-        name="attendance"
-        component={Attendance}
-        options={{
-        
-          header: () => (
-            <CommonHeader
-              title="Attendance"
-              subtitle="Daily attendance summary"
-              rightIcon={HomeClockIcon}
-            />
-          ),
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabContainer, focused && styles.activeTab]}>
-              <Image
-                source={AttendancIcon}
-                tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
-              />
-            </View>
-          ),
+          headerShown:false,
+          tabBarIcon: ({ focused }) =>
+            renderTabIcon(
+              focused,
+              FillHomeIcon,
+              HomeIcon,
+              t('Tabs.Home')
+            ),
         }}
       />
 
       <Tab.Screen
         name="expenses"
         component={Expenses}
-        listeners={({ navigation }) => ({
-        tabPress: e => {e.preventDefault()},
-        })}
+        // listeners={{
+        //   tabPress: e => e.preventDefault(),
+        // }}
         options={{
-          header: () => (
-            <CommonHeader
-              title="Expenses"
-              subtitle="Track your expenses"
-              rightIcon={HomeClockIcon}
-            />
-          ),
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabContainer, focused && styles.activeTab]}>
-              <Image
-                source={ExpensesIcon}
-                tintColor={COLOR.dark2}
-                // tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
+          tabBarIcon: ({ focused }) =>
+            renderTabIcon(
+              focused,
+              FillExpensesIcon,
+              ExpensesIcon,
+              t('Tabs.Expense')
+            ),
+            header:(()=>(
+              <CommonHeader 
+              title={t('Expenses.Expense')}
               />
-            </View>
-          ),
+            ))
         }}
+        
       />
 
       <Tab.Screen
         name="leaves"
         component={Leaves}
-        listeners={({ navigation }) => ({
-        tabPress: e => {e.preventDefault()},
-        })}
+        // listeners={{
+        //   tabPress: e => e.preventDefault(),
+        // }}
         options={{
           header: () => (
             <CommonHeader
               title="Leaves"
               subtitle="Manage your leaves"
-              rightIcon={HomeClockIcon}
             />
           ),
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabContainer, focused && styles.activeTab]}>
-              <Image
-                source={ReceiptIcon}
-                tintColor={COLOR.dark2}
-                // tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ focused }) =>
+            renderTabIcon(
+              focused,
+              FillLeaveIcon,
+              LeaveIcon,
+              t('Tabs.Leaves')
+            ),
         }}
       />
 
       <Tab.Screen
         name="calender"
         component={Calender}
-        listeners={({ navigation }) => ({
-        tabPress: e => {e.preventDefault()},
-        })}
+        // listeners={{
+        //   tabPress: e => e.preventDefault(),
+        // }}
         options={{
-          headerStatusBarHeight:0,
           header: () => (
             <CommonHeader
               title="Calendar"
               subtitle="Your monthly schedule"
-              rightIcon={HomeClockIcon}
             />
           ),
-          tabBarIcon: ({ focused }) => (
-            <View style={[styles.tabContainer, focused && styles.activeTab]}>
-              <Image
-                source={CalenderIcon}
-                tintColor={COLOR.dark2}
-                // tintColor={focused ? COLOR.LightOrange : COLOR.Black1}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ focused }) =>
+            renderTabIcon(
+              focused,
+              FillCalenderIcon,
+              CalenderIcon,
+              t('Tabs.Calendar')
+            ),
         }}
       />
     </Tab.Navigator>
   );
 };
+
 const styles = StyleSheet.create({
   tabBar: {
-    borderTopWidth: 1,
-    elevation: 5,
+    height: responsiveHeight(10),
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 0.5,
+    borderTopColor: '#E5E7EB',
+    elevation: 12,
   },
-  tabContainer: {
+
+  tabItem: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 10,
+    paddingTop: 6,
+    width:responsiveWidth(25),
   },
-  activeTab: {
-    borderTopWidth: 3,
-    borderColor: COLOR.LightOrange,
+
+  tabText: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font14,
+    color: COLOR.Placeholder,
+    marginTop: 4,
+  },
+
+  activeText: {
+    color: COLOR.LightOrange,
+    fontWeight: '600',
+  },
+
+  activeIndicator: {
+    position: 'absolute',
+    top: 0,
+    height: 3,
+    width: '40%',
+    borderRadius: 2,
+    backgroundColor: COLOR.LightOrange,
+    width:responsiveWidth(12),
   },
 });
 
-export default TabNavigation
+
+export default TabNavigation;

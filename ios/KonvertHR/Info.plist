@@ -29,26 +29,34 @@
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>KonvertHR accesses your calendar to manage attendance, shifts, and HR schedules.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>KonvertHR uses the camera to capture employee profile photos, documents, and attendance verification.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>KonvertHR uses contacts access to help manage employee and organizational information.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>KonvertHR uses Face ID or Touch ID to securely authenticate and protect employee data.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>KonvertHR uses location data to support location-based attendance, compliance, and workforce management features.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>KonvertHR needs your location even in background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>arm64</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<string>KonvertHR uses your location during attendance check-in to ensure accurate work location tracking.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>KonvertHR requires microphone access for capturing audio during video or voice-based HR features.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>KonvertHR needs permission to save and upload HR-related images and documents.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>KonvertHR requires access to your photo library to upload profile images and HR-related documents.</string>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>KonvertHR sends notifications for attendance updates, approvals, payroll alerts, and important HR communications.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>KonvertHR uses motion data to improve app stability, performance monitoring, and overall user experience.</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter_18pt-Black.ttf</string>
@@ -106,5 +114,17 @@
 		<string>Inter_28pt-Thin.ttf</string>
 		<string>Inter_28pt-ThinItalic.ttf</string>
 	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>arm64</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
 </dict>
 </plist>

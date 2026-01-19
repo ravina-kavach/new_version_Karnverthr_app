@@ -37,11 +37,15 @@
         "Shift_Timings": "शिफ्ट का समय"
     },
     "Expenses": {
+        "Approvals": "स्वीकृति",
         "Name": "नाम",
+        "Expense": "खर्च",
         "employee": "कर्मचारी",
         "Status": "स्थिति",
+        "Upload_Document": "दस्तावेज़ अपलोड करें",
         "Create_Expense": "व्यय बनाएँ",
         "Payment_Mode": "भुगतान विधि",
+        "Account": "खाता",
         "Own_account": "अपना खाता",
         "Compnay": "कंपनी",
         "Expense_Name": "व्यय का नाम",
@@ -50,6 +54,7 @@
         "Expense_Date": "व्यय तिथि"
     },
     "Attendance": {
+        "AttendanceList": "उपस्थिति सूची",
         "Total_Hours": "कुल घंटे",
         "Select_Month": "महीना चुनिए",
         "Select_Year": "वर्ष चुनें",
@@ -74,6 +79,7 @@
         "Total_Leave_Balance": "कुल छुट्टी शेष",
         "Leave_Type": "छुट्टी का प्रकार",
         "Select_Leave_Type": "छुट्टी का प्रकार चुनें",
+        "Select_Department_Type": "विभाग प्रकार का चयन करें",
         "Start_Date": "आरंभ तिथि",
         "End_Date": "समाप्ति तिथि",
         "Choose": "चुनें",
@@ -112,11 +118,14 @@
         "Subject": "विषय",
         "Owner": "स्वामी",
         "Category": "श्रेणी",
+        "Draft": "मसौदा",
         "Start": "प्रारंभ",
         "To": "से",
         "Status": "स्थिति",
         "Action": "क्रिया",
-        "User": "उपयोगकर्ता"
+        "User": "उपयोगकर्ता",
+        "Approved": "अनुमत",
+        "Rejected": "अस्वीकार"
     },
     "Welcome1": {
         "title": "कार्यबल प्रबंधन, सरलीकृत",
@@ -154,6 +163,7 @@
     "Button": {
         "Update_Profile": "प्रोफ़ाइल अपडेट करें",
         "Close": "बंद करना",
+        "Cancel": "रद्द करना",
         "Discard": "खारिज करना",
         "Submit": "जमा करना",
         "Save": "सहेजें",
@@ -168,7 +178,6 @@
         "LoginWithFaceId": "फेस आईडी से लॉगिन करें",
         "Continue": "जारी रखना",
         "BackToMail": "मेल पर वापस जाएँ"
-
     },
     "placeholders": {
         "Enter_First_Name": "प्रथम नाम दर्ज करें",
@@ -188,7 +197,9 @@
         "Enter_your_email": "अपना ईमेल दर्ज करें"
     },
     "comman": {
-        "No_records_found": "कोई रिकॉर्ड नहीं मिला."
+        "No_records_found": "कोई रिकॉर्ड नहीं मिला.",
+        "Hello": "नमस्ते,",
+        "Welcome": "वापसी पर स्वागत है"
     },
     "verification": {
         "Email_verification": "ईमेल सत्यापन भेजा गया!",
@@ -209,5 +220,29 @@
         "Project_created": "प्रोजेक्ट सफलतापूर्वक बनाया गया",
         "Welcome_back": "आपका स्वागत है! आपने सफलतापूर्वक लॉग इन कर लिया है। अपने अनुभव का आनंद लें!",
         "password_reset": "आपके ईमेल पर पासवर्ड रीसेट करने का लिंक भेजा गया है। कृपया अपना पासवर्ड रीसेट करने के लिए अपना इनबॉक्स देखें।"
+    },
+    "Tabs": {
+        "Home": "घर",
+        "Expense": "खर्च",
+        "Leaves": "छुटिया",
+        "Calendar": "कैलेंडर"
+    },
+    "Validation": {
+        "Payment_Mode_Required": "कृपया भुगतान का तरीका चुनें।",
+        "Document_Required": "कृपया खर्च से संबंधित दस्तावेज़ अपलोड करें।",
+        "Category_Required": "कृपया श्रेणी चुनें।",
+        "Account_Required": "कृपया खाता चुनें।",
+        "Expense_Name_Required": "कृपया खर्च का नाम दर्ज करें।",
+        "Amount_Required": "कृपया राशि दर्ज करें।",
+        "Amount_Invalid": "कृपया मान्य संख्यात्मक राशि दर्ज करें।",
+        "Expense_Date_Required": "कृपया खर्च की तारीख चुनें।",
+        "subjectRequired": "मीटिंग का विषय आवश्यक है",
+        "subjectShort": "मीटिंग का विषय कम से कम 3 अक्षरों का होना चाहिए",
+        "startPast": "मीटिंग का समय वर्तमान से पहले नहीं हो सकता",
+        "endBeforeStart": "समाप्ति समय प्रारंभ समय के बाद होना चाहिए",
+        "locationRequired": "स्थान आवश्यक है",
+        "organizerRequired": "आयोजक का नाम आवश्यक है",
+        "descriptionTooLong": "विवरण 150 अक्षरों से अधिक नहीं हो सकता"
+       
     }
 }

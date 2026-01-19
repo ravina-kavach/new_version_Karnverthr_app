@@ -1,118 +1,135 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import dayjs from "dayjs";
 import { COLOR } from "../theme/theme";
-import { RowView } from "../utils/common";
-import { AttendancIcon } from "../assets/icons/index.js";
-import utc from 'dayjs/plugin/utc';
+import { CheckIn, CheckOut } from "../assets/svgs";
+import { GlobalFonts } from "../theme/typography.js";
+import { FontSize } from "../utils/metrics.js";
 
-dayjs.extend(utc);
-const AttendanceItem = ({ item, t, getDuration }) => {
+const AttendanceItem = ({ item, getDuration }) => {
   const dateTitle = item?.check_in
-    ? dayjs
-      .utc(item.check_in, 'YYYY-MM-DD HH:mm:ss')
-      .local()
-      .format('DD MMMM YYYY')
-    : '';
+    ? dayjs(item.check_in, "YYYY-MM-DD HH:mm:ss").format("ddd DD MMMM")
+    : "";
 
   const checkIn = item?.check_in
-    ? dayjs
-      .utc(item.check_in, 'YYYY-MM-DD HH:mm:ss')
-      .local()
-      .format('hh:mm A')
-    : '--';
+    ? dayjs(item.check_in, "YYYY-MM-DD HH:mm:ss").format("hh:mm A")
+    : "00:00 AM";
 
   const checkOut = item?.check_out
-    ? dayjs
-      .utc(item.check_out, 'YYYY-MM-DD HH:mm:ss')
-      .local()
-      .format('hh:mm A')
-    : '--';
+    ? dayjs(item.check_out, "YYYY-MM-DD HH:mm:ss").format("hh:mm A")
+    : "00:00 PM";
 
-
+  const isAbsent = !item?.check_in && !item?.check_out;
 
   return (
     <View style={styles.wrapper}>
-
+      <View style={styles.header}>
+        <Text style={styles.date}>{dateTitle}</Text>
+        {isAbsent && <Text style={styles.absent}>Absent</Text>}
+      </View>
       <View style={styles.card}>
-        <RowView style={styles.titleContainer}>
-          <Image
-            source={AttendancIcon}
-            tintColor={COLOR.Primary1}
-          />
-          <Text numberOfLines={1} style={styles.dateTitle}>{dateTitle}</Text>
-        </RowView>
-        <View style={styles.row}>
-          <View style={styles.block}>
-            <Text style={styles.label}>Total Hours</Text>
-            <Text numberOfLines={1} style={styles.value}>
-              {getDuration(item?.check_in, item?.check_out)} hrs
-            </Text>
+        <View style={styles.left}>
+          <View style={styles.timeRow}>
+            <CheckIn />
+            <Text style={styles.timeText}>{checkIn}</Text>
           </View>
 
-          <View style={styles.block}>
-            <Text style={styles.label}>Clock in & Out</Text>
-            <Text numberOfLines={1} style={styles.value}>
-              {checkIn} — {checkOut}
-            </Text>
+          <View style={styles.timeRow}>
+            <CheckOut style={styles.checkoutIcon}/>
+            <Text style={styles.timeText}>{checkOut}</Text>
           </View>
+        </View>
+
+        {/* Right side (Hours) */}
+        <View style={styles.right}>
+          <Text style={styles.hours}>
+            {getDuration(item?.check_in, item?.check_out)} hrs
+          </Text>
+          <Text style={styles.subText}>Total Hours</Text>
         </View>
       </View>
     </View>
   );
 };
 
+export default AttendanceItem;
+
 const styles = StyleSheet.create({
   wrapper: {
-    marginHorizontal: 14,
-    marginVertical: 8,
-  },
-
-  dateTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#111827",
-    paddingLeft: 5,
-  },
-  titleContainer: {
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-
-  card: {
-    backgroundColor: COLOR.White1 || "#FFFFFF",
+    marginHorizontal: 16,
+    marginVertical: 12,
+    paddingHorizontal:20,
+    backgroundColor:COLOR.White1,
     borderRadius: 12,
-    padding: 16,
-
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
+    paddingVertical:20,
   },
 
-  row: {
+  /* Header */
+  header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginBottom:10,
+    paddingHorizontal: 4,
   },
-
-  block: {
-    width: "48%",
-  },
-
-  label: {
-    fontSize: 13,
-    color: "#6B7280",
-    marginBottom: 6,
-  },
-
-  value: {
-    fontSize: 16,
+  checkoutIcon:{paddingLeft:24},
+  date: {
+    fontSize: 15,
     fontWeight: "600",
     color: "#111827",
   },
-});
 
-export default AttendanceItem;
+  absent: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#EF4444",
+  },
+
+  /* Card */
+  card: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: COLOR.dark4,
+    borderRadius: 12,
+  },
+
+  left: {
+    gap: 10,
+  },
+
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  timeText: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font15,
+    fontWeight: "500",
+    color: "#111827",
+    marginLeft: 10,
+  },
+
+  right: {
+    alignItems: "flex-end",
+  },
+
+  hours: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font15,
+    fontWeight: "700",
+    color: "#111827",
+  },
+
+  subText: {
+    fontSize: 12,
+    color: COLOR.TextPlaceholder,
+    marginTop: 4,
+     ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font15,
+  },
+});

@@ -25,7 +25,6 @@
     "Emergency_Mobile": "Emergency Contact Mobile",
     "Emergency_Relation": "Emergency Contact Relation",
     "Aadhar_Number": "Aadhar Number"
-    
   },
   "Home": {
     "Home": "Home",
@@ -46,18 +45,22 @@
   },
   "Expenses": {
     "Name": "Name",
+    "Expense": "Expense",
     "employee": "employee",
     "Status": "Status",
     "Create_Expense": "Create Expense",
+    "Upload_Document": "Upload Document",
     "Payment_Mode": "Payment Mode",
     "Own_account": "Own account",
     "Compnay": "Compnay",
     "Expense_Name": "Expense Name",
     "Amount": "Amount",
     "Catagory": "Category",
+    "Account": "Account",
     "Expense_Date": "Expense Date"
   },
   "Attendance": {
+    "AttendanceList": "Attendance list",
     "Total_Hours": "Total Hours",
     "Select_Month": "Select Month",
     "Select_Year": "Select Year",
@@ -82,6 +85,7 @@
     "Total_Leave_Balance": "Total Leave Balance",
     "Leave_Type": "Leave Type",
     "Select_Leave_Type": "Select Leave Type",
+    "Select_Department_Type": "Select Department Type",
     "Start_Date": "Start Date",
     "End_Date": "End Date",
     "Choose": "Choose",
@@ -117,6 +121,14 @@
     "Tax": "Tax"
   },
   "Approvals": {
+    "Approvals": "Approvals",
+    "Approved": "Approved",
+    "Rejected": "Rejected",
+    "Draft": "Draft",
+    "Submitted": "Submitted",
+    "Pending": "Pending",
+    "Approve": "Approve",
+    "Reject": "Reject",
     "Subject": "Subject",
     "Owner": "Owner",
     "Category": "Category",
@@ -132,9 +144,12 @@
   },
   "Welcome2": {
     "title": "Your Everyday Tools",
-    "dis1":"Clear records, no confusion",
-    "dis2":"Faster approvals",
-    "dis3":"One system, fewer errors"
+    "subtitle1": "Track Time",
+    "subtitle2": "Manage Requests",
+    "subtitle3": "Stay Organized",
+    "dis1": "Clear records, no confusion",
+    "dis2": "Faster approvals",
+    "dis3": "One system, fewer errors"
   },
   "Welcome3": {
     "title": "Built for Everyday Work",
@@ -165,13 +180,14 @@
     "Add": "Add",
     "Done": "Done",
     "Save_Close": "Save & Close",
+    "Cancel": "Cancel",
     "Sign_In": "Sign In",
     "Forgot_password": "Forgot password",
-    "LoginWithFigerprint":"Login with Fingerprint",
-    "LoginWithFaceId":"Login with Face Id",
+    "LoginWithFigerprint": "Login with Fingerprint",
+    "LoginWithFaceId": "Login with Face Id",
     "SendTemporaryPassword": "Send Temporary Password",
     "Next": "Next",
-    "Continue" : "Continue",
+    "Continue": "Continue",
     "BackToMail": "Back to mail"
   },
   "placeholders": {
@@ -186,9 +202,9 @@
     "Enter_Location": "Enter Location",
     "Enter_your_registered_email": "Enter your registered email",
     "Enter_your_password": "Enter your password",
-    "Enter_temporary_password":"Enter temporary password",
+    "Enter_temporary_password": "Enter temporary password",
     "Enter_new_password": "Enter new password",
-    "Enter_confirm_password":"Enter confirm password",
+    "Enter_confirm_password": "Enter confirm password",
     "Enter_your_email": "Enter your email",
     "Enter_emp_address": "Enter Your Address",
     "Enter_pincode": "Enter Pincode",
@@ -199,26 +215,51 @@
     "Enter_aadhar_number": "Enter Aadhar Number"
   },
   "comman": {
-    "No_records_found": "No records found."
+    "No_records_found": "No records found.",
+    "Hello": "Hello",
+    "Welcome": "Welcome back"
   },
-  "verification":{
-    "Email_verification":"Email Verification Sent!",
+  "verification": {
+    "Email_verification": "Email Verification Sent!",
     "Email_verific_desc": "We’ll send a verification code to your email.\nEnter the code to verify your account.",
-    "key_placeholder":"Enter your unique key",
-    "valid_key":"The key must be exactly 6 unique characters."
+    "key_placeholder": "Enter your unique key",
+    "valid_key": "The key must be exactly 6 unique characters."
   },
-  "messages":{
-    "Approve_request":"Approve request approved successfully",
-    "Lead_and_attachment":"Lead and attachment created successfully",
-    "Your_expense":"Done! Your expense has been successfully added.",
-    "Expanse_image":"Expanse image in madatory!",
-    "Expanse_Date":"Expanse Date in madatory!",
-    "Check_in":"You've successfully checked in. Welcome!",
-    "Check_out":"You've checked out. Have a great day!",
-    "Leave_created":"Leave created successfully",
-    "Calendar_event":"Calendar event created successfully",
-    "Project_created":"Project created successfully",
-    "Welcome_back":"Welcome back! You've successfully logged in. Enjoy your experience!",
-    "password_reset":"A password reset link has been sent to your email. Please check your inbox to reset your password."
+  "messages": {
+    "Approve_request": "Approve request approved successfully",
+    "Lead_and_attachment": "Lead and attachment created successfully",
+    "Your_expense": "Done! Your expense has been successfully added.",
+    "Expanse_image": "Expanse image in madatory!",
+    "Expanse_Date": "Expanse Date in madatory!",
+    "Check_in": "You've successfully checked in. Welcome!",
+    "Check_out": "You've checked out. Have a great day!",
+    "Leave_created": "Leave created successfully",
+    "Calendar_event": "Calendar event created successfully",
+    "Project_created": "Project created successfully",
+    "Welcome_back": "Welcome back! You've successfully logged in. Enjoy your experience!",
+    "password_reset": "A password reset link has been sent to your email. Please check your inbox to reset your password."
+  },
+  "Tabs": {
+    "Home": "Home",
+    "Expense": "Expanse",
+    "Leaves": "Leaves",
+    "Calendar": "Calendar"
+  },
+  "Validation": {
+    "Payment_Mode_Required": "Please select a payment mode.",
+    "Document_Required": "Please upload an expense document.",
+    "Category_Required": "Please select a category.",
+    "Account_Required": "Please select an account.",
+    "Expense_Name_Required": "Please enter the expense name.",
+    "Amount_Required": "Please enter the amount.",
+    "Amount_Invalid": "Please enter a valid numeric amount.",
+    "Expense_Date_Required": "Please select the expense date.",
+    "subjectRequired": "Meeting subject is required",
+    "subjectShort": "Meeting subject must be at least 3 characters",
+    "startPast": "Meeting cannot start in the past",
+    "endBeforeStart": "End time must be after start time",
+    "locationRequired": "Location is required",
+    "organizerRequired": "Organizer is required",
+    "descriptionTooLong": "Description cannot exceed 150 characters"
   }
 }

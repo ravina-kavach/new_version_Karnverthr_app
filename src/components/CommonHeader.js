@@ -1,57 +1,64 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { COLOR } from '../theme/theme';
-import { CommonView } from '../utils/common';
+import { BackIcon } from '../assets/svgs';
+import { useNavigation } from '@react-navigation/native';
+import { FontSize, responsiveHeight } from '../utils/metrics';
 
-const CommonHeader = ({ title, subtitle, rightIcon }) => {
+const CommonHeader = ({
+  title = '',
+  leftIcon,
+  leftIconPress,
+  rightIcon,
+  rightIconPress,
+}) => {
+  const navigation = useNavigation();
+
   return (
-   <CommonView statusBarColor={COLOR.OffRed} >
-    <LinearGradient
-      colors={[COLOR.LightOrange, COLOR.LightYellow]}
-      style={styles.container}
-    >
-      <View style={styles.left}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.left}
+          onPress={leftIconPress || (() => navigation.goBack())}
+        >
+          {leftIcon || <BackIcon height={40} width={40} />}
+        </TouchableOpacity>
+        <View style={styles.center}>
+          <Text style={styles.title} numberOfLines={1}>{title}</Text>
+        </View>
+        <TouchableOpacity style={styles.right} onPress={rightIconPress}>
+          {rightIcon || null}
+        </TouchableOpacity>
       </View>
-
-      {rightIcon && (
-        <Image source={rightIcon} style={styles.icon} resizeMode="contain" />
-      )}
-    </LinearGradient>
-    </CommonView>
   );
 };
 
 export default CommonHeader;
 
 const styles = StyleSheet.create({
-  container: {
-    height: 160,
-    paddingTop:30,
-    paddingHorizontal: 20,
+  header: {
+    height: Platform.OS === 'android'? responsiveHeight(10): responsiveHeight(14),
     flexDirection: 'row',
-    alignItems:'center',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingTop:Platform.OS ==='android'? 20 : 30,
   },
   left: {
+    width: 40,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  center: {
     flex: 1,
-    // justifyContent: 'center',
+    alignItems: 'center',
+  },
+  right: {
+    width: 40,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: COLOR.White1,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: COLOR.White1,
-    marginTop: 6,
-    opacity: 0.9,
-  },
-  icon: {
-    width: 90,
-    height: 90,
+    fontSize: FontSize.Font18,
+    fontWeight: '600',
+    color: '#000',
   },
 });

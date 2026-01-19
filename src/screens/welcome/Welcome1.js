@@ -18,11 +18,9 @@ const Welcome1 = () => {
     navigateToWelcome2,
   } = useWelcome();
   return (
-    <CommonView statusBarColor={COLOR.Primary1}>
+    <CommonView>
       <View style={styles.container}>
-        <View style={styles.welcomeImage}>
           <Image style={styles.welcomeImage} source={welcome1Image} />
-        </View>
         <View style={styles.dotsContainer}>
           <View style={styles.activeDot} />
           <View style={[styles.inActiveDot, styles.dotsMargin]} />
@@ -63,9 +61,10 @@ const styles = StyleSheet.create({
 
   welcomeImage: {
     alignSelf: 'center',
-     resizeMode:'contain',
-    paddingTop: responsiveHeight(14),
-    paddingBottom:responsiveHeight(8),
+    resizeMode:'contain',
+
+    marginTop:responsiveHeight(15),
+    marginBottom:responsiveHeight(8),
     justifyContent: 'center',
     alignItems: 'center',
   },

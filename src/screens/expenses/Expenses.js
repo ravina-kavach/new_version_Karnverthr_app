@@ -1,18 +1,18 @@
-import { View, Text, ScrollView, TextInput, TouchableWithoutFeedback, ActivityIndicator, Image, Modal, TouchableOpacity, Dimensions, FlatList, RefreshControl, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Modal, TouchableWithoutFeedback, Dimensions, Image, FlatList, RefreshControl, Pressable, StyleSheet } from 'react-native'
 import React from 'react'
-import { ColView, commonStyle, Label, RowView, Valide } from '../../utils/common'
-import { COLOR,STATE } from '../../theme/theme';
-import DateTimePicker from '@react-native-community/datetimepicker';
-// import RadioGroup from 'react-native-radio-buttons-group';
-// import Entypo from 'react-native-vector-icons/dist/Entypo';
-// import AntDesign from 'react-native-vector-icons/dist/AntDesign';
-// import MaterialIcons from 'react-native-vector-icons/dist/MaterialIcons';
-// import Feather from 'react-native-vector-icons/dist/Feather';
+import { COLOR, STATE } from '../../theme/theme';
 import moment from 'moment'
 import Dropdown from '../../components/Dropdown'
 import { useExpenses } from './ExpensesController'
 import NodataFound from '../../components/NodataFound'
 import { CommonView } from '../../utils/common'
+import { PlusIcon,EmptyExpense } from '../../assets/svgs';
+import AddExpenseModal from '../../components/AddExpenseModal'
+import Config from 'react-native-config';
+import ImagePickerSheet from '../../components/ImagePickerSheet';
+import { GlobalFonts } from '../../theme/typography';
+import { FontSize } from '../../utils/metrics';
+
 
 export default function Expenses() {
 
@@ -20,7 +20,6 @@ export default function Expenses() {
     t,
     IsStartdatepickeropen,
     startDate,
-    Catagory,
     selectedId,
     FileObj,
     Formdata,
@@ -38,263 +37,129 @@ export default function Expenses() {
     isGetExpenseListFetching,
     setSelectedId,
     Validator,
-    setCatagory,
     setIsExoensemodal,
-    heandleonCamera,
     setIsStartdatepickeropen,
     setPreviewVisible,
-    setFormdata
+    setFormdata,
+    selectCategoryType,
+    setSelectedCategoryType,
+    selectAccountType,
+    setSelectedAccountType,
+    AccountListData,
+    onImagePicked,
+    isImagePickerVisible,
+    setIsImagePickerVisible,
   } = useExpenses()
 
-  // ==========================
+ const renderItem = ({ item }) => {
+  const stateKey = item.state?.toLowerCase();
 
-  const renderItem = ({ item }) => (
+  const imageUri =
+    item.attachment_ids?.length > 0 &&
+    item.attachment_ids[0]?.base64
+      ? `data:${item.attachment_ids[0].mimetype};base64,${item.attachment_ids[0].base64}`
+      : null;
+
+  return (
     <View style={styles.card}>
-      <RowView>
-        <ColView>
-          <Text style={styles.labelText}>
-            {t('Expenses.Name')}:{' '}
-            <Text style={styles.valueText}>{item.name}</Text>
-          </Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.title}>{item.name}</Text>
 
-          <Text style={styles.labelText}>
-            {t('Expenses.employee')}:{' '}
-            <Text style={styles.valueText}>{item.employee}</Text>
+        <View style={styles.statusWrap}>
+          <Text style={[styles.statusText, { color: STATE[stateKey] }]}>
+            {item.state}
           </Text>
-
-          {item.description && (
-            <Text style={styles.description}>{item.description}</Text>
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: STATE[stateKey] },
+            ]}
+          />
+        </View>
+      </View>
+      <View style={styles.contentRow}>
+        <View style={styles.imageBox}>
+          {imageUri ? (
+            <Pressable style={styles.imageBox} onPress={() => openImage(imageUri)}>
+            <Image source={{ uri: imageUri }} style={styles.image} />
+            </Pressable>
+          ) : (
+            <View style={styles.placeholder}>
+              <EmptyExpense color={COLOR.dark5} />
+            </View>
           )}
+        </View>
 
-          <Text style={styles.labelText}>
-            {t('Expenses.Amount')}:{' '}
-            <Text style={styles.amountText}>
-              ₹ {item.total_amount.toFixed(2)}
-            </Text>
+        <View style={styles.rightInfo}>
+          <Text style={styles.amount}>
+            ₹ {Number(item.total_amount).toFixed(2)}
           </Text>
-
-          <View style={styles.statusRow}>
-            <Text style={styles.labelText}>
-              {t('Expenses.Status')}:
-            </Text>
-            <Text
-              style={[
-                styles.statusBadge,
-                { backgroundColor: STATE[item.state] },
-              ]}>
-              {item.state}
-            </Text>
-          </View>
-        </ColView>
-
-        <ColView style={styles.rightColumn}>
-          <Text style={styles.dateText}>
-            {moment(item.date).format('DD-MM-yyyy')}
+          <Text style={styles.date}>
+            {moment(item.date).format('DD-MM-YYYY')}
           </Text>
-
-          {item.attachments?.length > 0 && (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.attachmentScroll}>
-              {item.attachments.map((img, idx) => {
-                const uri = img.data
-                  ? `data:${img.mimetype};base64,${img.data}`
-                  : null;
-
-                return (
-                  uri && (
-                    <TouchableWithoutFeedback
-                      key={idx}
-                      onPress={() => openImage(uri)}>
-                      <Image
-                        source={{ uri }}
-                        resizeMode="cover"
-                        style={styles.attachmentImage}
-                      />
-                    </TouchableWithoutFeedback>
-                  )
-                );
-              })}
-            </ScrollView>
-          )}
-        </ColView>
-      </RowView>
+        </View>
+      </View>
     </View>
   );
+};
+
+
 
 
   return (
-    <CommonView edges={['left', 'right', 'bottom']}>
+    <CommonView >
       <View style={styles.flexContainer}>
         <View style={styles.container}>
           <FlatList
             data={GetExpenseListData}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={false}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
             refreshControl={
               <RefreshControl refreshing={isGetExpenseListFetching} onRefresh={onRefresh} />
             }
             contentContainerStyle={styles.contentContainer}
+            // ListHeaderComponent={() => <Text style={styles.sectionTitle}>All Expenses</Text>}
             ListEmptyComponent={() => (
-              <NodataFound />
+              <View style={styles.placeHoldeContainer}>
+                <NodataFound titleText={"Add expenses"} />
+              </View>
             )}
           />
         </View>
         <TouchableWithoutFeedback onPress={() => setIsExoensemodal(true)}>
           <View style={styles.plusContainer}>
             <View style={styles.iconContainer}>
-              {/* <AntDesign name="plus" color={COLOR.White1} size={24} /> */}
+              <PlusIcon width={28} height={28}/>
             </View>
           </View>
         </TouchableWithoutFeedback>
-        {/* ----- create expense modal ------ */}
-        <Modal
-          animationType="none"
-          transparent={true}
+        <AddExpenseModal
           visible={IsExoensemodal}
-          onRequestClose={closeModal}>
-          <TouchableOpacity style={{ flex: 1, backgroundColor: COLOR.background2, justifyContent: 'center', alignItems: 'center', }} onPress={closeModal}>
-            <TouchableWithoutFeedback>
-              <View style={{ backgroundColor: 'rgba(232, 232, 232, 1)', padding: 5, borderRadius: 15, width: Dimensions.get('window').width - 40, }}>
-                <ScrollView>
-                  <View style={{ padding: 10 }}>
-                    <Text style={{ fontSize: 20, marginBottom: 10, color: COLOR.Black1, fontWeight: '600', textAlign: 'center' }}>{t('Expenses.Create_Expense')}</Text>
-                    <RowView>
-                      <ColView>
-                        <View style={{}}>
-                          <Text style={{ fontSize: 15, fontWeight: "500", color: COLOR.Black1, marginBottom: 5 }}>{t('Expenses.Payment_Mode')}</Text>
-                          {/* <RadioGroup
-                            radioButtons={[
-                              {
-                                id: 1, // acts as primary key, should be unique and non-empty string
-                                label: `${t('Expenses.Own_account')}`,
-                                value: 'own_account',
-                                borderColor: COLOR.button,
-                                color: COLOR.button,
-                                labelStyle: { color: COLOR.Black1, },
-                                containerStyle: { alignSelf: 'flex-start' }
-                              },
-                              {
-                                id: 2,
-                                label: `${t('Expenses.Compnay')}`,
-                                value: 'company_account',
-                                borderColor: COLOR.button,
-                                color: COLOR.button,
-                                labelStyle: { color: COLOR.Black1, },
-                                containerStyle: { alignSelf: 'flex-start' }
-                              }
-                            ]}
-                            onPress={setSelectedId}
-                            selectedId={selectedId}
-                            containerStyle={{ flexDirection: 'column', }}
-                          /> */}
-                        </View>
-                      </ColView>
-                      <ColView style={{ flex: 0 }}>
-                        <View style={{ marginBottom: 10, alignItems: 'flex-end' }}>
-                          <View style={{ borderRadius: 20, borderWidth: 1, height: 100, width: 100, justifyContent: 'center', overflow: 'hidden', }}>
-                            {FileObj.base64 ? (
-                              <Image source={{ uri: `data:image/png;base64,${FileObj?.base64}` }} style={{ height: 138, width: 138, }} resizeMode='cover' />
-                            ) : (
-                              <TouchableWithoutFeedback onPress={() => heandleonCamera()}>
-                                <View style={{ borderRadius: 20, borderWidth: 1, height: 100, width: 100, justifyContent: 'center', alignItems: 'center', }}>
-                                  {/* <Feather name="plus" color={COLOR.button} size={35} /> */}
-                                </View>
-                              </TouchableWithoutFeedback>
-                            )}
-                          </View>
-                        </View>
-                      </ColView>
-                    </RowView>
-                    <View style={{ position: 'relative', }}>
-                      <Text style={{ fontSize: 15, fontWeight: "500", color: COLOR.dark2, marginBottom: 5 }}>{t('Expenses.Expense_Name')}</Text>
-                      <TextInput
-                        style={{ backgroundColor: COLOR.White1, color: COLOR.Black1, borderRadius: 10, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 5, padding: 10 }}
-                        cursorColor={COLOR.button}
-                        onChangeText={(value) => setFormdata({ ...Formdata, ExpenseName: value })}
-                        value={Formdata.ExpenseName}
-                        placeholder={t('placeholders.Enter_your_ExpenseName')}
-                        placeholderTextColor={COLOR.dark4}
-                        autoCapitalize="none"
-                        maxLength={150}
-                      />
-                      <View style={{ position: 'absolute', bottom: 30, right: 10 }}>
-                        {/* <Entypo name='add-to-list' size={24} color={COLOR.button} /> */}
-                      </View>
-                      <Valide>{Validator.current.message('Expense Name', Formdata.ExpenseName, 'required')}</Valide>
-                    </View>
-                    <View style={{ position: 'relative', }}>
-                      <Text style={{ fontSize: 15, fontWeight: "500", color: COLOR.dark2, marginBottom: 5 }}>{t('Expenses.Amount')}</Text>
-                      <TextInput
-                        style={{ backgroundColor: COLOR.White1, color: COLOR.Black1, borderRadius: 10, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 5, padding: 10 }}
-                        cursorColor={COLOR.button}
-                        onChangeText={(value) => setFormdata({ ...Formdata, Amount: value })}
-                        value={Formdata.Amount}
-                        placeholder={t('placeholders.Enter_your_Amount')}
-                        placeholderTextColor={COLOR.dark4}
-                        keyboardType='numeric'
-                        autoCapitalize="none"
-                        maxLength={150}
-                      />
-                      <View style={{ position: 'absolute', bottom: 30, right: 10 }}>
-                        {/* <MaterialIcons name='currency-rupee' size={24} color={COLOR.button} /> */}
-                      </View>
-                      <Valide>{Validator.current.message('Amount', Formdata.Amount, 'required')}</Valide>
-                    </View>
-                    <View style={{ marginBottom: 10, }}>
-                      <Text style={{ fontSize: 15, fontWeight: "500", color: COLOR.dark2, marginBottom: 5 }}>{t('Expenses.Catagory')}</Text>
-                      <Dropdown
-                        DropdownData={CategoryListData}
-                        setSelecteditem={setCatagory}
-                        Selecteditem={Catagory}
-                      />
-                    </View>
-                    <View style={{ marginBottom: 10, position: 'relative', }}>
-                      <Text style={{ fontSize: 15, fontWeight: "500", color: COLOR.dark2, marginBottom: 5 }}>{t('Expenses.Expense_Date')}</Text>
-                      <TouchableWithoutFeedback onPress={() => setIsStartdatepickeropen(true)}>
-                        <View style={[commonStyle.input, { paddingRight: 0, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 5, borderWidth: 0, }]}>
-                          <RowView>
-                            <ColView>
-                              <Text style={{ paddingEnd: 15, color: COLOR.Black1 }}>{startDate ? moment(startDate).format('DD-MM-YYYY') : `${t('Expenses.Expense_Date')}`}</Text>
-                            </ColView>
-                            <ColView style={{ flex: 0, paddingTop: 10, paddingRight: 15 }}>
-                              {/* {IsStartdatepickeropen ? (
-                                <Entypo name='chevron-up' color={COLOR.button} size={26} />
-                              ) : (
-                                <Entypo name='chevron-down' color={COLOR.button} size={26} />
-                              )} */}
-                            </ColView>
-                          </RowView>
-                        </View>
-                      </TouchableWithoutFeedback>
-                      {IsStartdatepickeropen && (
-                        <DateTimePicker
-                          value={startDate || new Date()}
-                          mode="date"
-                          display="default"
-                          onChange={onChangeStartDate}
-                          maximumDate={new Date()}
-                          themeVariant="light"
-                        />
-                      )}
-                    </View>
-                    <View>
-                      <TouchableWithoutFeedback onPress={() => SubmitExpense()} >
-                        <View style={[commonStyle.btn_primary_round, { backgroundColor: COLOR.button, borderRadius: 10 }]}>
-                          <View style={{ flexDirection: 'row' }}>
-                            <Label style={{ color: COLOR.White1, marginBottom: 0, marginRight: 10 }}>{t('Button.Submit')}</Label>
-                            {isCreateExpensesFetching && <ActivityIndicator animating={isCreateExpensesFetching} color={COLOR.White1} />}
-                          </View>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-                  </View>
-                </ScrollView>
-              </View>
-            </TouchableWithoutFeedback>
-          </TouchableOpacity>
-        </Modal>
+          closeModal={closeModal}
+          SubmitExpense={SubmitExpense}
+          isCreateExpensesFetching={isCreateExpensesFetching}
+          FileObj={FileObj}
+          heandleonCamera={() => setIsImagePickerVisible(true)}
+          CategoryListData={CategoryListData}
+          Dropdown={Dropdown}
+          COLOR={COLOR}
+          t={t}
+          IsStartdatepickeropen={IsStartdatepickeropen}
+          startDate={startDate}
+          onChangeStartDate={onChangeStartDate}
+          setIsStartdatepickeropen={setIsStartdatepickeropen}
+          Formdata={Formdata}
+          setFormdata={setFormdata}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
+          selectCategoryType={selectCategoryType}
+          setSelectedCategoryType={setSelectedCategoryType}
+          AccountListData={AccountListData}
+          selectAccountType={selectAccountType}
+          setSelectedAccountType={setSelectedAccountType}
+        />
         {/* Full-Screen Preview Modal */}
         <Modal visible={PreviewVisible} transparent={true}>
           <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center', }}>
@@ -310,89 +175,185 @@ export default function Expenses() {
           </View>
         </Modal>
       </View>
+      {isImagePickerVisible &&
+        <ImagePickerSheet
+          visible={isImagePickerVisible}
+          onClose={() => setIsImagePickerVisible(false)}
+          onResult={onImagePicked}
+        />}
     </CommonView>
   )
-
-
-  const styles = StyleSheet.create({
-    card: {
-      backgroundColor: COLOR.White1,
-      borderRadius: 12,
-      padding: 10,
-      marginBottom: 10,
-      elevation: 2,
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 2 },
-    },
-    flexContainer: { flex: 1 },
-    iconContainer: { backgroundColor: COLOR.primary1, padding: 5, borderRadius: 15 },
-    container: { marginHorizontal: 10 },
-    contentContainer: { paddingVertical: 10 },
-    labelText: {
-      fontWeight: '600',
-      fontSize: 16,
-      color: COLOR.Black1,
-      marginBottom: 5,
-      textTransform: 'capitalize',
-    },
-
-    plusContainer: { position: "absolute", right: 20, bottom: 30 },
-
-    valueText: {
-      color: COLOR.dark2,
-      fontWeight: '500',
-      textTransform: 'capitalize',
-    },
-
-    description: {
-      fontSize: 14,
-      color: '#444',
-      marginVertical: 2,
-    },
-
-    amountText: {
-      color: COLOR.button,
-      fontWeight: '500',
-    },
-
-    statusRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-
-    statusBadge: {
-      fontWeight: '500',
-      color: COLOR.White1,
-      paddingVertical: 3,
-      paddingHorizontal: 7,
-      borderRadius: 15,
-    },
-
-    rightColumn: {
-      flex: 0,
-    },
-
-    dateText: {
-      fontSize: 16,
-      color: COLOR.Black1,
-      textAlign: 'center',
-      marginVertical: 2,
-      fontWeight: '600',
-    },
-
-    attachmentScroll: {
-      marginBottom: 10,
-    },
-
-    attachmentImage: {
-      width: 80,
-      height: 80,
-      borderRadius: 10,
-      marginRight: 8,
-      backgroundColor: '#eee',
-    },
-  });
-
 }
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: COLOR.White1,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  flexContainer: { flex: 1 },
+  iconContainer: { backgroundColor: COLOR.Black1, padding: 13, borderRadius: 14, overflow: 'hidden' },
+  container: { marginHorizontal: 20 },
+  contentContainer: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, backgroundColor: COLOR.White1, borderRadius: 20 },
+  labelText: {
+    ...GlobalFonts.subtitle,
+    fontWeight: '600',
+    fontSize: 16,
+    color: COLOR.Black1,
+    marginBottom: 5,
+    textTransform: 'capitalize',
+  },
+  statusText: {
+    fontSize: 13,
+    marginRight: 6,
+    fontWeight: '500',
+    ...GlobalFonts.subtitle,
+  },
+
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLOR.Black1,
+    ...GlobalFonts.subtitle,
+  },
+
+  statusWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+
+  sectionTitle: {
+    ...GlobalFonts.subtitle,
+    fontWeight: '600',
+    marginVertical: 10,
+    marginBottom: 20,
+
+  },
+
+  plusContainer: { position: "absolute", right: 20, bottom: 30 },
+
+  valueText: {
+    color: COLOR.dark2,
+    fontWeight: '500',
+    textTransform: 'capitalize',
+    ...GlobalFonts.subtitle,
+  },
+
+  description: {
+    ...GlobalFonts.subtitle,
+    fontSize: 14,
+    color: '#444',
+    marginVertical: 2,
+  },
+
+  amountText: {
+    ...GlobalFonts.subtitle,
+    color: COLOR.button,
+    fontWeight: '500',
+  },
+
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  placeHoldeContainer: {
+    flex: 1,
+    top: 200,
+    height: 800
+  },
+
+  statusBadge: {
+    fontWeight: '500',
+    color: COLOR.White1,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 15,
+    marginLeft: 5
+  },
+
+  rightColumn: {
+    flex: 0,
+  },
+
+  dateText: {
+    fontSize: 16,
+    ...GlobalFonts.subtitle,
+    color: COLOR.Black1,
+    textAlign: 'center',
+    marginVertical: 2,
+    fontWeight: '600',
+  },
+
+  attachmentScroll: {
+    marginBottom: 10,
+  },
+
+  attachmentImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    marginRight: 8,
+    backgroundColor: '#eee',
+  },
+  contentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  imageBox: {
+    width: 56,
+    height: 56,
+    borderRadius: 10,
+    backgroundColor: COLOR.dark5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+
+  placeholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: '#E5E7EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  rightInfo: {
+    flex: 1,
+    alignItems: 'flex-end',
+    marginLeft: 12,
+  },
+
+  amount: {
+    ...GlobalFonts.subtitle,
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLOR.Black1,
+  },
+
+  date: {
+    ...GlobalFonts.subtitle,
+    marginTop: 4,
+    fontSize: FontSize.Font14,
+    color: '#6B7280',
+  },
+});

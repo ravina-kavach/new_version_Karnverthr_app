@@ -135,7 +135,7 @@ export const useSignInScreen = () => {
       password: Formdata.password,
     });
     dispatch(updateState({ isSignin: false }));
-    if (isChecked) {
+    if (isChecked && Formdata?.email && Formdata?.password) {
       await Service.setisBiomatic('true');
     } else {
       await Service.setisBiomatic('false');
@@ -148,18 +148,32 @@ export const useSignInScreen = () => {
     Navigation.navigate('myTab');
     await Service.setisFirstime('true');
   };
+
   const Getdata = async () => {
-    let isVerifiedUser = await Service.GetisVerified();
-    setIsVisibleVerifiedModal(!isVerifiedUser);
-    let newdata = await Service.GetRemember();
-    setRememberData(newdata);
-    let data = await Service.GetisBiomatic();
-    if (data && data === 'true') {
-      setisChecked(true);
-      setFormdata(newdata);
-    }
-    setisShowbiomatric(data);
-  };
+  const isVerifiedUser = await Service.GetisVerified();
+  setIsVisibleVerifiedModal(!isVerifiedUser);
+
+  const rememberedUser = await Service.GetRemember();
+  setRememberData(rememberedUser);
+
+  const biometricEnabled = await Service.GetisBiomatic();
+
+  const shouldShowBiometric =
+    biometricEnabled === 'true' &&
+    rememberedUser?.email &&
+    rememberedUser?.password;
+
+  setisChecked(biometricEnabled === 'true');
+
+  if (shouldShowBiometric) {
+    setFormdata(rememberedUser);
+
+    setTimeout(() => {
+      setisShowbiomatric(true);
+    }, 300);
+  }
+};
+
 
   const GetDevicedata = async () => {
     let getDeviceId = DeviceInfo.getDeviceId();
@@ -175,7 +189,7 @@ export const useSignInScreen = () => {
       device_name: String(getDeviceName),
       ip_address: String(getIpAddress),
       device_id: String(getDeviceId),
-      device_unique_id:String(deviceUniqueId)
+      device_unique_id: String(deviceUniqueId)
     };
     setDeviceData(deviceDATA);
   };
@@ -194,31 +208,42 @@ export const useSignInScreen = () => {
   };
 
   const BiometricLogin = async () => {
+    if (!RememberData?.email || !RememberData?.password) {
+      showMessage({
+        message: 'Please login manually first',
+        type: 'warning',
+      });
+      return;
+    }
+
     const { biometryType } = await rnBiometrics.isSensorAvailable();
-    if (biometryType == undefined) {
+    if (!biometryType) {
       dispatch(
         Usersignin({
           email: RememberData.email,
           password: RememberData.password,
         }),
       );
+      return;
     }
-    if (biometryType === BiometryTypes.Biometrics) {
-      const result = await rnBiometrics.simplePrompt({
-        promptMessage: 'Authenticate',
-      });
-      if (result.success) {
-        dispatch(
-          Usersignin({
-            email: RememberData.email,
-            password: RememberData.password,
-          }),
-        );
-      } else {
-        console.log('Keys do not exist or were deleted');
-      }
+
+    const result = await rnBiometrics.simplePrompt({
+      promptMessage: 'Authenticate',
+    });
+
+    if (result.success) {
+      dispatch(
+        Usersignin({
+          email: RememberData.email,
+          password: RememberData.password,
+        }),
+      );
+      setisShowbiomatric(false)
     }
   };
+
+
+
   const heandleonforgot = () => {
     const formvalid = ResetValidator.current.allValid();
     if (formvalid) {
@@ -243,6 +268,7 @@ export const useSignInScreen = () => {
             password: RememberData.password,
           }),
         );
+        setisShowbiomatric(false)
       } else {
         console.log('Keys do not exist or were deleted');
       }
@@ -250,17 +276,24 @@ export const useSignInScreen = () => {
   };
 
   const handleVerificationModal = async secreatCode => {
-  
+
     if (isVisibleVerifiedModal) {
       const payloadObj = {
-       ...DeviceData,
+        ...DeviceData,
         random_code_for_reg: String(secreatCode),
       };
-        const result = await dispatch(UserVerification(payloadObj)).unwrap();
-        await Service.setisVerified(result); 
-        setIsVisibleVerifiedModal(!result);
+      const result = await dispatch(UserVerification(payloadObj)).unwrap();
+      await Service.setisVerified(result);
+      setIsVisibleVerifiedModal(!result);
     }
   };
+
+  const navigateTerms = ()=>{
+      Navigation.navigate('termsofuse')
+  }
+   const navigatePrivacyPolicy = ()=>{
+      Navigation.navigate('privacyPolicy')
+  }
   return {
     t,
     Formdata,
@@ -287,5 +320,7 @@ export const useSignInScreen = () => {
     setIsReSetmodalvisible,
     VerfiedUserData,
     isVerifiedFetching,
+    navigateTerms,
+    navigatePrivacyPolicy
   };
 };
