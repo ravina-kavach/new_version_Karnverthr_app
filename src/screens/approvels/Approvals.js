@@ -46,6 +46,8 @@ export default function Approvals() {
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [selectedApprovalId, setSelectedApprovalId] = useState(null);
+  const [reasonError, setReasonError] = useState(false);
+
 
   useEffect(() => {
     if (isFocused && UsersigninData?.user_id) {
@@ -105,102 +107,94 @@ export default function Approvals() {
   };
 
   const handleApprove = async (id) => {
-  try {
-    const payload = {
-      approval_request_id: id,
-      user_id: UsersigninData.user_id,
-    };
+    try {
+      const payload = {
+        approval_request_id: id,
+        user_id: UsersigninData.user_id,
+      };
 
-    const result = await dispatch(
-      ApproveActionApprove(payload)
-    ).unwrap();
+      const result = await dispatch(
+        ApproveActionApprove(payload)
+      ).unwrap();
 
-    if (result?.success) {
-      showMessage({
-        icon: 'success',
-        message: result?.message || 'Approval successful',
-        type: 'success',
-      });
+      if (result?.success) {
+        showMessage({
+          icon: 'success',
+          message: result?.message || 'Approval successful',
+          type: 'success',
+        });
 
-      // Refresh approval list
-      dispatch(ApprovalList({ id: UsersigninData.user_id }));
-    } else {
+        dispatch(ApprovalList({ id: UsersigninData.user_id }));
+      } else {
+        showMessage({
+          icon: 'danger',
+          message: result?.message || 'Failed to approve request',
+          type: 'danger',
+        });
+      }
+    } catch (error) {
       showMessage({
         icon: 'danger',
-        message: result?.message || 'Failed to approve request',
+        message:
+          error?.message ||
+          error?.error ||
+          'Something went wrong. Please try again.',
         type: 'danger',
       });
     }
-  } catch (error) {
-    showMessage({
-      icon: 'danger',
-      message:
-        error?.message ||
-        error?.error ||
-        'Something went wrong. Please try again.',
-      type: 'danger',
-    });
-  }
-};
+  };
 
 
   const handleRejectPress = (id) => {
-  setSelectedApprovalId(id);
-  setRejectReason('');
-  setRejectModalVisible(true);
-};
+    setSelectedApprovalId(id);
+    setRejectReason('');
+    setRejectModalVisible(true);
+  };
 
- const confirmReject = async () => {
-  if (!rejectReason.trim()) {
-    showMessage({
-      icon: 'danger',
-      message: 'Please enter rejection reason',
-      type: 'danger',
-    });
-    return;
-  }
+  const confirmReject = async () => {
+    if (!rejectReason.trim()) {
+      setReasonError(true); // 👈 show red border
+      return;
+    }
 
-  try {
-    const payload = {
-      approval_request_id: selectedApprovalId,
-      user_id: UsersigninData.user_id,
-      remarks: rejectReason,
-    };
+    setReasonError(false);
 
-    const result = await dispatch(
-      ApproveActionReject(payload)
-    ).unwrap();
+    try {
+      const payload = {
+        approval_request_id: selectedApprovalId,
+        user_id: UsersigninData.user_id,
+        remarks: rejectReason,
+      };
 
-    if (result?.success) {
-      showMessage({
-        icon: 'success',
-        message: result?.successMessage,
-        type: 'success',
-      });
+      const result = await dispatch(
+        ApproveActionReject(payload)
+      ).unwrap();
 
-      setRejectModalVisible(false);
-      setRejectReason('');
+      if (result?.success) {
+        showMessage({
+          icon: 'success',
+          message: result?.successMessage,
+          type: 'success',
+        });
 
-      // Refresh list
-      dispatch(ApprovalList({ id: UsersigninData.user_id }));
-    } else {
+        setRejectModalVisible(false);
+        setRejectReason('');
+        setReasonError(false);
+
+        dispatch(ApprovalList({ id: UsersigninData.user_id }));
+      }
+    } catch (error) {
       showMessage({
         icon: 'danger',
-        message: result?.message || 'Failed to reject request',
+        message:
+          error?.message ||
+          error?.error ||
+          'Something went wrong. Please try again.',
         type: 'danger',
       });
     }
-  } catch (error) {
-    showMessage({
-      icon: 'danger',
-      message:
-        error?.message ||
-        error?.error ||
-        'Something went wrong. Please try again.',
-      type: 'danger',
-    });
-  }
-};
+  };
+
 
 
   const renderItem = ({ item }) => {
@@ -208,24 +202,24 @@ export default function Approvals() {
     const isPending = status === 'submit';
     const statusColor = getStatusColor(item.state);
     const getApprovalType = (item) => {
-  if (item.hr_leave_id) {
-    return 'Leave';
-  }
-  if (item.hr_expense_id) {
-    return 'Expense';
-  }
-  return 'Attendance Regularization';
-};
+      if (item.hr_leave_id) {
+        return 'Leave';
+      }
+      if (item.hr_expense_id) {
+        return 'Expense';
+      }
+      return 'Attendance Regularization';
+    };
     return (
       <View style={styles.card}>
         <View style={styles.header}>
           <View>
-          <Text style={styles.name} numberOfLines={2}>
-            {`${item.req_employee_id?.[0]} ${item.req_employee_id?.[1]}` || 'N/A'}
-          </Text>
-          <Text style={styles.type} numberOfLines={2}>
-            {`Type : ${getApprovalType(item)}` || 'N/A'}
-          </Text>
+            <Text style={styles.name} numberOfLines={2}>
+              {`${item.req_employee_id?.[0]} ${item.req_employee_id?.[1]}` || 'N/A'}
+            </Text>
+            <Text style={styles.type} numberOfLines={2}>
+              {`Type : ${getApprovalType(item)}` || 'N/A'}
+            </Text>
           </View>
           <View style={styles.statusWrap}>
             <Text style={[styles.status, { color: statusColor }]}>
@@ -242,7 +236,7 @@ export default function Approvals() {
         <View style={styles.meta}>
           <View style={styles.dateContainer}>
             <DateApproval />
-            <Text style={[styles.id,{paddingLeft:5}]}>
+            <Text style={[styles.id, { paddingLeft: 5 }]}>
               {item.description?.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '--'}
             </Text>
           </View>
@@ -313,9 +307,15 @@ export default function Approvals() {
                 <TextInput
                   placeholder="Enter Reason"
                   value={rejectReason}
-                  onChangeText={setRejectReason}
+                  onChangeText={(text) => {
+                    setRejectReason(text);
+                    if (text.trim()) setReasonError(false);
+                  }}
                   multiline
-                  style={styles.reasonInput}
+                  style={[
+                    styles.reasonInput,
+                    reasonError && { borderColor: 'red' },
+                  ]}
                 />
 
                 <View style={styles.modalActions}>
@@ -376,10 +376,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     maxWidth: '100%',
   },
-   type: {
+  type: {
     ...GlobalFonts.subtitle,
     fontSize: FontSize.Font14,
-    color:COLOR.TextPlaceholder,
+    color: COLOR.TextPlaceholder,
     fontWeight: '600',
     maxWidth: '100%',
   },
