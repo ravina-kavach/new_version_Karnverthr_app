@@ -52,14 +52,14 @@ const ForgotPasswordModal = ({
     try {
       setLoading(true);
       const token = await AsyncStorage.getItem('USER_TOKEN');
-
+      console.log("token===>",token)
       const response = await fetch(
         `${Config.BASE_URL}api/forgot-password/request`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: token,
           },
           body: JSON.stringify({ email: resetEmail }),
         }

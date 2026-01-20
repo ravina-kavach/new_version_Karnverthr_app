@@ -41,8 +41,7 @@ export const GetUserDetails = createAsyncThunk(
                     error: errorMassage(result?.data?.message),
                 });
             }
-
-            return result.data;
+            return result.data.data[0];
         } catch (error) {
             return thunkAPI.rejectWithValue({
                 error: errorMassage(error.response?.data?.message || error.message),
@@ -99,12 +98,15 @@ export const UserAttendance = createAsyncThunk(
     async (userdata, thunkAPI) => {
         try {
             let result = await API.post('api/employee/attandence', userdata);
+            console.log("result===>",result)
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
             } else {
+                 console.log("error else===>",error)
                 return thunkAPI.rejectWithValue({ error: errorMassage(error.response?.data?.errorMessage) });
             }
         } catch (error) {
+             console.log("error catch===>",error)
             return thunkAPI.rejectWithValue({
                 error: errorMassage(error.response?.data?.errorMessage )
             });
@@ -287,32 +289,27 @@ export const GetLeaveList = createAsyncThunk(
     },
 );
 
-
-
 export const ProfileUpdate = createAsyncThunk(
     'ProfileUpdate',
     async (userdata, thunkAPI) => {
+        const { empId, id, userData } = userdata;
         try {
-            let result = await axios({
-                method: 'POST',
-                baseURL: Config.BASE_URL,
-                url: `api/profile/update`,
-                headers: Authheader,
-                data: userdata,
-            });
-            // console.log('ProfileUpdate result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+            let result = await API.put(`employee/${empId}?user_id=${id}`,userData);
+            if (result.data.status === "error") {
+                return thunkAPI.rejectWithValue({
+                    error: errorMassage(result.data.message)
+                });
             }
+            return result.data.data;
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ ProfileUpdate ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("Axios Error:", error);
+            return thunkAPI.rejectWithValue({
+                error: errorMassage(error.response?.data?.message || error.message)
+            });
         }
     },
 );
+
 export const ForgotPassword = createAsyncThunk(
     'ForgotPassword',
     async (userdata, thunkAPI) => {
@@ -332,7 +329,7 @@ export const ForgotPassword = createAsyncThunk(
             }
         } catch (error) {
             console.log("error>>>", error)
-            console.log('try catch [ ProfileUpdate ] error.message>>', error.message);
+            console.log('try catch [ ForgotPassword ] error.message>>', error.message);
             return thunkAPI.rejectWithValue({ error: error.message });
         }
     },

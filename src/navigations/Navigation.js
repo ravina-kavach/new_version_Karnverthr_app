@@ -19,6 +19,7 @@ import Termsofuse from '../screens/Termsofuse/Termsofuse'
 import PrivacyPolicy from '../screens/PrivacyPolicy/PrivacyPolicy'
 import TabNavigation from './TabNavigation'
 import SignInScreen from '../screens/authscreens/signInScreen/SignInScreen';
+import EmergencyDetails from '../screens/profile/EmergencyDetails';
 import Leaves from '../screens/leaves/Leaves';
 import Chatbot from '../screens/chatbot/Chatbot';
 
@@ -44,6 +45,8 @@ function Navigation({ props }) {
             <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 
             <Stack.Screen name="profile" component={Profile} />
             <Stack.Screen name="editProfile" component={EditProfile} />
+            <Stack.Screen name="emergencyDetails" component={EmergencyDetails} />
+            
             <Stack.Screen name="shiftTiming" component={ShiftTiming} />
             <Stack.Screen name="attendance" component={Attendance} />
             <Stack.Screen name="leaves" component={Leaves} />

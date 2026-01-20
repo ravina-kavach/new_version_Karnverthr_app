@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { COLOR } from '../theme/theme';
 import { responsiveHeight } from '../utils/metrics';
 import { FontSize } from '../utils/metrics';
+import { GlobalFonts } from '../theme/typography';
 
 const CommonButton = ({
   onPress,
@@ -55,9 +56,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
+    ...GlobalFonts.buttonText,
     color: COLOR.White1,
     fontWeight: '500',
-    fontSize: FontSize.Font18,
+    fontSize: FontSize.Font15,
     lineHeight: 20,
   },
 });

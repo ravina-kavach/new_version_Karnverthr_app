@@ -28,6 +28,7 @@ import { FontSize } from "../../utils/metrics";
 import useProfile from './ProfileController'
 import { responsiveHeight } from "../../utils/metrics";
 import ImagePickerSheet from '../../components/ImagePickerSheet'
+import ForgotPasswordModal from "../../components/ForgotPasswordModal";
 
 const ProfileItem = ({ icon, title, subtitle, onPress }) => (
   <TouchableOpacity style={styles.row} activeOpacity={1} onPress={onPress}>
@@ -43,7 +44,19 @@ const ProfileItem = ({ icon, title, subtitle, onPress }) => (
 );
 
 export default function Profile() {
-  const { UsersigninData, navigationEditProfile,UserDetailsData,handleOnLogout, handleProfileUpload, pickerVisible,setPickerVisible,avatar } = useProfile()
+  const { 
+    UsersigninData, 
+    navigationEditProfile, 
+    navigationEmergencyDetails,
+    UserDetailsData, 
+    handleOnLogout, 
+    handleProfileUpload, 
+    pickerVisible, 
+    setPickerVisible, 
+    avatar, 
+    IsReSetmodalvisible, 
+    setIsReSetmodalvisible 
+  } = useProfile()
   return (
     <CommonView>
       <CommonHeader title="Profile" />
@@ -51,24 +64,24 @@ export default function Profile() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.profilecard}>
-          <GreetingHeader 
-          editProfile={pickerVisible} 
-          containerStyle={styles.headerContainer} 
-          screenName={"editProfile"} 
-          desc={UsersigninData.email} 
-          avatar={avatar}
+          <GreetingHeader
+            editProfile={pickerVisible}
+            containerStyle={styles.headerContainer}
+            screenName={"editProfile"}
+            desc={UsersigninData.email}
+            avatar={avatar}
           // onAvatarPress={() => setPickerVisible(true)}
           />
         </View>
 
         {/* Account & Identity */}
-        {/* <View style={styles.card}>
+        <View style={styles.card}>
           <Text style={styles.section}>Account & Identity</Text>
-          <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, photo, contact" onPress={() => { }} />
-          <ProfileItem icon={<GovIcon />} title="Government ID" subtitle="View Aadhaar, request update" onPress={() => { }} />
-          <ProfileItem icon={<ChangePwd />} title="Change Password" subtitle="Change or update password" onPress={() => { }} />
-          <ProfileItem icon={<EmryIcon />} title="Emergency Contact" subtitle="Change or update emergency contact" onPress={() => { }} />
-        </View> */}
+          <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, address, contact" onPress={() => navigationEditProfile()} />
+          {/* <ProfileItem icon={<GovIcon />} title="Government ID" subtitle="View Aadhaar, request update" onPress={() => { }} /> */}
+          <ProfileItem icon={<ChangePwd />} title="Change Password" subtitle="Change or update password" onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)} />
+          <ProfileItem icon={<EmryIcon />} title="Emergency Contact" subtitle="Change or update emergency contact" onPress={() => navigationEmergencyDetails()} />
+        </View>
 
         {/* Professional Info */}
         {/* <View style={styles.card}>
@@ -86,7 +99,7 @@ export default function Profile() {
         </View> */}
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={()=>handleOnLogout()}>
+          <TouchableOpacity style={styles.button} onPress={() => handleOnLogout()}>
             <Text style={styles.text}>Log out</Text>
           </TouchableOpacity>
         </View>
@@ -96,6 +109,11 @@ export default function Profile() {
         onClose={() => setPickerVisible(false)}
         onResult={(image) => handleProfileUpload(image)}
       />
+      {IsReSetmodalvisible &&
+        <ForgotPasswordModal
+          visible={IsReSetmodalvisible}
+          onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
+        />}
     </CommonView>
   );
 }
