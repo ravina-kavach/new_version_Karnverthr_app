@@ -203,7 +203,7 @@ const ApplyLeaveModal = ({
             value={selectEndDate || new Date()}
             mode="date"
             onChange={onChangeEndDate}
-            minimumDate={new Date()}
+            minimumDate={selectStartDate}
           />
         )}
       </View>
