@@ -118,16 +118,22 @@ const handleOnGallery = async () => {
   try {
     let hasPermission = true;
 
-    // 🔹 Android storage permission
     if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES ||
+      if (Platform.Version >= 33) {
+        // ✅ Android 13+
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+        );
+        hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+      } else {
+        // ✅ Android 12 and below
+        const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
-      );
-      hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+        );
+        hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
+      }
     }
 
-    // 🔹 iOS photo library permission
     if (Platform.OS === 'ios') {
       const result = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
       hasPermission = result === RESULTS.GRANTED;
@@ -170,6 +176,7 @@ const handleOnGallery = async () => {
     return { success: false };
   }
 };
+
 
 
 const showSettingsAlert = () => {
