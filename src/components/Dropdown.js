@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { View, Image, StyleSheet } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import { RowView, Label } from "../utils/common";
@@ -7,22 +7,28 @@ import { ArrowDown } from "../assets/icons";
 import { GlobalFonts } from "../theme/typography";
 import { FontSize } from "../utils/metrics";
 
-function Dropdown({ DropdownData = [], Selecteditem, setSelecteditem }) {
+function Dropdown({ DropdownData = [], Selecteditem, setSelecteditem, type = null }) {
   if (!DropdownData.length) return null;
+
+  const dropdownList = useMemo(
+    () => DropdownData.slice(1),
+    [DropdownData]
+  );
 
   return (
     <SelectDropdown
-      data={DropdownData}
-      defaultValue={DropdownData[0]}
+      data={type === "Attendance" ? DropdownData : dropdownList}
+      defaultValue={type === "Attendance" ? DropdownData[0] : Selecteditem}
       onSelect={(selectedItem) => setSelecteditem(selectedItem)}
       dropdownStyle={styles.dropdown}
-      dropdownOverlayColor='transparent'
+      dropdownOverlayColor="transparent"
       showsVerticalScrollIndicator={false}
+
       renderButton={(selectedItem, isOpened) => (
         <View style={styles.button}>
           <RowView style={styles.buttonRow}>
             <Label style={styles.text}>
-              {selectedItem?.name}
+              {selectedItem?.name ?? DropdownData[0]?.name}
             </Label>
 
             <Image
@@ -35,23 +41,24 @@ function Dropdown({ DropdownData = [], Selecteditem, setSelecteditem }) {
           </RowView>
         </View>
       )}
+
       renderItem={(item, index, isSelected) => (
-       <View
-    style={[
-      styles.item,
-      isSelected && styles.selectedItem,
-      index !== DropdownData.length - 1 && styles.separator,
-    ]}
-  >
-    <Label
-      style={[
-        styles.itemText,
-        isSelected && styles.selectedText,
-      ]}
-    >
-      {item.name}
-    </Label>
-  </View>
+        <View
+          style={[
+            styles.item,
+            isSelected && styles.selectedItem,
+            index !== dropdownList.length - 1 && styles.separator,
+          ]}
+        >
+          <Label
+            style={[
+              styles.itemText,
+              isSelected && styles.selectedText,
+            ]}
+          >
+            {item.name}
+          </Label>
+        </View>
       )}
     />
   );

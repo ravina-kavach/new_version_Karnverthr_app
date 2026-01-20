@@ -39,6 +39,7 @@ export default function Attendance() {
         <RowView style={styles.filterRow}>
           <View style={styles.filterItem}>
             <Dropdown
+              type = "Attendance"
               DropdownData={months}
               setSelecteditem={setSelectedmonth}
               Selecteditem={Selectedmonth}
@@ -47,6 +48,7 @@ export default function Attendance() {
 
           <View style={styles.filterItem}>
             <Dropdown
+              type = "Attendance"
               DropdownData={YEARDATA}
               setSelecteditem={setSelectedYear}
               Selecteditem={SelectedYear}

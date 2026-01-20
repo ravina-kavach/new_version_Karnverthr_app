@@ -411,10 +411,10 @@ export const CreateExpenses = createAsyncThunk(
 export const GetExpenseList = createAsyncThunk(
     'GetExpenseList',
     async (userdata, thunkAPI) => {
-        console.log('GetExpenseList userdata >>', userdata);
+        // console.log('GetExpenseList userdata >>', userdata);
         try {
             let result = await API.get(`employee/expense?user_id=${userdata.id}`);
-            console.log('GetExpenseList result.data >>', result);
+            // console.log('GetExpenseList result.data >>', result);
             if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result.data.message)
@@ -1659,7 +1659,7 @@ export const CommonSlice = createSlice({
         builder.addCase(GetLeavetype.fulfilled, (state, { payload }) => {
             // console.log("[GetLeavetype.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetLeavetypeData = [{ "name": "All", value: 0, }, ...payload];
+                state.GetLeavetypeData = [{ "name": "Select Leave Type", value: 0, }, ...payload];
                 state.isGetLeavetype = true;
                 state.isGetLeavetypeFetching = false;
                 state.isError = false;
