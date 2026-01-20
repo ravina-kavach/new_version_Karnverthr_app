@@ -157,6 +157,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
                         <TextInput
                             style={[styles.input, errors.subject && styles.errorInput]}
                             value={subject}
+                            placeholderTextColor={COLOR.TextPlaceholder}
                             placeholder="Enter meeting subject"
                             onChangeText={(text) => {
                                 setSubject(text);
@@ -202,6 +203,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
                         <Text style={styles.label}>Location</Text>
                         <TextInput
                             style={[styles.input, errors.location && styles.errorInput]}
+                            placeholderTextColor={COLOR.TextPlaceholder}
                             placeholder="Enter Location"
                             value={location}
                             onChangeText={(text) => {
@@ -215,6 +217,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
                         <Text style={styles.label}>Organizer</Text>
                         <TextInput
                             style={[styles.input, errors.organizer && styles.errorInput]}
+                            placeholderTextColor={COLOR.TextPlaceholder}
                             placeholder="Enter Organizer"
                             value={organizer}
                             onChangeText={(text) => {
@@ -229,6 +232,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
                         <TextInput
                             style={[styles.input, { height: 80 }, errors.description && styles.errorInput]}
                             multiline
+                            placeholderTextColor={COLOR.TextPlaceholder}
                             maxLength={150}
                             placeholder="Enter Description"
                             value={description}

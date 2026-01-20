@@ -5,10 +5,10 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Dimensions,
     ActivityIndicator,
     ScrollView,
-    Modal
+    Modal,
+    Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLOR } from '../theme/theme';
@@ -18,13 +18,19 @@ import Dropdown from './Dropdown';
 import { useTranslation } from 'react-i18next';
 
 const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
+
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-    const [regCategories, setRegCategories] = useState('');
+    const [regCategories, setRegCategories] = useState(null);
     const [description, setDescription] = useState('');
-    const [showStartPicker, setShowStartPicker] = useState(false);
     const [pickerMode, setPickerMode] = useState(null);
+
+    const [errors, setErrors] = useState({
+        regCategory: '',
+        description: '',
+    });
+
     const MIN_DESC_LENGTH = 10;
     const MAX_DESC_LENGTH = 250;
 
@@ -32,6 +38,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         ...rest,
         name: type,
     }));
+
     useEffect(() => {
         if (endDate <= startDate) {
             const newEnd = new Date(startDate);
@@ -39,6 +46,16 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
             setEndDate(newEnd);
         }
     }, [startDate]);
+
+    const today = new Date();
+    const maxSelectableDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        23,
+        59,
+        59
+    );
 
     const formatDate = (date) => {
         const y = date.getFullYear();
@@ -53,7 +70,37 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         return `${h}:${m}`;
     };
 
+    const formatUIDate = (date) => {
+        const d = String(date.getDate()).padStart(2, '0');
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const y = date.getFullYear();
+        return `${d}/${m}/${y}`;
+    };
+
+    const validateForm = () => {
+        let valid = true;
+        let newErrors = { regCategory: '', description: '' };
+
+        if (!regCategories || !regCategories.id) {
+            newErrors.regCategory = 'Please select Regularization type';
+            valid = false;
+        }
+
+        if (!description.trim()) {
+            newErrors.description = 'Description is required';
+            valid = false;
+        } else if (description.length < MIN_DESC_LENGTH) {
+            newErrors.description = `Minimum ${MIN_DESC_LENGTH} characters required`;
+            valid = false;
+        }
+
+        setErrors(newErrors);
+        return valid;
+    };
+
     const handleCreateReg = () => {
+        if (!validateForm()) return;
+
         const payload = {
             from_date: formatDate(startDate),
             to_date: formatDate(endDate),
@@ -62,104 +109,89 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
             check_in: formatTime(startDate),
             check_out: formatTime(endDate),
         };
+
         onCreateReq(payload);
     };
 
-    const today = new Date();
-    const maxSelectableDate = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate(),
-        23,
-        59,
-        59
-    );
     const onChangePicker = (event, selectedDate) => {
         if (event.type === 'dismissed') {
             setPickerMode(null);
             return;
         }
 
-        if (!selectedDate) return;
-
-        if (selectedDate > maxSelectableDate) {
+        if (!selectedDate || selectedDate > maxSelectableDate) {
             setPickerMode(null);
             return;
         }
 
-        if (pickerMode === 'startDate') {
-            const updated = new Date(startDate);
-            updated.setFullYear(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate()
-            );
-            setStartDate(updated);
-        }
+        const updateDateTime = (baseDate, setter) => {
+            const updated = new Date(baseDate);
+            if (pickerMode.includes('Date')) {
+                updated.setFullYear(
+                    selectedDate.getFullYear(),
+                    selectedDate.getMonth(),
+                    selectedDate.getDate()
+                );
+            } else {
+                updated.setHours(
+                    selectedDate.getHours(),
+                    selectedDate.getMinutes()
+                );
+            }
+            setter(updated);
+        };
 
-        if (pickerMode === 'startTime') {
-            const updated = new Date(startDate);
-            updated.setHours(
-                selectedDate.getHours(),
-                selectedDate.getMinutes()
-            );
-            setStartDate(updated);
-        }
-
-        if (pickerMode === 'endDate') {
-            const updated = new Date(endDate);
-            updated.setFullYear(
-                selectedDate.getFullYear(),
-                selectedDate.getMonth(),
-                selectedDate.getDate()
-            );
-            setEndDate(updated);
-        }
-
-        if (pickerMode === 'endTime') {
-            const updated = new Date(endDate);
-            updated.setHours(
-                selectedDate.getHours(),
-                selectedDate.getMinutes()
-            );
-            setEndDate(updated);
+        if (pickerMode.includes('start')) {
+            updateDateTime(startDate, setStartDate);
+        } else {
+            updateDateTime(endDate, setEndDate);
         }
 
         setPickerMode(null);
     };
-    const formatUIDate = (date) => {
-        const d = String(date.getDate()).padStart(2, '0');
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const y = date.getFullYear();
-        return `${d}/${m}/${y}`;
-    };
 
     return (
-        <Modal
-            visible={visible}
-        >
-            <View style={styles.overlay} >
+        <Modal visible={visible} statusBarTranslucent transparent>
+            <View style={styles.overlay}>
                 <View style={styles.modalContent}>
+                    {/* Header */}
                     <View style={styles.header}>
                         <Text style={styles.title}>Attendance Regularization</Text>
-                        <TouchableOpacity style={{ alignItems: 'flex-end' }} onPress={onClose}>
+                        <TouchableOpacity onPress={onClose}>
                             <Text style={styles.close}>✕</Text>
                         </TouchableOpacity>
                     </View>
+
                     <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-                        {/* Meeting Subject */}
+                        {/* Regularization */}
                         <Text style={styles.label}>Regularization</Text>
-                        {updatedData?.length > 0 ? (
+
+                        <View
+                            style={[
+                                styles.dropdownWrapper,
+                                errors.regCategory && styles.errorBorder,
+                            ]}
+                        >
                             <Dropdown
                                 DropdownData={updatedData}
-                                setSelecteditem={setRegCategories}
                                 Selecteditem={regCategories}
+                                setSelecteditem={(item) => {
+                                    setRegCategories(item);
+                                    setErrors((prev) => ({
+                                        ...prev,
+                                        regCategory: '',
+                                    }));
+                                }}
                             />
-                        ) : (
-                            <Text style={styles.noDataText}>
-                                No Regularization available
+                        </View>
+
+                        {errors.regCategory ? (
+                            <Text style={styles.errorText}>
+                                {errors.regCategory}
                             </Text>
-                        )}
+                        ) : null}
+
+                        {/* Check In */}
                         <Text style={styles.label}>Check In</Text>
                         <View style={styles.row}>
                             <TouchableOpacity
@@ -170,36 +202,21 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                     {formatUIDate(startDate)}
                                 </Text>
                             </TouchableOpacity>
+
                             <TouchableOpacity
                                 style={styles.dateTimeBox}
                                 onPress={() => setPickerMode('startTime')}
                             >
                                 <Text style={styles.dateTimeText}>
-                                    {startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    {startDate.toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
                                 </Text>
                             </TouchableOpacity>
                         </View>
-                        {showStartPicker && (
-                            <DateTimePicker
-                                value={startDate}
-                                mode="datetime"
-                                display="default"
-                                // dateFormat='day month year'
-                                onChange={(event, selectedDate) => {
-                                    if (event.type === 'dismissed') {
-                                        setShowStartPicker(false);
-                                        return;
-                                    }
 
-                                    if (event.type === 'set' && selectedDate) {
-                                        setShowStartPicker(false);
-                                        setStartDate(selectedDate);
-                                    }
-                                }}
-                            />
-                        )}
-
-                        {/* End Date & Time */}
+                        {/* Check Out */}
                         <Text style={styles.label}>Check Out</Text>
                         <View style={styles.row}>
                             <TouchableOpacity
@@ -210,46 +227,82 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                     {formatUIDate(endDate)}
                                 </Text>
                             </TouchableOpacity>
+
                             <TouchableOpacity
                                 style={styles.dateTimeBox}
                                 onPress={() => setPickerMode('endTime')}
                             >
                                 <Text style={styles.dateTimeText}>
-                                    {endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    {endDate.toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
                                 </Text>
                             </TouchableOpacity>
                         </View>
+
                         {pickerMode && (
                             <DateTimePicker
-                                value={pickerMode.includes('start') ? startDate : endDate}
-                                mode={pickerMode.includes('Date') ? 'date' : 'time'}
-                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                maximumDate={pickerMode.includes('Date') ? maxSelectableDate : undefined}
+                                value={
+                                    pickerMode.includes('start')
+                                        ? startDate
+                                        : endDate
+                                }
+                                mode={
+                                    pickerMode.includes('Date')
+                                        ? 'date'
+                                        : 'time'
+                                }
+                                display={
+                                    Platform.OS === 'ios'
+                                        ? 'spinner'
+                                        : 'default'
+                                }
+                                maximumDate={
+                                    pickerMode.includes('Date')
+                                        ? maxSelectableDate
+                                        : undefined
+                                }
                                 onChange={onChangePicker}
                             />
                         )}
 
+                        {/* Description */}
                         <Text style={styles.label}>Description</Text>
 
                         <TextInput
                             placeholder="Add a description"
+                            placeholderTextColor={COLOR.TextPlaceholder}
                             value={description}
                             onChangeText={(text) => {
                                 if (text.length <= MAX_DESC_LENGTH) {
                                     setDescription(text);
+                                    setErrors((prev) => ({
+                                        ...prev,
+                                        description: '',
+                                    }));
                                 }
                             }}
-                            style={[styles.input, { height: 80 }]}
+                            style={[
+                                styles.input,
+                                { height: 80 },
+                                errors.description && styles.errorBorder,
+                            ]}
                             multiline
-                            maxLength={MAX_DESC_LENGTH}
                         />
+
+                        {errors.description ? (
+                            <Text style={styles.errorText}>
+                                {errors.description}
+                            </Text>
+                        ) : null}
 
                         <Text style={styles.charCount}>
                             {description.length}/{MAX_DESC_LENGTH}
                         </Text>
-
                     </ScrollView>
 
+                    {/* Footer */}
                     <View style={styles.footer}>
                         <TouchableOpacity
                             style={styles.cancelBtn}
@@ -282,42 +335,46 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
 export default AttendanceRegModal;
 
 const styles = StyleSheet.create({
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     modalContent: {
         backgroundColor: '#fff',
         marginHorizontal: 16,
         borderRadius: 20,
         padding: 20,
         maxHeight: '90%',
+        width: '90%',
     },
-    noDataText: {
-        ...GlobalFonts.subtitle,
-        marginTop: 10,
-        color: COLOR.TextPlaceholder,
-        fontSize: 14,
-        textAlign: 'center',
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
     },
-    modalTitle: {
+    title: {
+        flex: 1,
         fontSize: 18,
-        fontWeight: '700',
-        marginBottom: 15,
+        fontWeight: '600',
         textAlign: 'center',
     },
-    charCount: {
-        fontSize: 12,
-        color: COLOR.TextSecondary,
-        alignSelf: 'flex-end',
-        marginTop: 4,
+    close: {
+        fontSize: 18,
+        color: '#666',
     },
-
     label: {
         ...GlobalFonts.subtitle,
-        fontSize: FontSize.Font16,
+        fontSize: FontSize.Font15,
         color: COLOR.Black1,
         marginBottom: 6,
         marginTop: 10,
     },
+    dropdownWrapper: {
+        borderRadius: 12,
+    },
     input: {
-        ...GlobalFonts.subtitle,
         backgroundColor: '#F3F4F6',
         borderRadius: 12,
         paddingHorizontal: 12,
@@ -340,37 +397,11 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: '#111827',
     },
-    close: {
-        fontSize: 18,
-        color: '#666',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignSelf: 'center',
-        marginTop: 30,
-        marginBottom: 6,
-    },
-    overlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.3)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    title: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: '600',
-        textAlign: 'center',
-        color: '#111',
-    },
     footer: {
         flexDirection: 'row',
         marginTop: 25,
     },
-
     cancelBtn: {
-        ...GlobalFonts.buttonText,
         flex: 1,
         borderWidth: 1,
         borderColor: '#000',
@@ -379,24 +410,35 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: 10,
     },
-
     saveBtn: {
-        ...GlobalFonts.buttonText,
         flex: 1,
         backgroundColor: '#000',
         padding: 12,
         borderRadius: 10,
         alignItems: 'center',
     },
-
     cancelText: {
-        fontWeight: '500',
         color: '#000',
+        fontWeight: '500',
     },
-
     saveText: {
-        fontWeight: '600',
         color: '#fff',
+        fontWeight: '600',
+    },
+    charCount: {
+        fontSize: 12,
+        color: COLOR.TextSecondary,
+        alignSelf: 'flex-end',
+        marginTop: 4,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        marginTop: 4,
+    },
+    errorBorder: {
+        borderWidth: 1,
+        borderColor: 'red',
+        borderRadius: 12,
     },
 });
-

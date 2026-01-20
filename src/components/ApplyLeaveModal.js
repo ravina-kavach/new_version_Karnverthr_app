@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -36,13 +36,12 @@ const ApplyLeaveModal = ({
   isOverTimeLeave,
   isEarnedLeave,
 }) => {
-
   const [errors, setErrors] = useState({});
 
-  const validateAndSubmit = () => {
-    let newErrors = {};
+  const validateForm = () => {
+    const newErrors = {};
 
-    if (!selectedLeaveType) {
+    if (!selectedLeaveType?.id) {
       newErrors.leaveType = 'Leave type is required';
     }
 
@@ -67,8 +66,11 @@ const ApplyLeaveModal = ({
     }
 
     setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    if (Object.keys(newErrors).length > 0) return;
+  const validateAndSubmit = () => {
+    if (!validateForm()) return;
 
     const formData = new FormData();
     formData.append('employee_id', UsersigninData?.id);
@@ -89,8 +91,23 @@ const ApplyLeaveModal = ({
     onSave(formData);
   };
 
+  useEffect(() => {
+    if (
+      selectStartDate &&
+      selectEndDate &&
+      moment(selectEndDate).isBefore(selectStartDate)
+    ) {
+      setErrors((prev) => ({
+        ...prev,
+        endDate: 'End date cannot be before start date',
+      }));
+    } else {
+      setErrors((prev) => ({ ...prev, endDate: null }));
+    }
+  }, [selectStartDate]);
+
   return (
-    <Modal visible={visible} transparent animationType="fade">
+    <Modal visible={visible} statusBarTranslucent transparent animationType="fade">
       <View style={styles.overlay}>
         <View style={styles.container}>
           <View style={styles.header}>
@@ -108,14 +125,19 @@ const ApplyLeaveModal = ({
           </View>
 
           <Text style={styles.label}>Leave Type</Text>
-          <View style={styles.dropdownBox}>
+          <View
+            style={[
+              styles.dropdownBox,
+              errors.leaveType && styles.inputError,
+            ]}
+          >
             <Dropdown
               DropdownData={leaveTypeData}
+              Selecteditem={selectedLeaveType}
               setSelecteditem={(item) => {
                 setSelectedLeaveType(item);
-                setErrors({ ...errors, leaveType: null });
+                setErrors((prev) => ({ ...prev, leaveType: null }));
               }}
-              Selecteditem={selectedLeaveType}
             />
           </View>
           {errors.leaveType && (
@@ -126,11 +148,16 @@ const ApplyLeaveModal = ({
             <View style={styles.flex}>
               <Text style={styles.label}>Start Date</Text>
               <TouchableOpacity
-                style={styles.input}
+                style={[
+                  styles.input,
+                  errors.startDate && styles.inputError,
+                ]}
                 onPress={() => setOpenStartDatePicker(true)}
               >
                 <Text style={styles.placeholder}>
-                  {moment(selectStartDate).format('DD/MM/YYYY')}
+                  {selectStartDate
+                    ? moment(selectStartDate).format('DD/MM/YYYY')
+                    : 'Select date'}
                 </Text>
               </TouchableOpacity>
               {errors.startDate && (
@@ -141,11 +168,16 @@ const ApplyLeaveModal = ({
             <View style={styles.flex}>
               <Text style={styles.label}>End Date</Text>
               <TouchableOpacity
-                style={styles.input}
+                style={[
+                  styles.input,
+                  errors.endDate && styles.inputError,
+                ]}
                 onPress={() => setOpenEndDatePicker(true)}
               >
                 <Text style={styles.placeholder}>
-                  {moment(selectEndDate).format('DD/MM/YYYY')}
+                  {selectEndDate
+                    ? moment(selectEndDate).format('DD/MM/YYYY')
+                    : 'Select date'}
                 </Text>
               </TouchableOpacity>
               {errors.endDate && (
@@ -164,7 +196,7 @@ const ApplyLeaveModal = ({
             value={resonText}
             onChangeText={(text) => {
               setResonText(text);
-              setErrors({ ...errors, description: null });
+              setErrors((prev) => ({ ...prev, description: null }));
             }}
             placeholder="Add a description..."
             placeholderTextColor="#999"
@@ -174,7 +206,6 @@ const ApplyLeaveModal = ({
             <Text style={styles.errorText}>{errors.description}</Text>
           )}
 
-          {/* Footer */}
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
               <Text style={styles.cancelText}>Cancel</Text>
@@ -203,13 +234,15 @@ const ApplyLeaveModal = ({
             value={selectEndDate || new Date()}
             mode="date"
             onChange={onChangeEndDate}
-            minimumDate={selectStartDate}
+            minimumDate={selectStartDate || new Date()}
           />
         )}
       </View>
     </Modal>
   );
 };
+
+export default ApplyLeaveModal;
 
 const styles = StyleSheet.create({
   overlay: {
@@ -231,10 +264,14 @@ const styles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: '600' },
   close: { fontSize: 18, color: '#666' },
   label: { marginTop: 10, marginBottom: 6, color: '#555' },
+
   dropdownBox: {
     backgroundColor: COLOR.White1,
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E2E2E2',
   },
+
   input: {
     height: 45,
     borderWidth: 1,
@@ -243,9 +280,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     justifyContent: 'center',
   },
+
   inputError: {
     borderColor: '#E53935',
   },
+
   userInput: {
     height: 45,
     borderRadius: 10,
@@ -253,23 +292,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: COLOR.White1,
   },
+
   placeholder: {
     color: COLOR.Secondary,
     ...GlobalFonts.normalText,
     fontSize: FontSize.Font14,
   },
+
   row: { flexDirection: 'row', gap: 10 },
   flex: { flex: 1 },
   textArea: { height: 80, textAlignVertical: 'top' },
+
   errorText: {
     color: '#E53935',
     fontSize: 12,
     marginTop: 4,
   },
+
   footer: {
     flexDirection: 'row',
     marginTop: 20,
   },
+
   cancelBtn: {
     flex: 1,
     height: 44,
@@ -280,6 +324,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 10,
   },
+
   saveBtn: {
     flex: 1,
     height: 44,
@@ -288,8 +333,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   cancelText: { color: '#333' },
   saveText: { color: '#fff', fontWeight: '600' },
 });
-
-export default ApplyLeaveModal;

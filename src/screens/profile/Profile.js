@@ -70,7 +70,7 @@ export default function Profile() {
             screenName={"editProfile"}
             desc={UsersigninData.email}
             avatar={avatar}
-          // onAvatarPress={() => setPickerVisible(true)}
+          onAvatarPress={() => setPickerVisible(true)}
           />
         </View>
 
