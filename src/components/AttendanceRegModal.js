@@ -263,7 +263,8 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                         ? maxSelectableDate
                                         : undefined
                                 }
-                                onChange={onChangePicker}
+                                is24Hour={false} 
+                                onChange={onChangePicker} 
                             />
                         )}
 

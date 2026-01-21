@@ -192,6 +192,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
 
                         {pickerMode && (
                             <DateTimePicker
+                                is24Hour={false} 
                                 value={pickerMode.includes('start') ? startDate : endDate}
                                 mode={pickerMode.includes('Date') ? 'date' : 'time'}
                                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}
