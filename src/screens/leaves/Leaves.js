@@ -16,6 +16,7 @@ import { FontSize, responsiveHeight } from '../../utils/metrics'
 import ApplyLeaveModal from '../../components/ApplyLeaveModal'
 import NodataFound from '../../components/NodataFound'
 import moment from 'moment'
+import { COMMON_STATUS } from '../../utils/metrics'
 
 const Leaves = () => {
   const {
@@ -88,7 +89,9 @@ const Leaves = () => {
             ListHeaderComponent={() => (
               <Text style={styles.sectionTitle}>Submitted Leaves</Text>
             )}
-            renderItem={({ item }) => (
+            renderItem={({ item }) => {
+                console.log("item.status===>",item.status)
+              return(
               <View style={styles.leaveCard}>
 
                 <View style={styles.headerRow}>
@@ -109,7 +112,7 @@ const Leaves = () => {
                         { color: getStatusColor(item.status) },
                       ]}
                     >
-                      {item.status}
+                      {COMMON_STATUS[item.status]}
                     </Text>
                   </View>
                 </View>
@@ -133,7 +136,7 @@ const Leaves = () => {
                 </View>
 
               </View>
-            )}
+            )}}
             ListEmptyComponent={() => (
               <View style={styles.placeHoldeContainer}>
                 <NodataFound titleText="Add Leaves" />

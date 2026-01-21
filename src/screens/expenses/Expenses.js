@@ -12,6 +12,7 @@ import Config from 'react-native-config';
 import ImagePickerSheet from '../../components/ImagePickerSheet';
 import { GlobalFonts } from '../../theme/typography';
 import { FontSize } from '../../utils/metrics';
+import { COMMON_STATUS } from '../../utils/metrics'
 
 
 export default function Expenses() {
@@ -67,7 +68,7 @@ export default function Expenses() {
 
         <View style={styles.statusWrap}>
           <Text style={[styles.statusText, { color: STATE[stateKey] }]}>
-            {item.state}
+            {COMMON_STATUS[item.state]}
           </Text>
           <View
             style={[

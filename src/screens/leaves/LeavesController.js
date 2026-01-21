@@ -83,7 +83,16 @@ export const useLeaves = () => {
     if (status === 'confirm') return APPROVALS.confirm
     if (status === 'approved') return APPROVALS.approved
     if (status === 'refuse') return APPROVALS.refuse
-    if (status === 'validate') return APPROVALS.validate
+    if (status === 'validate') return APPROVALS.approved
+    if (status === 'validate2') return APPROVALS.validate2
+    if (status === 'cancel') return APPROVALS.cancel
+    return COLOR.Red
+  };
+   const getStatus = (status) => {
+    if (status === 'confirm') return APPROVALS.confirm
+    if (status === 'approved') return APPROVALS.approved
+    if (status === 'refuse') return APPROVALS.refuse
+    if (status === 'validate') return APPROVALS.approved
     if (status === 'validate2') return APPROVALS.validate2
     if (status === 'cancel') return APPROVALS.cancel
     return COLOR.Red
@@ -195,6 +204,7 @@ export const useLeaves = () => {
     isEarnedLeave,
     setIsEarnedLeave,
     GetLeaveAllocationData,
+    getStatus
 
   }
 }

@@ -73,6 +73,21 @@ const FontSize = {
   Font28: getFont(28),
 };
 
+export const COMMON_STATUS = {
+  draft: 'To Report',
+  reported: 'To Submit',
+  submitted: 'Submitted',
+  approved: 'Approved',
+  done: 'Done',
+  refused: 'Refused',
+  confirm: 'To Approve',
+  refuse: 'Refused',
+  validate1: 'Second Approval',
+  validate2: 'Admin Approval',
+  validate: 'Approved',
+  cancel: 'Cancelled',
+};
+
 export {
   insets,
   screenWidth,
