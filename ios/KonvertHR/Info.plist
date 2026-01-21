@@ -47,14 +47,14 @@
 	<string>KonvertHR uses your location during attendance check-in to ensure accurate work location tracking.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>KonvertHR requires microphone access for capturing audio during video or voice-based HR features.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>KonvertHR uses motion data to improve app stability, performance monitoring, and overall user experience.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>KonvertHR needs permission to save and upload HR-related images and documents.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>KonvertHR requires access to your photo library to upload profile images and HR-related documents.</string>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>KonvertHR sends notifications for attendance updates, approvals, payroll alerts, and important HR communications.</string>
-	<key>NSMotionUsageDescription</key>
-	<string>KonvertHR uses motion data to improve app stability, performance monitoring, and overall user experience.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UIAppFonts</key>
