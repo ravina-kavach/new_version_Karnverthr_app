@@ -139,9 +139,10 @@ export default function Calendar() {
 
       if (attendance && attendance.is_late_in) {
         events.push({
-          title: 'Late',
+          title: '',
           start: day.toDate(),
           end: day.clone().add(30, 'minutes').toDate(),
+          allDay: true,
           attendanceType: 'late',
           description: attendance.late_time_display,
         });
@@ -150,6 +151,7 @@ export default function Calendar() {
           title: 'Absent',
           start: day.toDate(),
           end: day.clone().add(30, 'minutes').toDate(),
+          allDay: true,
           attendanceType: 'absent',
           description: 'Absent',
         });
@@ -462,7 +464,7 @@ export default function Calendar() {
                   date={currentDate}
                   onPressEvent={(event) => { if (event?.attendanceType === "meeting") Navigation.navigate("calendarList"); }}
                   swipeToChangeMonth
-                  showTime
+                  showTime={mode !== 'day'} 
                   onSwipeEnd={setCurrentDate}
                   eventCellStyle={calendarEventStyle}
                   calendarCellStyle={{ borderColor: 'transparent' }}
