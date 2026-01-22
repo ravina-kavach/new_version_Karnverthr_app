@@ -73,34 +73,51 @@ const FontSize = {
   Font28: getFont(28),
 };
 
-export const COMMON_STATUS = {
-  draft: 'Draft',
-  reported: 'Reported',
-  submitted: 'Submitted',
-  confirm: 'Pending Approval',
-  validate1: 'Second-Level Approval',
-  validate2: 'Admin Approval',
-  approved: 'Approved',
-  validate: 'Approved',
-  done: 'Completed',
-  refused: 'Rejected',
-  refuse: 'Rejected',
-  cancel: 'Cancelled',
+export const EXPENSE_STATUS = {
+  draft: 'To Submit',
+  submit: 'Submitted',
+  approve: 'Approved',
+  post:'Posted',
+  done:'Done',
+  cancel: 'Refused',
 
 };
 
-export const STATUS_FILTER_OPTIONS = [
-  { id: 'all', name: 'All' },
-  ...Object.entries(COMMON_STATUS).reduce((uniqueList, [key, label]) => {
-    const isDuplicate = uniqueList.some((item) => item.name === label);
+export const LEAVE_STATUS = {
+  confirm: 'To Approval',
+  refuse: 'Rejected',
+  validate1: 'Second-Level Approval',
+  validate2: 'Admin Approval',
+  validate: 'Approved',
+  cancel: 'Cancelled',
+};
 
-    if (!isDuplicate) {
-      uniqueList.push({ id: key, name: label });
-    }
-    
-    return uniqueList;
-  }, []),
-];
+export const APPROVALS_STATUS = {
+  draft: 'Darft',
+  submit: 'Submit',
+  approved: 'Approved',
+  reject:'Rejected'
+
+};
+
+export const createStatusFilterOptions = (statusObj) => {
+  return [
+    { id: 'all', name: 'All' },
+    ...Object.entries(statusObj).map(([key, label]) => ({
+      id: key,
+      name: label,
+    })),
+  ];
+};
+
+export const EXPENSE_STATUS_FILTER_OPTIONS =
+  createStatusFilterOptions(EXPENSE_STATUS);
+
+export const LEAVE_STATUS_FILTER_OPTIONS =
+  createStatusFilterOptions(LEAVE_STATUS);
+
+export const APPROVALS_STATUS_FILTER_OPTIONS =
+  createStatusFilterOptions(APPROVALS_STATUS);
 
 export {
   insets,

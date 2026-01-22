@@ -50,28 +50,23 @@ export const STATE = {
     paid: '#28a745',
     invoicing_legacy: '#5f636f',
     draft: '#1F2937',
-    cancel: '#1F2937',
+    cancel: '#FF0000',
     posted: '#6610f2',
     blocked: '#000000',
     reported: '#17a2b8',
+    submit: '#f2af3a',
     submitted: '#f2af3a',
+    approve: '#28a745',
     approved: '#28a745',
     done: '#fd7e14',
     refused: '#6f42c1',
-    
-}
-
-export const APPROVALS = {
-    confirm : "#28a745",
-    approved: '#28a745',
-    refuse: '#5f636f',
-    validate :"#fd7e14",
-    validate2:"#f2af3a",
-    cancel: "#FF0000",
-    submitted: '#17a2b8',
-    draft: '#1F2937',
-
-    // tosubmit: '#17a2b8',
+    refuse: '#FF0000',
+    post:"#17a2b8",
+    reject:'#FF0000',
     rejected : '#FF0000',
-    pending: '#f2af3a'
+    pending: '#f2af3a',
+    confirm : "#28a745",
+    validate :"#28a745",
+    validate1:"#fd7e14",
+    validate2:"#f2af3a",
 }

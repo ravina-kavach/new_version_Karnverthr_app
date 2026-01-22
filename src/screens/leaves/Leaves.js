@@ -16,7 +16,7 @@ import { FontSize, responsiveHeight } from '../../utils/metrics'
 import ApplyLeaveModal from '../../components/ApplyLeaveModal'
 import NodataFound from '../../components/NodataFound'
 import moment from 'moment'
-import { COMMON_STATUS } from '../../utils/metrics'
+import { LEAVE_STATUS } from '../../utils/metrics'
 
 const Leaves = () => {
   const {
@@ -90,7 +90,6 @@ const Leaves = () => {
               <Text style={styles.sectionTitle}>Submitted Leaves</Text>
             )}
             renderItem={({ item }) => {
-                console.log("item.status===>",item.status)
               return(
               <View style={styles.leaveCard}>
 
@@ -113,7 +112,7 @@ const Leaves = () => {
                         { color: getStatusColor(item.status) },
                       ]}
                     >
-                      {COMMON_STATUS[item.status] || item.status}
+                      {LEAVE_STATUS[item.status]|| item.status}
                     </Text>
                   </View>
                 </View>

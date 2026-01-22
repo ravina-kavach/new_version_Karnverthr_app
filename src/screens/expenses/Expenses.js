@@ -22,7 +22,7 @@ import AddExpenseModal from '../../components/AddExpenseModal';
 import ImagePickerSheet from '../../components/ImagePickerSheet';
 import { GlobalFonts } from '../../theme/typography';
 import { FontSize } from '../../utils/metrics';
-import { COMMON_STATUS, STATUS_FILTER_OPTIONS } from '../../utils/metrics';
+import { EXPENSE_STATUS, EXPENSE_STATUS_FILTER_OPTIONS } from '../../utils/metrics';
 import CommonFilterDropdown from '../../components/CommonFilterDropdown';
 
 export default function Expenses() {
@@ -81,7 +81,7 @@ export default function Expenses() {
               numberOfLines={1}
               style={[styles.statusText, { color: STATE[stateKey] }]}
             >
-              {COMMON_STATUS[item.state] || item.state}
+              {EXPENSE_STATUS[item.state] || item.state}
             </Text>
             <View
               style={[
@@ -126,7 +126,7 @@ export default function Expenses() {
           <View style={styles.headerWrapper}>
             <Text style={styles.sectionTitle}>All Expenses</Text>
             <CommonFilterDropdown
-              data={STATUS_FILTER_OPTIONS}
+              data={EXPENSE_STATUS_FILTER_OPTIONS}
               selectedItem={selectedStatus}
               setSelectedItem={setSelectedStatus}
             />

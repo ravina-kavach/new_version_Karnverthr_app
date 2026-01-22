@@ -9,7 +9,7 @@ import SimpleReactValidator from 'simple-react-validator'
 import { useTranslation } from 'react-i18next';
 import moment from 'moment'
 import { request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
-import { STATUS_FILTER_OPTIONS,COMMON_STATUS } from '../../utils/metrics'
+import { EXPENSE_STATUS } from '../../utils/metrics'
 
 export const useExpenses = () => {
   const { t, i18n } = useTranslation();
@@ -27,7 +27,7 @@ export const useExpenses = () => {
   const [selectAccountType, setSelectedAccountType] = useState({})
   const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = React.useState(
-  STATUS_FILTER_OPTIONS[0]
+  EXPENSE_STATUS[0]
 );
 const [showFilter, setShowFilter] = React.useState(false);
 
@@ -276,7 +276,7 @@ const filteredExpenses = React.useMemo(() => {
     return GetExpenseListData;
   }
   return GetExpenseListData?.filter(item => {
-    const itemLabel = COMMON_STATUS[item.state]; 
+    const itemLabel = EXPENSE_STATUS[item.state]; 
     return itemLabel === selectedStatus.name;
   });
 }, [GetExpenseListData, selectedStatus]);

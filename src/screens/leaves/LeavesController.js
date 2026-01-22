@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { CommonSelector, GetLeavetype, GetLeaveAllocation, CreateLeave, GetLeaveList } from '../../store/reducers/commonSlice';
 import moment from 'moment';
-import { APPROVALS, COLOR } from '../../theme/theme';
+import { STATE, COLOR } from '../../theme/theme';
 import { showMessage } from 'react-native-flash-message';
 
 export const useLeaves = () => {
@@ -26,24 +26,24 @@ export const useLeaves = () => {
   const [leavesSummary, setLeavesSummary] = useState([]);
 
   useEffect(() => {
-    if (!IsFocused || !UsersigninData) return;
-
-    const data = {
-      id: Number(UsersigninData.user_id),
-    };
-
-    Promise.all([
-      dispatch(GetLeaveList(data)),
-      dispatch(GetLeavetype(data)),
-      dispatch(GetLeaveAllocation(data)),
-    ]);
+    if(UsersigninData && IsFocused){
+  const data = {
+    id: Number(UsersigninData.user_id),
+  };
+  Promise.all([
+    dispatch(GetLeaveList(data)),
+    dispatch(GetLeavetype(data)),
+    dispatch(GetLeaveAllocation(data)),
+  ]);
+}
   }, [IsFocused, UsersigninData]);
 
   useEffect(() => {
     if (GetLeaveAllocationData?.success && IsFocused) {
+      console.log("GetLeaveAllocationData====>",GetLeaveAllocationData)
       updateLeaveSummary(GetLeaveAllocationData);
     } else {
-      setLeavesSummary([]); // optional fallback
+      setLeavesSummary([]); 
     }
   }, [IsFocused, GetLeaveAllocationData]);
 
@@ -80,21 +80,21 @@ export const useLeaves = () => {
 
 
   const getStatusColor = (status) => {
-    if (status === 'confirm') return APPROVALS.confirm
-    if (status === 'approved') return APPROVALS.approved
-    if (status === 'refuse') return APPROVALS.refuse
-    if (status === 'validate') return APPROVALS.approved
-    if (status === 'validate2') return APPROVALS.validate2
-    if (status === 'cancel') return APPROVALS.cancel
+    if (status === 'confirm') return STATE.confirm
+    if (status === 'approved') return STATE.approved
+    if (status === 'refuse') return STATE.refuse
+    if (status === 'validate') return STATE.approved
+    if (status === 'validate2') return STATE.validate2
+    if (status === 'cancel') return STATE.cancel
     return COLOR.Red
   };
    const getStatus = (status) => {
-    if (status === 'confirm') return APPROVALS.confirm
-    if (status === 'approved') return APPROVALS.approved
-    if (status === 'refuse') return APPROVALS.refuse
-    if (status === 'validate') return APPROVALS.approved
-    if (status === 'validate2') return APPROVALS.validate2
-    if (status === 'cancel') return APPROVALS.cancel
+    if (status === 'confirm') return STATE.confirm
+    if (status === 'approved') return STATE.approved
+    if (status === 'refuse') return STATE.refuse
+    if (status === 'validate') return STATE.approved
+    if (status === 'validate2') return STATE.validate2
+    if (status === 'cancel') return STATE.cancel
     return COLOR.Red
   };
   const handleModal = () => {

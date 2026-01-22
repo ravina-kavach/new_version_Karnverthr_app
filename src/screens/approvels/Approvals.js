@@ -27,7 +27,7 @@ import {
 } from '../../store/reducers/commonSlice';
 
 import { DateApproval } from '../../assets/svgs';
-import { COLOR, APPROVALS } from '../../theme/theme';
+import { COLOR, STATE } from '../../theme/theme';
 import { FontSize, responsiveHeight } from '../../utils/metrics';
 
 export default function Approvals() {
@@ -92,15 +92,15 @@ export default function Approvals() {
     if (!status) return COLOR.Primary1;
     switch (status.toLowerCase()) {
       case 'approved':
-        return APPROVALS.approved;
+        return STATE.approved;
       case 'reject':
-        return APPROVALS.rejected;
+        return STATE.rejected;
       case 'submit':
-        return APPROVALS.submitted;
+        return STATE.submitted;
       case 'pending':
-        return APPROVALS.pending;
+        return STATE.pending;
       case 'draft':
-        return APPROVALS.draft;
+        return STATE.draft;
       default:
         return COLOR.Primary1;
     }
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
   },
 
   rejectBtn: {
-    backgroundColor: APPROVALS.rejected,
+    backgroundColor: STATE.rejected,
   },
 
   approveText: {
@@ -534,7 +534,7 @@ const styles = StyleSheet.create({
   modalRejectBtn: {
     flex: 1,
     height: 44,
-    backgroundColor: APPROVALS.rejected,
+    backgroundColor: STATE.rejected,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
