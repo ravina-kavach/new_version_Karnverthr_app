@@ -5,10 +5,20 @@ import VersionCheck from 'react-native-version-check';
 export const checkAppVersion = async () => {
   try {
     const currentVersion = DeviceInfo.getVersion();
+
     const latestVersion = await VersionCheck.getLatestVersion();
     const storeUrl = await VersionCheck.getStoreUrl();
+    if (!currentVersion || !latestVersion || !storeUrl) {
+      console.log('Version info missing, skipping update check');
+      return;
+    }
 
-    if (currentVersion !== latestVersion) {
+    const updateNeeded = VersionCheck.needUpdate({
+      currentVersion,
+      latestVersion,
+    });
+
+    if (updateNeeded?.isNeeded) {
       Alert.alert(
         'Update Available',
         'A new version of KonverHR is available. Please update to continue.',
@@ -18,7 +28,7 @@ export const checkAppVersion = async () => {
             onPress: () => Linking.openURL(storeUrl),
           },
         ],
-        { cancelable: false } // force user to update
+        { cancelable: false }
       );
     }
   } catch (error) {

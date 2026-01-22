@@ -89,6 +89,19 @@ export const COMMON_STATUS = {
 
 };
 
+export const STATUS_FILTER_OPTIONS = [
+  { id: 'all', name: 'All' },
+  ...Object.entries(COMMON_STATUS).reduce((uniqueList, [key, label]) => {
+    const isDuplicate = uniqueList.some((item) => item.name === label);
+
+    if (!isDuplicate) {
+      uniqueList.push({ id: key, name: label });
+    }
+    
+    return uniqueList;
+  }, []),
+];
+
 export {
   insets,
   screenWidth,
