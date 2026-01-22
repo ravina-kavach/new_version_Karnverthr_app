@@ -81,7 +81,7 @@ export default function Expenses() {
               numberOfLines={1}
               style={[styles.statusText, { color: STATE[stateKey] }]}
             >
-              {EXPENSE_STATUS[item.state] || item.state}
+              {EXPENSE_STATUS[item.state]}
             </Text>
             <View
               style={[

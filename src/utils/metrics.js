@@ -74,30 +74,29 @@ const FontSize = {
 };
 
 export const EXPENSE_STATUS = {
-  draft: 'To Submit',
-  submit: 'Submitted',
-  approve: 'Approved',
+  draft: 'Darft',
+  reported:'Reported',
+  submitted: 'Submitted',
+  approved: 'Approved',
   post:'Posted',
-  done:'Done',
-  cancel: 'Refused',
-
+  done:'Completed',
+  refused: 'Rejected',
 };
 
 export const LEAVE_STATUS = {
-  confirm: 'To Approval',
-  refuse: 'Rejected',
+  confirm: 'Pending Approval',
   validate1: 'Second-Level Approval',
   validate2: 'Admin Approval',
   validate: 'Approved',
+  refuse: 'Rejected',
   cancel: 'Cancelled',
 };
 
 export const APPROVALS_STATUS = {
-  draft: 'Darft',
-  submit: 'Submit',
+  draft: 'Draft',
+  submit: 'Submitted',
   approved: 'Approved',
-  reject:'Rejected'
-
+  reject: 'Rejected',
 };
 
 export const createStatusFilterOptions = (statusObj) => {
