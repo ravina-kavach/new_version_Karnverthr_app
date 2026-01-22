@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   FlatList,
@@ -28,8 +28,8 @@ import {
 
 import { DateApproval } from '../../assets/svgs';
 import { COLOR, STATE } from '../../theme/theme';
-import { FontSize, responsiveHeight } from '../../utils/metrics';
-
+import { APPROVALS_STATUS, APPROVALS_STATUS_FILTER_OPTIONS, FontSize, responsiveHeight } from '../../utils/metrics';
+import CommonFilterDropdown from '../../components/CommonFilterDropdown';
 export default function Approvals() {
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
@@ -47,7 +47,9 @@ export default function Approvals() {
   const [rejectReason, setRejectReason] = useState('');
   const [selectedApprovalId, setSelectedApprovalId] = useState(null);
   const [reasonError, setReasonError] = useState(false);
-
+   const [selectedStatus, setSelectedStatus] = useState(
+      APPROVALS_STATUS[0]
+    );
 
   useEffect(() => {
     if (isFocused && UsersigninData?.user_id) {
@@ -195,7 +197,15 @@ export default function Approvals() {
     }
   };
 
-
+  const filteredApprovals = useMemo(() => {
+      if (!selectedStatus || selectedStatus.id === 'all') {
+        return GetApprovalListData;
+      }
+      return GetApprovalListData?.filter(item => {
+        const itemLabel = APPROVALS_STATUS[item.state]; 
+        return itemLabel === selectedStatus.name;
+      });
+    }, [GetApprovalListData, selectedStatus]);
 
   const renderItem = ({ item }) => {
     const status = item.state?.toLowerCase();
@@ -266,9 +276,16 @@ export default function Approvals() {
   return (
     <CommonView>
       <CommonHeader title={t('Approvals.Approvals')} />
-
+      <View style={styles.headerWrapper}>
+            <Text style={styles.sectionTitle}>{t('Approvals.Approvals')}</Text>
+            <CommonFilterDropdown
+              data={APPROVALS_STATUS_FILTER_OPTIONS}
+              selectedItem={selectedStatus}
+              setSelectedItem={setSelectedStatus}
+            />
+          </View>
       <FlatList
-        data={GetApprovalListData}
+        data={filteredApprovals}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
@@ -461,8 +478,6 @@ const styles = StyleSheet.create({
     ...GlobalFonts.subtitle,
     fontSize: FontSize.Font14,
   },
-
-  /* MODAL */
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
@@ -549,5 +564,21 @@ const styles = StyleSheet.create({
     ...GlobalFonts.buttonText,
     fontSize: FontSize.Font14,
     color: COLOR.White1,
+  },
+    headerWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+    alignItems: 'center',
+    zIndex: 2000,
+    overflow: 'visible',
+    backgroundColor: 'transparent',
+  },
+
+  sectionTitle: {
+    ...GlobalFonts.subtitle,
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLOR.Black1,
   },
 });

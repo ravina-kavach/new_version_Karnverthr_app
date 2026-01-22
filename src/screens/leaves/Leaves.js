@@ -103,7 +103,7 @@ const Leaves = () => {
 
                   <View style={styles.headerRow}>
                     <Text style={styles.leaveType}>
-                      Leave Type - {item.leave_type_name}
+                      {item.leave_type_name}
                     </Text>
 
                     <View style={styles.statusBadge}>
