@@ -28,7 +28,6 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
     const [pickerMode, setPickerMode] = useState(null);
     const [errors, setErrors] = useState({});
 
-    /* 🔁 Ensure end time is always after start */
     useEffect(() => {
         if (endDate <= startDate) {
             const updatedEnd = new Date(startDate);
@@ -36,8 +35,6 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
             setEndDate(updatedEnd);
         }
     }, [startDate]);
-
-    /* 🧹 Reset form */
     const resetForm = () => {
         const resetNow = new Date();
         const resetEnd = new Date(resetNow);
@@ -55,12 +52,13 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
 
     const formatDateTime = (date) => {
         const pad = (n) => (n < 10 ? `0${n}` : n);
-        return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}
-        ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+
+        return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ` +
+            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
     };
 
     const calculateDuration = (start, end) => {
-        return +((end - start) / (1000 * 60 * 60)).toFixed(2);
+        return Number(((end - start) / (1000 * 60 * 60)).toFixed(1));
     };
 
     const validateForm = () => {
@@ -93,7 +91,6 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
             description: description.trim(),
             privacy: 'private',
         };
-
         onCreateMeeting(payload);
         resetForm();
         onClose();
@@ -111,14 +108,14 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
             const updated = new Date(startDate);
             pickerMode === 'startDate'
                 ? updated.setFullYear(
-                      selectedDate.getFullYear(),
-                      selectedDate.getMonth(),
-                      selectedDate.getDate()
-                  )
+                    selectedDate.getFullYear(),
+                    selectedDate.getMonth(),
+                    selectedDate.getDate()
+                )
                 : updated.setHours(
-                      selectedDate.getHours(),
-                      selectedDate.getMinutes()
-                  );
+                    selectedDate.getHours(),
+                    selectedDate.getMinutes()
+                );
             setStartDate(updated);
         }
 
@@ -126,14 +123,14 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
             const updated = new Date(endDate);
             pickerMode === 'endDate'
                 ? updated.setFullYear(
-                      selectedDate.getFullYear(),
-                      selectedDate.getMonth(),
-                      selectedDate.getDate()
-                  )
+                    selectedDate.getFullYear(),
+                    selectedDate.getMonth(),
+                    selectedDate.getDate()
+                )
                 : updated.setHours(
-                      selectedDate.getHours(),
-                      selectedDate.getMinutes()
-                  );
+                    selectedDate.getHours(),
+                    selectedDate.getMinutes()
+                );
             setEndDate(updated);
         }
 
@@ -192,7 +189,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
 
                         {pickerMode && (
                             <DateTimePicker
-                                is24Hour={false} 
+                                is24Hour={false}
                                 value={pickerMode.includes('start') ? startDate : endDate}
                                 mode={pickerMode.includes('Date') ? 'date' : 'time'}
                                 display={Platform.OS === 'ios' ? 'spinner' : 'default'}

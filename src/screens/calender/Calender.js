@@ -50,25 +50,27 @@ export default function Calendar() {
   const Navigation = useNavigation();
   const { GetCalendarEventsData, GetAttandanceListData, isGetCalendarEventsDataFetching, UsersigninData } = useSelector(CommonSelector);
 
-  // Fetch events when screen focused or month changes
   useFocusEffect(
     useCallback(() => {
       const fetchData = () => {
-        if (!UsersigninData?.user_id) return;
-
-        const userData = { id: UsersigninData.user_id };
-        const data = {
+         const data = {
           id: Number(UsersigninData.user_id),
           month: Number(visibleMonth),
           year: Number(visibleYear),
         };
 
         dispatch(GetAttandanceList(data));
-        dispatch(GetCalendarEvents(userData));
+        fetchAttendanceAndCalendar()
       };
       fetchData();
     }, [UsersigninData?.user_id, visibleMonth, visibleYear, dispatch])
   );
+
+  const fetchAttendanceAndCalendar = () => {
+   if (!UsersigninData?.user_id) return;
+    const userData = { id: UsersigninData.user_id };   
+    dispatch(GetCalendarEvents(userData));
+    };
 
   useEffect(() => {
     const meetingsThisMonth = calendarEvents.filter(e => {
@@ -176,6 +178,7 @@ export default function Calendar() {
         type: "success",
       });
       setMeetingModal(false);
+      fetchAttendanceAndCalendar();
       buildAttendanceEvents()
     }
   };
