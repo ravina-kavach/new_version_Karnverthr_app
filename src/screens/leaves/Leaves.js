@@ -142,7 +142,7 @@ const Leaves = () => {
                       </Text>
                     </View>
                   </View>
-
+                  <Text numberOfLines={2} style={[styles.value,{paddingTop:10}]}>Reason : <Text numberOfLines={2} style={styles.label}>{item.reason}</Text></Text>
                 </View>
               )
             }}

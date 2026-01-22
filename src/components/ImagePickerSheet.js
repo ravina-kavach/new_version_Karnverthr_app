@@ -40,6 +40,7 @@ const ImagePickerSheet = ({
     <Modal
       visible={visible}
       transparent
+      statusBarTranslucent
       animationType="slide"
       onRequestClose={onClose}
     >
