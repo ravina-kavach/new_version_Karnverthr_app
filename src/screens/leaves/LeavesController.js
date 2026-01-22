@@ -28,26 +28,33 @@ export const useLeaves = () => {
   const [selectedStatus, setSelectedStatus] = useState(
     LEAVE_STATUS[0]
   );
-  
+
   useEffect(() => {
-    if(UsersigninData && IsFocused){
-  const data = {
-    id: Number(UsersigninData.user_id),
-  };
-  Promise.all([
-    dispatch(GetLeaveList(data)),
-    dispatch(GetLeavetype(data)),
-    dispatch(GetLeaveAllocation(data)),
-  ]);
-}
+    if (UsersigninData && IsFocused) {
+      const data = {
+        id: Number(UsersigninData.user_id),
+      };
+      Promise.all([
+        getLeaveList(),
+        dispatch(GetLeavetype(data)),
+        dispatch(GetLeaveAllocation(data)),
+      ]);
+    }
   }, [IsFocused, UsersigninData]);
+
+
+  const getLeaveList = () => {
+    const data = {
+      id: Number(UsersigninData.user_id),
+    };
+    dispatch(GetLeaveList(data))
+  }
 
   useEffect(() => {
     if (GetLeaveAllocationData?.success && IsFocused) {
-      console.log("GetLeaveAllocationData====>",GetLeaveAllocationData)
       updateLeaveSummary(GetLeaveAllocationData);
     } else {
-      setLeavesSummary([]); 
+      setLeavesSummary([]);
     }
   }, [IsFocused, GetLeaveAllocationData]);
 
@@ -66,21 +73,21 @@ export const useLeaves = () => {
   };
 
   const resetLeaveForm = () => {
-  setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
-  setSelectedDeptType({ id: '', name: t("Leaves.Select_Department_Type") });
+    setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
+    setSelectedDeptType({ id: '', name: t("Leaves.Select_Department_Type") });
 
-  setSelectStartDate(new Date());
-  setSelectEndDate(new Date());
+    setSelectStartDate(new Date());
+    setSelectEndDate(new Date());
 
-  setOpenStartDatePicker(false);
-  setOpenEndDatePicker(false);
+    setOpenStartDatePicker(false);
+    setOpenEndDatePicker(false);
 
-  setResonText(null);
+    setResonText(null);
 
-  setIsPublicLeave(false);
-  setIsOverTimeLeave(false);
-  setIsEarnedLeave(false);
-};
+    setIsPublicLeave(false);
+    setIsOverTimeLeave(false);
+    setIsEarnedLeave(false);
+  };
 
 
   const getStatusColor = (status) => {
@@ -92,7 +99,7 @@ export const useLeaves = () => {
     if (status === 'cancel') return STATE.cancel
     return COLOR.Red
   };
-   const getStatus = (status) => {
+  const getStatus = (status) => {
     if (status === 'confirm') return STATE.confirm
     if (status === 'approved') return STATE.approved
     if (status === 'refuse') return STATE.refuse
@@ -122,52 +129,35 @@ export const useLeaves = () => {
   };
 
   const saveLeave = async () => {
-    try {
-      let data = {
-        holiday_status_id: selectedLeaveType.id,
-        date_from: moment(selectStartDate).format("YYYY-MM-DD"),
-        date_to: moment(selectEndDate).format("YYYY-MM-DD"),
-        reason: resonText,
-      };
+  try {
+    const data = {
+      holiday_status_id: selectedLeaveType?.id,
+      date_from: moment(selectStartDate).format("YYYY-MM-DD"),
+      date_to: moment(selectEndDate).format("YYYY-MM-DD"),
+      reason: resonText,
+    };
 
-      const obj = {
-        userid: UsersigninData.user_id,
-        userData: data,
-      };
+    const obj = {
+      userid: UsersigninData.user_id,
+      userData: data,
+    };
 
-      const result = await dispatch(CreateLeave(obj)).unwrap();
-      if (result?.success) {
-        showMessage({
-          icon: "success",
-          message: result.successMessage || "Leave applied successfully",
-          type: "success",
-        });
-
-        handleModal();
-        setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
-        await dispatch(GetLeaveList());
-      } else {
-        handleModal();
-        showMessage({
-          icon: "danger",
-          message: result?.message || "Failed to apply leave",
-          type: "danger",
-        });
-      }
-
-    } catch (error) {
-      handleModal();
-      showMessage({
-        icon: "danger",
-        message:
-          error?.message ||
-          error?.error ||
-          "Something went wrong. Please try again.",
-        type: "danger",
-      });
-    }
-    handleModal();
-  };
+    const result = await dispatch(CreateLeave(obj)).unwrap();
+    showMessage({
+      icon: "success",
+      message: result?.message,
+      type: "success",
+    });
+  } catch (error) {
+    showMessage({
+      icon: "danger",
+      message: error?.message,
+      type: "danger",
+    });
+  }
+  handleModal();
+  getLeaveList();
+};
 
   const onRefresh = useCallback(() => {
     dispatch(GetLeaveList())
@@ -178,7 +168,7 @@ export const useLeaves = () => {
       return GetLeaveListData;
     }
     return GetLeaveListData?.filter(item => {
-      const itemLabel = LEAVE_STATUS[item.status]; 
+      const itemLabel = LEAVE_STATUS[item.status];
       return itemLabel === selectedStatus.name;
     });
   }, [GetLeaveListData, selectedStatus]);
@@ -219,7 +209,7 @@ export const useLeaves = () => {
     setIsEarnedLeave,
     GetLeaveAllocationData,
     getStatus,
-    selectedStatus, 
+    selectedStatus,
     setSelectedStatus,
     filteredLeaves
 

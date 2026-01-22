@@ -218,7 +218,6 @@ export const GetLeaveAllocation = createAsyncThunk(
 
     } catch (error) {
       console.log("Axios Error:", error.response || error);
-
       return;
     }
   }
@@ -245,23 +244,34 @@ export const GetDepartmentType = createAsyncThunk(
     },
 );
 export const CreateLeave = createAsyncThunk(
-    'CreateLeave',
-    async (userdata, thunkAPI) => {
-        try {
-            let result = await API.post(`api/create/leave-request?user_id=${userdata.userid}`, userdata.userData);
-            if (result.data.success) {
-                return { ...result.data.data, message: result?.data.successMessage };
-            } else {
-                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
-            }
-        } catch (error) {
-            console.log("Error >>>", error.response?.data?.message);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.message || error?.message)
-            });
-        }
-    },
+  'CreateLeave',
+  async (userdata, thunkAPI) => {
+    try {
+      const result = await API.post(
+        `api/create/leave-request?user_id=${userdata.userid}`,
+        userdata.userData
+      );
+
+      if (result.data?.status === "success") {
+        return {
+          ...result.data.data,
+          message: result.data.message,
+        };
+      }
+      return thunkAPI.rejectWithValue({
+        message: result.data?.message
+      });
+
+    } catch (error) {
+      return thunkAPI.rejectWithValue({
+        message:
+          error?.response?.data?.message ||
+          error?.message
+      });
+    }
+  }
 );
+
 
 export const GetLeaveList = createAsyncThunk(
     'GetLeaveList',

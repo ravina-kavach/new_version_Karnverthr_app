@@ -24,10 +24,10 @@ const ApplyLeaveModal = ({
   onSave,
   selectStartDate,
   selectEndDate,
-  openStartDataPicker,
-  openEndDataPicker,
   onChangeStartDate,
   onChangeEndDate,
+  openStartDataPicker,
+  openEndDataPicker,
   setOpenStartDatePicker,
   setOpenEndDatePicker,
   resonText,
@@ -37,6 +37,8 @@ const ApplyLeaveModal = ({
   isEarnedLeave,
 }) => {
   const [errors, setErrors] = useState({});
+
+  /* ---------------- VALIDATION ---------------- */
 
   const validateForm = () => {
     const newErrors = {};
@@ -56,7 +58,7 @@ const ApplyLeaveModal = ({
     if (
       selectStartDate &&
       selectEndDate &&
-      moment(selectEndDate).isBefore(selectStartDate)
+      moment(selectEndDate).isBefore(moment(selectStartDate), 'day')
     ) {
       newErrors.endDate = 'End date cannot be before start date';
     }
@@ -83,7 +85,7 @@ const ApplyLeaveModal = ({
       'end_date',
       moment(selectEndDate).format('YYYY-MM-DD')
     );
-    formData.append('description', resonText);
+    formData.append('description', resonText.trim());
     formData.append('include_public_holiday', isPublicLeave ? 1 : 0);
     formData.append('overtime_deductible', isOverTimeLeave ? 1 : 0);
     formData.append('earned_leave', isEarnedLeave ? 1 : 0);
@@ -95,16 +97,48 @@ const ApplyLeaveModal = ({
     if (
       selectStartDate &&
       selectEndDate &&
-      moment(selectEndDate).isBefore(selectStartDate)
+      moment(selectEndDate).isBefore(moment(selectStartDate), 'day')
     ) {
       setErrors((prev) => ({
         ...prev,
         endDate: 'End date cannot be before start date',
       }));
     } else {
-      setErrors((prev) => ({ ...prev, endDate: null }));
+      setErrors((prev) => {
+        const { endDate, ...rest } = prev;
+        return rest;
+      });
     }
-  }, [selectStartDate]);
+  }, [selectStartDate, selectEndDate]);
+
+
+  useEffect(() => {
+    if (!visible) {
+      setErrors({});
+    }
+  }, [visible]);
+
+  const handleStartDateChange = (event, date) => {
+    setOpenStartDatePicker(false);
+    if (!date) return;
+
+    onChangeStartDate(event, date);
+    setErrors((prev) => {
+      const { startDate, endDate, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const handleEndDateChange = (event, date) => {
+    setOpenEndDatePicker(false);
+    if (!date) return;
+
+    onChangeEndDate(event, date);
+    setErrors((prev) => {
+      const { endDate, ...rest } = prev;
+      return rest;
+    });
+  };
 
   return (
     <Modal visible={visible} statusBarTranslucent transparent animationType="fade">
@@ -116,14 +150,12 @@ const ApplyLeaveModal = ({
               <Text style={styles.close}>✕</Text>
             </TouchableOpacity>
           </View>
-
           <Text style={styles.label}>Employee</Text>
           <View style={styles.userInput}>
             <Text style={styles.placeholder}>
               {UsersigninData?.full_name}
             </Text>
           </View>
-
           <Text style={styles.label}>Leave Type</Text>
           <View
             style={[
@@ -136,7 +168,10 @@ const ApplyLeaveModal = ({
               Selecteditem={selectedLeaveType}
               setSelecteditem={(item) => {
                 setSelectedLeaveType(item);
-                setErrors((prev) => ({ ...prev, leaveType: null }));
+                setErrors((prev) => {
+                  const { leaveType, ...rest } = prev;
+                  return rest;
+                });
               }}
             />
           </View>
@@ -196,7 +231,10 @@ const ApplyLeaveModal = ({
             value={resonText}
             onChangeText={(text) => {
               setResonText(text);
-              setErrors((prev) => ({ ...prev, description: null }));
+              setErrors((prev) => {
+                const { description, ...rest } = prev;
+                return rest;
+              });
             }}
             placeholder="Add a description..."
             placeholderTextColor="#999"
@@ -205,27 +243,22 @@ const ApplyLeaveModal = ({
           {errors.description && (
             <Text style={styles.errorText}>{errors.description}</Text>
           )}
-
           <View style={styles.footer}>
             <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.saveBtn}
-              onPress={validateAndSubmit}
-            >
+            <TouchableOpacity style={styles.saveBtn} onPress={validateAndSubmit}>
               <Text style={styles.saveText}>Save</Text>
             </TouchableOpacity>
           </View>
         </View>
-
         {openStartDataPicker && (
           <DateTimePicker
             value={selectStartDate || new Date()}
             mode="date"
-            onChange={onChangeStartDate}
             minimumDate={new Date()}
+            onChange={handleStartDateChange}
           />
         )}
 
@@ -233,8 +266,8 @@ const ApplyLeaveModal = ({
           <DateTimePicker
             value={selectEndDate || new Date()}
             mode="date"
-            onChange={onChangeEndDate}
             minimumDate={selectStartDate || new Date()}
+            onChange={handleEndDateChange}
           />
         )}
       </View>
