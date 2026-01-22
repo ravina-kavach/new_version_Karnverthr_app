@@ -1,22 +1,31 @@
-import { View, Text, Modal, TouchableWithoutFeedback, Dimensions, Image, FlatList, RefreshControl, Pressable, StyleSheet } from 'react-native'
-import React from 'react'
+import {
+  View,
+  Text,
+  Modal,
+  TouchableWithoutFeedback,
+  Dimensions,
+  Image,
+  FlatList,
+  RefreshControl,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
+import React from 'react';
 import { COLOR, STATE } from '../../theme/theme';
-import moment from 'moment'
-import Dropdown from '../../components/Dropdown'
-import { useExpenses } from './ExpensesController'
-import NodataFound from '../../components/NodataFound'
-import { CommonView } from '../../utils/common'
-import { PlusIcon,EmptyExpense } from '../../assets/svgs';
-import AddExpenseModal from '../../components/AddExpenseModal'
-import Config from 'react-native-config';
+import moment from 'moment';
+import Dropdown from '../../components/Dropdown';
+import { useExpenses } from './ExpensesController';
+import NodataFound from '../../components/NodataFound';
+import { CommonView } from '../../utils/common';
+import { PlusIcon, EmptyExpense } from '../../assets/svgs';
+import AddExpenseModal from '../../components/AddExpenseModal';
 import ImagePickerSheet from '../../components/ImagePickerSheet';
 import { GlobalFonts } from '../../theme/typography';
 import { FontSize } from '../../utils/metrics';
-import { COMMON_STATUS } from '../../utils/metrics'
-
+import { COMMON_STATUS, STATUS_FILTER_OPTIONS } from '../../utils/metrics';
+import CommonFilterDropdown from '../../components/CommonFilterDropdown';
 
 export default function Expenses() {
-
   const {
     t,
     IsStartdatepickeropen,
@@ -34,10 +43,8 @@ export default function Expenses() {
     openImage,
     CategoryListData,
     isCreateExpensesFetching,
-    GetExpenseListData,
     isGetExpenseListFetching,
     setSelectedId,
-    Validator,
     setIsExoensemodal,
     setIsStartdatepickeropen,
     setPreviewVisible,
@@ -50,92 +57,111 @@ export default function Expenses() {
     onImagePicked,
     isImagePickerVisible,
     setIsImagePickerVisible,
-  } = useExpenses()
+    filteredExpenses,
+    selectedStatus,
+    setSelectedStatus,
+  } = useExpenses();
 
- const renderItem = ({ item }) => {
-  const stateKey = item.state?.toLowerCase();
+  const renderItem = ({ item }) => {
+    const stateKey = item.state?.toLowerCase();
 
-  const imageUri =
-    item.attachment_ids?.length > 0 &&
-    item.attachment_ids[0]?.base64
-      ? `data:${item.attachment_ids[0].mimetype};base64,${item.attachment_ids[0].base64}`
-      : null;
+    const imageUri =
+      item.attachment_ids?.length > 0 &&
+        item.attachment_ids[0]?.base64
+        ? `data:${item.attachment_ids[0].mimetype};base64,${item.attachment_ids[0].base64}`
+        : null;
 
-  return (
-    <View style={styles.card}>
-      <View style={styles.headerRow}>
-        <Text style={styles.title}>{item.name}</Text>
+    return (
+      <View style={styles.card}>
+        <View style={styles.headerRow}>
+          <Text style={styles.title}>{item.name}</Text>
 
-        <View style={styles.statusWrap}>
-          <Text style={[styles.statusText, { color: STATE[stateKey] }]}>
-            {COMMON_STATUS[item.state]}
-          </Text>
-          <View
-            style={[
-              styles.statusDot,
-              { backgroundColor: STATE[stateKey] },
-            ]}
-          />
+          <View style={styles.statusWrap}>
+            <Text
+              numberOfLines={1}
+              style={[styles.statusText, { color: STATE[stateKey] }]}
+            >
+              {COMMON_STATUS[item.state] || item.state}
+            </Text>
+            <View
+              style={[
+                styles.statusDot,
+                { backgroundColor: STATE[stateKey] },
+              ]}
+            />
+          </View>
+        </View>
+
+        <View style={styles.contentRow}>
+          <View style={styles.imageBox}>
+            {imageUri ? (
+              <Pressable onPress={() => openImage(imageUri)}>
+                <Image source={{ uri: imageUri }} style={styles.image} />
+              </Pressable>
+            ) : (
+              <View style={styles.placeholder}>
+                <EmptyExpense color={COLOR.dark5} />
+              </View>
+            )}
+          </View>
+
+          <View style={styles.rightInfo}>
+            <Text style={styles.amount}>
+              ₹ {Number(item.total_amount).toFixed(2)}
+            </Text>
+            <Text style={styles.date}>
+              {moment(item.date).format('DD-MM-YYYY')}
+            </Text>
+          </View>
         </View>
       </View>
-      <View style={styles.contentRow}>
-        <View style={styles.imageBox}>
-          {imageUri ? (
-            <Pressable style={styles.imageBox} onPress={() => openImage(imageUri)}>
-            <Image source={{ uri: imageUri }} style={styles.image} />
-            </Pressable>
-          ) : (
-            <View style={styles.placeholder}>
-              <EmptyExpense color={COLOR.dark5} />
-            </View>
-          )}
-        </View>
-
-        <View style={styles.rightInfo}>
-          <Text style={styles.amount}>
-            ₹ {Number(item.total_amount).toFixed(2)}
-          </Text>
-          <Text style={styles.date}>
-            {moment(item.date).format('DD-MM-YYYY')}
-          </Text>
-        </View>
-      </View>
-    </View>
-  );
-};
-
-
-
+    );
+  };
 
   return (
-    <CommonView >
+    <CommonView>
       <View style={styles.flexContainer}>
         <View style={styles.container}>
+
+          <View style={styles.headerWrapper}>
+            <Text style={styles.sectionTitle}>All Expenses</Text>
+            <CommonFilterDropdown
+              data={STATUS_FILTER_OPTIONS}
+              selectedItem={selectedStatus}
+              setSelectedItem={setSelectedStatus}
+            />
+          </View>
+
           <FlatList
-            data={GetExpenseListData}
-            showsVerticalScrollIndicator={false}
-            nestedScrollEnabled={false}
+            data={filteredExpenses}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
             refreshControl={
-              <RefreshControl refreshing={isGetExpenseListFetching} onRefresh={onRefresh} />
+              <RefreshControl
+                refreshing={isGetExpenseListFetching}
+                onRefresh={onRefresh}
+              />
             }
             contentContainerStyle={styles.contentContainer}
-            // ListHeaderComponent={() => <Text style={styles.sectionTitle}>All Expenses</Text>}
             ListEmptyComponent={() => (
               <View style={styles.placeHoldeContainer}>
-                <NodataFound titleText={"Add expenses"} />
+                <NodataFound titleText="Add expenses" />
               </View>
             )}
           />
         </View>
+
+        {/* ➕ Floating Button */}
         <TouchableWithoutFeedback onPress={() => setIsExoensemodal(true)}>
           <View style={styles.plusContainer}>
             <View style={styles.iconContainer}>
-              <PlusIcon width={28} height={28}/>
+              <PlusIcon width={28} height={28} />
             </View>
           </View>
         </TouchableWithoutFeedback>
+
+        {/* ➕ Add Expense Modal */}
         <AddExpenseModal
           visible={IsExoensemodal}
           closeModal={closeModal}
@@ -161,31 +187,70 @@ export default function Expenses() {
           selectAccountType={selectAccountType}
           setSelectedAccountType={setSelectedAccountType}
         />
-        {/* Full-Screen Preview Modal */}
-        <Modal visible={PreviewVisible} transparent={true}>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.9)', justifyContent: 'center', alignItems: 'center', }}>
-            <Pressable onPress={() => setPreviewVisible(false)} style={{ position: 'absolute', top: 40, right: 20, zIndex: 1 }}>
-              <Text style={{ color: COLOR.White1, fontSize: 18 }}>{t('Button.Close')} ✕</Text>
+
+        {/* 🔍 Image Preview */}
+        <Modal visible={PreviewVisible} transparent>
+          <View style={styles.previewModal}>
+            <Pressable
+              onPress={() => setPreviewVisible(false)}
+              style={styles.closeBtn}
+            >
+              <Text style={styles.closeText}>✕</Text>
             </Pressable>
+
             {PreviewImage && (
               <Image
                 source={{ uri: PreviewImage }}
-                style={{ width: Dimensions.get('window').width - 40, height: Dimensions.get('window').height * 0.8, resizeMode: 'contain', }}
+                style={styles.previewImage}
               />
             )}
           </View>
         </Modal>
+
+        {isImagePickerVisible && (
+          <ImagePickerSheet
+            visible={isImagePickerVisible}
+            onClose={() => setIsImagePickerVisible(false)}
+            onResult={onImagePicked}
+          />
+        )}
       </View>
-      {isImagePickerVisible &&
-        <ImagePickerSheet
-          visible={isImagePickerVisible}
-          onClose={() => setIsImagePickerVisible(false)}
-          onResult={onImagePicked}
-        />}
     </CommonView>
-  )
+  );
 }
+
 const styles = StyleSheet.create({
+  flexContainer: { flex: 1 },
+
+  container: {
+    flex: 1,
+    marginHorizontal: 20,
+    overflow: 'visible',
+  },
+
+  headerWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal:10,
+    alignItems: 'center',
+    zIndex: 2000,
+    elevation: 20,
+    overflow: 'visible',
+    backgroundColor: 'transparent',
+    marginBottom:30,
+  },
+
+  sectionTitle: {
+    ...GlobalFonts.subtitle,
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLOR.Black1,
+  },
+
+  contentContainer: {
+    paddingBottom: 30,
+  },
+
   card: {
     backgroundColor: COLOR.White1,
     borderRadius: 14,
@@ -194,121 +259,35 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
-  flexContainer: { flex: 1 },
-  iconContainer: { backgroundColor: COLOR.Black1, padding: 13, borderRadius: 14, overflow: 'hidden' },
-  container: { marginHorizontal: 20 },
-  contentContainer: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, backgroundColor: COLOR.White1, borderRadius: 20 },
-  labelText: {
-    ...GlobalFonts.subtitle,
-    fontWeight: '600',
-    fontSize: 16,
-    color: COLOR.Black1,
-    marginBottom: 5,
-    textTransform: 'capitalize',
-  },
-  statusText: {
-    fontSize: 13,
-    marginRight: 6,
-    fontWeight: '500',
-    ...GlobalFonts.subtitle,
+
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
   },
 
   title: {
+    ...GlobalFonts.subtitle,
     fontSize: 16,
     fontWeight: '600',
-    color: COLOR.Black1,
-    ...GlobalFonts.subtitle,
   },
 
   statusWrap: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
+
+  statusText: {
+    fontSize: 13,
+    marginRight: 6,
   },
+
   statusDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
   },
 
-  sectionTitle: {
-    ...GlobalFonts.subtitle,
-    fontWeight: '600',
-    marginVertical: 10,
-    marginBottom: 20,
-
-  },
-
-  plusContainer: { position: "absolute", right: 20, bottom: 30 },
-
-  valueText: {
-    color: COLOR.dark2,
-    fontWeight: '500',
-    textTransform: 'capitalize',
-    ...GlobalFonts.subtitle,
-  },
-
-  description: {
-    ...GlobalFonts.subtitle,
-    fontSize: 14,
-    color: '#444',
-    marginVertical: 2,
-  },
-
-  amountText: {
-    ...GlobalFonts.subtitle,
-    color: COLOR.button,
-    fontWeight: '500',
-  },
-
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  placeHoldeContainer: {
-    flex: 1,
-    top: 200,
-    height: 800
-  },
-
-  statusBadge: {
-    fontWeight: '500',
-    color: COLOR.White1,
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 15,
-    marginLeft: 5
-  },
-
-  rightColumn: {
-    flex: 0,
-  },
-
-  dateText: {
-    fontSize: 16,
-    ...GlobalFonts.subtitle,
-    color: COLOR.Black1,
-    textAlign: 'center',
-    marginVertical: 2,
-    fontWeight: '600',
-  },
-
-  attachmentScroll: {
-    marginBottom: 10,
-  },
-
-  attachmentImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    marginRight: 8,
-    backgroundColor: '#eee',
-  },
   contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -318,10 +297,8 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 10,
-    backgroundColor: COLOR.dark5,
-    justifyContent: 'center',
-    alignItems: 'center',
     overflow: 'hidden',
+    backgroundColor: COLOR.dark5,
   },
 
   image: {
@@ -330,10 +307,7 @@ const styles = StyleSheet.create({
   },
 
   placeholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#E5E7EB',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -345,16 +319,53 @@ const styles = StyleSheet.create({
   },
 
   amount: {
-    ...GlobalFonts.subtitle,
     fontSize: 18,
     fontWeight: '700',
-    color: COLOR.Black1,
   },
 
   date: {
-    ...GlobalFonts.subtitle,
     marginTop: 4,
     fontSize: FontSize.Font14,
     color: '#6B7280',
+  },
+
+  plusContainer: {
+    position: 'absolute',
+    right: 20,
+    bottom: 30,
+  },
+
+  iconContainer: {
+    backgroundColor: COLOR.Black1,
+    padding: 14,
+    borderRadius: 16,
+  },
+
+  placeHoldeContainer: {
+    marginTop: 120,
+  },
+
+  previewModal: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  closeBtn: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+  },
+
+  closeText: {
+    color: COLOR.White1,
+    fontSize: 18,
+  },
+
+  previewImage: {
+    width: Dimensions.get('window').width - 40,
+    height: Dimensions.get('window').height * 0.8,
+    resizeMode: 'contain',
   },
 });

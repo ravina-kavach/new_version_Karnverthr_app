@@ -47,6 +47,8 @@ import UploadIcon from './UploadIcon.svg'
 import EmptyExpense from './EmptyExpense.svg'
 import CheckOut from './CheckOut.svg'
 import ChatBotIcon from './ChatBot.svg'
+import SortIcon from './Sort.svg'
+
 export {
   Check,
   FillCheck,
@@ -96,5 +98,6 @@ export {
   TenureIcon,
   DateApproval,
   EmptyExpense,
-  ChatBotIcon
+  ChatBotIcon,
+  SortIcon
 };

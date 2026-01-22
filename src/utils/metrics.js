@@ -74,19 +74,33 @@ const FontSize = {
 };
 
 export const COMMON_STATUS = {
-  draft: 'To Report',
-  reported: 'To Submit',
+  draft: 'Draft',
+  reported: 'Reported',
   submitted: 'Submitted',
-  approved: 'Approved',
-  done: 'Done',
-  refused: 'Refused',
-  confirm: 'To Approve',
-  refuse: 'Refused',
-  validate1: 'Second Approval',
+  confirm: 'Pending Approval',
+  validate1: 'Second-Level Approval',
   validate2: 'Admin Approval',
+  approved: 'Approved',
   validate: 'Approved',
+  done: 'Completed',
+  refused: 'Rejected',
+  refuse: 'Rejected',
   cancel: 'Cancelled',
+
 };
+
+export const STATUS_FILTER_OPTIONS = [
+  { id: 'all', name: 'All' },
+  ...Object.entries(COMMON_STATUS).reduce((uniqueList, [key, label]) => {
+    const isDuplicate = uniqueList.some((item) => item.name === label);
+
+    if (!isDuplicate) {
+      uniqueList.push({ id: key, name: label });
+    }
+    
+    return uniqueList;
+  }, []),
+];
 
 export {
   insets,

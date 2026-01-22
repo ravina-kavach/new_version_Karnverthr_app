@@ -107,12 +107,13 @@ const Leaves = () => {
                       ]}
                     />
                     <Text
+                    numberOfLines={1}
                       style={[
                         styles.statusText,
                         { color: getStatusColor(item.status) },
                       ]}
                     >
-                      {COMMON_STATUS[item.status]}
+                      {COMMON_STATUS[item.status] || item.status}
                     </Text>
                   </View>
                 </View>
