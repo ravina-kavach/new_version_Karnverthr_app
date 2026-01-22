@@ -29,7 +29,6 @@ export const useExpenses = () => {
   const [selectedStatus, setSelectedStatus] = React.useState(
   EXPENSE_STATUS[0]
 );
-const [showFilter, setShowFilter] = React.useState(false);
 
 
 
@@ -321,8 +320,6 @@ const filteredExpenses = React.useMemo(() => {
     filteredExpenses,
     selectedStatus, 
     setSelectedStatus,
-    showFilter, 
-    setShowFilter
   }
 
 }

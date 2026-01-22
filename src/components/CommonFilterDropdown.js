@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     width: 220,                 
     backgroundColor: COLOR.White1,
     borderRadius: 12,
-    paddingVertical: 6,
+    paddingVertical: 6,      
     elevation: 12,        
     marginTop: 10, 
     marginLeft: -190, 

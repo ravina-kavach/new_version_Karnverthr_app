@@ -12,11 +12,12 @@ import { COLOR } from '../../theme/theme'
 import { CommonView } from '../../utils/common'
 import { useLeaves } from './LeavesController'
 import { GlobalFonts } from '../../theme/typography'
-import { FontSize, responsiveHeight } from '../../utils/metrics'
+import { FontSize, LEAVE_STATUS_FILTER_OPTIONS, responsiveHeight } from '../../utils/metrics'
 import ApplyLeaveModal from '../../components/ApplyLeaveModal'
 import NodataFound from '../../components/NodataFound'
 import moment from 'moment'
 import { LEAVE_STATUS } from '../../utils/metrics'
+import CommonFilterDropdown from '../../components/CommonFilterDropdown'
 
 const Leaves = () => {
   const {
@@ -48,7 +49,10 @@ const Leaves = () => {
     setIsOverTimeLeave,
     isEarnedLeave,
     setIsEarnedLeave,
-    handleOpenModal
+    handleOpenModal,
+    selectedStatus,
+    setSelectedStatus,
+    filteredLeaves
   } = useLeaves()
 
   return (
@@ -75,7 +79,14 @@ const Leaves = () => {
               ))}
             </View>
           )}
-
+          <View style={styles.headerWrapper}>
+            <Text style={styles.sectionTitle}>Submitted Leaves</Text>
+            <CommonFilterDropdown
+              data={LEAVE_STATUS_FILTER_OPTIONS}
+              selectedItem={selectedStatus}
+              setSelectedItem={setSelectedStatus}
+            />
+          </View>
           <FlatList
             nestedScrollEnabled
             refreshControl={
@@ -84,59 +95,57 @@ const Leaves = () => {
                 onRefresh={onRefresh}
               />
             }
-            data={GetLeaveListData}
+            data={filteredLeaves}
             keyExtractor={(item, index) => index.toString()}
-            ListHeaderComponent={() => (
-              <Text style={styles.sectionTitle}>Submitted Leaves</Text>
-            )}
             renderItem={({ item }) => {
-              return(
-              <View style={styles.leaveCard}>
+              return (
+                <View style={styles.leaveCard}>
 
-                <View style={styles.headerRow}>
-                  <Text style={styles.leaveType}>
-                    Leave Type - {item.leave_type_name}
-                  </Text>
-
-                  <View style={styles.statusBadge}>
-                    <View
-                      style={[
-                        styles.statusDot,
-                        { backgroundColor: getStatusColor(item.status) },
-                      ]}
-                    />
-                    <Text
-                    numberOfLines={1}
-                      style={[
-                        styles.statusText,
-                        { color: getStatusColor(item.status) },
-                      ]}
-                    >
-                      {LEAVE_STATUS[item.status]|| item.status}
+                  <View style={styles.headerRow}>
+                    <Text style={styles.leaveType}>
+                      Leave Type - {item.leave_type_name}
                     </Text>
+
+                    <View style={styles.statusBadge}>
+                      <View
+                        style={[
+                          styles.statusDot,
+                          { backgroundColor: getStatusColor(item.status) },
+                        ]}
+                      />
+                      <Text
+                        numberOfLines={1}
+                        style={[
+                          styles.statusText,
+                          { color: getStatusColor(item.status) },
+                        ]}
+                      >
+                        {LEAVE_STATUS[item.status] || item.status}
+                      </Text>
+                    </View>
                   </View>
+
+                  <View style={styles.innerBox}>
+                    <View>
+                      <Text style={styles.label}>From-To</Text>
+                      <Text style={styles.value}>
+                        {moment(item?.validity?.from).format('DD MMM')} -{' '}
+                        {moment(item?.validity?.to).format('DD MMM')}
+                      </Text>
+                    </View>
+
+                    <View style={styles.totalBox}>
+                      <Text style={styles.label}>Total</Text>
+                      <Text style={styles.days}>
+                        {item.duration_days}{' '}
+                        {item.duration_days > 1 ? 'Days' : 'Day'}
+                      </Text>
+                    </View>
+                  </View>
+
                 </View>
-
-                <View style={styles.innerBox}>
-                  <View>
-                    <Text style={styles.label}>From-To</Text>
-                    <Text style={styles.value}>
-                      {moment(item?.validity?.from).format('DD MMM')} -{' '}
-                      {moment(item?.validity?.to).format('DD MMM')}
-                    </Text>
-                  </View>
-
-                  <View style={styles.totalBox}>
-                    <Text style={styles.label}>Total</Text>
-                    <Text style={styles.days}>
-                      {item.duration_days}{' '}
-                      {item.duration_days > 1 ? 'Days' : 'Day'}
-                    </Text>
-                  </View>
-                </View>
-
-              </View>
-            )}}
+              )
+            }}
             ListEmptyComponent={() => (
               <View style={styles.placeHoldeContainer}>
                 <NodataFound titleText="Add Leaves" />
@@ -150,7 +159,7 @@ const Leaves = () => {
           activeOpacity={0.8}
           onPress={handleOpenModal}
         >
-          <Text style={styles.fabText}>Apply Leave  +</Text>
+          <Text style={styles.fabText}>Apply Leave  + </Text>
         </TouchableOpacity>
       </View>
 
@@ -349,5 +358,24 @@ const styles = StyleSheet.create({
     color: COLOR.White1,
     fontWeight: '600',
     fontSize: 15,
+  },
+
+  headerWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    alignItems: 'center',
+    zIndex: 2000,
+    overflow: 'visible',
+    backgroundColor: 'transparent',
+    marginBottom: 30,
+  },
+
+  sectionTitle: {
+    ...GlobalFonts.subtitle,
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLOR.Black1,
   },
 })

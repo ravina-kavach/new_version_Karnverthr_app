@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useMemo } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +6,7 @@ import { CommonSelector, GetLeavetype, GetLeaveAllocation, CreateLeave, GetLeave
 import moment from 'moment';
 import { STATE, COLOR } from '../../theme/theme';
 import { showMessage } from 'react-native-flash-message';
+import { LEAVE_STATUS } from '../../utils/metrics';
 
 export const useLeaves = () => {
   const { t } = useTranslation();
@@ -24,7 +25,10 @@ export const useLeaves = () => {
   const [isOverTimeLeave, setIsOverTimeLeave] = useState(false)
   const [isEarnedLeave, setIsEarnedLeave] = useState(false)
   const [leavesSummary, setLeavesSummary] = useState([]);
-
+  const [selectedStatus, setSelectedStatus] = useState(
+    LEAVE_STATUS[0]
+  );
+  
   useEffect(() => {
     if(UsersigninData && IsFocused){
   const data = {
@@ -169,6 +173,16 @@ export const useLeaves = () => {
     dispatch(GetLeaveList())
   }, []);
 
+  const filteredLeaves = useMemo(() => {
+    if (!selectedStatus || selectedStatus.id === 'all') {
+      return GetLeaveListData;
+    }
+    return GetLeaveListData?.filter(item => {
+      const itemLabel = LEAVE_STATUS[item.status]; 
+      return itemLabel === selectedStatus.name;
+    });
+  }, [GetLeaveListData, selectedStatus]);
+
   return {
     t,
     UsersigninData,
@@ -204,7 +218,10 @@ export const useLeaves = () => {
     isEarnedLeave,
     setIsEarnedLeave,
     GetLeaveAllocationData,
-    getStatus
+    getStatus,
+    selectedStatus, 
+    setSelectedStatus,
+    filteredLeaves
 
   }
 }
