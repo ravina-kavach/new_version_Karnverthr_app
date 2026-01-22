@@ -74,18 +74,19 @@ const FontSize = {
 };
 
 export const COMMON_STATUS = {
-  draft: 'To Report',
-  reported: 'To Submit',
+  draft: 'Draft',
+  reported: 'Reported',
   submitted: 'Submitted',
-  approved: 'Approved',
-  done: 'Done',
-  refused: 'Refused',
-  confirm: 'To Approve',
-  refuse: 'Refused',
-  validate1: 'Second Approval',
+  confirm: 'Pending Approval',
+  validate1: 'Second-Level Approval',
   validate2: 'Admin Approval',
+  approved: 'Approved',
   validate: 'Approved',
+  done: 'Completed',
+  refused: 'Rejected',
+  refuse: 'Rejected',
   cancel: 'Cancelled',
+
 };
 
 export {

@@ -67,8 +67,8 @@ export default function Expenses() {
         <Text style={styles.title}>{item.name}</Text>
 
         <View style={styles.statusWrap}>
-          <Text style={[styles.statusText, { color: STATE[stateKey] }]}>
-            {COMMON_STATUS[item.state]}
+          <Text numberOfLines={1} style={[styles.statusText, { color: STATE[stateKey] }]}>
+            {COMMON_STATUS[item.state] || item.state}
           </Text>
           <View
             style={[

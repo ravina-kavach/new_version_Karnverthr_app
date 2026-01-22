@@ -97,16 +97,13 @@ export const UserAttendance = createAsyncThunk(
     'UserAttendance',
     async (userdata, thunkAPI) => {
         try {
-            let result = await API.post('api/employee/attandence', userdata);
-            console.log("result===>",result)
+            let result = await API.post('api/employee/attandence', userdata)
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
             } else {
-                 console.log("error else===>",error)
                 return thunkAPI.rejectWithValue({ error: errorMassage(error.response?.data?.errorMessage) });
             }
         } catch (error) {
-             console.log("error catch===>",error)
             return thunkAPI.rejectWithValue({
                 error: errorMassage(error.response?.data?.errorMessage )
             });
@@ -173,6 +170,7 @@ export const GetAttandanceList = createAsyncThunk(
 export const CheckAttandanceStatus = createAsyncThunk(
     'CheckAttandanceStatus',
     async (userdata, thunkAPI) => {
+        
         try {
             let result = await API.get(`api/checkin_checkout_status?email=${userdata.email}`);
             if (result.data.status === "error") {
