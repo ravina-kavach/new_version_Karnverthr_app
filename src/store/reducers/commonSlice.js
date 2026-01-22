@@ -119,13 +119,9 @@ export const UserAttendanceRegularization = createAsyncThunk(
         `api/create/regularization?user_id=${userdata.id}`,
         userdata.data
       );
-
-      if (result.data.status === "success") {
-        return result.data;
-      }
-      return;
+      return result.data; 
     } catch (error) {
-      return error;
+      return thunkAPI.rejectWithValue({error:error.response?.data?.message });
     }
   }
 );

@@ -123,11 +123,8 @@ export const useAttendance = () => {
         message: result.message || "Regularization request submitted successfully",
         type: "success",
       });
-
       setVisible(false);
     } catch (err) {
-      // console.log("Regularization Error:", err);
-
       showMessage({
         icon: "danger",
         message: err.error,
