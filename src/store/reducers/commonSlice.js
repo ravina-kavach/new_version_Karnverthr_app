@@ -26,7 +26,7 @@ export const UserToken = createAsyncThunk(
             );
         } catch (error) {
             return thunkAPI.rejectWithValue(
-                error?.response?.data?.message || error?.message
+                error?.response?.data?.message
             );
         }
     }
