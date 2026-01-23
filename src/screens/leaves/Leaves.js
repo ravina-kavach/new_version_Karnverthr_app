@@ -134,16 +134,16 @@ const Leaves = () => {
                     <View>
                       <Text style={styles.label}>From-To</Text>
                       <Text style={styles.value}>
-                        {moment(item?.validity?.from).format('DD MMM')} -{' '}
-                        {moment(item?.validity?.to).format('DD MMM')}
+                        {moment(item?.from).format('DD MMM')} -{' '}
+                        {moment(item?.to).format('DD MMM')}
                       </Text>
                     </View>
 
                     <View style={styles.totalBox}>
                       <Text style={styles.label}>Total</Text>
                       <Text style={styles.days}>
-                        {item.duration_days}{' '}
-                        {item.duration_days > 1 ? 'Days' : 'Day'}
+                        {item.days}{' '}
+                        {item.days > 1 ? 'Days' : 'Day'}
                       </Text>
                     </View>
                   </View>
