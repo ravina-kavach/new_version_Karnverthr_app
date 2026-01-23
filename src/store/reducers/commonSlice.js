@@ -164,25 +164,32 @@ export const GetAttandanceList = createAsyncThunk(
 );
 
 export const CheckAttandanceStatus = createAsyncThunk(
-    'CheckAttandanceStatus',
-    async (userdata, thunkAPI) => {
-        
-        try {
-            let result = await API.get(`api/checkin_checkout_status?email=${userdata.email}`);
-            if (result.data.status === "error") {
-                return thunkAPI.rejectWithValue({
-                    error: errorMassage(result.data.message)
-                });
-            }
-            return result.data;
-        } catch (error) {
-            console.log("Axios Error:", error);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.message || error.message)
-            });
-        }
-    },
+  'CheckAttandanceStatus',
+  async (userdata, thunkAPI) => {
+    try {
+      const result = await API.get(
+        `api/checkin_checkout_status?email=${encodeURIComponent(userdata.email)}`
+      );
+      if (result.data?.success === false) {
+        return thunkAPI.rejectWithValue({
+          error: errorMassage(result.data.errorMessage || 'Something went wrong'),
+        });
+      }
+
+      return result.data;
+
+    } catch (error) {
+      return thunkAPI.rejectWithValue({
+        error: errorMassage(
+          error.response?.data?.errorMessage ||
+          error.response?.data?.message ||
+          error.message
+        ),
+      });
+    }
+  }
 );
+
 
 
 //==== Get Leave Type 
