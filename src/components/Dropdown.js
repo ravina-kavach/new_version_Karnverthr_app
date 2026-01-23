@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLOR.White1,
     paddingVertical: 6,
+    marginTop:-24,
   },
 
   item: {

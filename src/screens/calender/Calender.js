@@ -234,7 +234,7 @@ export default function Calendar() {
       <View style={styles.listItemContainer}>
         <Text style={styles.listItemTitle}>{item.title || 'Meeting Invitation'}</Text>
         <View style={styles.cardBox}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, }}>
             <Text style={styles.cardLabel}>From-To</Text>
             <Text style={styles.cardDate}>{dayRange}</Text>
             <Text style={styles.cardTime}>{timeRange}</Text>
@@ -243,9 +243,9 @@ export default function Calendar() {
               <Text style={styles.cardDate}>{item?.description.replace(/<[^>]+>/g, '')}</Text>
             </View>
           </View>
-          <View style={styles.linkIconContainer}>
+          {/* <View style={styles.linkIconContainer}>
             <Text style={styles.linkIcon}>🔗</Text>
-          </View>
+          </View> */}
         </View>
       </View>
     );

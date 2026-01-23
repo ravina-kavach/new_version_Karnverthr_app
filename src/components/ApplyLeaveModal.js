@@ -38,8 +38,6 @@ const ApplyLeaveModal = ({
 }) => {
   const [errors, setErrors] = useState({});
 
-  /* ---------------- VALIDATION ---------------- */
-
   const validateForm = () => {
     const newErrors = {};
 
