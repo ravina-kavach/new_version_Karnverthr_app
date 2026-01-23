@@ -10,8 +10,8 @@ import { useShiftTiming } from './ShiftTimingController';
 import { COLOR } from '../../theme/theme';
 import { CommonView } from '../../utils/common';
 import CommonHeader from '../../components/CommonHeader';
-
-/* ================= CONSTANTS ================= */
+import { GlobalFonts } from '../../theme/typography';
+import { FontSize } from '../../utils/metrics';
 
 const DAYS = [
     'Monday',
@@ -28,8 +28,6 @@ const PERIOD_COLORS = {
     lunch: { bg: '#FFF3E0', text: '#EF6C00' },
     afternoon: { bg: '#E8F5E9', text: '#2E7D32' },
 };
-
-/* ================= HELPERS ================= */
 
 const groupByDay = (attendances = []) =>
     attendances.reduce((acc, item) => {
@@ -49,7 +47,6 @@ const formatTime = (hour) => {
 const ShiftTiming = () => {
     const { GetMonthlyShiftsData, isGetMonthlyShiftsFetching } = useShiftTiming();
 
-    /* 🔄 Loader */
     if (isGetMonthlyShiftsFetching) {
         return (
             <View style={styles.loader}>
@@ -152,12 +149,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 
-    loadingText: {
-        marginTop: 10,
-        fontSize: 13,
-        color: '#666',
-    },
-
     empty: {
         textAlign: 'center',
         marginTop: 40,
@@ -182,13 +173,15 @@ const styles = StyleSheet.create({
     },
 
     title: {
-        fontSize: 17,
+        ...GlobalFonts.subtitle,
+        fontSize: FontSize.Font16,
         fontWeight: '800',
         color: '#111',
     },
 
     subTitle: {
-        fontSize: 12,
+        ...GlobalFonts.subtitle,
+        fontSize: FontSize.Font12,
         color: '#666',
         marginTop: 6,
     },
@@ -245,12 +238,14 @@ const styles = StyleSheet.create({
     },
 
     period: {
-        fontSize: 11,
+         ...GlobalFonts.subtitle,
+        fontSize: FontSize.Font10,
         fontWeight: '700',
     },
 
     time: {
-        fontSize: 14,
+        ...GlobalFonts.subtitle,
+        fontSize: FontSize.Font14,
         fontWeight: '800',
         marginTop: 4,
         color: '#111',
