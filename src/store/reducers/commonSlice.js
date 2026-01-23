@@ -539,6 +539,27 @@ export const GetCalendarEvents = createAsyncThunk(
         }
     },
 );
+
+//========= GetMonthlyShifts
+export const GetMonthlyShifts = createAsyncThunk(
+    'GetMonthlyShifts',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(`api/WorkingSchedules?user_id=${userdata.id}`);
+            console.log('GetCalendarEvents result.data >>', result.data.status);
+            if (result.data.status === "success") {
+                return result.data.data;
+            } else {
+                return thunkAPI.rejectWithValue({ error: result.data.error });
+            }
+        } catch (error) {
+            console.log("error>>>", error)
+            console.log('try catch [ GetCalendarEvents ] error.message>>', error.message);
+            return error;
+        }
+    },
+);
+
 export const GetCalendarEventsMore = createAsyncThunk(
     'GetCalendarEventsMore',
     async (userdata, thunkAPI) => {
@@ -845,31 +866,6 @@ export const GetReportDocsMore = createAsyncThunk(
     },
 );
 
-export const GetMonthlyShifts = createAsyncThunk(
-    'GetMonthlyShifts',
-    async (userdata, thunkAPI) => {
-        console.log('GetMonthlyShifts userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/employee/shift',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetMonthlyShifts result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetMonthlyShifts ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
 
 export const CommonSlice = createSlice({
     name: 'CommonSlice',
@@ -2313,9 +2309,8 @@ export const CommonSlice = createSlice({
 
 
         builder.addCase(GetMonthlyShifts.fulfilled, (state, { payload }) => {
-            // console.log("[GetMonthlyShifts.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetMonthlyShiftsData = payload.data.shifts_this_month;
+                state.GetMonthlyShiftsData = payload;
                 state.isGetMonthlyShifts = true;
                 state.isGetMonthlyShiftsFetching = false;
                 state.isError = false;

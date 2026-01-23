@@ -1,29 +1,24 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { AuthSelector, GetMonthlyShifts } from '../../store/reducers/commonSlice';
+import { CommonSelector, GetMonthlyShifts } from '../../store/reducers/commonSlice';
+import { useIsFocused } from '@react-navigation/native';
 
 export const useShiftTiming = () => {
-     const dispatch = useDispatch();
-    const [expandedId, setExpandedId] = React.useState(null);
-    
-    
-        const { GetMonthlyShiftsData, UsersigninData } = useSelector(AuthSelector);
-    
-        React.useEffect(() => {
-            dispatch(GetMonthlyShifts({ "email": UsersigninData?.email }))
-        }, [])
-    
-        const ShiftData = GetMonthlyShiftsData?.map((shift, index) => {
-            return {
-                id: `${index + 1}`,
-                day: shift.date,
-                weekday: shift.weekday,
-                shifts: shift.shifts
-            };
-        }) || [];
-  return {
-    expandedId,
-    setExpandedId,
-    ShiftData
-  }
+    const dispatch = useDispatch();
+    const IsFocused =useIsFocused();
+
+    const { GetMonthlyShiftsData, UsersigninData, isGetMonthlyShiftsFetching } = useSelector(CommonSelector);
+
+    useEffect(() => {
+        if(IsFocused && UsersigninData){
+            const data = {
+                id: Number(UsersigninData.user_id),
+            };  
+            dispatch(GetMonthlyShifts(data))
+          }
+    }, [])
+    return {
+        GetMonthlyShiftsData,
+        isGetMonthlyShiftsFetching
+    }
 }
