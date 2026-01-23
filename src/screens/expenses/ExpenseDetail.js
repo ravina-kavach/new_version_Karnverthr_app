@@ -1,0 +1,151 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+} from 'react-native';
+import CommonHeader from '../../components/CommonHeader';
+import { CommonView } from '../../utils/common';
+
+const ExpenseDetail = ({ route }) => {
+  const { expense } = route.params;
+
+  return (
+    <CommonView>
+      <CommonHeader title={"Expense Detail"} />
+    <ScrollView style={styles.container}>
+      <View style={styles.statusRow}>
+        <View style={styles.dot} />
+        <Text style={styles.statusText}>
+          {expense.state?.toUpperCase()}
+        </Text>
+      </View>
+      <View style={styles.amountBox}>
+        <Text style={styles.amount}>
+          ₹ {expense.total_amount}
+        </Text>
+        <Text style={styles.date}>{expense.date}</Text>
+      </View>
+      <View style={styles.card}>
+        <DetailRow label="Employee" value={expense.employee_name} />
+        <DetailRow label="Expense Sheet" value={expense.sheet_id?.[1]} />
+        <DetailRow label="Product" value={expense.product_id?.[1]} />
+        <DetailRow label="Account" value={expense.account_id?.[1]} />
+        <DetailRow label="Payment Mode" value={expense.payment_mode} />
+        <DetailRow label="Currency" value={expense.currency_id?.[1]} />
+      </View>
+      {expense.attachment_ids?.length > 0 && (
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>Attachments</Text>
+
+          {expense.attachment_ids.map(item => (
+            <Image
+              key={item.id}
+              source={{ uri: `data:${item.mimetype};base64,${item.base64}` }}
+              style={styles.attachment}
+            />
+          ))}
+        </View>
+      )}
+    </ScrollView>
+    </CommonView>
+  );
+};
+
+const DetailRow = ({ label, value }) => (
+  <View style={styles.row}>
+    <Text style={styles.label}>{label}</Text>
+    <Text style={styles.value}>{value || '-'}</Text>
+  </View>
+);
+
+export default ExpenseDetail;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+
+  title: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    margin:20
+  },
+
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#1CB5A3',
+    marginRight: 8,
+  },
+
+  statusText: {
+    color: '#1CB5A3',
+    fontWeight: '500',
+  },
+
+  amountBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+
+  amount: {
+    fontSize: 24,
+    fontWeight: '700',
+  },
+
+  date: {
+    color: '#777',
+    marginTop: 4,
+  },
+
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+
+  label: {
+    color: '#777',
+    fontSize: 14,
+  },
+
+  value: {
+    fontSize: 14,
+    fontWeight: '500',
+    maxWidth: '60%',
+    textAlign: 'right',
+  },
+
+  sectionTitle: {
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+
+  attachment: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+});

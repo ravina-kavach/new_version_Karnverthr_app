@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { PermissionsAndroid, Linking } from 'react-native'
-import { useIsFocused } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
 import { CommonSelector, CategoryList, CreateExpenses, GetExpenseList, AccountList, updateState } from '../../store/reducers/commonSlice'
 import { launchCamera } from 'react-native-image-picker'
@@ -15,6 +15,7 @@ export const useExpenses = () => {
   const { t, i18n } = useTranslation();
   const IsFocused = useIsFocused();
   const dispatch = useDispatch();
+  const Navigation = useNavigation()
   const [Formdata, setFormdata] = React.useState({})
   const [IsStartdatepickeropen, setIsStartdatepickeropen] = React.useState(false)
   const [startDate, setStartDate] = React.useState(null);
@@ -280,7 +281,11 @@ const filteredExpenses = React.useMemo(() => {
   });
 }, [GetExpenseListData, selectedStatus]);
 
-
+const NavigateExpenseDetail = (item) => {
+  Navigation.navigate('expenseDetail', {
+      expense: item,
+    })
+  }
 
   return {
     t,
@@ -320,6 +325,7 @@ const filteredExpenses = React.useMemo(() => {
     filteredExpenses,
     selectedStatus, 
     setSelectedStatus,
+    NavigateExpenseDetail
   }
 
 }

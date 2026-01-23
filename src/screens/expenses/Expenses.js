@@ -60,6 +60,7 @@ export default function Expenses() {
     filteredExpenses,
     selectedStatus,
     setSelectedStatus,
+    NavigateExpenseDetail
   } = useExpenses();
 
   const renderItem = ({ item }) => {
@@ -72,7 +73,8 @@ export default function Expenses() {
         : null;
 
     return (
-      <View style={styles.card}>
+      <TouchableWithoutFeedback  onPress={()=>NavigateExpenseDetail(item)}>
+        <View style={styles.card}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>{item.name}</Text>
 
@@ -114,7 +116,8 @@ export default function Expenses() {
             </Text>
           </View>
         </View>
-      </View>
+        </View>
+      </TouchableWithoutFeedback>
     );
   };
 
@@ -151,8 +154,6 @@ export default function Expenses() {
             )}
           />
         </View>
-
-        {/* ➕ Floating Button */}
         <TouchableWithoutFeedback onPress={() => setIsExoensemodal(true)}>
           <View style={styles.plusContainer}>
             <View style={styles.iconContainer}>
@@ -160,8 +161,6 @@ export default function Expenses() {
             </View>
           </View>
         </TouchableWithoutFeedback>
-
-        {/* ➕ Add Expense Modal */}
         <AddExpenseModal
           visible={IsExoensemodal}
           closeModal={closeModal}
