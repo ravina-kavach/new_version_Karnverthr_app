@@ -213,11 +213,13 @@ export const GetLeaveAllocation = createAsyncThunk(
       const result = await API.get(
         `employee/employee-dashboard?user_id=${userdata.id}`
       );
-
-      return result.data.data;
+       if (result.data.success) {
+           return result.data.cards;
+        }
+        return;
 
     } catch (error) {
-      console.log("Axios Error:", error.response || error);
+      console.log("Axios Error:", error.response);
       return;
     }
   }

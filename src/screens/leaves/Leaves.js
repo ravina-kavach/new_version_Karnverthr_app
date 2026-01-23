@@ -68,6 +68,10 @@ const Leaves = () => {
             </View>
           ) : (
             <View style={styles.summaryCard}>
+            <View>
+            <Text style={styles.sectionTitle}>My Leaves</Text>
+            </View>
+            <View style={styles.innnerSummaryCard}>    
               {leavesSummary.map((item, index) => (
                 <View key={index} style={styles.leaveBox}>
                   <Text style={styles.leaveTitle}>{item.title}</Text>
@@ -77,6 +81,7 @@ const Leaves = () => {
                   <Text style={styles.leftText}>Left: {item.left}</Text>
                 </View>
               ))}
+              </View>
             </View>
           )}
           <View style={styles.headerWrapper}>
@@ -216,10 +221,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginHorizontal: 20,
     padding: 15,
-    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     elevation: 4,
+  },
+
+  innnerSummaryCard: {
+    padding: 15,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
 
   summaryEmpty: {
@@ -250,14 +261,17 @@ const styles = StyleSheet.create({
   },
 
   leaveTitle: {
-    fontSize: FontSize.Font14,
     ...GlobalFonts.subtitle,
+    color:COLOR.Black1,
+    fontSize: FontSize.Font14,
   },
 
   leaveCount: {
-    fontSize: FontSize.Font24,
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font18,
+    color:COLOR.TextSecondary,
     fontWeight: '700',
-    marginVertical: 4,
+    marginVertical: 10,
   },
 
   leftText: {

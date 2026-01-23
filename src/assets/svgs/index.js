@@ -48,6 +48,7 @@ import EmptyExpense from './EmptyExpense.svg'
 import CheckOut from './CheckOut.svg'
 import ChatBotIcon from './ChatBot.svg'
 import SortIcon from './Sort.svg'
+import DotsIcon from './Dots.svg'
 
 export {
   Check,
@@ -99,5 +100,6 @@ export {
   DateApproval,
   EmptyExpense,
   ChatBotIcon,
-  SortIcon
+  SortIcon,
+  DotsIcon
 };

@@ -51,7 +51,8 @@ export const useLeaves = () => {
   }
 
   useEffect(() => {
-    if (GetLeaveAllocationData?.success && IsFocused) {
+    
+    if (GetLeaveAllocationData && IsFocused) {
       updateLeaveSummary(GetLeaveAllocationData);
     } else {
       setLeavesSummary([]);
@@ -60,18 +61,23 @@ export const useLeaves = () => {
 
 
   const updateLeaveSummary = (res) => {
-    const cards = res?.cards ?? [];
+  const cards = Array.isArray(res) ? res : [];
 
-    const mappedData = cards.map(item => ({
-      title: leaveTypeMap[item.leave_type] || item.leave_type,
-      used: String(item?.used ?? 0).padStart(2, "0"),
-      total: String(item?.total ?? 0).padStart(2, "0"),
-      left: item?.remaining ?? 0,
-    }));
+  const mappedData = cards.map((item) => {
+    const total = Number(item?.total) || 0;
+    const used = Number(item?.used) || 0;
+    const remaining = Number(item?.remaining) || 0;
 
-    setLeavesSummary(mappedData);
-  };
+    return {
+      title: item.leave_type,         
+      used: String(used).padStart(2, '0'),
+      total: String(total).padStart(2, '0'),
+      left: remaining,
+    };
+  });
 
+  setLeavesSummary(mappedData);
+};
   const resetLeaveForm = () => {
     setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
     setSelectedDeptType({ id: '', name: t("Leaves.Select_Department_Type") });
