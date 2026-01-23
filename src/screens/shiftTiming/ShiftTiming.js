@@ -47,27 +47,24 @@ const formatTime = (hour) => {
 const ShiftTiming = () => {
     const { GetMonthlyShiftsData, isGetMonthlyShiftsFetching } = useShiftTiming();
 
-    if (isGetMonthlyShiftsFetching) {
-        return (
-            <View style={styles.loader}>
-                <ActivityIndicator size="large" color={COLOR.Black1} />
-            </View>
-        );
-    }
-
     return (
         <CommonView>
             <CommonHeader title='Shift Timing' />
-            <FlatList
-                data={GetMonthlyShiftsData || []}
-                keyExtractor={(item) => String(item.id)}
-                contentContainerStyle={styles.container}
-                renderItem={({ item }) => <ShiftCard shift={item} />}
-                ListEmptyComponent={
-                    <Text style={styles.empty}>No shifts found</Text>
-                }
-                showsVerticalScrollIndicator={false}
-            />
+            {isGetMonthlyShiftsFetching ?
+                <View style={styles.loader}>
+                    <ActivityIndicator size="large" color={COLOR.Black1} />
+                </View>
+                :
+                <FlatList
+                    data={GetMonthlyShiftsData || []}
+                    keyExtractor={(item) => String(item.id)}
+                    contentContainerStyle={styles.container}
+                    renderItem={({ item }) => <ShiftCard shift={item} />}
+                    ListEmptyComponent={
+                        <Text style={styles.empty}>No shifts found</Text>
+                    }
+                    showsVerticalScrollIndicator={false}
+                />}
         </CommonView>
     );
 };
@@ -226,7 +223,7 @@ const styles = StyleSheet.create({
     },
 
     slotRow: {
-        flexDirection:'column',        
+        flexDirection: 'column',
         gap: 10,
     },
 
@@ -238,7 +235,7 @@ const styles = StyleSheet.create({
     },
 
     period: {
-         ...GlobalFonts.subtitle,
+        ...GlobalFonts.subtitle,
         fontSize: FontSize.Font10,
         fontWeight: '700',
     },
