@@ -107,7 +107,7 @@ const Leaves = () => {
                 <View style={styles.leaveCard}>
 
                   <View style={styles.headerRow}>
-                    <Text style={styles.leaveType}>
+                    <Text numberOfLines={2} style={styles.leaveType}>
                       {item.leave_type_name}
                     </Text>
 
@@ -125,7 +125,7 @@ const Leaves = () => {
                           { color: getStatusColor(item.status) },
                         ]}
                       >
-                        {LEAVE_STATUS[item.status] || item.status}
+                        {LEAVE_STATUS[item.status].toUpperCase() || item.status.toUpperCase()}
                       </Text>
                     </View>
                   </View>
@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#1F2937',
+    maxWidth:180,
   },
 
   statusBadge: {

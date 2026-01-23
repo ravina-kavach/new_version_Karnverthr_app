@@ -76,14 +76,14 @@ export default function Expenses() {
       <TouchableWithoutFeedback  onPress={()=>NavigateExpenseDetail(item)}>
         <View style={styles.card}>
         <View style={styles.headerRow}>
-          <Text style={styles.title}>{item.name}</Text>
+          <Text numberOfLines={2} style={styles.title}>{item.name}</Text>
 
           <View style={styles.statusWrap}>
             <Text
               numberOfLines={1}
               style={[styles.statusText, { color: STATE[stateKey] }]}
             >
-              {EXPENSE_STATUS[item.state]}
+              {EXPENSE_STATUS[item.state].toUpperCase()}
             </Text>
             <View
               style={[
@@ -267,6 +267,7 @@ const styles = StyleSheet.create({
 
   title: {
     ...GlobalFonts.subtitle,
+    maxWidth:180,
     fontSize: 16,
     fontWeight: '600',
   },

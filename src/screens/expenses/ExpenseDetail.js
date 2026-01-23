@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import CommonHeader from '../../components/CommonHeader';
 import { CommonView } from '../../utils/common';
+import { STATE } from '../../theme/theme';
+import { EXPENSE_STATUS } from '../../utils/metrics';
 
 const ExpenseDetail = ({ route }) => {
   const { expense } = route.params;
@@ -17,9 +19,9 @@ const ExpenseDetail = ({ route }) => {
       <CommonHeader title={"Expense Detail"} />
     <ScrollView style={styles.container}>
       <View style={styles.statusRow}>
-        <View style={styles.dot} />
-        <Text style={styles.statusText}>
-          {expense.state?.toUpperCase()}
+        <View style={[styles.dot,{backgroundColor:STATE[expense.state]}]} />
+        <Text style={[styles.statusText,{color:STATE[expense.state]}]}>
+          {EXPENSE_STATUS[expense.state].toUpperCase()}
         </Text>
       </View>
       <View style={styles.amountBox}>
@@ -86,12 +88,10 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#1CB5A3',
     marginRight: 8,
   },
 
   statusText: {
-    color: '#1CB5A3',
     fontWeight: '500',
   },
 

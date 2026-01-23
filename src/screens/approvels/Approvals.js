@@ -233,7 +233,7 @@ export default function Approvals() {
           </View>
           <View style={styles.statusWrap}>
             <Text style={[styles.status, { color: statusColor }]}>
-              {getStatusLabel(item.state)}
+              {getStatusLabel(item.state).toUpperCase()}
             </Text>
             <View style={[styles.dot, { backgroundColor: statusColor }]} />
           </View>
@@ -259,14 +259,14 @@ export default function Approvals() {
               style={[styles.btn, styles.approveBtn]}
               onPress={() => handleApprove(item.id)}
             >
-              <Text style={styles.approveText}>{t('Approvals.Approve')}</Text>
+              <Text style={styles.approveText}>{t('Approvals.Approve').toUpperCase()}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.btn, styles.rejectBtn]}
               onPress={() => handleRejectPress(item.id)}
             >
-              <Text style={styles.rejectText}>{t('Approvals.Reject')}</Text>
+              <Text style={styles.rejectText}>{t('Approvals.Reject').toUpperCase()}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
     ...GlobalFonts.subtitle,
     fontSize: FontSize.Font16,
     fontWeight: '600',
-    maxWidth: '100%',
+    maxWidth: 180,
   },
   type: {
     ...GlobalFonts.subtitle,
