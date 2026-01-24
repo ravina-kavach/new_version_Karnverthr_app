@@ -83,7 +83,10 @@ export default function Expenses() {
               numberOfLines={1}
               style={[styles.statusText, { color: STATE[stateKey] }]}
             >
-              {EXPENSE_STATUS[item.state].toUpperCase()}
+              {EXPENSE_STATUS[item.state].toUpperCase()
+              
+              
+              }
             </Text>
             <View
               style={[

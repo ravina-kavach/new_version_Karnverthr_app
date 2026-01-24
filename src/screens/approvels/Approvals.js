@@ -118,11 +118,10 @@ export default function Approvals() {
       const result = await dispatch(
         ApproveActionApprove(payload)
       ).unwrap();
-
-      if (result?.success) {
+      if (result?.status === "success") {
         showMessage({
           icon: 'success',
-          message: result?.message || 'Approval successful',
+          message: result?.message,
           type: 'success',
         });
 

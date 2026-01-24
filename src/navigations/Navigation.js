@@ -23,7 +23,9 @@ import EmergencyDetails from '../screens/profile/EmergencyDetails';
 import Leaves from '../screens/leaves/Leaves';
 import Chatbot from '../screens/chatbot/Chatbot';
 import ExpenseDetail from '../screens/expenses/ExpenseDetail';
-import { navigationRef } from '../utils/NavigationService'
+import PaySlip from '../screens/paySlip/PaySlip';
+import { navigationRef } from '../utils/NavigationService';
+
 const Stack = createNativeStackNavigator();
 
 function Navigation({ props }) {
@@ -49,6 +51,7 @@ function Navigation({ props }) {
             <Stack.Screen name="emergencyDetails" component={EmergencyDetails} />
             
             <Stack.Screen name="shiftTiming" component={ShiftTiming} />
+            <Stack.Screen name="paySlip" component={PaySlip} />
             <Stack.Screen name="attendance" component={Attendance} />
             <Stack.Screen name="leaves" component={Leaves} />
             <Stack.Screen name="calendarList" component={CalendarList} />

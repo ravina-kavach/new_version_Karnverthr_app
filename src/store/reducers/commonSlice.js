@@ -703,10 +703,10 @@ export const ApprovalList = createAsyncThunk(
 export const ApproveActionApprove = createAsyncThunk(
     'ApproveActionApprove',
     async (userdata, thunkAPI) => {
-         console.log('ApproveActionApprove payload >>', JSON.stringify(payload));
+         console.log('ApproveActionApprove payload >>', JSON.stringify(userdata));
         try {
             let result = await API.post(`/api/admin/approve`, userdata);
-            console.log('ApproveActionApprove result.data >>', result.data);
+            console.log('ApproveActionApprove result.data >>', result);
             if (result.data.status === "success") {
                 return result.data
             } else {

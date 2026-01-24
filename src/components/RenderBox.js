@@ -10,7 +10,7 @@ import { COLOR } from "../theme/theme";
 import { FontSize, responsiveHeight, responsiveWidth } from "../utils/metrics";
 import { GlobalFonts } from "../theme/typography";
 
-const ENABLED_SCREENS = ["attendance", "leaves","expenses", "calender", "approvals", "shiftTiming"];
+const ENABLED_SCREENS = ["attendance", "leaves","expenses", "calender", "approvals", "shiftTiming", "paySlip" ];
 // const ENABLED_SCREENS = ["attendance", "leaves", "expenses", "calender", "approvals"];
 
 export const RenderBox = ({ image, title, screen }) => {
