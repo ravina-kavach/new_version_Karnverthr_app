@@ -117,60 +117,57 @@ const heandleOnCamera = async () => {
 const handleOnGallery = async () => {
   try {
     let hasPermission = true;
-
     if (Platform.OS === 'android') {
       if (Platform.Version >= 33) {
-        // ✅ Android 13+
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
         );
         hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
       } else {
-        // ✅ Android 12 and below
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
         );
         hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
       }
     }
-
     if (Platform.OS === 'ios') {
       const result = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
-      hasPermission = result === RESULTS.GRANTED;
+      hasPermission =
+        result === RESULTS.GRANTED || result === RESULTS.LIMITED;
     }
 
     if (!hasPermission) {
       showSettingsAlert();
       return { success: false };
     }
-
-    return new Promise((resolve) => {
-      launchImageLibrary(
-        {
-          mediaType: 'photo',
-          selectionLimit: 1,
-          includeBase64: true,
-          quality: 0.8,
-        },
-        (response) => {
-          if (response?.didCancel || response?.errorCode) {
-            return resolve({ success: false });
-          }
-
-          const asset = response.assets?.[0];
-
-          resolve({
-            success: true,
-            image: {
-              base64: asset.base64,
-              uri: asset.uri,
-              fileName: asset.fileName,
-              type: asset.type,
-            },
-          });
-        }
-      );
+    await new Promise((res) => setTimeout(res, 250));
+    const result = await launchImageLibrary({
+      mediaType: 'photo',
+      selectionLimit: 1,
+      includeBase64: true,
+      quality: 0.8,
     });
+    if (result.didCancel || result.errorCode) {
+      return { success: false };
+    }
+    if (!result.assets || !result.assets.length) {
+      return { success: false };
+    }
+
+    const asset = result.assets[0];
+
+    if (!asset?.uri) {
+      return { success: false };
+    }
+    return {
+      success: true,
+      image: {
+        base64: asset.base64 || '',
+        uri: asset.uri,
+        fileName: asset.fileName || `image_${Date.now()}.jpg`,
+        type: asset.type || 'image/jpeg',
+      },
+    };
   } catch (error) {
     console.log('handleOnGallery error:', error);
     return { success: false };

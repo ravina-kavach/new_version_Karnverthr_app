@@ -64,6 +64,7 @@ const startTracking = async () => {
       stopOnTerminate: false,
       startOnBoot: true,
       enableHeadless: true,
+      preventSuspend: false,
       allowIdenticalLocations: false,
       foregroundService: true,
       debug: false,
