@@ -10,7 +10,7 @@ import { LEAVE_STATUS } from '../../utils/metrics';
 
 export const useLeaves = () => {
   const { t } = useTranslation();
-  const { UsersigninData, GetLeavetypeData, GetLeaveAllocationData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
+  const { UsersigninData, GetLeavetypeData,UserDetailsData, GetLeaveAllocationData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
   const dispatch = useDispatch();
   const IsFocused = useIsFocused();
   const [visibleModal, setVisibleModel] = useState(false)
@@ -182,6 +182,7 @@ export const useLeaves = () => {
   return {
     t,
     UsersigninData,
+    UserDetailsData,
     leavesSummary,
     getStatusColor,
     visibleModal,

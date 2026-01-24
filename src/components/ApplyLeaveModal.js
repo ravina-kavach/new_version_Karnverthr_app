@@ -16,6 +16,7 @@ import moment from 'moment';
 
 const ApplyLeaveModal = ({
   UsersigninData,
+  UserDetailsData,
   leaveTypeData,
   setSelectedLeaveType,
   selectedLeaveType,
@@ -151,7 +152,7 @@ const ApplyLeaveModal = ({
           <Text style={styles.label}>Employee</Text>
           <View style={styles.userInput}>
             <Text style={styles.placeholder}>
-              {UsersigninData?.full_name}
+              {UserDetailsData?.name}
             </Text>
           </View>
           <Text style={styles.label}>Leave Type</Text>

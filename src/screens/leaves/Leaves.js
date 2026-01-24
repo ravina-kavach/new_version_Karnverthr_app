@@ -28,6 +28,7 @@ const Leaves = () => {
     saveLeave,
     GetLeavetypeData,
     UsersigninData,
+    UserDetailsData,
     setSelectedLeaveType,
     selectedLeaveType,
     selectStartDate,
@@ -171,6 +172,7 @@ const Leaves = () => {
       {visibleModal && (
         <ApplyLeaveModal
           UsersigninData={UsersigninData}
+          UserDetailsData={UserDetailsData}
           leaveTypeData={GetLeavetypeData}
           setSelectedLeaveType={setSelectedLeaveType}
           selectedLeaveType={selectedLeaveType}

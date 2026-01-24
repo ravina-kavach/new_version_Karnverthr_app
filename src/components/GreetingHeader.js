@@ -23,9 +23,8 @@ const GreetingHeader = ({
   onAvatarPress,
 }) => {
   const { t } = useTranslation();
-  const { UsersigninData } = useSelector(CommonSelector);
+  const { UserDetailsData } = useSelector(CommonSelector);
   const navigation = useNavigation();
-
   const navigateProfile = () => {
     if (screenName !== 'editProfile') {
       navigation.navigate('profile');
@@ -50,7 +49,7 @@ const GreetingHeader = ({
   };
 
   const initials = getInitials(
-    UsersigninData.full_name || UsersigninData.name
+    UserDetailsData.name
   );
   const bgColor = getAvatarColor(initials);
 
@@ -85,8 +84,8 @@ const GreetingHeader = ({
       <View>
         <Text style={styles.title}>
           {screenName === 'editProfile'
-            ? UsersigninData.full_name
-            : `${t('comman.Hello')} ${UsersigninData.full_name}`
+            ? UserDetailsData.name
+            : `${t('comman.Hello')} ${UserDetailsData.name}`
           }
         </Text>
         <Text style={styles.subtitle}>

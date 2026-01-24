@@ -13,6 +13,7 @@ import {
   UserVerification,
   Usersignin,
   updateState,
+  GetUserDetails
 } from '../../../store/reducers/commonSlice';
 import { useTranslation } from 'react-i18next';
 
@@ -58,6 +59,7 @@ export const useSignInScreen = () => {
     isVerified,
     VerfiedUserData,
     isVerifiedFetching,
+    isUserDetailsFetching,
     UsersigninData,
     isError,
     errorMessage,
@@ -141,38 +143,42 @@ export const useSignInScreen = () => {
       await Service.setisBiomatic('false');
       await Service.setisFirstime('false');
     }
-
-    // Navigation.navigate('home')
-    // testing parpuse after romove it.
-
-    Navigation.navigate('myTab');
+    if (UsersigninData) {
+      const data = {
+        id: Number(UsersigninData.user_id),
+      };
+      dispatch(GetUserDetails(data))
+    }
+    if(!isUserDetailsFetching){
+      Navigation.navigate('myTab');
+    }
     await Service.setisFirstime('true');
   };
 
   const Getdata = async () => {
-  const isVerifiedUser = await Service.GetisVerified();
-  setIsVisibleVerifiedModal(!isVerifiedUser);
+    const isVerifiedUser = await Service.GetisVerified();
+    setIsVisibleVerifiedModal(!isVerifiedUser);
 
-  const rememberedUser = await Service.GetRemember();
-  setRememberData(rememberedUser);
+    const rememberedUser = await Service.GetRemember();
+    setRememberData(rememberedUser);
 
-  const biometricEnabled = await Service.GetisBiomatic();
+    const biometricEnabled = await Service.GetisBiomatic();
 
-  const shouldShowBiometric =
-    biometricEnabled === 'true' &&
-    rememberedUser?.email &&
-    rememberedUser?.password;
+    const shouldShowBiometric =
+      biometricEnabled === 'true' &&
+      rememberedUser?.email &&
+      rememberedUser?.password;
 
-  setisChecked(biometricEnabled === 'true');
+    setisChecked(biometricEnabled === 'true');
 
-  if (shouldShowBiometric) {
-    setFormdata(rememberedUser);
+    if (shouldShowBiometric) {
+      setFormdata(rememberedUser);
 
-    setTimeout(() => {
-      setisShowbiomatric(true);
-    }, 300);
-  }
-};
+      setTimeout(() => {
+        setisShowbiomatric(true);
+      }, 300);
+    }
+  };
 
 
   const GetDevicedata = async () => {
@@ -288,11 +294,11 @@ export const useSignInScreen = () => {
     }
   };
 
-  const navigateTerms = ()=>{
-      Navigation.navigate('termsofuse')
+  const navigateTerms = () => {
+    Navigation.navigate('termsofuse')
   }
-   const navigatePrivacyPolicy = ()=>{
-      Navigation.navigate('privacyPolicy')
+  const navigatePrivacyPolicy = () => {
+    Navigation.navigate('privacyPolicy')
   }
   return {
     t,
