@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { View, Image, StyleSheet } from "react-native";
+import { View, Image, StyleSheet, Platform } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import { RowView, Label } from "../utils/common";
 import { COLOR } from "../theme/theme";
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "transparent",
   },
 
   buttonRow: {
@@ -98,8 +98,10 @@ const styles = StyleSheet.create({
   dropdown: {
     borderRadius: 12,
     backgroundColor: COLOR.White1,
-    paddingVertical: 6,
-    marginTop:-24,
+    borderColor:COLOR.dark5,
+    borderWidth:2,
+    paddingVertical: 5,
+    marginTop:Platform.OS === 'android'? -24 : 0,
   },
 
   item: {

@@ -11,7 +11,7 @@ const EventCard = ({ item }) => {
   return (
     <View style={styles.card}>
       {/* Title */}
-      <Text style={styles.title}>Name - {item.name}</Text>
+      <Text style={styles.title}>Event : {item.name}</Text>
 
       {/* Row 1 */}
       <View style={styles.row}>
