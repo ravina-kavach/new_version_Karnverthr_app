@@ -13,7 +13,6 @@ import { EXPENSE_STATUS } from '../../utils/metrics';
 
 const ExpenseDetail = ({ route }) => {
   const { expense } = route.params;
-
   return (
     <CommonView>
       <CommonHeader title={"Expense Detail"} />
@@ -31,8 +30,8 @@ const ExpenseDetail = ({ route }) => {
         <Text style={styles.date}>{expense.date}</Text>
       </View>
       <View style={styles.card}>
-        <DetailRow label="Employee" value={expense.employee_name} />
-        <DetailRow label="Expense Sheet" value={expense.sheet_id?.[1]} />
+        <DetailRow label="Employee Name" value={expense.name} />
+        <DetailRow label="Attachment Id" value={expense.attachment_ids[0]?.id} />
         <DetailRow label="Product" value={expense.product_id?.[1]} />
         <DetailRow label="Account" value={expense.account_id?.[1]} />
         <DetailRow label="Payment Mode" value={expense.payment_mode} />
