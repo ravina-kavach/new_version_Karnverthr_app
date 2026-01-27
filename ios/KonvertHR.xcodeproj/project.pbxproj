@@ -438,13 +438,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-KonvertHR/Pods-KonvertHR-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-KonvertHR/Pods-KonvertHR-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -459,13 +455,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-KonvertHR/Pods-KonvertHR-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-KonvertHR/Pods-KonvertHR-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -495,7 +487,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 4A74AHGFX4;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = KonvertHR/Info.plist;
@@ -531,7 +523,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = 4A74AHGFX4;
 				INFOPLIST_FILE = KonvertHR/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Konvert-HR";

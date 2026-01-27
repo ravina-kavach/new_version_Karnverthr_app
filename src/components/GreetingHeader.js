@@ -31,6 +31,7 @@ const GreetingHeader = ({
     }
   };
 
+  // console.log("UserDetailsData?.name===>",UserDetailsData)
   const getInitials = (fullName) => {
     if (!fullName) return '';
     const words = fullName.trim().split(' ');
@@ -85,7 +86,7 @@ const GreetingHeader = ({
         <Text style={styles.title}>
           {screenName === 'editProfile'
             ? UserDetailsData.name
-            : `${t('comman.Hello')} ${UserDetailsData.name}`
+            : `${t('comman.Hello')} ${UserDetailsData?.name}`
           }
         </Text>
         <Text style={styles.subtitle}>

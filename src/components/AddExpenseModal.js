@@ -15,6 +15,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { GlobalFonts } from '../theme/typography';
 import { COLOR } from '../theme/theme';
+import ImagePickerSheet from './ImagePickerSheet';
 
 export const AddExpenseModal = ({
   visible,
@@ -39,6 +40,9 @@ export const AddExpenseModal = ({
   selectAccountType,
   setSelectedAccountType,
   isEditMode = false,
+  isImagePickerVisible,
+  setIsImagePickerVisible,
+  onImagePicked,
   t,
 }) => {
   const [errors, setErrors] = useState({});
@@ -101,7 +105,7 @@ export const AddExpenseModal = ({
   };
 
   return (
-    <Modal animationType="fade" statusBarTranslucent transparent visible={visible}>
+    <Modal animationType="fade" presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
       <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={handleClose}>
         <TouchableWithoutFeedback>
           <View style={styles.card}>
@@ -128,6 +132,7 @@ export const AddExpenseModal = ({
 
               <Text style={styles.label}>{t('Expenses.Upload_Document')}</Text>
               <TouchableOpacity
+                activeOpacity={0.5}
                 style={[styles.uploadBox, errors.file && styles.errorBorder]}
                 onPress={heandleonCamera}
               >
@@ -226,6 +231,13 @@ export const AddExpenseModal = ({
               </View>
 
             </ScrollView>
+            {isImagePickerVisible && (
+              <ImagePickerSheet
+                visible={isImagePickerVisible}
+                onClose={() => setIsImagePickerVisible(false)}
+                onResult={onImagePicked}
+              />
+            )}
           </View>
         </TouchableWithoutFeedback>
       </TouchableOpacity>

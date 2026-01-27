@@ -188,6 +188,9 @@ export default function Expenses() {
           AccountListData={AccountListData}
           selectAccountType={selectAccountType}
           setSelectedAccountType={setSelectedAccountType}
+          isImagePickerVisible={isImagePickerVisible}
+          setIsImagePickerVisible={setIsImagePickerVisible}
+          onImagePicked={onImagePicked}
         />
 
         {/* 🔍 Image Preview */}
@@ -209,13 +212,7 @@ export default function Expenses() {
           </View>
         </Modal>
 
-        {isImagePickerVisible && (
-          <ImagePickerSheet
-            visible={isImagePickerVisible}
-            onClose={() => setIsImagePickerVisible(false)}
-            onResult={onImagePicked}
-          />
-        )}
+        
       </View>
     </CommonView>
   );
