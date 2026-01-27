@@ -374,6 +374,8 @@ const styles = StyleSheet.create({
     },
     dropdownWrapper: {
         borderRadius: 12,
+        borderColor:COLOR.dark5,
+        borderWidth:1.5
     },
     input: {
         backgroundColor: '#F3F4F6',

@@ -97,6 +97,12 @@ export const useSignInScreen = () => {
   }, [isError]);
   React.useEffect(() => {
     if (isSignin) {
+      if (UsersigninData) {
+        const data = {
+          id: Number(UsersigninData.user_id),
+        };
+        dispatch(GetUserDetails(data))
+      }
       showMessage({
         icon: 'success',
         message: `${t('messages.Welcome_back')}`,
@@ -143,13 +149,7 @@ export const useSignInScreen = () => {
       await Service.setisBiomatic('false');
       await Service.setisFirstime('false');
     }
-    if (UsersigninData) {
-      const data = {
-        id: Number(UsersigninData.user_id),
-      };
-      dispatch(GetUserDetails(data))
-    }
-    if(!isUserDetailsFetching){
+    if (!isUserDetailsFetching) {
       Navigation.navigate('myTab');
     }
     await Service.setisFirstime('true');

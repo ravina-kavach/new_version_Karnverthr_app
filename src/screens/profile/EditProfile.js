@@ -1,19 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, memo } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import CommonHeader from "../../components/CommonHeader";
 import { CommonView } from "../../utils/common";
 import useProfile from "./ProfileController";
-import { useNavigation } from "@react-navigation/native";
 import { COLOR } from "../../theme/theme";
 import { FontSize } from "../../utils/metrics";
 import { GlobalFonts } from "../../theme/typography";
+
+const Input = memo(
+  ({ label, value, editable = true, onChangeText, placeholder, keyboardType }) => (
+    <View style={{ marginBottom: 16 }}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={[
+          styles.input,
+          { backgroundColor: !editable ? COLOR.dark5 : COLOR.White1 },
+        ]}
+        value={value}
+        placeholder={placeholder}
+        editable={editable}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        autoCorrect={false}
+      />
+    </View>
+  )
+);
 
 export default function EditProfile() {
   const {
@@ -21,8 +44,9 @@ export default function EditProfile() {
     handleProfileUpdate,
     isProfileUpdate,
     isProfileUpdateFetching,
-    isUserDetailsFetching
+    isUserDetailsFetching,
   } = useProfile();
+
   const navigation = useNavigation();
 
   const [form, setForm] = useState({
@@ -31,15 +55,18 @@ export default function EditProfile() {
     work_phone: "",
     present_address: "",
   });
+  
+  const isFormInitialized = useRef(false);
 
   useEffect(() => {
-    if (UserDetailsData) {
+    if (UserDetailsData && !isFormInitialized.current) {
       setForm({
         name: UserDetailsData.name || "",
         private_email: UserDetailsData.private_email || "",
         work_phone: UserDetailsData.work_phone || "",
         present_address: UserDetailsData.present_address || "",
       });
+      isFormInitialized.current = true;
     }
   }, [UserDetailsData]);
 
@@ -47,106 +74,93 @@ export default function EditProfile() {
     if (isProfileUpdate) {
       navigation.goBack();
     }
-  }, [isProfileUpdate]);
+  }, [isProfileUpdate, navigation]);
 
   const onSave = () => {
     handleProfileUpdate(form);
   };
 
-  const Input = ({ label, value, editable = true, onChangeText, placeholder }) => (
-    <View style={{ marginBottom: 16 }}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        style={[styles.input, { backgroundColor: !editable ? COLOR.dark5 : COLOR.White1 }]}
-        value={value}
-        placeholder={placeholder}
-        editable={editable}
-        onChangeText={onChangeText}
-      />
-    </View>
-  );
-
-
   return (
-    <CommonView>
-      <CommonHeader title="Edit Profile" />
-      {isUserDetailsFetching ?<View style={{ flex: 1, marginTop:80 }}>
-          <ActivityIndicator size="large" color={COLOR.Black1} />
-        </View>:
-      <>
-      <View style={styles.card}>
-        <Input
-          label="Employee Name"
-          placeholder={"Employee name"}
-          value={form.name}
-          onChangeText={(text) =>
-            setForm({ ...form, name: text })
-          }
-        />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <CommonView keyboardShouldPersistTaps="handled">
+        <CommonHeader title="Edit Profile" />
 
-        <Input
-          label="Email"
-          placeholder={"Email"}
-          editable={false}
-          value={form.private_email}
-          onChangeText={(text) =>
-            setForm({ ...form, private_email: text })
-          }
-        />
+        {isUserDetailsFetching ? (
+          <View style={{ flex: 1, marginTop: 80 }}>
+            <ActivityIndicator size="large" color={COLOR.Black1} />
+          </View>
+        ) : (
+          <>
+            <View style={styles.card}>
+              <Input
+                label="Employee Name"
+                placeholder="Employee name"
+                value={form.name}
+                onChangeText={(text) =>
+                  setForm((prev) => ({ ...prev, name: text }))
+                }
+              />
 
-        <Input
-          label="Phone Number"
-          placeholder={"Phone number"}
-          value={form.work_phone}
-          onChangeText={(text) =>
-            setForm({ ...form, work_phone: text })
-          }
-        />
+              <Input
+                label="Email"
+                placeholder="Email"
+                editable={false}
+                value={form.private_email}
+                keyboardType="email-address"
+                onChangeText={(text) =>
+                  setForm((prev) => ({ ...prev, private_email: text }))
+                }
+              />
 
-        <Input
-          label="Address"
-          placeholder={"Address"}
-          value={form.present_address}
-          onChangeText={(text) =>
-            setForm({ ...form, present_address: text })
-          }
-        />
-      </View>
+              <Input
+                label="Phone Number"
+                placeholder="Phone number"
+                keyboardType="phone-pad"
+                value={form.work_phone}
+                onChangeText={(text) =>
+                  setForm((prev) => ({ ...prev, work_phone: text }))
+                }
+              />
 
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.cancelBtn}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
+              <Input
+                label="Address"
+                placeholder="Address"
+                value={form.present_address}
+                onChangeText={(text) =>
+                  setForm((prev) => ({ ...prev, present_address: text }))
+                }
+              />
+            </View>
 
-        <TouchableOpacity
-          style={styles.saveBtn}
-          onPress={onSave}
-          disabled={isProfileUpdateFetching}
-        >
-          <Text style={[styles.buttonText, { color: COLOR.White1 }]}>
-            {isProfileUpdateFetching ? "Saving..." : "Save"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-      </>
-      }
-    </CommonView>
+            <View style={styles.actions}>
+              <TouchableOpacity
+                style={styles.cancelBtn}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.saveBtn}
+                onPress={onSave}
+                disabled={isProfileUpdateFetching}
+              >
+                <Text style={[styles.buttonText, { color: COLOR.White1 }]}>
+                  {isProfileUpdateFetching ? "Saving..." : "Save"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
+      </CommonView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#F4F4F5",
-    padding: 16,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 16,
-  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
@@ -170,7 +184,7 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "row",
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     marginTop: 24,
     marginHorizontal: 20,
   },
@@ -180,14 +194,14 @@ const styles = StyleSheet.create({
     borderColor: "#D1D5DB",
     paddingVertical: 12,
     width: 120,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 8,
   },
   saveBtn: {
     backgroundColor: "#111827",
     paddingVertical: 12,
     width: 120,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 8,
   },
   buttonText: {
