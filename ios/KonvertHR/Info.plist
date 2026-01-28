@@ -57,6 +57,10 @@
 	<string>KonvertHR sends notifications for attendance updates, approvals, payroll alerts, and important HR communications.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter_18pt-Black.ttf</string>

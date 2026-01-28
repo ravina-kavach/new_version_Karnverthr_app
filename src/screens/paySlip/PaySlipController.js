@@ -8,14 +8,14 @@ import { showMessage } from 'react-native-flash-message';
 
 export const usePaySlip = () => {
   const {
-    getisPaySlipBase64Fetching,
+    isPaySlipBase64Fetching,
     UserDetailsData,
     getPaySlipBase64
   } = useSelector(CommonSelector);
   const { t, i18n } = useTranslation();
   const IsFocused = useIsFocused();
   const dispatch = useDispatch();
-  const [slips, setSlips] = useState([])
+  const [paySlip, setPaySlip] = useState(null)
   const currentYear = moment().year();
   const currentMonth = moment().month() + 1;
   const months = React.useMemo(() => {
@@ -68,11 +68,26 @@ export const usePaySlip = () => {
         month: Number(Selectedmonth.id),
         year: Number(SelectedYear.name)
       };
-      await dispatch(GetPaySlip(payload)).unwrap();
-
+      // const payload = {
+      //   employee_id: 3974,
+      //   month: 9,
+      //   year: 2025
+      // }
+      const result = await dispatch(GetPaySlip(payload)).unwrap();
+      console.log()
+      setPaySlip(result.data.pdf_base64)
+      showMessage({
+        icon: "success",
+        message: result.message,
+        type: "success",
+      })
     } catch (error) {
-      console.log("error==>",error)
-  }
+      showMessage({
+        icon: "danger",
+        message: error.error,
+        type: "danger",
+      })
+    }
   }
 
   return {
@@ -80,10 +95,10 @@ export const usePaySlip = () => {
     months,
     SelectedYear,
     setSelectedYear,
-    slips,
-    getPaySlips,
     UserDetailsData,
     Selectedmonth,
-    setSelectedmonth
+    setSelectedmonth,
+    isPaySlipBase64Fetching,
+    paySlip
   }
 }

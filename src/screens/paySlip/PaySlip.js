@@ -1,21 +1,26 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
-    FlatList,
     StyleSheet,
     ActivityIndicator,
-    TouchableWithoutFeedback
+    Dimensions,
+    TouchableOpacity,
+    Platform,
 } from 'react-native';
+import Pdf from 'react-native-pdf';
+import RNFS from 'react-native-fs';
+import FileViewer from 'react-native-file-viewer';
+
 import { usePaySlip } from './PaySlipController';
 import { COLOR } from '../../theme/theme';
-import { CommonView } from '../../utils/common';
+import { CommonView, RowView } from '../../utils/common';
 import CommonHeader from '../../components/CommonHeader';
 import { GlobalFonts } from '../../theme/typography';
-import { FontSize } from '../../utils/metrics';
 import Dropdown from '../../components/Dropdown';
-import { RowView } from '../../utils/common';
 import { DownloadIcon } from '../../assets/svgs';
+import { showMessage } from 'react-native-flash-message';
+
 const PaySlip = () => {
     const {
         YEARDATA,
@@ -24,14 +29,38 @@ const PaySlip = () => {
         months,
         Selectedmonth,
         setSelectedmonth,
-        slips,
-        getisPaySlipBase64Fetching
-
+        paySlip,
+        isPaySlipBase64Fetching,
     } = usePaySlip();
 
+    // Function to download PDF
+    const handleDownload = async () => {
+        try {
+            if (!paySlip) return;
+
+            // Path to save PDF
+            const filePath = `${RNFS.DocumentDirectoryPath}/payslip_${Selectedmonth.name}_${SelectedYear.name}.pdf`;
+
+            // Write base64 to file
+            await RNFS.writeFile(filePath, paySlip, 'base64');
+
+            // Open PDF
+            await FileViewer.open(filePath);
+
+        } catch (error) {
+            console.log('Download error:', error);
+            showMessage({
+                message: 'Failed to download PDF',
+                type: 'danger',
+            });
+        }
+    };
+
     return (
-        <CommonView>
-            <CommonHeader title='Pay Slip' />
+        <CommonView style={{ flex: 1 }}>
+            <CommonHeader title="Pay Slip" />
+
+            {/* Filters */}
             <View style={styles.filterContainer}>
                 <RowView style={styles.filterRow}>
                     <View style={styles.filterItem}>
@@ -53,84 +82,59 @@ const PaySlip = () => {
                     </View>
                 </RowView>
             </View>
-            {getisPaySlipBase64Fetching ?
+
+            {isPaySlipBase64Fetching ? (
                 <View style={styles.loader}>
-                    <ActivityIndicator animating={getisPaySlipBase64Fetching} size="large" color={COLOR.Black1} />
+                    <ActivityIndicator size="large" color={COLOR.Black1} />
                 </View>
-                :
-                // <FlatList
-                //     data={slips || []}
-                //     keyExtractor={(item) => String(item.id)}
-                //     contentContainerStyle={styles.container}
-                //     renderItem={({ item }) => <ShiftCard shift={item} />}
-                //     ListEmptyComponent={
-                //         <Text style={styles.empty}>No pay slips found</Text>
-                //     }
-                //     showsVerticalScrollIndicator={false}
-                // />
-                <View style={{flex:1}}>
-                    <Text style={styles.empty}>No pay slips found</Text>
-                    <TouchableWithoutFeedback>
-                              <View style={styles.downloadContainer}>
-                                <View style={styles.iconContainer}>
-                                  <DownloadIcon width={28} height={28} />
-                                </View>
-                              </View>
-                    </TouchableWithoutFeedback>
+            ) : paySlip ? (
+                <View style={{ flex: 1 }}>
+                    <Pdf
+                        source={{ uri: `data:application/pdf;base64,${paySlip}` }}
+                        style={styles.pdf}
+                        onError={(error) => {
+                            console.log('PDF load error:', error);
+                        }}
+                    />
+
+                    <TouchableOpacity
+                        style={styles.downloadContainer}
+                        onPress={handleDownload}
+                        activeOpacity={0.8}
+                    >
+                        <View style={styles.iconContainer}>
+                            <DownloadIcon width={28} height={28} />
+                        </View>
+                    </TouchableOpacity>
                 </View>
-                
-                }
+            ) : (
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>No pay slips found</Text>
+                </View>
+            )}
         </CommonView>
     );
 };
 
-
-
 export default PaySlip;
 
-
 const styles = StyleSheet.create({
-    container: {
+    loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    filterContainer: { paddingHorizontal: 20, marginTop: 12, marginBottom: 8 },
+    filterRow: { justifyContent: 'space-between' },
+    filterItem: { width: '48%' },
+    pdf: { flex: 1, width: Dimensions.get('window').width },
+    downloadContainer: {
+        position: 'absolute',
+        right: 24,
+        bottom: 40,
+    },
+    iconContainer: {
+        backgroundColor: COLOR.Black1,
         padding: 16,
-        paddingBottom: 40,
+        borderRadius: 16,
+        elevation: 5,
     },
-
-    loader: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-    empty: {
-        ...GlobalFonts.subtitle,
-        textAlign: 'center',
-        marginTop: 60,
-        color: COLOR.TextPlaceholder,
-    },
-    filterContainer: {
-        paddingHorizontal: 20,
-        marginTop: 12,
-        marginBottom: 8,
-    },
-    filterRow: {
-        justifyContent: "space-between",
-    },
-    filterItem: {
-    width: "48%",
-  },
-   downloadContainer: {
-    alignItems:'flex-end',
-    justifyContent:'flex-end',
-    alignItems:'flex-end',
-    position: 'absolute',
-    right: 50,
-    bottom: 80,
-  },
-
-  iconContainer: {
-    backgroundColor: COLOR.Black1,
-    padding: 16,
-    borderRadius: 16,
-  },
-
+    emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    emptyText: { ...GlobalFonts.subtitle, color: COLOR.TextPlaceholder },
 });

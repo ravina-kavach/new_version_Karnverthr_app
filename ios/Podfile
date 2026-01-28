@@ -36,6 +36,7 @@ target 'KonvertHR' do
   )
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
+  pod 'RNFileViewer', :path => '../node_modules/react-native-file-viewer'
   
   post_install do |installer|
     react_native_post_install(

@@ -128,7 +128,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:$googlePlayServicesLocationVersion"
     implementation("com.facebook.react:react-android")
     implementation project(':react-native-linear-gradient')
-    if (hermesEnabled.toBoolean()) {
+    implementation project(':react-native-file-viewer')
+        if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
