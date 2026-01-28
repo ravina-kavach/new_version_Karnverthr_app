@@ -268,7 +268,6 @@ export default function Approvals() {
       </View>
     );
   };
-  console.log("filteredApprovals===>",filteredApprovals)
   return (
     <CommonView>
       <CommonHeader title={t('Approvals.Approvals')} />

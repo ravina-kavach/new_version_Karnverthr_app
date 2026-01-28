@@ -85,8 +85,8 @@ const GreetingHeader = ({
       <View>
         <Text style={styles.title}>
           {screenName === 'editProfile'
-            ? UserDetailsData.name
-            : `${t('comman.Hello')} ${UserDetailsData?.name}`
+            ? UserDetailsData?.name ?? ''
+            : `${t('comman.Hello')} ${UserDetailsData?.name ?? ''}`
           }
         </Text>
         <Text style={styles.subtitle}>

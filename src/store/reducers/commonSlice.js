@@ -750,17 +750,17 @@ export const GetPaySlip = createAsyncThunk(
     async (userdata, thunkAPI) => {
         console.log('GetPaySlip userdata >>', userdata);
         try {
-            let result = await API.post(`api/printPayslip`, userdata);
+            let result = await API.post(`api/printPayslipMobile`, userdata);
             console.log('GetPaySlip result.data >>', result);
             if (result.data.status === "success") {
                 return result
             } else {
-                return thunkAPI.rejectWithValue({ error: result.data.errorMessage });
+            return thunkAPI.rejectWithValue({ error: result?.data?.message });
             }
         } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetPaySlip ] error.message >>', error.message,);
-            return thunkAPI.rejectWithValue({ error: error.message });
+            console.log("error>>>", error.response?.data?.error)
+            // console.log('try catch [ GetPaySlip ] error.message >>', error.message,);
+            return thunkAPI.rejectWithValue({ error: error.response?.data?.error || error.message });
         }
     },
 );
