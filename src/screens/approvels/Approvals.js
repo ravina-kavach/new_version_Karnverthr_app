@@ -9,6 +9,7 @@ import {
   Modal,
   TextInput,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
@@ -39,7 +40,7 @@ export default function Approvals() {
     UsersigninData,
     GetApprovalListData,
     isGetApprovalListFetching,
-    isApproveAction,
+    isApproveActionFetching,
   } = useSelector(CommonSelector);
 
 
@@ -56,17 +57,6 @@ export default function Approvals() {
       dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
     }
   }, [isFocused]);
-
-  useEffect(() => {
-    if (isApproveAction) {
-      showMessage({
-        icon: 'success',
-        message: t('messages.Approve_request'),
-        type: 'success',
-      });
-      setRejectModalVisible(false);
-    }
-  }, [isApproveAction]);
 
   const onRefresh = () => {
     dispatch(ApprovalList({ id: Number(UsersigninData.user_id) }));
@@ -114,22 +104,21 @@ export default function Approvals() {
         approval_request_id: id,
         user_id: UsersigninData.user_id,
       };
-
+      
       const result = await dispatch(
         ApproveActionApprove(payload)
       ).unwrap();
       if (result?.status === "success") {
+        dispatch(ApprovalList({ id: UsersigninData.user_id }));
         showMessage({
           icon: 'success',
           message: result?.message,
           type: 'success',
         });
-
-        dispatch(ApprovalList({ id: UsersigninData.user_id }));
       } else {
         showMessage({
           icon: 'danger',
-          message: result?.message || 'Failed to approve request',
+          message: result?.message,
           type: 'danger',
         });
       }
@@ -138,8 +127,7 @@ export default function Approvals() {
         icon: 'danger',
         message:
           error?.message ||
-          error?.error ||
-          'Something went wrong. Please try again.',
+          error?.error,
         type: 'danger',
       });
     }
@@ -154,7 +142,7 @@ export default function Approvals() {
 
   const confirmReject = async () => {
     if (!rejectReason.trim()) {
-      setReasonError(true); // 👈 show red border
+      setReasonError(true);
       return;
     }
 
@@ -171,10 +159,10 @@ export default function Approvals() {
         ApproveActionReject(payload)
       ).unwrap();
 
-      if (result?.success) {
-        showMessage({
+       if (result?.status === "success") {
+         showMessage({
           icon: 'success',
-          message: result?.successMessage,
+          message: result?.message,
           type: 'success',
         });
 
@@ -183,17 +171,25 @@ export default function Approvals() {
         setReasonError(false);
 
         dispatch(ApprovalList({ id: UsersigninData.user_id }));
+      } else {
+        setRejectModalVisible(false);
+        showMessage({
+          icon: 'danger',
+          message: result?.message,
+          type: 'danger',
+        });
       }
     } catch (error) {
+      setRejectModalVisible(false);
       showMessage({
         icon: 'danger',
         message:
           error?.message ||
-          error?.error ||
-          'Something went wrong. Please try again.',
+          error?.error,
         type: 'danger',
       });
     }
+    setRejectModalVisible(false);
   };
 
   const filteredApprovals = useMemo(() => {
@@ -244,10 +240,10 @@ export default function Approvals() {
 
         <View style={styles.meta}>
           <View style={styles.dateContainer}>
-            <DateApproval />
+            {/* <DateApproval />
             <Text style={[styles.id, { paddingLeft: 5 }]}>
               {item.description?.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '--'}
-            </Text>
+            </Text> */}
           </View>
           <Text style={styles.id}>ID: {item.name}</Text>
         </View>
@@ -272,6 +268,7 @@ export default function Approvals() {
       </View>
     );
   };
+  console.log("filteredApprovals===>",filteredApprovals)
   return (
     <CommonView>
       <CommonHeader title={t('Approvals.Approvals')} />
@@ -354,6 +351,7 @@ export default function Approvals() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+      <ActivityIndicator animating={isApproveActionFetching}/>
     </CommonView>
   );
 }
