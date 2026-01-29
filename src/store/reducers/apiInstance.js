@@ -1,7 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
-import { resetToLogin } from '../../utils/NavigationService';
 
 const API = axios.create({
   baseURL: Config.BASE_URL,
@@ -9,8 +8,6 @@ const API = axios.create({
 });
 
 const skipAuthUrls = ['api/auth'];
-let isLoggingOut = false;
-
 API.interceptors.request.use(
   async config => {
     const token = await AsyncStorage.getItem('USER_TOKEN');
@@ -29,18 +26,6 @@ API.interceptors.request.use(
     return config;
   },
   error => Promise.reject(error)
-);
-
-API.interceptors.response.use(
-  response => response,
-  async error => {
-    if (error?.response?.status === 401 && !isLoggingOut) {
-      isLoggingOut = true;
-      await AsyncStorage.removeItem('USER_TOKEN');
-      resetToLogin();
-    }
-    return Promise.reject(error);
-  }
 );
 
 export default API;
