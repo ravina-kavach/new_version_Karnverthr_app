@@ -33,18 +33,12 @@ const PaySlip = () => {
         isPaySlipBase64Fetching,
     } = usePaySlip();
 
-    // Function to download PDF
     const handleDownload = async () => {
         try {
             if (!paySlip) return;
 
-            // Path to save PDF
             const filePath = `${RNFS.DocumentDirectoryPath}/payslip_${Selectedmonth.name}_${SelectedYear.name}.pdf`;
-
-            // Write base64 to file
             await RNFS.writeFile(filePath, paySlip, 'base64');
-
-            // Open PDF
             await FileViewer.open(filePath);
 
         } catch (error) {
@@ -60,12 +54,10 @@ const PaySlip = () => {
         <CommonView style={{ flex: 1 }}>
             <CommonHeader title="Pay Slip" />
 
-            {/* Filters */}
             <View style={styles.filterContainer}>
                 <RowView style={styles.filterRow}>
                     <View style={styles.filterItem}>
                         <Dropdown
-                            type="Attendance"
                             DropdownData={months}
                             setSelecteditem={setSelectedmonth}
                             Selecteditem={Selectedmonth}
@@ -74,7 +66,6 @@ const PaySlip = () => {
 
                     <View style={styles.filterItem}>
                         <Dropdown
-                            type="Attendance"
                             DropdownData={YEARDATA}
                             setSelecteditem={setSelectedYear}
                             Selecteditem={SelectedYear}

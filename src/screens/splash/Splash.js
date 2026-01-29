@@ -1,8 +1,8 @@
-import React, { useEffect,useRef } from 'react';
+import React, { useEffect,useRef,useCallback } from 'react';
 import { StyleSheet, Image, AppState } from 'react-native';
 import { permission } from '../../utils/permission';
 import Service from '../../utils/service';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { splash_logo } from '../../assets/images/index';
 import { responsiveHeight, responsiveWidth } from '../../utils/metrics';
@@ -11,48 +11,61 @@ const Splash = () => {
   const Navigation = useNavigation();
   const IsFocused = useIsFocused();
   const appState = useRef(AppState.currentState);
+  const hasCheckedPermission = useRef(false);
 
-useEffect(() => {
-  const init = async () => {
-    const hasPermission = await permission.checkLocationPermission();
-    if (hasPermission) {
-      permission.getLocation();
-      Getdata();
-    } else {
-      const granted = await permission.requestLocationPermission();
-      if (granted) {
+useFocusEffect(
+  useCallback(() => {
+    const init = async () => {
+      if (hasCheckedPermission.current) return;
+      const hasPermission = await permission.checkLocationPermission();
+      if (hasPermission) {
+        permission.getLocation();
+        Getdata();
+        hasCheckedPermission.current = true;
+        return;
+      }
+
+      const status = await permission.requestLocationPermission();
+
+      if (status === true) {
+        permission.getLocation();
+        Getdata();
+      } else if (status === 'blocked') {
+        permission.showPermissionSettingsAlert();
+      }
+
+      hasCheckedPermission.current = true;
+    };
+
+    init();
+  }, [])
+);
+
+
+useFocusEffect(() => {
+  const handleAppStateChange = async nextAppState => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === 'active'
+    ) {
+      const hasPermission = await permission.checkLocationPermission();
+
+      if (hasPermission) {
         permission.getLocation();
         Getdata();
       } else {
         permission.showPermissionSettingsAlert();
       }
     }
-  };
 
-  init();
-}, []);
-
-useEffect(() => {
-  const handleAppStateChange = nextAppState => {
-    console.log('AppState changed to', nextAppState);
-    if (
-      appState.current.match(/inactive|background/) &&
-      nextAppState === 'active'
-    ) {
-      permission.checkLocationPermission();
-    }
     appState.current = nextAppState;
   };
 
-  const subscription = AppState.addEventListener(
-    'change',
-    handleAppStateChange
-  );
-
-  return () => {
-    subscription.remove();
-  };
+  const subscription = AppState.addEventListener('change', handleAppStateChange);
+  return () => subscription.remove();
 }, []);
+
+
 
 
   const Getdata = async () => {

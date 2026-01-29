@@ -9,18 +9,17 @@ let isPickerOpen = false;
 const requestLocationPermission = async () => {
   if (Platform.OS !== 'android') return true;
 
+  // First check if already granted
   const fineGranted = await PermissionsAndroid.check(
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
   );
-
   const coarseGranted = await PermissionsAndroid.check(
     PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
   );
 
-  if (fineGranted || coarseGranted) {
-    return true;
-  }
+  if (fineGranted || coarseGranted) return true;
 
+  // Request permission
   const result = await PermissionsAndroid.request(
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
     {
@@ -28,6 +27,7 @@ const requestLocationPermission = async () => {
       message:
         'Konvert HR needs access to your location to track attendance and check-ins accurately.',
       buttonPositive: 'OK',
+      buttonNegative: 'Cancel',
     }
   );
 
@@ -35,35 +35,47 @@ const requestLocationPermission = async () => {
     return true;
   }
 
-  showPermissionSettingsAlert();
-  return false;
-};
+  // If denied, show alert and keep checking
+  await showPermissionSettingsAlert();
 
+  // Recheck after user might have opened settings
+  return await requestLocationPermission();
+};
 
 const showPermissionSettingsAlert = () => {
-  Alert.alert(
-    'Location Permission Required',
-    'Please allow location permission from Settings to continue.',
-    [
-      { text: 'Exit App', onPress: () => BackHandler.exitApp() },
-      { text: 'Open Settings', onPress: () => Linking.openSettings() },
-    ]
-  );
+  return new Promise((resolve) => {
+    Alert.alert(
+      'Location Permission Required',
+      'Please allow location permission from Settings to continue.',
+      [
+        { text: 'Exit App', onPress: () => BackHandler.exitApp() },
+        {
+          text: 'Open Settings',
+          onPress: async () => {
+            await Linking.openSettings();
+            resolve();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  });
 };
 
+// Optional helper to just check without requesting
 const checkLocationPermission = async () => {
   if (Platform.OS !== 'android') return true;
 
   const fine = await PermissionsAndroid.check(
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
   );
-
   const coarse = await PermissionsAndroid.check(
     PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
   );
 
   return fine || coarse;
 };
+
 
 
 const getLocation = () => {

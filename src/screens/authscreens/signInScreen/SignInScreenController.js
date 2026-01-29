@@ -288,9 +288,14 @@ export const useSignInScreen = () => {
         ...DeviceData,
         random_code_for_reg: String(secreatCode),
       };
-      const result = await dispatch(UserVerification(payloadObj)).unwrap();
-      await Service.setisVerified(result);
-      setIsVisibleVerifiedModal(!result);
+      try {
+        const result = await dispatch(UserVerification(payloadObj)).unwrap();
+        await Service.setisVerified(result);
+        setIsVisibleVerifiedModal(!result);
+      } catch (err) {
+        console.log(err)
+      }
+
     }
   };
 
