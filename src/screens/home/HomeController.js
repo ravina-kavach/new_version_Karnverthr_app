@@ -132,7 +132,8 @@ export const useHome = () => {
 
       setAttendance(data);
       await Service.setAsyncAttendanceData(data);
-      BackgroundHandler.startTracking();
+      const hasPermission = await permission.checkLocationPermission();
+      if (hasPermission) BackgroundHandler.startTracking();
       return;
     }
 
@@ -217,7 +218,7 @@ export const useHome = () => {
 
 
   const takeImage = async type => {
-    const result = await permission.heandleOnCamera();
+    const result = await permission.handleOnCamera();
     if (result.success && result.image) {
       handleAttendance(type, result.image.base64);
     }

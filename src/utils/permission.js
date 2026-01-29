@@ -1,51 +1,70 @@
 import Geolocation from 'react-native-geolocation-service';
 import { request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
-import { PermissionsAndroid, Alert, Platform } from 'react-native';
+import { PermissionsAndroid, Alert, Platform, BackHandler,Linking } from 'react-native';
 import Service from './service';
 import { launchCamera ,launchImageLibrary } from 'react-native-image-picker';
 
-const requestLocationPermission = async () => {
-  try {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        {
-          title: 'Konvert HR - Location Access Required',
-          message: 'Konvert HR needs access to your location to track attendance and check-ins accurately.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
-        }
-      );
+let isPickerOpen = false;
 
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        getLocation();
-      } else {
-        showPermissionSettingsAlert();
-      }
-    } else {
-      const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
-      if (result === RESULTS.GRANTED) {
-        getLocation();
-      } else {
-        showPermissionSettingsAlert(true);
-      }
-    }
-  } catch (err) {
-    console.log('Location permission error:', err);
+const requestLocationPermission = async () => {
+  if (Platform.OS !== 'android') return true;
+
+  const fineGranted = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+  );
+
+  const coarseGranted = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+  );
+
+  if (fineGranted || coarseGranted) {
+    return true;
   }
+
+  const result = await PermissionsAndroid.request(
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    {
+      title: 'Konvert HR - Location Access Required',
+      message:
+        'Konvert HR needs access to your location to track attendance and check-ins accurately.',
+      buttonPositive: 'OK',
+    }
+  );
+
+  if (result === PermissionsAndroid.RESULTS.GRANTED) {
+    return true;
+  }
+
+  showPermissionSettingsAlert();
+  return false;
 };
 
-const showPermissionSettingsAlert = (isIOS = false) => {
+
+const showPermissionSettingsAlert = () => {
   Alert.alert(
-    'Location Permission',
-    'Please enable location access in Settings.',
+    'Location Permission Required',
+    'Please allow location permission from Settings to continue.',
     [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Open Settings', onPress: openSettings },
+      { text: 'Exit App', onPress: () => BackHandler.exitApp() },
+      { text: 'Open Settings', onPress: () => Linking.openSettings() },
     ]
   );
 };
+
+const checkLocationPermission = async () => {
+  if (Platform.OS !== 'android') return true;
+
+  const fine = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+  );
+
+  const coarse = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+  );
+
+  return fine || coarse;
+};
+
 
 const getLocation = () => {
   Geolocation.getCurrentPosition(
@@ -64,23 +83,35 @@ const getLocation = () => {
   );
 };
 
-const heandleOnCamera = async () => {
+const handleOnCamera = async () => {
   try {
     let hasPermission = false;
 
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA
-      );
-      hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
-    } else {
-      const result = await request(PERMISSIONS.IOS.CAMERA);
-      hasPermission = result === RESULTS.GRANTED;
-    }
+    const checkPermission = async () => {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.CAMERA
+        );
+        if (granted) return true;
 
-    if (!hasPermission) {
-      showSettingsAlert();
-      return { success: false };
+        const request = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA
+        );
+        return request === PermissionsAndroid.RESULTS.GRANTED;
+      } else {
+        const result = await check(PERMISSIONS.IOS.CAMERA);
+        if (result === RESULTS.GRANTED) return true;
+
+        const requestResult = await request(PERMISSIONS.IOS.CAMERA);
+        return requestResult === RESULTS.GRANTED;
+      }
+    };
+
+    while (!hasPermission) {
+      hasPermission = await checkPermission();
+      if (!hasPermission) {
+        await showSettingsAlert();
+      }
     }
 
     return new Promise(resolve => {
@@ -109,13 +140,19 @@ const heandleOnCamera = async () => {
         }
       );
     });
-  } catch {
+  } catch (error) {
+    console.log('Camera error:', error);
     return { success: false };
   }
 };
 
+
+
 const handleOnGallery = async () => {
   try {
+    if (isPickerOpen) return;
+    isPickerOpen = true;
+
     let hasPermission = true;
     if (Platform.OS === 'android') {
       if (Platform.Version >= 33) {
@@ -130,6 +167,7 @@ const handleOnGallery = async () => {
         hasPermission = granted === PermissionsAndroid.RESULTS.GRANTED;
       }
     }
+
     if (Platform.OS === 'ios') {
       const result = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
       hasPermission =
@@ -138,27 +176,28 @@ const handleOnGallery = async () => {
 
     if (!hasPermission) {
       showSettingsAlert();
+      isPickerOpen = false;
       return { success: false };
     }
-    await new Promise((res) => setTimeout(res, 250));
+
+    await new Promise((res) => setTimeout(res, 150));
+
     const result = await launchImageLibrary({
       mediaType: 'photo',
       selectionLimit: 1,
       includeBase64: true,
       quality: 0.8,
     });
-    if (result.didCancel || result.errorCode) {
-      return { success: false };
-    }
-    if (!result.assets || !result.assets.length) {
+
+    isPickerOpen = false;
+
+    if (result.didCancel || result.errorCode || !result.assets?.length) {
       return { success: false };
     }
 
     const asset = result.assets[0];
+    if (!asset?.uri) return { success: false };
 
-    if (!asset?.uri) {
-      return { success: false };
-    }
     return {
       success: true,
       image: {
@@ -170,6 +209,7 @@ const handleOnGallery = async () => {
     };
   } catch (error) {
     console.log('handleOnGallery error:', error);
+    isPickerOpen = false;
     return { success: false };
   }
 };
@@ -181,7 +221,7 @@ const showSettingsAlert = () => {
     'Permission Required',
     'Please enable permission in Settings.',
     [
-      { text: 'Cancel', style: 'cancel' },
+      // { text: 'Cancel', style: 'cancel' },
       { text: 'Open Settings', onPress: openSettings },
     ]
   );
@@ -191,6 +231,8 @@ export const permission = {
   requestLocationPermission,
   showPermissionSettingsAlert,
   showSettingsAlert,
-  heandleOnCamera,
-  handleOnGallery
+  handleOnCamera,
+  handleOnGallery,
+  getLocation,
+  checkLocationPermission
 };

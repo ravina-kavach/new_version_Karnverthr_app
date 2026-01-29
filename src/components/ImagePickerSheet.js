@@ -21,7 +21,7 @@ const ImagePickerSheet = ({
 }) => {
   const handleCamera = async () => {
     onClose();
-    const res = await permission.heandleOnCamera();
+    const res = await permission.handleOnCamera();
     if (res?.success) {
       onResult(res.image);
     }
