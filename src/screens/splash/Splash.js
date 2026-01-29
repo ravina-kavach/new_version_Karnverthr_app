@@ -13,7 +13,7 @@ const Splash = () => {
   const appState = useRef(AppState.currentState);
   const hasCheckedPermission = useRef(false);
 
-useFocusEffect(
+useEffect(
   useCallback(() => {
     const init = async () => {
       if (hasCheckedPermission.current) return;
@@ -42,7 +42,7 @@ useFocusEffect(
 );
 
 
-useFocusEffect(() => {
+useEffect(() => {
   const handleAppStateChange = async nextAppState => {
     if (
       appState.current.match(/inactive|background/) &&

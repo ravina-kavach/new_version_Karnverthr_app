@@ -7,6 +7,7 @@ import { showMessage } from 'react-native-flash-message';
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 import SimpleReactValidator from 'simple-react-validator';
 import DeviceInfo from 'react-native-device-info';
+import { bootstrapAuth } from '../../../utils/bootstrapAuth';
 import {
   CommonSelector,
   ForgotPassword,
@@ -67,6 +68,10 @@ export const useSignInScreen = () => {
     isForgotPasswordFetching,
   } = useSelector(CommonSelector);
 
+  React.useEffect(() => {
+      bootstrapAuth(dispatch);
+    }, []);
+    
   const rnBiometrics = new ReactNativeBiometrics({
     allowDeviceCredentials: true,
   });
@@ -82,8 +87,9 @@ export const useSignInScreen = () => {
       return () => backHandler.remove();
     }
   }, [IsFocused]);
+
   React.useEffect(() => {
-    if (isError) {
+    if (isError && !isSignin) { 
       showMessage({
         icon: 'danger',
         message: errorMessage,
@@ -94,23 +100,23 @@ export const useSignInScreen = () => {
       setReSetemail('');
       setIsReSetmodalvisible(false);
     }
-  }, [isError]);
+  }, [isError,isSignin]);
+  
   React.useEffect(() => {
-    if (isSignin) {
-      if (UsersigninData) {
-        const data = {
-          id: Number(UsersigninData.user_id),
-        };
-        dispatch(GetUserDetails(data))
-      }
-      showMessage({
-        icon: 'success',
-        message: `${t('messages.Welcome_back')}`,
-        type: 'success',
-      });
-      setdata();
-    }
-  }, [isSignin]);
+  if (!UsersigninData?.user_id) return;
+  if (isSignin) {
+    dispatch(GetUserDetails({ id: Number(UsersigninData.user_id) }));
+
+    showMessage({
+      icon: 'success',
+      message: t('messages.Welcome_back'),
+      type: 'success',
+    });
+
+    dispatch(updateState({ isSignin: false }));
+    Navigation.navigate('myTab');
+  }
+}, [isSignin]);
 
   React.useEffect(() => {
     if (VerfiedUserData?.message) {
@@ -138,22 +144,24 @@ export const useSignInScreen = () => {
 
   //-----------------
   const setdata = async () => {
+  if (isChecked && Formdata?.email && Formdata?.password) {
     await Service.setRemember({
-      ...UsersigninData,
+      email: Formdata.email,
       password: Formdata.password,
     });
-    dispatch(updateState({ isSignin: false }));
-    if (isChecked && Formdata?.email && Formdata?.password) {
-      await Service.setisBiomatic('true');
-    } else {
-      await Service.setisBiomatic('false');
-      await Service.setisFirstime('false');
-    }
-    if (!isUserDetailsFetching) {
-      Navigation.navigate('myTab');
-    }
-    await Service.setisFirstime('true');
-  };
+    await Service.setisBiomatic('true');
+  } else {
+    await Service.setRemember(null);
+    await Service.setisBiomatic('false');
+  }
+
+  dispatch(updateState({ isSignin: false }));
+
+  if (!isUserDetailsFetching) {
+    Navigation.navigate('myTab');
+  }
+  await Service.setisFirstime('true');
+};
 
   const Getdata = async () => {
     const isVerifiedUser = await Service.GetisVerified();
@@ -200,18 +208,20 @@ export const useSignInScreen = () => {
     setDeviceData(deviceDATA);
   };
   const heandleonSignin = async () => {
-    const formvalid = Validator.current.allValid();
-    if (formvalid) {
-      Validator.current.hideMessages();
-      forceUpdate(0);
-      dispatch(
-        Usersignin({ email: Formdata.email, password: Formdata.password }),
-      );
-    } else {
-      Validator.current.showMessages();
-      forceUpdate(1);
-    }
-  };
+  dispatch(updateState({ isError: false, errorMessage: '' }));
+  const formvalid = Validator.current.allValid();
+  console.log("Formdata ===>", Formdata)
+  if (formvalid) {
+    Validator.current.hideMessages();
+    forceUpdate(0);
+    dispatch(
+      Usersignin({ email: Formdata.email, password: Formdata.password })
+    );
+  } else {
+    Validator.current.showMessages();
+    forceUpdate(1);
+  }
+};
 
   const BiometricLogin = async () => {
     if (!RememberData?.email || !RememberData?.password) {

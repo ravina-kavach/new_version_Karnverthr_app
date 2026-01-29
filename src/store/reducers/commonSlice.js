@@ -1028,7 +1028,9 @@ export const CommonSlice = createSlice({
             state.isFeatchAttendanceReguration = payload.isFeatchAttendanceReguration !== undefined ? payload.isFeatchAttendanceReguration : state.isFeatchAttendanceReguration;
             state.isForgotPassword = payload.isForgotPassword !== undefined ? payload.isForgotPassword : state.isForgotPassword;
             state.isProfileUpdate = payload.isProfileUpdate !== undefined ? payload.isProfileUpdate : state.isProfileUpdate;
-
+            state. VerfiedUserData = payload.VerfiedUserData !== undefined ? payload.VerfiedUserData : state.VerfiedUserData;
+            state.UserDetailsData = payload.UserDetailsData !== undefined ? payload.UserDetailsData : state.UserDetailsData;
+            state.UsersigninData = payload.UsersigninData !== undefined ? payload.UsersigninData : state.UsersigninData;
             state.isGetInvoiceList = payload.isGetInvoiceList !== undefined ? payload.isGetInvoiceList : state.isGetInvoiceList;
             state.isExpenseApproved = payload.isExpenseApproved !== undefined ? payload.isExpenseApproved : state.isExpenseApproved;
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useIsFocused } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
-import { CommonSelector, GetUserDetails, ProfileUpdate } from '../../store/reducers/commonSlice'
+import { CommonSelector, GetUserDetails, ProfileUpdate, updateState } from '../../store/reducers/commonSlice'
 import Service from '../../utils/service'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,25 +12,26 @@ const useProfile = () => {
   const Navigation = useNavigation()
   const { UsersigninData, UserDetailsData, ProfileUpdateData, isUserDetailsFetching, isProfileUpdate, isProfileUpdateFetching } = useSelector(CommonSelector);
   const [pickerVisible, setPickerVisible] = useState(false);
-  const [IsReSetmodalvisible,setIsReSetmodalvisible] = useState(false)
+  const [IsReSetmodalvisible, setIsReSetmodalvisible] = useState(false)
   const [avatar, setAvatar] = useState(
     UsersigninData?.profile_image || null
   );
 
 
   useEffect(() => {
-    if (!IsFocused || !UsersigninData) return;
-    const data = {
-      id: Number(UsersigninData.user_id),
-    };
-    dispatch(GetUserDetails(data))
-  }, [IsFocused, UsersigninData]);
+  if (!IsFocused) return;
+  const userId = Number(UsersigninData?.user_id);
+  if (!userId || Number.isNaN(userId)) {
+    return;
+  }
+  dispatch(GetUserDetails({ id: userId }));
+}, [IsFocused, UsersigninData]);
 
   const navigationEditProfile = () => {
     Navigation.navigate('editProfile')
   }
 
-  const navigationEmergencyDetails = () =>{
+  const navigationEmergencyDetails = () => {
     Navigation.navigate("emergencyDetails")
   }
   const handleProfileUpload = (image) => {
@@ -52,18 +53,46 @@ const useProfile = () => {
   );
 
   const handleOnLogout = async () => {
-    const isFirstTime = await Service.GetisFirstime();
-    const token = await AsyncStorage.getItem('USER_TOKEN');
+  try {
+   await dispatch(
+      updateState({
+        VerfiedUserData: {},
+        UsersigninData: {},
+        UserDetailsData: {},
+        isVerified: false,
+        isSignin: false,
+      })
+    );
+
+    const keysToPreserve = ['isFirstTime', 'USER_TOKEN'];
+    const preservedValues = {};
+
+    await Promise.all(
+      keysToPreserve.map(async key => {
+        preservedValues[key] = await AsyncStorage.getItem(key);
+      })
+    );
+
     await Service.ClearStorage();
-    if (isFirstTime) {
-      await Service.setisFirstime(isFirstTime);
-      await AsyncStorage.setItem('USER_TOKEN', token);
-    }
+    await Promise.all(
+      keysToPreserve.map(async key => {
+        const value = preservedValues[key];
+        if (value !== null) {
+          await AsyncStorage.setItem(key, value);
+        }
+      })
+    );
     Navigation.reset({
       index: 0,
       routes: [{ name: 'signInScreen' }],
     });
-  };
+
+  } catch (error) {
+    console.error('Logout failed:', error);
+  }
+};
+
+
 
   return {
     UsersigninData,
