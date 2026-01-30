@@ -1,48 +1,73 @@
 import Geolocation from 'react-native-geolocation-service';
 import { request, PERMISSIONS, RESULTS, openSettings } from 'react-native-permissions';
-import { PermissionsAndroid, Alert, Platform, BackHandler,Linking } from 'react-native';
+import {
+  PermissionsAndroid,
+  Alert,
+  Platform,
+  BackHandler,
+  Linking,
+} from 'react-native';
 import Service from './service';
-import { launchCamera ,launchImageLibrary } from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 let isPickerOpen = false;
 
 const requestLocationPermission = async () => {
-  if (Platform.OS !== 'android') return true;
+ 
+  if (Platform.OS === 'android') {
+    const fineGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+    const coarseGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+    );
 
-  const fineGranted = await PermissionsAndroid.check(
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-  );
-  const coarseGranted = await PermissionsAndroid.check(
-    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
-  );
+    if (fineGranted || coarseGranted) return true;
 
-  if (fineGranted || coarseGranted) return true;
+    const result = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: 'Konvert HR - Location Access Required',
+        message:
+          'Konvert HR needs access to your location to track attendance and check-ins accurately.',
+        buttonPositive: 'OK',
+        buttonNegative: 'Cancel',
+      }
+    );
 
-  // Request permission
-  const result = await PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-    {
-      title: 'Konvert HR - Location Access Required',
-      message:
-        'Konvert HR needs access to your location to track attendance and check-ins accurately.',
-      buttonPositive: 'OK',
-      buttonNegative: 'Cancel',
+    if (result === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
     }
-  );
 
-  if (result === PermissionsAndroid.RESULTS.GRANTED) {
-    return true;
+    await showPermissionSettingsAlert();
+    return await requestLocationPermission();
   }
 
-  // If denied, show alert and keep checking
-  await showPermissionSettingsAlert();
+  if (Platform.OS === 'ios') {
+    const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
 
-  // Recheck after user might have opened settings
-  return await requestLocationPermission();
+    if (result === RESULTS.GRANTED || result === RESULTS.LIMITED) {
+      return true;
+    }
+
+    Alert.alert(
+      'Location Permission Required',
+      'Please allow location permission from Settings to continue.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Open Settings', onPress: openSettings },
+      ],
+      { cancelable: false }
+    );
+
+    return false;
+  }
+
+  return false;
 };
 
 const showPermissionSettingsAlert = () => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     Alert.alert(
       'Location Permission Required',
       'Please allow location permission from Settings to continue.',
@@ -61,20 +86,24 @@ const showPermissionSettingsAlert = () => {
   });
 };
 
-// Optional helper to just check without requesting
 const checkLocationPermission = async () => {
-  if (Platform.OS !== 'android') return true;
+  if (Platform.OS === 'android') {
+    const fine = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+    const coarse = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+    );
+    return fine || coarse;
+  }
 
-  const fine = await PermissionsAndroid.check(
-    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-  );
-  const coarse = await PermissionsAndroid.check(
-    PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
-  );
+  if (Platform.OS === 'ios') {
+    const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+    return result === RESULTS.GRANTED || result === RESULTS.LIMITED;
+  }
 
-  return fine || coarse;
+  return false;
 };
-
 
 
 const getLocation = () => {
@@ -84,7 +113,23 @@ const getLocation = () => {
     },
     error => {
       console.log('location error:', error);
-      Service.OpenLocaitonbutton();
+
+  
+      if (Platform.OS === 'android') {
+        Service.OpenLocaitonbutton();
+      }
+
+      if (Platform.OS === 'ios') {
+        Alert.alert(
+          'Enable Location Services',
+          'Please enable Location Services from Settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: openSettings },
+          ],
+          { cancelable: false }
+        );
+      }
     },
     {
       enableHighAccuracy: true,
@@ -94,22 +139,6 @@ const getLocation = () => {
   );
 };
 
-const unMirrorImage = uri => {
-  return new Promise((resolve, reject) => {
-    ImageEditor.cropImage(
-      uri,
-      {
-        offset: { x: 0, y: 0 },
-        size: { width: 1000, height: 1000 }, // will auto-scale
-        displaySize: { width: 1000, height: 1000 },
-        resizeMode: 'contain',
-        transform: [{ scaleX: -1 }],
-      },
-      resolve,
-      reject
-    );
-  });
-};
 
 const handleOnCamera = async () => {
   try {
@@ -122,16 +151,13 @@ const handleOnCamera = async () => {
         );
         if (granted) return true;
 
-        const request = await PermissionsAndroid.request(
+        const requestResult = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA
         );
-        return request === PermissionsAndroid.RESULTS.GRANTED;
+        return requestResult === PermissionsAndroid.RESULTS.GRANTED;
       } else {
-        const result = await check(PERMISSIONS.IOS.CAMERA);
-        if (result === RESULTS.GRANTED) return true;
-
-        const requestResult = await request(PERMISSIONS.IOS.CAMERA);
-        return requestResult === RESULTS.GRANTED;
+        const result = await request(PERMISSIONS.IOS.CAMERA);
+        return result === RESULTS.GRANTED;
       }
     };
 
@@ -151,22 +177,20 @@ const handleOnCamera = async () => {
           includeBase64: true,
           saveToPhotos: false,
           presentationStyle: 'fullScreen',
-
         },
         response => {
           if (response?.didCancel || response?.errorCode) {
             return resolve({ success: false });
           }
-          
+
           const asset = response.assets?.[0];
           resolve({
             success: true,
             image: {
-              base64: asset.base64,
-              uri: asset.uri,
-              quality: 0.8,
-              fileName: asset.fileName,
-              type: asset.type,
+              base64: asset?.base64,
+              uri: asset?.uri,
+              fileName: asset?.fileName,
+              type: asset?.type,
             },
           });
         }
@@ -178,14 +202,13 @@ const handleOnCamera = async () => {
   }
 };
 
-
-
 const handleOnGallery = async () => {
   try {
     if (isPickerOpen) return;
     isPickerOpen = true;
 
     let hasPermission = true;
+
     if (Platform.OS === 'android') {
       if (Platform.Version >= 33) {
         const granted = await PermissionsAndroid.request(
@@ -212,8 +235,6 @@ const handleOnGallery = async () => {
       return { success: false };
     }
 
-    await new Promise((res) => setTimeout(res, 150));
-
     const result = await launchImageLibrary({
       mediaType: 'photo',
       selectionLimit: 1,
@@ -228,7 +249,6 @@ const handleOnGallery = async () => {
     }
 
     const asset = result.assets[0];
-    if (!asset?.uri) return { success: false };
 
     return {
       success: true,
@@ -246,25 +266,21 @@ const handleOnGallery = async () => {
   }
 };
 
-
-
 const showSettingsAlert = () => {
   Alert.alert(
     'Permission Required',
     'Please enable permission in Settings.',
-    [
-      // { text: 'Cancel', style: 'cancel' },
-      { text: 'Open Settings', onPress: openSettings },
-    ]
+    [{ text: 'Open Settings', onPress: openSettings }],
+    { cancelable: false }
   );
 };
 
 export const permission = {
   requestLocationPermission,
+  checkLocationPermission,
   showPermissionSettingsAlert,
   showSettingsAlert,
   handleOnCamera,
   handleOnGallery,
   getLocation,
-  checkLocationPermission
 };
