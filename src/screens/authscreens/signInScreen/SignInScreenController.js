@@ -204,21 +204,38 @@ export const useSignInScreen = () => {
     };
     setDeviceData(deviceDATA);
   };
+
   const heandleonSignin = async () => {
+  const enteredEmail = Formdata.email?.toLowerCase().trim();
+  const verifiedEmail = VerfiedUserData?.private_email?.toLowerCase().trim();
   dispatch(updateState({ isError: false, errorMessage: '' }));
+  if (!verifiedEmail || enteredEmail !== verifiedEmail) {
+    dispatch(
+      updateState({
+        isError: true,
+        errorMessage: 'This email is not registered with verification code',
+      })
+    );
+    return;
+  }
   const formvalid = Validator.current.allValid();
-  console.log("Formdata ===>", Formdata)
+
   if (formvalid) {
     Validator.current.hideMessages();
     forceUpdate(0);
+
     dispatch(
-      Usersignin({ email: Formdata.email, password: Formdata.password })
+      Usersignin({
+        email: enteredEmail,
+        password: Formdata.password,
+      })
     );
   } else {
     Validator.current.showMessages();
     forceUpdate(1);
   }
 };
+
 
   const BiometricLogin = async () => {
     if (!RememberData?.email || !RememberData?.password) {
