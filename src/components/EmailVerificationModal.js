@@ -7,7 +7,6 @@ import { MailIcon } from '../assets/icons';
 import { CommonTextInput } from '../components/CommonTextInput';
 import SimpleReactValidator from 'simple-react-validator';
 import { GlobalFonts } from '../theme/typography';
-import { FontSize } from '../utils/metrics';
 
 const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
   const { t, i18n } = useTranslation();

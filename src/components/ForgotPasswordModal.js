@@ -19,15 +19,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
+import { useSelector } from 'react-redux';
+import { CommonSelector } from '../store/reducers/commonSlice';
 const ForgotPasswordModal = ({
   visible,
   onClose,
 }) => {
-
+  const {VerfiedUserData} = useSelector(CommonSelector);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
-  const [resetEmail, setResetEmail] = useState('');
+  const [resetEmail, setResetEmail] = useState(VerfiedUserData.private_email);
   const [tempPassword, setTempPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -43,49 +45,61 @@ const ForgotPasswordModal = ({
   );
 
   const onSendTempPassword = async () => {
-    if (!resetValidator.current.allValid()) {
-      resetValidator.current.showMessages();
-      forceUpdate(n => n + 1)
-      return;
-    }
+  const enteredEmail = resetEmail?.toLowerCase().trim();
+  const verifiedEmail = VerfiedUserData?.private_email?.toLowerCase().trim();
+  if (enteredEmail !== verifiedEmail) {
+    showMessage({
+      message: 'Email does not match the registered email.',
+      type: 'danger',
+    });
+    return;
+  }
 
-    try {
-      setLoading(true);
-      const token = await AsyncStorage.getItem('USER_TOKEN');
-      console.log("token===>",token)
-      const response = await fetch(
-        `${Config.BASE_URL}api/forgot-password/request`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: token,
-          },
-          body: JSON.stringify({ email: resetEmail }),
-        }
-      );
+  if (!resetValidator.current.allValid()) {
+    resetValidator.current.showMessages();
+    forceUpdate(n => n + 1);
+    return;
+  }
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result?.message || 'Failed to send password');
+  try {
+    setLoading(true);
+    const token = await AsyncStorage.getItem('USER_TOKEN');
+    const response = await fetch(
+      `${Config.BASE_URL}api/forgot-password/request`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token,
+        },
+        body: JSON.stringify({
+          email: enteredEmail,
+        }),
       }
+    );
 
-      showMessage({
-        message: 'Temporary password sent to your email',
-        type: 'success',
-      });
+    const result = await response.json();
 
-      setStep(2);
-    } catch (error) {
-      showMessage({
-        message: error.message,
-        type: 'danger',
-      });
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      throw new Error(result?.message || 'Failed to send password');
     }
-  };
+
+    showMessage({
+      message: 'Temporary password sent to your email',
+      type: 'success',
+    });
+
+    setStep(2);
+  } catch (error) {
+    showMessage({
+      message: error.message,
+      type: 'danger',
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const onResetPassword = async () => {
 
@@ -167,6 +181,7 @@ const ForgotPasswordModal = ({
       visible={visible}
       onRequestClose={onClose}
     >
+      
       <TouchableOpacity
         style={styles.modalContainer}
         activeOpacity={1}
