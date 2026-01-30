@@ -132,8 +132,7 @@ export const useHome = () => {
 
       setAttendance(data);
       await Service.setAsyncAttendanceData(data);
-      const hasPermission = await permission.checkLocationPermission();
-      if (hasPermission) BackgroundHandler.startTracking();
+      BackgroundHandler.startTracking();
       return;
     }
 
@@ -209,7 +208,6 @@ export const useHome = () => {
       showMessage({
         icon: "danger",
         message: err.error || "Attendance failed. Please try again.",
-
         type: "danger",
         duration: 2000,
       });

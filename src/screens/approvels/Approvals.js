@@ -145,9 +145,8 @@ export default function Approvals() {
       setReasonError(true);
       return;
     }
-
+    setRejectModalVisible(false);
     setReasonError(false);
-
     try {
       const payload = {
         approval_request_id: selectedApprovalId,
@@ -166,7 +165,7 @@ export default function Approvals() {
           type: 'success',
         });
 
-        setRejectModalVisible(false);
+        
         setRejectReason('');
         setReasonError(false);
 

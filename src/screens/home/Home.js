@@ -47,11 +47,11 @@ const Home = () => {
           )}
         />
       </ScrollView>
-      <TouchableWithoutFeedback onPress={() => navigateChatBot()}>
+      {/* <TouchableWithoutFeedback onPress={() => navigateChatBot()}>
         <View style={styles.plusContainer}>
           <ChatBotIcon width={60} height={60} />
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback> */}
     </CommonView>
   );
 };

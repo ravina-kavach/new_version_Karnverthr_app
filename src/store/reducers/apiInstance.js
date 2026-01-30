@@ -8,6 +8,7 @@ const API = axios.create({
 });
 
 const skipAuthUrls = ['api/auth'];
+
 API.interceptors.request.use(
   async config => {
     const token = await AsyncStorage.getItem('USER_TOKEN');

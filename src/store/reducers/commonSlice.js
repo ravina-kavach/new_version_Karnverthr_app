@@ -97,8 +97,9 @@ export const UserAttendance = createAsyncThunk(
     'UserAttendance',
     async (userdata, thunkAPI) => {
         try {
+            // console.log("UserAttendance userdata===>",userdata)
             let result = await API.post('api/employee/attandence', userdata)
-            console.log("")
+            // console.log("UserAttendance result===>",result)
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
             } else {

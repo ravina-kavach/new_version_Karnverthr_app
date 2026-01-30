@@ -24,13 +24,12 @@ import Leaves from '../screens/leaves/Leaves';
 import Chatbot from '../screens/chatbot/Chatbot';
 import ExpenseDetail from '../screens/expenses/ExpenseDetail';
 import PaySlip from '../screens/paySlip/PaySlip';
-import { navigationRef } from '../utils/NavigationService';
 
 const Stack = createNativeStackNavigator();
 
 function Navigation({ props }) {
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer>
       <Stack.Navigator initialRouteName="splash">
         <Stack.Group screenOptions={{ header: () => null }}>
           <Stack.Screen name="splash" component={Splash} />

@@ -110,6 +110,7 @@ export const useSignInScreen = () => {
     });
 
     dispatch(updateState({ isSignin: false }));
+    setdata()
     Navigation.navigate('myTab');
   }
 }, [isSignin]);

@@ -9,7 +9,6 @@ let isPickerOpen = false;
 const requestLocationPermission = async () => {
   if (Platform.OS !== 'android') return true;
 
-  // First check if already granted
   const fineGranted = await PermissionsAndroid.check(
     PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
   );
@@ -95,6 +94,23 @@ const getLocation = () => {
   );
 };
 
+const unMirrorImage = uri => {
+  return new Promise((resolve, reject) => {
+    ImageEditor.cropImage(
+      uri,
+      {
+        offset: { x: 0, y: 0 },
+        size: { width: 1000, height: 1000 }, // will auto-scale
+        displaySize: { width: 1000, height: 1000 },
+        resizeMode: 'contain',
+        transform: [{ scaleX: -1 }],
+      },
+      resolve,
+      reject
+    );
+  });
+};
+
 const handleOnCamera = async () => {
   try {
     let hasPermission = false;
@@ -130,21 +146,25 @@ const handleOnCamera = async () => {
       launchCamera(
         {
           mediaType: 'photo',
-          quality: 0.1,
+          quality: 0.8,
           cameraType: 'front',
           includeBase64: true,
+          saveToPhotos: false,
+          presentationStyle: 'fullScreen',
+
         },
         response => {
           if (response?.didCancel || response?.errorCode) {
             return resolve({ success: false });
           }
-
+          
           const asset = response.assets?.[0];
           resolve({
             success: true,
             image: {
               base64: asset.base64,
               uri: asset.uri,
+              quality: 0.8,
               fileName: asset.fileName,
               type: asset.type,
             },

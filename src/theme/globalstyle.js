@@ -5,7 +5,12 @@ const GlobalStyle = StyleSheet.create({
       flex: 1,
    },
    massageCotanier: {
-      marginBottom: Platform.OS === 'android' ? 60 : 0,
+      position: 'absolute',
+      bottom:Platform.OS === 'android' ? 60 : 0,
+      left: 0,
+      right: 0,
+      zIndex: 9999,
+      elevation: 9999,  
    }
 },
 )

@@ -27,6 +27,7 @@ const Root = () => {
       <Navigation />
       <FlashMessage
         position="bottom"
+        floating
         style={GlobalStyle.massageCotanier}
       />
     </SafeAreaProvider>

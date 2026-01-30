@@ -1,4 +1,3 @@
-// src/utils/bootstrapAuth.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserToken } from '../store/reducers/commonSlice';
 
