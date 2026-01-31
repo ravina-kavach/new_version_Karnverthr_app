@@ -133,9 +133,9 @@ const ForgotPasswordModal = ({
           },
           body: JSON.stringify({
             email: resetEmail,
-            temp_password: tempPassword,
-            new_password: newPassword,
-            confirm_password: confirmPassword
+            temp_password: tempPassword?.trim(),
+            new_password: newPassword?.trim(),
+            confirm_password: confirmPassword?.trim()
           }),
         }
       );

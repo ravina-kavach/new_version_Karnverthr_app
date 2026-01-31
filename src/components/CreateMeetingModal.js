@@ -1,260 +1,277 @@
 import React, { useState, useEffect } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    ScrollView,
-    Modal,
-    Platform,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Modal,
+  Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLOR } from '../theme/theme';
 import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
 
+const isSameDay = (d1, d2) =>
+  d1.getFullYear() === d2.getFullYear() &&
+  d1.getMonth() === d2.getMonth() &&
+  d1.getDate() === d2.getDate();
+
 const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
+  const now = new Date();
+  const initialEnd = new Date(now);
+  initialEnd.setMinutes(initialEnd.getMinutes() + 30);
+
+  const [subject, setSubject] = useState('');
+  const [startDate, setStartDate] = useState(now);
+  const [endDate, setEndDate] = useState(initialEnd);
+  const [location, setLocation] = useState('');
+  const [organizer, setOrganizer] = useState('');
+  const [description, setDescription] = useState('');
+  const [pickerMode, setPickerMode] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (endDate <= startDate) {
+      const updatedEnd = new Date(startDate);
+      updatedEnd.setMinutes(updatedEnd.getMinutes() + 30);
+      setEndDate(updatedEnd);
+    }
+  }, [startDate]);
+
+  const resetForm = () => {
+    const resetNow = new Date();
+    const resetEnd = new Date(resetNow);
+    resetEnd.setMinutes(resetEnd.getMinutes() + 30);
+
+    setSubject('');
+    setLocation('');
+    setOrganizer('');
+    setDescription('');
+    setStartDate(resetNow);
+    setEndDate(resetEnd);
+    setPickerMode(null);
+    setErrors({});
+  };
+
+  const formatDateTime = (date) => {
+    const pad = (n) => (n < 10 ? `0${n}` : n);
+    return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(
+      date.getHours()
+    )}:${pad(date.getMinutes())}:00`;
+  };
+
+  const calculateDuration = (start, end) =>
+    Number(((end - start) / (1000 * 60 * 60)).toFixed(1));
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!subject.trim()) newErrors.subject = t('Validation.subjectRequired');
+    else if (subject.trim().length < 3)
+      newErrors.subject = t('Validation.subjectShort');
+
+    if (startDate <= new Date())
+      newErrors.startDate = t('Validation.startPast');
+
+    if (endDate <= startDate)
+      newErrors.endDate = t('Validation.endBeforeStart');
+
+    if (!location.trim())
+      newErrors.location = t('Validation.locationRequired');
+
+    if (!organizer.trim())
+      newErrors.organizer = t('Validation.organizerRequired');
+
+    if (description.length > 150)
+      newErrors.description = t('Validation.descriptionTooLong');
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleCreateMeeting = () => {
+    if (!validateForm()) return;
+
+    const payload = {
+      name: subject.trim(),
+      start: formatDateTime(startDate),
+      stop: formatDateTime(endDate),
+      location: location.trim(),
+      duration: calculateDuration(startDate, endDate),
+      description: description.trim(),
+      privacy: 'private',
+    };
+
+    onCreateMeeting(payload);
+    resetForm();
+    onClose();
+  };
+
+  const onChangePicker = (event, selectedDate) => {
+    if (event.type === 'dismissed' || !selectedDate) {
+      setPickerMode(null);
+      return;
+    }
+
     const now = new Date();
-    const initialEnd = new Date(now);
-    initialEnd.setMinutes(initialEnd.getMinutes() + 30);
 
-    const [subject, setSubject] = useState('');
-    const [startDate, setStartDate] = useState(now);
-    const [endDate, setEndDate] = useState(initialEnd);
-    const [location, setLocation] = useState('');
-    const [organizer, setOrganizer] = useState('');
-    const [description, setDescription] = useState('');
-    const [pickerMode, setPickerMode] = useState(null);
-    const [errors, setErrors] = useState({});
+    if (pickerMode === 'startDate') {
+      const updated = new Date(startDate);
+      updated.setFullYear(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      );
+      setStartDate(updated);
+    }
 
-    useEffect(() => {
-        if (endDate <= startDate) {
-            const updatedEnd = new Date(startDate);
-            updatedEnd.setMinutes(updatedEnd.getMinutes() + 30);
-            setEndDate(updatedEnd);
-        }
-    }, [startDate]);
-    const resetForm = () => {
-        const resetNow = new Date();
-        const resetEnd = new Date(resetNow);
-        resetEnd.setMinutes(resetEnd.getMinutes() + 30);
+    if (pickerMode === 'startTime') {
+      const updated = new Date(startDate);
+      updated.setHours(selectedDate.getHours(), selectedDate.getMinutes());
 
-        setSubject('');
-        setLocation('');
-        setOrganizer('');
-        setDescription('');
-        setStartDate(resetNow);
-        setEndDate(resetEnd);
+      if (isSameDay(updated, now) && updated < now) {
+        setErrors({ startDate: t('Validation.startPast') });
         setPickerMode(null);
-        setErrors({});
-    };
+        return;
+      }
+      setStartDate(updated);
+    }
 
-    const formatDateTime = (date) => {
-        const pad = (n) => (n < 10 ? `0${n}` : n);
+    if (pickerMode === 'endDate') {
+      const updated = new Date(endDate);
+      updated.setFullYear(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate()
+      );
 
-        return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ` +
-            `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-    };
-
-    const calculateDuration = (start, end) => {
-        return Number(((end - start) / (1000 * 60 * 60)).toFixed(1));
-    };
-
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!subject.trim()) newErrors.subject = t('Validation.subjectRequired');
-        else if (subject.trim().length < 3) newErrors.subject = t('Validation.subjectShort');
-
-        if (startDate < new Date()) newErrors.startDate = t('Validation.startPast');
-        if (endDate <= startDate) newErrors.endDate = t('Validation.endBeforeStart');
-
-        if (!location.trim()) newErrors.location = t('Validation.locationRequired');
-        if (!organizer.trim()) newErrors.organizer = t('Validation.organizerRequired');
-
-        if (description.length > 150) newErrors.description = t('Validation.descriptionTooLong');
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleCreateMeeting = () => {
-        if (!validateForm()) return;
-
-        const payload = {
-            name: subject.trim(),
-            start: formatDateTime(startDate),
-            stop: formatDateTime(endDate),
-            location: location.trim(),
-            duration: calculateDuration(startDate, endDate),
-            description: description.trim(),
-            privacy: 'private',
-        };
-        onCreateMeeting(payload);
-        resetForm();
-        onClose();
-    };
-
-    const onChangePicker = (event, selectedDate) => {
-        if (event.type === 'dismissed') {
-            setPickerMode(null);
-            return;
-        }
-
-        if (!selectedDate) return;
-
-        if (pickerMode === 'startDate' || pickerMode === 'startTime') {
-            const updated = new Date(startDate);
-            pickerMode === 'startDate'
-                ? updated.setFullYear(
-                    selectedDate.getFullYear(),
-                    selectedDate.getMonth(),
-                    selectedDate.getDate()
-                )
-                : updated.setHours(
-                    selectedDate.getHours(),
-                    selectedDate.getMinutes()
-                );
-            setStartDate(updated);
-        }
-
-        if (pickerMode === 'endDate' || pickerMode === 'endTime') {
-            const updated = new Date(endDate);
-            pickerMode === 'endDate'
-                ? updated.setFullYear(
-                    selectedDate.getFullYear(),
-                    selectedDate.getMonth(),
-                    selectedDate.getDate()
-                )
-                : updated.setHours(
-                    selectedDate.getHours(),
-                    selectedDate.getMinutes()
-                );
-            setEndDate(updated);
-        }
-
+      if (updated < startDate) {
+        setErrors({ endDate: t('Validation.endBeforeStart') });
         setPickerMode(null);
-    };
+        return;
+      }
+      setEndDate(updated);
+    }
 
-    return (
-        <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-            <View style={styles.overlay}>
-                <View style={styles.modalContent}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>New Meeting</Text>
-                        <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-                            <Text style={styles.close}>✕</Text>
-                        </TouchableOpacity>
-                    </View>
+    if (pickerMode === 'endTime') {
+      const updated = new Date(endDate);
+      updated.setHours(selectedDate.getHours(), selectedDate.getMinutes());
 
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        {/* Subject */}
-                        <Text style={styles.label}>Meeting Subject</Text>
-                        <TextInput
-                            style={[styles.input, errors.subject && styles.errorInput]}
-                            value={subject}
-                            placeholderTextColor={COLOR.TextPlaceholder}
-                            placeholder="Enter meeting subject"
-                            onChangeText={(text) => {
-                                setSubject(text);
-                                setErrors({ ...errors, subject: null });
-                            }}
-                        />
-                        {errors.subject && <Text style={styles.errorText}>{errors.subject}</Text>}
+      if (updated <= startDate) {
+        setErrors({ endDate: t('Validation.endBeforeStart') });
+        setPickerMode(null);
+        return;
+      }
+      setEndDate(updated);
+    }
 
-                        {/* From */}
-                        <Text style={styles.label}>From</Text>
-                        <View style={styles.row}>
-                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startDate')}>
-                                <Text>{startDate.toLocaleDateString()}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startTime')}>
-                                <Text>{startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                            </TouchableOpacity>
-                        </View>
-                        {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
+    setErrors({});
+    setPickerMode(null);
+  };
 
-                        {/* To */}
-                        <Text style={styles.label}>To</Text>
-                        <View style={styles.row}>
-                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endDate')}>
-                                <Text>{endDate.toLocaleDateString()}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endTime')}>
-                                <Text>{endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-                            </TouchableOpacity>
-                        </View>
-                        {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
+  return (
+    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
+      <View style={styles.overlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.header}>
+            <Text style={styles.title}>New Meeting</Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <Text style={styles.close}>✕</Text>
+            </TouchableOpacity>
+          </View>
 
-                        {pickerMode && (
-                            <DateTimePicker
-                                is24Hour={false}
-                                value={pickerMode.includes('start') ? startDate : endDate}
-                                mode={pickerMode.includes('Date') ? 'date' : 'time'}
-                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                onChange={onChangePicker}
-                            />
-                        )}
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Subject */}
+            <Text style={styles.label}>Meeting Subject</Text>
+            <TextInput
+              style={[styles.input, errors.subject && styles.errorInput]}
+              placeholder="Enter meeting subject"
+              value={subject}
+              onChangeText={(text) => setSubject(text)}
+            />
+            {errors.subject && <Text style={styles.errorText}>{errors.subject}</Text>}
 
-                        {/* Location */}
-                        <Text style={styles.label}>Location</Text>
-                        <TextInput
-                            style={[styles.input, errors.location && styles.errorInput]}
-                            placeholderTextColor={COLOR.TextPlaceholder}
-                            placeholder="Enter Location"
-                            value={location}
-                            onChangeText={(text) => {
-                                setLocation(text);
-                                setErrors({ ...errors, location: null });
-                            }}
-                        />
-                        {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
-
-                        {/* Organizer */}
-                        <Text style={styles.label}>Organizer</Text>
-                        <TextInput
-                            style={[styles.input, errors.organizer && styles.errorInput]}
-                            placeholderTextColor={COLOR.TextPlaceholder}
-                            placeholder="Enter Organizer"
-                            value={organizer}
-                            onChangeText={(text) => {
-                                setOrganizer(text);
-                                setErrors({ ...errors, organizer: null });
-                            }}
-                        />
-                        {errors.organizer && <Text style={styles.errorText}>{errors.organizer}</Text>}
-
-                        {/* Description */}
-                        <Text style={styles.label}>Description</Text>
-                        <TextInput
-                            style={[styles.input, { height: 80 }, errors.description && styles.errorInput]}
-                            multiline
-                            placeholderTextColor={COLOR.TextPlaceholder}
-                            maxLength={150}
-                            placeholder="Enter Description"
-                            value={description}
-                            onChangeText={(text) => {
-                                setDescription(text);
-                                setErrors({ ...errors, description: null });
-                            }}
-                        />
-                        <Text style={styles.charCount}>{description.length}/150</Text>
-                        {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
-                    </ScrollView>
-
-                    <TouchableOpacity style={styles.createButton} onPress={handleCreateMeeting}>
-                        <Text style={styles.createButtonText}>Create New Meeting +</Text>
-                    </TouchableOpacity>
-                </View>
+            {/* From */}
+            <Text style={styles.label}>From</Text>
+            <View style={styles.row}>
+              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startDate')}>
+                <Text>{startDate.toLocaleDateString()}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startTime')}>
+                <Text>{startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+              </TouchableOpacity>
             </View>
-        </Modal>
-    );
+            {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
+
+            {/* To */}
+            <Text style={styles.label}>To</Text>
+            <View style={styles.row}>
+              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endDate')}>
+                <Text>{endDate.toLocaleDateString()}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endTime')}>
+                <Text>{endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+              </TouchableOpacity>
+            </View>
+            {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
+
+            {pickerMode && (
+              <DateTimePicker
+                value={pickerMode.includes('start') ? startDate : endDate}
+                mode={pickerMode.includes('Date') ? 'date' : 'time'}
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                minimumDate={
+                  pickerMode.includes('start') ? new Date() : startDate
+                }
+                onChange={onChangePicker}
+              />
+            )}
+
+            <Text style={styles.label}>Location</Text>
+            <TextInput
+              style={[styles.input, errors.location && styles.errorInput]}
+              placeholder="Enter location"
+              value={location}
+              onChangeText={setLocation}
+            />
+            {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
+
+            <Text style={styles.label}>Organizer</Text>
+            <TextInput
+              style={[styles.input, errors.organizer && styles.errorInput]}
+              placeholder="Enter organizer"
+              value={organizer}
+              onChangeText={setOrganizer}
+            />
+            {errors.organizer && <Text style={styles.errorText}>{errors.organizer}</Text>}
+
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={[styles.input, { height: 80 }]}
+              multiline
+              maxLength={150}
+              placeholder="Enter description"
+              value={description}
+              onChangeText={setDescription}
+            />
+            <Text style={styles.charCount}>{description.length}/150</Text>
+          </ScrollView>
+
+          <TouchableOpacity style={styles.createButton} onPress={handleCreateMeeting}>
+            <Text style={styles.createButtonText}>Create New Meeting +</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
 };
 
 export default NewMeetingModal;
 
-/* 🎨 Styles */
+
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,

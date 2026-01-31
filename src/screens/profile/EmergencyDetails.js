@@ -19,12 +19,16 @@ import { FontSize } from "../../utils/metrics";
 import { GlobalFonts } from "../../theme/typography";
 
 const Input = memo(
-  ({ label, value, onChangeText, placeholder, keyboardType }) => (
+  ({ label, value, onChangeText, placeholder, keyboardType, multiline }) => (
     <View style={{ marginBottom: 16 }}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={styles.input}
+        style={[
+          styles.input,
+          multiline && styles.multilineInput,
+        ]}
         value={value}
+        multiline
         placeholder={placeholder}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
@@ -96,31 +100,6 @@ export default function EmergencyDetails() {
           <>
             <View style={styles.card}>
               <Input
-                label="Phone Number"
-                placeholder="Emergency phone number"
-                keyboardType="phone-pad"
-                value={form.emergency_contact_mobile}
-                onChangeText={(text) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    emergency_contact_mobile: text,
-                  }))
-                }
-              />
-
-              <Input
-                label="Address"
-                placeholder="Emergency address"
-                value={form.emergency_contact_address}
-                onChangeText={(text) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    emergency_contact_address: text,
-                  }))
-                }
-              />
-
-              <Input
                 label="Name"
                 placeholder="Emergency name"
                 value={form.emergency_contact_name}
@@ -143,6 +122,33 @@ export default function EmergencyDetails() {
                   }))
                 }
               />
+              <Input
+                label="Phone Number"
+                placeholder="Emergency phone number"
+                keyboardType="phone-pad"
+                value={form.emergency_contact_mobile}
+                onChangeText={(text) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    emergency_contact_mobile: text,
+                  }))
+                }
+              />
+
+              <Input
+                label="Address"
+                placeholder="Emergency address"
+                value={form.emergency_contact_address}
+                multiline
+                onChangeText={(text) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    emergency_contact_address: text,
+                  }))
+                }
+              />
+
+
             </View>
 
             <View style={styles.actions}>
@@ -207,12 +213,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 8,
   },
+
   saveBtn: {
     backgroundColor: "#111827",
     paddingVertical: 12,
     width: 120,
     alignItems: "center",
     borderRadius: 8,
+  },
+  multilineInput: {
+    height: 100,
+    paddingTop: 12,
+    textAlignVertical: "top",
   },
   buttonText: {
     ...GlobalFonts.subtitleText,

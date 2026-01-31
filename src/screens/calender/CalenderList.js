@@ -10,23 +10,20 @@ import { CommonSelector} from '../../store/reducers/commonSlice';
 const CalendarList = () => {
 const {GetCalendarEventsData } = useSelector(CommonSelector);
   const groupedData = useMemo(() => {
-    const groups = {};
+  const groups = {};
 
-    GetCalendarEventsData.forEach(event => {
-      const dateKey = moment(event.start).format('YYYY-MM-DD');
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
-      groups[dateKey].push(event);
-    });
+  GetCalendarEventsData.forEach(event => {
+    const dateKey = moment(event.start).format('YYYY-MM-DD');
+    (groups[dateKey] ||= []).push(event);
+  });
 
-    return Object.keys(groups)
-      .sort()
-      .map(date => ({
-        date,
-        events: groups[date],
-      }));
-  }, [GetCalendarEventsData]);
+  return Object.keys(groups)
+    .sort((a, b) => b.localeCompare(a))
+    .map(date => ({
+      date,
+      events: groups[date],
+    }));
+}, [GetCalendarEventsData]);
 
   const renderDateSection = ({ item }) => (
     <View>

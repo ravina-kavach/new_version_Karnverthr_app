@@ -19,17 +19,19 @@ import { FontSize } from "../../utils/metrics";
 import { GlobalFonts } from "../../theme/typography";
 
 const Input = memo(
-  ({ label, value, editable = true, onChangeText, placeholder, keyboardType }) => (
+  ({ label, value, editable = true, onChangeText, placeholder, keyboardType, multiline }) => (
     <View style={{ marginBottom: 16 }}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
         style={[
           styles.input,
+          multiline && styles.multilineInput,
           { backgroundColor: !editable ? COLOR.dark5 : COLOR.White1 },
         ]}
         value={value}
         placeholder={placeholder}
         editable={editable}
+        multiline={multiline}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
         autoCorrect={false}
@@ -128,6 +130,7 @@ export default function EditProfile() {
               <Input
                 label="Address"
                 placeholder="Address"
+                multiline
                 value={form.present_address}
                 onChangeText={(text) =>
                   setForm((prev) => ({ ...prev, present_address: text }))
@@ -209,4 +212,9 @@ const styles = StyleSheet.create({
     fontSize: FontSize.Font14,
     color: COLOR.Black1,
   },
+  multilineInput: {
+  height: 100,
+  paddingTop: 12,
+  textAlignVertical: "top",
+},
 });

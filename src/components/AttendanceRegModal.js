@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -29,6 +29,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
     const [errors, setErrors] = useState({
         regCategory: '',
         description: '',
+        checkout: '',
     });
 
     const MIN_DESC_LENGTH = 10;
@@ -38,14 +39,6 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         ...rest,
         name: type,
     }));
-
-    useEffect(() => {
-        if (endDate <= startDate) {
-            const newEnd = new Date(startDate);
-            newEnd.setMinutes(newEnd.getMinutes() + 30);
-            setEndDate(newEnd);
-        }
-    }, [startDate]);
 
     const today = new Date();
     const maxSelectableDate = new Date(
@@ -79,7 +72,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
 
     const validateForm = () => {
         let valid = true;
-        let newErrors = { regCategory: '', description: '' };
+        let newErrors = { regCategory: '', description: '', checkout: '' };
 
         if (!regCategories || !regCategories.id) {
             newErrors.regCategory = 'Please select Regularization type';
@@ -91,6 +84,12 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
             valid = false;
         } else if (description.length < MIN_DESC_LENGTH) {
             newErrors.description = `Minimum ${MIN_DESC_LENGTH} characters required`;
+            valid = false;
+        }
+
+        if (endDate <= startDate) {
+            newErrors.checkout =
+                'Check-out time must be after check-in time';
             valid = false;
         }
 
@@ -124,8 +123,9 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
             return;
         }
 
-        const updateDateTime = (baseDate, setter) => {
+        const updateDateTime = (baseDate) => {
             const updated = new Date(baseDate);
+
             if (pickerMode.includes('Date')) {
                 updated.setFullYear(
                     selectedDate.getFullYear(),
@@ -138,13 +138,36 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                     selectedDate.getMinutes()
                 );
             }
-            setter(updated);
+
+            return updated;
         };
 
         if (pickerMode.includes('start')) {
-            updateDateTime(startDate, setStartDate);
+            const newStart = updateDateTime(startDate);
+            setStartDate(newStart);
+
+            if (endDate <= newStart) {
+                setErrors((prev) => ({
+                    ...prev,
+                    checkout:
+                        'Check-out time must be after check-in time',
+                }));
+            } else {
+                setErrors((prev) => ({ ...prev, checkout: '' }));
+            }
         } else {
-            updateDateTime(endDate, setEndDate);
+            const newEnd = updateDateTime(endDate);
+            setEndDate(newEnd);
+
+            if (newEnd <= startDate) {
+                setErrors((prev) => ({
+                    ...prev,
+                    checkout:
+                        'Check-out time must be after check-in time',
+                }));
+            } else {
+                setErrors((prev) => ({ ...prev, checkout: '' }));
+            }
         }
 
         setPickerMode(null);
@@ -154,18 +177,17 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         <Modal visible={visible} statusBarTranslucent transparent>
             <View style={styles.overlay}>
                 <View style={styles.modalContent}>
-                    {/* Header */}
                     <View style={styles.header}>
-                        <Text style={styles.title}>Attendance Regularization</Text>
+                        <Text style={styles.title}>
+                            Attendance Regularization
+                        </Text>
                         <TouchableOpacity onPress={onClose}>
                             <Text style={styles.close}>✕</Text>
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-                        {/* Regularization */}
                         <Text style={styles.label}>Regularization</Text>
-
                         <View
                             style={[
                                 styles.dropdownWrapper,
@@ -185,13 +207,12 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                             />
                         </View>
 
-                        {errors.regCategory ? (
+                        {errors.regCategory && (
                             <Text style={styles.errorText}>
                                 {errors.regCategory}
                             </Text>
-                        ) : null}
+                        )}
 
-                        {/* Check In */}
                         <Text style={styles.label}>Check In</Text>
                         <View style={styles.row}>
                             <TouchableOpacity
@@ -216,11 +237,13 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                             </TouchableOpacity>
                         </View>
 
-                        {/* Check Out */}
                         <Text style={styles.label}>Check Out</Text>
                         <View style={styles.row}>
                             <TouchableOpacity
-                                style={styles.dateTimeBox}
+                                style={[
+                                    styles.dateTimeBox,
+                                    errors.checkout && styles.errorBorder,
+                                ]}
                                 onPress={() => setPickerMode('endDate')}
                             >
                                 <Text style={styles.dateTimeText}>
@@ -229,7 +252,10 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                style={styles.dateTimeBox}
+                                style={[
+                                    styles.dateTimeBox,
+                                    errors.checkout && styles.errorBorder,
+                                ]}
                                 onPress={() => setPickerMode('endTime')}
                             >
                                 <Text style={styles.dateTimeText}>
@@ -240,6 +266,12 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                 </Text>
                             </TouchableOpacity>
                         </View>
+
+                        {errors.checkout && (
+                            <Text style={styles.errorText}>
+                                {errors.checkout}
+                            </Text>
+                        )}
 
                         {pickerMode && (
                             <DateTimePicker
@@ -263,14 +295,12 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                         ? maxSelectableDate
                                         : undefined
                                 }
-                                is24Hour={false} 
-                                onChange={onChangePicker} 
+                                is24Hour={false}
+                                onChange={onChangePicker}
                             />
                         )}
 
-                        {/* Description */}
                         <Text style={styles.label}>Description</Text>
-
                         <TextInput
                             placeholder="Add a description"
                             placeholderTextColor={COLOR.TextPlaceholder}
@@ -292,18 +322,17 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                             multiline
                         />
 
-                        {errors.description ? (
+                        {errors.description && (
                             <Text style={styles.errorText}>
                                 {errors.description}
                             </Text>
-                        ) : null}
+                        )}
 
                         <Text style={styles.charCount}>
                             {description.length}/{MAX_DESC_LENGTH}
                         </Text>
                     </ScrollView>
 
-                    {/* Footer */}
                     <View style={styles.footer}>
                         <TouchableOpacity
                             style={styles.cancelBtn}
@@ -334,6 +363,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
 };
 
 export default AttendanceRegModal;
+
 
 const styles = StyleSheet.create({
     overlay: {
