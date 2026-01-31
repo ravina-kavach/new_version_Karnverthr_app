@@ -9,6 +9,7 @@ import AttendanceItem from '../../components/AttendanceItem'
 import CommonHeader from '../../components/CommonHeader';
 import AttendanceRegModal from '../../components/AttendanceRegModal'
 import { GlobalFonts } from '../../theme/typography';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Attendance() {
   const {
@@ -29,7 +30,8 @@ export default function Attendance() {
     handleModal,
     onCreateRegularization
   } = useAttendance();
-
+  
+  const insets = useSafeAreaInsets();
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
       <CommonHeader
@@ -78,7 +80,7 @@ export default function Attendance() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={() => <NodataFound />}
       />
-      <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={() => handleModal()}>
+      <TouchableOpacity style={[styles.fab,{bottom:insets.bottom + 20}]} activeOpacity={0.8} onPress={() => handleModal()}>
         <Text style={styles.fabText}>Attendance Regularization</Text>
       </TouchableOpacity>
       <AttendanceRegModal

@@ -23,11 +23,14 @@ import Expenses from '../screens/expenses/Expenses';
 import Leaves from '../screens/leaves/Leaves';
 import Calender from '../screens/calender/Calender';
 import CommonHeader from '../components/CommonHeader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+
 
   const renderTabIcon = (focused, ActiveIcon, InactiveIcon, label) => (
     <View style={styles.tabItem}>
@@ -44,10 +47,9 @@ const TabNavigation = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        // headerShown: false,
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: {...styles.tabBar,bottom: insets.bottom},
       }}
     >
       <Tab.Screen
@@ -91,9 +93,6 @@ const TabNavigation = () => {
       <Tab.Screen
         name="leaves"
         component={Leaves}
-        // listeners={{
-        //   tabPress: e => e.preventDefault(),
-        // }}
         options={{
           header: () => (
             <CommonHeader
@@ -114,9 +113,6 @@ const TabNavigation = () => {
       <Tab.Screen
         name="calender"
         component={Calender}
-        // listeners={{
-        //   tabPress: e => e.preventDefault(),
-        // }}
         options={{
           header: () => (
             <CommonHeader

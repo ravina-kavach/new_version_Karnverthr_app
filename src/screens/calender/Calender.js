@@ -21,6 +21,7 @@ import { CommonSelector, GetCalendarEvents, CreateNewMeeting, GetAttandanceList 
 import { showMessage } from 'react-native-flash-message';
 import { FontSize } from '../../utils/metrics';
 import { GlobalFonts } from '../../theme/typography';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const COLORS = {
   bg: '#F3F4F6',
@@ -45,7 +46,7 @@ export default function Calendar() {
   const [reminderEvents, setRemaiderEvents] = useState([]);
   const [visibleMonth, setVisibleMonth] = useState(moment().month() + 1);
   const [visibleYear, setVisibleYear] = useState(moment().year());
-
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const Navigation = useNavigation();
   const { GetCalendarEventsData, GetAttandanceListData, isGetCalendarEventsDataFetching, UsersigninData } = useSelector(CommonSelector);
@@ -498,7 +499,7 @@ export default function Calendar() {
         }
       />
 
-      <TouchableOpacity style={styles.fab} activeOpacity={0.8} onPress={() => setMeetingModal(true)}>
+      <TouchableOpacity style={[styles.fab,{bottom:insets.bottom + 10}]} activeOpacity={0.8} onPress={() => setMeetingModal(true)}>
         <Text style={styles.fabIcon}>+</Text>
       </TouchableOpacity>
 
@@ -595,7 +596,7 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     bottom: 30,
-    right: 20,
+    right: 10,
     width: 56,
     height: 56,
     backgroundColor: '#222', // Dark button

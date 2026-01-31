@@ -5,10 +5,17 @@ import { COLOR } from '../theme/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlobalStyle from '../theme/globalstyle';
 import {GlobalFonts} from '../theme/typography'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const CommonView = props => {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={[GlobalStyle.flexContainer]}>
+    <View 
+    style={{
+        ...GlobalStyle.flexContainer,
+        paddingBottom: insets.bottom,
+      }}
+>
       <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
       {props.children}
     </View>

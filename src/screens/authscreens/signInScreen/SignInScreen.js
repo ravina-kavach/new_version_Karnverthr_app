@@ -244,7 +244,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     height: 60,
-    // marginTop: responsiveHeight(2),
     borderWidth: 1.2,
     borderColor: COLOR.GrayBorder,
     borderRadius: 12,
@@ -374,8 +373,9 @@ const styles = StyleSheet.create({
     color: '#444',
   },
   policyContainer: {
-  marginBottom: 25,
+  paddingBottom: 25,
   paddingHorizontal: 10,
+  backgroundColor:COLOR.White1,
   justifyContent:'center',
   alignItems: 'center',
   flexDirection:'row'
