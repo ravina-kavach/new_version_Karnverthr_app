@@ -18,7 +18,7 @@ function Dropdown({ DropdownData = [], Selecteditem, setSelecteditem, type = nul
   return (
     <SelectDropdown
       data={type === "Attendance" ? DropdownData : dropdownList}
-      defaultValue={type === "Attendance" ? DropdownData[0] : Selecteditem}
+      defaultValue={Selecteditem}
       onSelect={(selectedItem) => setSelecteditem(selectedItem)}
       dropdownStyle={styles.dropdown}
       dropdownOverlayColor="transparent"
