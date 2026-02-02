@@ -214,8 +214,8 @@ export const useSignInScreen = () => {
   };
 
   const heandleonSignin = async () => {
-  const enteredEmail = Formdata.email?.toLowerCase().trim();
-  const verifiedEmail = VerfiedUserData?.private_email?.toLowerCase().trim();
+  const enteredEmail = Formdata.email?.trim();
+  const verifiedEmail = VerfiedUserData?.private_email?.trim();
   dispatch(updateState({ isError: false, errorMessage: '' }));
   if (!verifiedEmail || enteredEmail !== verifiedEmail) {
     dispatch(
