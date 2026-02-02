@@ -1133,9 +1133,9 @@ export const CommonSlice = createSlice({
 
         //===== UserVerification
         builder.addCase(UserVerification.fulfilled, (state, { payload }) => {
-            //console.log("[UserVerification.fulfilled]>>>payload>>>", payload)
+            console.log("[UserVerification.fulfilled]>>>payload>>>", payload)
             try {
-                state.VerfiedUserData = payload;
+                state.VerfiedUserData = payload || {};
                 state.isVerified = true;
                 state.isVerifiedFetching = false;
                 state.isError = false;

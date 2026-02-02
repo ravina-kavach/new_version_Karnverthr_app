@@ -53,6 +53,7 @@ export const useLeaves = () => {
   useEffect(() => {
     
     if (GetLeaveAllocationData && IsFocused) {
+      console.log("GetLeaveListData====>",GetLeaveAllocationData)
       updateLeaveSummary(GetLeaveAllocationData);
     } else {
       setLeavesSummary([]);
@@ -62,7 +63,7 @@ export const useLeaves = () => {
 
   const updateLeaveSummary = (res) => {
   const cards = Array.isArray(res) ? res : [];
-
+  console.log("cards====>",cards)
   const mappedData = cards.map((item) => {
     const total = Number(item?.total) || 0;
     const used = Number(item?.used) || 0;

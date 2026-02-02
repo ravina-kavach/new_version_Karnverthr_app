@@ -143,6 +143,15 @@ const GetisVerified = async () => {
     }
 };
 
+export const setVerifiedUser = async email => {
+  await AsyncStorage.setItem('VERIFIED_USER', email);
+};
+
+// Get verified email
+export const GetVerifiedUser = async () => {
+  return await AsyncStorage.getItem('VERIFIED_USER');
+};
+
 
 const setAsyncAttendanceData = async (data) => {
     try {
@@ -170,7 +179,8 @@ const GetAsyncAttendanceData = async () => {
 const Service = {
     setRemember, GetRemember, removeRemember, GetisFirstime, removeisFirstime, setisFirstime, ClearStorage,
     FormatIndianNumber, getDayDifference, GetisBiomatic, removeisBiomatic, setisBiomatic,OpenLocaitonbutton,
-    setisVerified,removeisVerified,GetisVerified,setAsyncAttendanceData,removeAsyncAttendanceData,GetAsyncAttendanceData
+    setisVerified,removeisVerified,GetisVerified,setAsyncAttendanceData,removeAsyncAttendanceData,GetAsyncAttendanceData,
+    setVerifiedUser,GetVerifiedUser
 };
 
 export default Service;
