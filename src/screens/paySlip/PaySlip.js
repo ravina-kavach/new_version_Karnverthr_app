@@ -49,7 +49,6 @@ const PaySlip = () => {
             });
         }
     };
-
     return (
         <CommonView style={{ flex: 1 }}>
             <CommonHeader title="Pay Slip" />
@@ -59,6 +58,7 @@ const PaySlip = () => {
                     <View style={styles.filterItem}>
                         <Dropdown
                             DropdownData={months}
+                            type={"Attendance"}
                             setSelecteditem={setSelectedmonth}
                             Selecteditem={Selectedmonth}
                         />
@@ -67,6 +67,7 @@ const PaySlip = () => {
                     <View style={styles.filterItem}>
                         <Dropdown
                             DropdownData={YEARDATA}
+                            type={"Attendance"}
                             setSelecteditem={setSelectedYear}
                             Selecteditem={SelectedYear}
                         />

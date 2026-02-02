@@ -18,7 +18,7 @@ export const usePaySlip = () => {
 
   const [paySlip, setPaySlip] = useState(null);
 
-  const currentDate = useMemo(() => moment(), []);
+  const currentDate = useMemo(() => moment(), [IsFocused]);
   const currentYear = currentDate.year();
   const currentMonth = currentDate.month() + 1;
 
@@ -53,19 +53,22 @@ export const usePaySlip = () => {
   const [SelectedYear, setSelectedYear] = useState(null);
   const [Selectedmonth, setSelectedmonth] = useState(null);
 
-  const months = useMemo(() => {
-    if (!SelectedYear) return [];
-
-    const selectedYearNumber = Number(SelectedYear.name);
-
-    if (selectedYearNumber === currentYear) {
-      return ALL_MONTHS.filter(
-        m => Number(m.id) < currentMonth
-      );
-    }
-
-    return ALL_MONTHS;
-  }, [SelectedYear, ALL_MONTHS, currentYear, currentMonth]);
+  const months = React.useMemo(() => {
+      return [
+        { id: '1', name: t("Attendance.January") },
+        { id: '2', name: t("Attendance.February") },
+        { id: '3', name: t("Attendance.March") },
+        { id: '4', name: t("Attendance.April") },
+        { id: '5', name: t("Attendance.May") },
+        { id: '6', name: t("Attendance.June") },
+        { id: '7', name: t("Attendance.July") },
+        { id: '8', name: t("Attendance.August") },
+        { id: '9', name: t("Attendance.September") },
+        { id: '10', name: t("Attendance.October") },
+        { id: '11', name: t("Attendance.November") },
+        { id: '12', name: t("Attendance.December") },
+      ];
+    }, [t]);
 
   useEffect(() => {
     if (!YEARDATA.length || !ALL_MONTHS.length) return;
@@ -83,16 +86,17 @@ export const usePaySlip = () => {
   }, [YEARDATA, ALL_MONTHS, defaultYear, defaultMonth]);
 
   useEffect(() => {
-    if (!Selectedmonth || !months.length) return;
+  if (!Selectedmonth || !months.length) return;
 
-    const isValid = months.some(
-      m => m.id === Selectedmonth.id
-    );
+  const isValid = months.some(
+    m => m.id === Selectedmonth.id
+  );
 
-    if (!isValid) {
-      setSelectedmonth(months[months.length - 1]);
-    }
-  }, [months]);
+  if (!isValid) {
+    setSelectedmonth(months[months.length - 1]);
+  }
+}, [months, Selectedmonth]);
+
 
   useEffect(() => {
     if (IsFocused && UserDetailsData && Selectedmonth && SelectedYear) {
