@@ -49,7 +49,7 @@ const ShiftTiming = () => {
 
     return (
         <CommonView>
-            <CommonHeader title='Shift Timing' />
+            <CommonHeader title='Shift Time' />
             {isGetMonthlyShiftsFetching ?
                 <View style={styles.loader}>
                     <ActivityIndicator size="large" color={COLOR.Black1} />
