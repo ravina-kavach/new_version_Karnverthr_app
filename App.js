@@ -1,4 +1,4 @@
-import React,{useEffect} from 'react';
+import React,{useEffect,useState} from 'react';
 import 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FlashMessage from 'react-native-flash-message';
@@ -8,18 +8,19 @@ import Navigation from './src/navigations/Navigation';
 import store from './src/store';
 import './src/utils/i18n';
 import GlobalStyle from './src/theme/globalstyle';
-import { checkAppVersion } from './src/components/VersionCheck';
+import VersionCheck from 'react-native-version-check';
 import { bootstrapAuth } from './src/utils/bootstrapAuth';
+import UpdateModal from './src/components/UpdateModal'
+import DeviceInfo from 'react-native-device-info';
+
 
 const Root = () => {
   const dispatch = useDispatch();
+  const [showUpdate, setShowUpdate] = useState(false);
+  const [storeUrl, setStoreUrl] = useState('');
 
   useEffect(() => {
     bootstrapAuth(dispatch);
-  }, []);
-
-  useEffect(() => {
-    checkAppVersion();
   }, []);
 
   useEffect(() => {
@@ -32,6 +33,32 @@ const Root = () => {
     return () => subscription.remove();
   }, [dispatch]);
 
+  const checkAppVersion = async () => {
+    try {
+      const currentVersion = DeviceInfo.getVersion();
+      const latestVersion = await VersionCheck.getLatestVersion();
+      const url = await VersionCheck.getStoreUrl();
+      
+
+      if (!currentVersion || !latestVersion || !url) return;
+
+      const updateNeeded = VersionCheck.needUpdate({
+        currentVersion,
+        latestVersion,
+      });
+      if (updateNeeded?.isNeeded) {
+        setStoreUrl(url);
+        setShowUpdate(true);
+      }
+    } catch (error) {
+      console.log('Version check failed:', error);
+    }
+  };
+
+  useEffect(() => {
+    checkAppVersion();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <Navigation />
@@ -39,6 +66,10 @@ const Root = () => {
         position="bottom"
         floating
         style={GlobalStyle.massageCotanier}
+      />
+       <UpdateModal
+        visible={showUpdate}
+        storeUrl={storeUrl}
       />
     </SafeAreaProvider>
   );
