@@ -36,14 +36,14 @@ const ImagePickerSheet = ({
   };
 
   return (
-    <CommonView>
     <Modal
-      visible={visible}
-      transparent
-      statusBarTranslucent
-      animationType="slide"
-      onRequestClose={onClose}
+    visible={visible}
+    transparent
+    statusBarTranslucent
+    animationType="slide"
+    onRequestClose={onClose}
     >
+      <CommonView>
       <Pressable style={styles.overlay} onPress={onClose}>
         <View style={styles.sheet}>
           <TouchableOpacity style={styles.option} onPress={handleCamera}>
@@ -59,8 +59,8 @@ const ImagePickerSheet = ({
           </TouchableOpacity>
         </View>
       </Pressable>
-    </Modal>
     </CommonView>
+    </Modal>
   );
 };
 
