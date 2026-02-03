@@ -528,7 +528,7 @@ export const GetCalendarEvents = createAsyncThunk(
         // console.log('GetCalendarEvents userdata >>', userdata);
         try {
             let result = await API.get(`employee/calendar?user_id=${userdata.id}`);
-            console.log('GetCalendarEvents result.data >>', result);
+            // console.log('GetCalendarEvents result.data >>', result);
             if (result.data.success) {
                 return result.data.data;
             } else {

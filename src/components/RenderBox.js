@@ -53,7 +53,7 @@ export const RenderBox = ({ image, title, screen }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLOR.White1,
-    padding: 20,
+    padding: 18,
     width:responsiveWidth(28),
     height:responsiveHeight(14),
     maxHeight:300,
