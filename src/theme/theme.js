@@ -59,7 +59,7 @@ export const STATE = {
     approve: '#28a745',
     approved: '#28a745',
     done: '#fd7e14',
-    refused: '#6f42c1',
+    refused: '#FF0000',
     refuse: '#FF0000',
     post:"#17a2b8",
     reject:'#FF0000',
