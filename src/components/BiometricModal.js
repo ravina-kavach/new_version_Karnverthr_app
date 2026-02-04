@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingBottom:50
+    paddingBottom:80
   },
 
   card: {
