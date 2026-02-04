@@ -56,7 +56,8 @@ export default function Profile() {
     avatar, 
     IsReSetmodalvisible, 
     setIsReSetmodalvisible 
-  } = useProfile()
+  } = useProfile();
+  
   return (
     <CommonView>
       <CommonHeader title="Profile" />

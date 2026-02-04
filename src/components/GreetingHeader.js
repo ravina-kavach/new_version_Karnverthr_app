@@ -5,6 +5,7 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -14,6 +15,7 @@ import { CommonSelector } from '../store/reducers/commonSlice';
 import { FontSize, responsiveHeight } from '../utils/metrics';
 import { GlobalFonts } from '../theme/typography';
 import { EditIcon } from '../assets/svgs';
+import { COLOR } from '../theme/theme';
 
 const GreetingHeader = ({
   desc,
@@ -23,15 +25,13 @@ const GreetingHeader = ({
   onAvatarPress,
 }) => {
   const { t } = useTranslation();
-  const { UserDetailsData } = useSelector(CommonSelector);
+  const { UserDetailsData, isProfileUpdateFetching } = useSelector(CommonSelector);
   const navigation = useNavigation();
   const navigateProfile = () => {
     if (screenName !== 'editProfile') {
       navigation.navigate('profile');
     }
   };
-
-  // console.log("UserDetailsData?.name===>",UserDetailsData)
   const getInitials = (fullName) => {
     if (!fullName) return '';
     const words = fullName.trim().split(' ');
@@ -53,7 +53,6 @@ const GreetingHeader = ({
     UserDetailsData.name
   );
   const bgColor = getAvatarColor(initials);
-
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -64,23 +63,35 @@ const GreetingHeader = ({
         activeOpacity={0.8}
         onPress={screenName === 'editProfile' ? onAvatarPress : undefined}
       >
-        {avatar ? (
-          <Image source={{ uri: avatar }} style={styles.avatar} />
-        ) : (
-          <View style={[styles.initialAvatar, { backgroundColor: bgColor }]}>
-            <Text style={styles.initialText}>{initials}</Text>
-          </View>
-        )}
+        <View style={styles.avatarWrapper}>
+          {UserDetailsData.image_url ? (
+            <Image
+              source={{ uri: avatar || UserDetailsData.image_url }}
+              style={styles.avatar}
+            />
+          ) : (
+            <View style={[styles.initialAvatar, { backgroundColor: !UserDetailsData.image_url ? COLOR.Transparent : bgColor }]}>
+              <Text style={styles.initialText}>{initials}</Text>
+            </View>
+          )}
 
-        {screenName === 'editProfile' && (
-          <TouchableOpacity
-            style={styles.editIcon}
-            onPress={onAvatarPress}
-          >
-            <EditIcon width={22} height={22} />
-          </TouchableOpacity>
-        )}
+          {isProfileUpdateFetching || !UserDetailsData.image_url  && (
+            <View style={styles.loaderOverlay}>
+              <ActivityIndicator size="small" color="#fff" />
+            </View>
+          )}
+
+          {screenName === 'editProfile' && (
+            <TouchableOpacity
+              style={styles.editIcon}
+              onPress={onAvatarPress}
+            >
+              <EditIcon width={22} height={22} />
+            </TouchableOpacity>
+          )}
+        </View>
       </TouchableOpacity>
+
 
       <View>
         <Text style={styles.title}>
@@ -111,20 +122,19 @@ const styles = StyleSheet.create({
         ? responsiveHeight(3)
         : responsiveHeight(6),
   },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    marginRight: 12,
-  },
-  initialAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    marginRight: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+ avatar: {
+  width: 44,
+  height: 44,
+  borderRadius: 22,
+},
+
+ initialAvatar: {
+  width: 44,
+  height: 44,
+  borderRadius: 22,
+  alignItems: 'center',
+  justifyContent: 'center',
+},
   initialText: {
     color: '#fff',
     fontSize: 18,
@@ -133,7 +143,7 @@ const styles = StyleSheet.create({
   editIcon: {
     position: 'absolute',
     bottom: -4,
-    right: 6,
+    right: 0,
   },
   title: {
     fontSize: FontSize.Font18,
@@ -146,4 +156,22 @@ const styles = StyleSheet.create({
     color: '#777',
     marginTop: 2,
   },
+  avatarWrapper: {
+  width: 44,
+  height: 44,
+  marginRight: 12,
+  position: 'relative',
+},
+  loaderOverlay: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  borderRadius: 22,
+  backgroundColor: 'rgba(0,0,0,0.4)',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 10,
+},
 });

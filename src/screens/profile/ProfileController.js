@@ -10,11 +10,11 @@ const useProfile = () => {
   const IsFocused = useIsFocused()
   const dispatch = useDispatch();
   const Navigation = useNavigation()
-  const { UsersigninData, UserDetailsData, ProfileUpdateData, isUserDetailsFetching, isProfileUpdate, isProfileUpdateFetching } = useSelector(CommonSelector);
+  const { UsersigninData, UserDetailsData, isUserDetailsFetching, isProfileUpdate, isProfileUpdateFetching } = useSelector(CommonSelector);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [IsReSetmodalvisible, setIsReSetmodalvisible] = useState(false)
   const [avatar, setAvatar] = useState(
-    UsersigninData?.profile_image || null
+    UserDetailsData?.image_url || null
   );
 
 
@@ -36,6 +36,10 @@ const useProfile = () => {
   }
   const handleProfileUpload = (image) => {
     setAvatar(image.uri)
+    const obj = {
+      image_1920 : image.base64
+    }
+    handleProfileUpdate(obj)
   }
 
   const handleProfileUpdate = useCallback(
