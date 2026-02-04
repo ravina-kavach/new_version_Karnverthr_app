@@ -11,21 +11,35 @@ const AttendanceItem = ({ item, getDuration }) => {
     ? dayjs(item.check_in, "YYYY-MM-DD HH:mm:ss").format("ddd DD MMMM")
     : "";
 
-  const checkIn = item?.check_in
-    ? dayjs(item.check_in, "YYYY-MM-DD HH:mm:ss").format("hh:mm A")
-    : "00:00 AM";
+  const checkInDate = item?.check_in
+  ? dayjs(item.check_in, "YYYY-MM-DD HH:mm:ss")
+  : "";
 
-  const checkOut = item?.check_out
-    ? dayjs(item.check_out, "YYYY-MM-DD HH:mm:ss").format("hh:mm A")
-    : "00:00 PM";
+const checkOutDate = item?.check_out
+  ? dayjs(item.check_out, "YYYY-MM-DD HH:mm:ss")
+  : "";
 
-  const isAbsent = !item?.check_in && !item?.check_out;
+const checkIn = checkInDate
+  ? checkInDate.format("hh:mm A")
+  : "00:00 AM";
+
+const checkOut = checkOutDate
+  ? checkOutDate.format("hh:mm A")
+  : "00:00 PM";
+
+const isDifferentDay =
+  checkInDate &&
+  checkOutDate &&
+  !checkInDate.isSame(checkOutDate, "day");
+
+const checkOutDisplay = isDifferentDay
+  ? `${checkOut} (${checkOutDate.format("DD MMM")})`
+  : checkOut;
 
   return (
     <View style={styles.wrapper}>
       <View style={styles.header}>
         <Text style={styles.date}>{dateTitle}</Text>
-        {isAbsent && <Text style={styles.absent}>Absent</Text>}
       </View>
       <View style={styles.card}>
         <View style={styles.left}>
@@ -36,11 +50,9 @@ const AttendanceItem = ({ item, getDuration }) => {
 
           <View style={styles.timeRow}>
             <CheckOut style={styles.checkoutIcon}/>
-            <Text style={styles.timeText}>{checkOut}</Text>
+            <Text style={styles.timeText}>{checkOutDisplay}</Text>
           </View>
         </View>
-
-        {/* Right side (Hours) */}
         <View style={styles.right}>
           <Text style={styles.hours}>
             {getDuration(item?.check_in, item?.check_out)} hrs
