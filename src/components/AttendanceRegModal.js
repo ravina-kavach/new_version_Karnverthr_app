@@ -50,18 +50,17 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         59
     );
 
-    const formatDate = (date) => {
+    const formatDateTime = (date) => {
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, '0');
         const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        const h = String(date.getHours()).padStart(2, '0');
+        const min = String(date.getMinutes()).padStart(2, '0');
+        const s = '00';
+
+        return `${y}-${m}-${d} ${h}:${min}:${s}`;
     };
 
-    const formatTime = (date) => {
-        const h = String(date.getHours()).padStart(2, '0');
-        const m = String(date.getMinutes()).padStart(2, '0');
-        return `${h}:${m}`;
-    };
 
     const formatUIDate = (date) => {
         const d = String(date.getDate()).padStart(2, '0');
@@ -69,6 +68,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         const y = date.getFullYear();
         return `${d}/${m}/${y}`;
     };
+
 
     const validateForm = () => {
         let valid = true;
@@ -101,14 +101,11 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         if (!validateForm()) return;
 
         const payload = {
-            from_date: formatDate(startDate),
-            to_date: formatDate(endDate),
+            reg_reason: description.trim(),
+            from_date: formatDateTime(startDate),
+            to_date: formatDateTime(endDate),
             reg_category: regCategories.id,
-            reg_reason: description,
-            check_in: formatTime(startDate),
-            check_out: formatTime(endDate),
         };
-
         onCreateReq(payload);
     };
 
@@ -404,8 +401,8 @@ const styles = StyleSheet.create({
     },
     dropdownWrapper: {
         borderRadius: 12,
-        borderColor:COLOR.dark5,
-        borderWidth:1.5
+        borderColor: COLOR.dark5,
+        borderWidth: 1.5
     },
     input: {
         backgroundColor: '#F3F4F6',
