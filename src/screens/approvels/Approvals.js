@@ -205,7 +205,6 @@ export default function Approvals() {
     const status = item.state?.toLowerCase();
     const isPending = status === 'submit';
     const statusColor = getStatusColor(item.state);
-    console.log("item===>",item)
     const getApprovalType = (item) => {
       if (item.hr_leave_id) {
         return 'Leave';
