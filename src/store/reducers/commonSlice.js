@@ -561,32 +561,6 @@ export const GetMonthlyShifts = createAsyncThunk(
     },
 );
 
-export const GetCalendarEventsMore = createAsyncThunk(
-    'GetCalendarEventsMore',
-    async (userdata, thunkAPI) => {
-        console.log('GetCalendarEventsMore userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_own_calendar',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetCalendarEventsMore result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetCalendarEventsMore ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-
 //==== Get attendees list
 export const GetAttendeesList = createAsyncThunk(
     'GetAttendeesList',
@@ -613,56 +587,7 @@ export const GetAttendeesList = createAsyncThunk(
         }
     },
 );
-export const GetAttendeesListMore = createAsyncThunk(
-    'GetAttendeesListMore',
-    async (userdata, thunkAPI) => {
-        console.log('GetAttendeesListMore userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/list_of_partners_for_calendar',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('GetAttendeesListMore result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetAttendeesListMore ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
-export const GetRemindersList = createAsyncThunk(
-    'GetRemindersList',
-    async (userdata, thunkAPI) => {
-        console.log('GetRemindersList userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'api/calendar_event_reminders',
-                // headers: Authheader,
-                // params: userdata,
-            });
-            // console.log('GetRemindersList result.data >>', result.data);
-            if (result.data.success) {
-                return result.data.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ GetRemindersList ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
+
 
 export const CreateNewMeeting = createAsyncThunk(
     'CreateNewMeeting',
@@ -766,31 +691,6 @@ export const GetPaySlip = createAsyncThunk(
 );
 
 
-export const ApprovalListMore = createAsyncThunk(
-    'ApprovalListMore',
-    async (userdata, thunkAPI) => {
-        console.log('ApprovalListMore userdata >>', userdata);
-        try {
-            let result = await axios({
-                method: 'GET',
-                baseURL: Config.BASE_URL,
-                url: 'approvals/requests/api',
-                // headers: Authheader,
-                params: userdata,
-            });
-            // console.log('ApprovalListMore result.data >>', result.data);
-            if (result.data.success) {
-                return result.data;
-            } else {
-                return thunkAPI.rejectWithValue({ error: result.data.error });
-            }
-        } catch (error) {
-            console.log("error>>>", error)
-            console.log('try catch [ ApprovalListMore ] error.message>>', error.message);
-            return thunkAPI.rejectWithValue({ error: error.message });
-        }
-    },
-);
 export const ApprovalCategory = createAsyncThunk(
     'ApprovalCategory',
     async (userdata, thunkAPI) => {
@@ -971,10 +871,6 @@ export const CommonSlice = createSlice({
         GetAttendeesListDataTotalCount: "",
         isGetAttendeesListDataMoreFetching: false,
 
-        GetRemindersListData: [],
-        isGetRemindersListData: false,
-        isGetRemindersListDataFetching: false,
-
         GetApprovalListData: [],
         isGetApprovalList: false,
         isGetApprovalListFetching: false,
@@ -1029,22 +925,18 @@ export const CommonSlice = createSlice({
             state.isFeatchAttendanceReguration = payload.isFeatchAttendanceReguration !== undefined ? payload.isFeatchAttendanceReguration : state.isFeatchAttendanceReguration;
             state.isForgotPassword = payload.isForgotPassword !== undefined ? payload.isForgotPassword : state.isForgotPassword;
             state.isProfileUpdate = payload.isProfileUpdate !== undefined ? payload.isProfileUpdate : state.isProfileUpdate;
-            state. VerfiedUserData = payload.VerfiedUserData !== undefined ? payload.VerfiedUserData : state.VerfiedUserData;
+            state.VerfiedUserData = payload.VerfiedUserData !== undefined ? payload.VerfiedUserData : state.VerfiedUserData;
             state.UserDetailsData = payload.UserDetailsData !== undefined ? payload.UserDetailsData : state.UserDetailsData;
             state.UsersigninData = payload.UsersigninData !== undefined ? payload.UsersigninData : state.UsersigninData;
             state.isGetInvoiceList = payload.isGetInvoiceList !== undefined ? payload.isGetInvoiceList : state.isGetInvoiceList;
             state.isExpenseApproved = payload.isExpenseApproved !== undefined ? payload.isExpenseApproved : state.isExpenseApproved;
 
             state.isCreateLeave = payload.isCreateLeave !== undefined ? payload.isCreateLeave : state.isCreateLeave;
-
             state.isGetLeaveList = payload.isGetLeaveList !== undefined ? payload.isGetLeaveList : state.isGetLeaveList;
             state.isGetLeavetype = payload.isGetLeavetype !== undefined ? payload.isGetLeavetype : state.isGetLeavetype;
 
             state.isGetCalendarEventsData = payload.isGetCalendarEventsData !== undefined ? payload.isGetCalendarEventsData : state.isGetCalendarEventsData;
             state.isGetAttendeesListData = payload.isGetAttendeesListData !== undefined ? payload.isGetAttendeesListData : state.isGetAttendeesListData;
-            state.isGetRemindersListData = payload.isGetRemindersListData !== undefined ? payload.isGetRemindersListData : state.isGetRemindersListData;
-
-
             state.isCreateNewMeeting = payload.isCreateNewMeeting !== undefined ? payload.isCreateNewMeeting : state.isCreateNewMeeting;
             state.isGetLeavetype = payload.isGetLeavetype !== undefined ? payload.isGetLeavetype : state.isGetLeavetype;
 
@@ -1870,41 +1762,6 @@ export const CommonSlice = createSlice({
         builder.addCase(GetCalendarEvents.pending, state => {
             state.isGetCalendarEventsDataFetching = true;
         });
-        builder.addCase(GetCalendarEventsMore.fulfilled, (state, { payload }) => {
-            // console.log("[GetCalendarEventsMore.fulfilled]>>>payload>>>", payload)
-            try {
-                state.GetCalendarEventsData = [...state.GetCalendarEventsData, ...payload.events];
-                state.GetCalendarEventsDataPageNumber = state.GetCalendarEventsDataPageNumber + 1;
-                state.isGetCalendarEventsDataMoreFetching = false;
-                state.isError = false;
-                state.errorMessage = '';
-                return state;
-            } catch (error) {
-                console.log('Error: GetCalendarEventsMore.fulfilled try catch error >>', error);
-            }
-        });
-        builder.addCase(GetCalendarEventsMore.rejected, (state, { payload }) => {
-            console.log("[GetCalendarEventsMore.rejected]>>>", payload)
-            try {
-                state.GetCalendarEventsData = state.GetCalendarEventsData;
-                state.GetCalendarEventsDataPageNumber = state.GetCalendarEventsDataPageNumber;
-                state.isGetCalendarEventsDataMoreFetching = false;
-                state.isError = true;
-                payload
-                    ? (state.errorMessage = payload.error.errorMessage
-                        ? payload.error.errorMessage
-                        : payload.error)
-                    : (state.errorMessage = 'API Response Invalid. Please Check API');
-            } catch (error) {
-                console.log(
-                    'Error: [GetCalendarEventsMore.rejected] try catch error >>',
-                    error,
-                );
-            }
-        });
-        builder.addCase(GetCalendarEventsMore.pending, state => {
-            state.isGetCalendarEventsDataMoreFetching = true;
-        });
 
         //===== GetAttendeesList
         builder.addCase(GetAttendeesList.fulfilled, (state, { payload }) => {
@@ -1944,77 +1801,7 @@ export const CommonSlice = createSlice({
         builder.addCase(GetAttendeesList.pending, state => {
             state.isGetAttendeesListDataFetching = true;
         });
-        builder.addCase(GetAttendeesListMore.fulfilled, (state, { payload }) => {
-            // console.log("[GetAttendeesListMore.fulfilled]>>>payload>>>", payload)
-            try {
-                state.GetAttendeesListData = [...state.GetAttendeesListData, ...payload.partners];
-                state.GetAttendeesListDataPageNumber = state.GetAttendeesListDataPageNumber + 1;
-                state.isGetAttendeesListDataMoreFetching = false;
-                state.isError = false;
-                state.errorMessage = '';
-                return state;
-            } catch (error) {
-                console.log('Error: GetAttendeesListMore.fulfilled try catch error >>', error);
-            }
-        });
-        builder.addCase(GetAttendeesListMore.rejected, (state, { payload }) => {
-            console.log("[GetAttendeesListMore.rejected]>>>", payload)
-            try {
-                state.GetCalendarEventsData = state.GetCalendarEventsData;
-                state.GetAttendeesListDataPageNumber = state.GetAttendeesListDataPageNumber;
-                state.isGetAttendeesListDataMoreFetching = false;
-                state.isError = true;
-                payload
-                    ? (state.errorMessage = payload.error.errorMessage
-                        ? payload.error.errorMessage
-                        : payload.error)
-                    : (state.errorMessage = 'API Response Invalid. Please Check API');
-            } catch (error) {
-                console.log(
-                    'Error: [GetAttendeesListMore.rejected] try catch error >>',
-                    error,
-                );
-            }
-        });
-        builder.addCase(GetAttendeesListMore.pending, state => {
-            state.isGetAttendeesListDataMoreFetching = true;
-        });
-
-        builder.addCase(GetRemindersList.fulfilled, (state, { payload }) => {
-            // console.log("[GetRemindersList.fulfilled]>>>payload>>>", payload)
-            try {
-                state.GetRemindersListData = payload;
-                state.isGetRemindersListData = true;
-                state.isGetRemindersListDataFetching = false;
-                state.isError = false;
-                state.errorMessage = '';
-                return state;
-            } catch (error) {
-                console.log('Error: GetRemindersList.fulfilled try catch error >>', error);
-            }
-        });
-        builder.addCase(GetRemindersList.rejected, (state, { payload }) => {
-            console.log("[GetRemindersList.rejected]>>>", payload)
-            try {
-                state.GetRemindersListData = [];
-                state.isGetRemindersListData = false;
-                state.isGetRemindersListDataFetching = false;
-                state.isError = true;
-                payload
-                    ? (state.errorMessage = payload.error?.message
-                        ? payload.error?.message
-                        : payload.error)
-                    : (state.errorMessage = 'API Response Invalid. Please Check API');
-            } catch (error) {
-                console.log(
-                    'Error: [GetRemindersList.rejected] try catch error >>',
-                    error,
-                );
-            }
-        });
-        builder.addCase(GetRemindersList.pending, state => {
-            state.isGetRemindersListDataFetching = true;
-        });
+    
         //==== create new meeting
         builder.addCase(CreateNewMeeting.fulfilled, (state, { payload }) => {
             // console.log("[CreateNewMeeting.fulfilled]>>>payload>>>", payload)
@@ -2085,42 +1872,7 @@ export const CommonSlice = createSlice({
         builder.addCase(ApprovalList.pending, state => {
             state.isGetApprovalListFetching = true;
         });
-        builder.addCase(ApprovalListMore.fulfilled, (state, { payload }) => {
-            // console.log("[ApprovalListMore.fulfilled]>>>payload>>>", payload)
-            try {
-                state.GetApprovalListData = payload;
-                state.GetApprovalListDataPageNumber = state.GetApprovalListDataPageNumber + 1;
-                state.isGetApprovalListDataMoreFetching = false;
-                state.isError = false;
-                state.errorMessage = '';
-                return state;
-            } catch (error) {
-                console.log('Error: ApprovalListMore.fulfilled try catch error >>', error);
-            }
-        });
-        builder.addCase(ApprovalListMore.rejected, (state, { payload }) => {
-            console.log("[ApprovalListMore.rejected]>>>", payload)
-            try {
-                state.GetApprovalListData = state.GetApprovalListData;
-                state.GetApprovalListDataPageNumber = state.GetApprovalListDataPageNumber;
-                state.isGetApprovalListDataMoreFetching = false;
-                state.isError = true;
-                payload
-                    ? (state.errorMessage = payload.error.errorMessage
-                        ? payload.error.errorMessage
-                        : payload.error)
-                    : (state.errorMessage = 'API Response Invalid. Please Check API');
-            } catch (error) {
-                console.log(
-                    'Error: [ApprovalListMore.rejected] try catch error >>',
-                    error,
-                );
-            }
-        });
-        builder.addCase(ApprovalListMore.pending, state => {
-            state.isGetApprovalListDataMoreFetching = true;
-        });
-
+        
         //==== approvals accept action
         builder.addCase(ApproveActionApprove.fulfilled, (state, { payload }) => {
             // console.log("[ApproveActionApprove.fulfilled]>>>payload>>>", payload)
