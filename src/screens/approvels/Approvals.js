@@ -205,6 +205,7 @@ export default function Approvals() {
     const status = item.state?.toLowerCase();
     const isPending = status === 'submit';
     const statusColor = getStatusColor(item.state);
+    console.log("item===>",item)
     const getApprovalType = (item) => {
       if (item.hr_leave_id) {
         return 'Leave';
@@ -239,10 +240,10 @@ export default function Approvals() {
 
         <View style={styles.meta}>
           <View style={styles.dateContainer}>
-            {/* <DateApproval />
+            <DateApproval />
             <Text style={[styles.id, { paddingLeft: 5 }]}>
-              {item.description?.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '--'}
-            </Text> */}
+              {item.create_date?.match(/\d{4}-\d{2}-\d{2}/)?.[0] || '--'}
+            </Text>
           </View>
           <Text style={styles.id}>ID: {item.name}</Text>
         </View>
