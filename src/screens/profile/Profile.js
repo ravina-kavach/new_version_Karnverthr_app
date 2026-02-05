@@ -29,6 +29,7 @@ import useProfile from './ProfileController'
 import { responsiveHeight } from "../../utils/metrics";
 import ImagePickerSheet from '../../components/ImagePickerSheet'
 import ForgotPasswordModal from "../../components/ForgotPasswordModal";
+import DeviceInfo from "react-native-device-info";
 
 const ProfileItem = ({ icon, title, subtitle, onPress }) => (
   <TouchableOpacity style={styles.row} activeOpacity={1} onPress={onPress}>
@@ -57,7 +58,7 @@ export default function Profile() {
     IsReSetmodalvisible, 
     setIsReSetmodalvisible 
   } = useProfile();
-  
+  const currentVersion = DeviceInfo.getVersion();
   return (
     <CommonView>
       <CommonHeader title="Profile" />
@@ -75,7 +76,6 @@ export default function Profile() {
           />
         </View>
 
-        {/* Account & Identity */}
         <View style={styles.card}>
           <Text style={styles.section}>Account & Identity</Text>
           <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, address, contact" onPress={() => navigationEditProfile()} />
@@ -84,20 +84,18 @@ export default function Profile() {
           <ProfileItem icon={<EmryIcon />} title="Emergency Contact" subtitle="Change or update emergency contact" onPress={() => navigationEmergencyDetails()} />
         </View>
 
-        {/* Professional Info */}
-        {/* <View style={styles.card}>
-          <Text style={styles.section}>Professional Information</Text>
-          <ProfileItem icon={<RoleIcon />} title="Current Role" subtitle="Developer" />
-          <ProfileItem icon={<DepartIcon />} title="Department" subtitle="Creative Administrative" />
-          <ProfileItem icon={<ReportMnrIcon />} title="Reporting Manager" subtitle="David" />
-        </View> */}
-
-        {/* Employment */}
-        {/* <Text style={styles.section}>Employment History</Text>
         <View style={styles.card}>
-          <ProfileItem icon={<JoiningDateIcon/>} title="Joining Date" subtitle="12/10/2020" />
-          <ProfileItem icon={<TenureIcon/>} title="Job tenure" subtitle="3 Years" />
-        </View> */}
+          <Text style={styles.section}>Professional Information</Text>
+          <ProfileItem icon={<RoleIcon />} title="Current Role" subtitle={UserDetailsData?.job_id[1]|| ""} />
+          <ProfileItem icon={<DepartIcon />} title="Department" subtitle={UserDetailsData?.department_id[1]|| ""} />
+          <ProfileItem icon={<ReportMnrIcon />} title="Reporting Manager" subtitle={UserDetailsData?.reporting_manager_id[1]} />
+        </View>
+
+        <Text style={styles.section}>Employment History</Text>
+        <View style={styles.card}>
+          <ProfileItem icon={<JoiningDateIcon/>} title="Joining Date" subtitle={UserDetailsData?.joining_date || ""} />
+          <ProfileItem icon={<TenureIcon/>} title="Job tenure" subtitle={`${UserDetailsData?.total_experiance || ""} Years`} />
+        </View>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => handleOnLogout()}>
@@ -115,6 +113,7 @@ export default function Profile() {
           visible={IsReSetmodalvisible}
           onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
         />}
+        <Text style={styles.verisonText}>{`version : ${currentVersion}`}</Text>
     </CommonView>
   );
 }
@@ -190,5 +189,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLOR.Black1,
   },
+  verisonText : {backgroundColor:COLOR.Primary1,
+    fontSize: FontSize.Font16,
+    textAlign:'center',
+    justifyContent:'center',
+    alignItems:'center',
+    fontWeight: '500',
+    paddingVertical:20,
+    color: COLOR.TextPlaceholder,
+  }
 
 });
