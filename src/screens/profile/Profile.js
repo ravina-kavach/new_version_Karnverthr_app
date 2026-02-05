@@ -58,7 +58,7 @@ export default function Profile() {
     IsReSetmodalvisible, 
     setIsReSetmodalvisible 
   } = useProfile();
-  const currentVersion = DeviceInfo.getVersion();
+  const currentVersion = DeviceInfo?.getVersion();
   return (
     <CommonView>
       <CommonHeader title="Profile" />

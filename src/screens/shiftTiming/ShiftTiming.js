@@ -38,9 +38,15 @@ const groupByDay = (attendances = []) =>
     }, {});
 
 const formatTime = (hour) => {
-    const suffix = hour >= 12 ? 'PM' : 'AM';
-    const formatted = hour % 12 || 12;
-    return `${formatted}:00 ${suffix}`;
+  const suffix = hour >= 12 ? 'PM' : 'AM';
+
+  const totalMinutes = Math.round(hour * 60);
+  const hours = Math.floor(totalMinutes / 60) % 12 || 12;
+  const minutes = totalMinutes % 60;
+
+  const paddedMinutes = minutes.toString().padStart(2, '0');
+
+  return `${hours}:${paddedMinutes} ${suffix}`;
 };
 
 
@@ -104,12 +110,14 @@ const ShiftCard = ({ shift }) => {
 };
 
 
-const DayCard = ({ day, slots }) => (
-    <View style={styles.dayCard}>
+const DayCard = ({ day, slots }) => {
+    return(
+        <View style={styles.dayCard}>
         <Text style={styles.day}>{day}</Text>
         <View style={styles.slotRow}>
             {slots.map((slot) => {
                 const theme = PERIOD_COLORS[slot.day_period] || {};
+                console.log("slot===>",slot)
                 return (
                     <View
                         key={slot.id}
@@ -129,7 +137,7 @@ const DayCard = ({ day, slots }) => (
             })}
         </View>
     </View>
-);
+)};
 
 export default ShiftTiming;
 
