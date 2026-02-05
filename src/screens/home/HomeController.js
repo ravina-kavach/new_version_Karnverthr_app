@@ -15,7 +15,6 @@ import {
 import { permission } from "../../utils/permission";
 import { showMessage } from "react-native-flash-message";
 import { useTranslation } from "react-i18next";
-import Service from "../../utils/service";
 import BackgroundGeolocation from "react-native-background-geolocation";
 import BackgroundHandler from "../../utils/BackgroundHandler";
 
@@ -45,10 +44,8 @@ export const useHome = () => {
     isAttendanceFetching,
   } = useSelector(CommonSelector);
 
-
   const [attendance, setAttendance] = useState(null);
   const [location, setLocation] = useState(null);
-
 
   const MENUDATA = [
     { id: "1", image: <AttendanceIcon />, title: t("Home.Attendance"), screen: "attendance" },
@@ -61,7 +58,6 @@ export const useHome = () => {
     { id: "8", image: <DeclarationIcon />, title: t("Home.Announcement"), screen: "announcement" },
     { id: "9", image: <ShiftIcon />, title: t("Home.Shift_Timings"), screen: "shiftTiming" },
   ];
-
 
   useFocusEffect(
     useCallback(() => {
@@ -113,46 +109,31 @@ export const useHome = () => {
   }, [isFocused]);
 
   const syncAttendance = async () => {
-  try {
-    const cached = await Service.GetAsyncAttendanceData();
-    if (cached) {
-      setAttendance(cached);
+    try {
+      const res = await dispatch(
+        CheckAttandanceStatus({ email: UsersigninData.email })
+      ).unwrap();
+
+      if (res?.status === "CheckedIn") {
+        setAttendance({
+          check_in_time: res.action_time,
+          check_in_image: res.action_image,
+          action: "CHECK_IN",
+        });
+        BackgroundHandler.startTracking();
+        return;
+      }
+
+      if (res?.status === "CheckedOut") {
+        setAttendance(null);
+        BackgroundHandler.stopTracking();
+        return;
+      }
+
+    } catch (err) {
+      console.log("Attendance sync failed", err);
     }
-
-    const res = await dispatch(
-      CheckAttandanceStatus({ email: UsersigninData.email })
-    ).unwrap();
-
-    if (res?.status === "CheckedIn") {
-      const data = {
-        check_in_time: res.action_time,
-        check_in_image: res.action_image,
-        action: "CHECK_IN",
-      };
-
-      setAttendance(data);
-      await Service.setAsyncAttendanceData(data);
-      BackgroundHandler.startTracking();
-      return;
-    }
-
-    // 4️⃣ API confirms CHECK-OUT
-    if (res?.status === "CheckedOut") {
-      setAttendance(null);
-      await Service.removeAsyncAttendanceData();
-      BackgroundHandler.stopTracking();
-      return;
-    }
-
-    // 5️⃣ Fallback: KEEP cached data (DO NOTHING)
-    console.log("Attendance status unchanged");
-
-  } catch (err) {
-    console.log("Attendance sync failed", err);
-    // ❗ Do NOT clear attendance on error
-  }
-};
-
+  };
 
   useEffect(() => {
     if (isFocused && UsersigninData?.email) {
@@ -163,37 +144,17 @@ export const useHome = () => {
   const handleAttendance = async (type, imageBase64) => {
     if (!location || !UsersigninData?.email) return;
 
-    const timeNow = new Date().toISOString();
-
     const payload = {
       email: UsersigninData.email,
       Image: imageBase64,
       Latitude: String(location.latitude),
       Longitude: String(location.longitude),
       action: type,
-      ...(type === "CHECK_IN"
-        ? { check_in: timeNow }
-        : { check_out: timeNow }),
     };
 
     try {
       await dispatch(UserAttendance(payload)).unwrap();
-
-      if (type === "CHECK_IN") {
-        const data = {
-          check_in_time: timeNow,
-          check_in_image: imageBase64,
-          action: "CHECK_IN",
-        };
-
-        setAttendance(data);
-        await Service.setAsyncAttendanceData(data);
-        BackgroundHandler.startTracking();
-      } else {
-        setAttendance(null);
-        await Service.removeAsyncAttendanceData();
-        BackgroundHandler.stopTracking();
-      }
+      await syncAttendance();
 
       showMessage({
         icon: "success",
@@ -207,13 +168,12 @@ export const useHome = () => {
     } catch (err) {
       showMessage({
         icon: "danger",
-        message: err.error || "Attendance failed. Please try again.",
+        message: err?.error || "Attendance failed. Please try again.",
         type: "danger",
         duration: 2000,
       });
     }
   };
-
 
   const takeImage = async type => {
     const result = await permission.handleOnCamera();
@@ -221,7 +181,6 @@ export const useHome = () => {
       handleAttendance(type, result.image.base64);
     }
   };
-
 
   useEffect(() => {
     if (isError) {
@@ -235,25 +194,9 @@ export const useHome = () => {
     }
   }, [isError]);
 
-
-  useEffect(() => {
-    if (UserAttendanceData?.action) {
-      showMessage({
-        icon: "success",
-        message:
-          UserAttendanceData.action === "CHECK_IN"
-            ? t("messages.Check_in")
-            : t("messages.Check_out"),
-        type: "success",
-        duration: 2000,
-      });
-    }
-  }, [UserAttendanceData]);
-
-  const navigateChatBot = () =>{
-    Navigation.navigate("chatbot")
-  }
-
+  const navigateChatBot = () => {
+    Navigation.navigate("chatbot");
+  };
 
   return {
     MENUDATA,
@@ -262,6 +205,6 @@ export const useHome = () => {
     isAttendanceFetching,
     takeImage,
     location,
-    navigateChatBot
+    navigateChatBot,
   };
 };
