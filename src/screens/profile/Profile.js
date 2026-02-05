@@ -15,120 +15,183 @@ import {
   ChangePwd,
   DepartIcon,
   EmryIcon,
-  GovIcon,
   ReportMnrIcon,
   RoleIcon,
   RightArrow,
   JoiningDateIcon,
   TenureIcon
-} from '../../assets/svgs/index'
+} from '../../assets/svgs/index';
 import { GlobalFonts } from "../../theme/typography";
 import { COLOR } from "../../theme/theme";
-import { FontSize } from "../../utils/metrics";
-import useProfile from './ProfileController'
-import { responsiveHeight } from "../../utils/metrics";
-import ImagePickerSheet from '../../components/ImagePickerSheet'
+import { FontSize, responsiveHeight } from "../../utils/metrics";
+import useProfile from './ProfileController';
+import ImagePickerSheet from '../../components/ImagePickerSheet';
 import ForgotPasswordModal from "../../components/ForgotPasswordModal";
 import DeviceInfo from "react-native-device-info";
 
 const ProfileItem = ({ icon, title, subtitle, onPress }) => (
   <TouchableOpacity style={styles.row} activeOpacity={1} onPress={onPress}>
-    <View style={styles.icon}>
-      {icon}
-    </View>
+    <View style={styles.icon}>{icon}</View>
+
     <View style={{ flex: 1 }}>
       <Text style={styles.rowTitle} numberOfLines={1}>{title}</Text>
-      {subtitle && <Text style={styles.rowSub} numberOfLines={1}>{subtitle}</Text>}
+      {subtitle ? (
+        <Text style={styles.rowSub} numberOfLines={1}>{subtitle}</Text>
+      ) : null}
     </View>
+
     {onPress && <RightArrow />}
   </TouchableOpacity>
 );
 
 export default function Profile() {
-  const { 
-    UsersigninData, 
-    navigationEditProfile, 
+  const {
+    UsersigninData,
+    navigationEditProfile,
     navigationEmergencyDetails,
-    UserDetailsData, 
-    handleOnLogout, 
-    handleProfileUpload, 
-    pickerVisible, 
-    setPickerVisible, 
-    avatar, 
-    IsReSetmodalvisible, 
-    setIsReSetmodalvisible 
+    UserDetailsData,
+    handleOnLogout,
+    handleProfileUpload,
+    pickerVisible,
+    setPickerVisible,
+    avatar,
+    IsReSetmodalvisible,
+    setIsReSetmodalvisible
   } = useProfile();
-  const currentVersion = DeviceInfo?.getVersion();
+
+  const safeValue = (value) => value ?? "—";
+
   return (
     <CommonView>
       <CommonHeader title="Profile" />
-      <ScrollView contentContainerStyle={styles.container}
+
+      <ScrollView
+        contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
+        {/* Profile Header */}
         <View style={styles.profilecard}>
           <GreetingHeader
             editProfile={pickerVisible}
             containerStyle={styles.headerContainer}
             screenName={"editProfile"}
-            desc={UsersigninData.email}
+            desc={UsersigninData?.email ?? ""}
             avatar={avatar}
-          onAvatarPress={() => setPickerVisible(true)}
+            onAvatarPress={() => setPickerVisible(true)}
           />
         </View>
 
+        {/* Account & Identity */}
         <View style={styles.card}>
           <Text style={styles.section}>Account & Identity</Text>
-          <ProfileItem icon={<ProfileIcon />} title="Edit Profile" subtitle="Change name, address, contact" onPress={() => navigationEditProfile()} />
-          {/* <ProfileItem icon={<GovIcon />} title="Government ID" subtitle="View Aadhaar, request update" onPress={() => { }} /> */}
-          <ProfileItem icon={<ChangePwd />} title="Change Password" subtitle="Change or update password" onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)} />
-          <ProfileItem icon={<EmryIcon />} title="Emergency Contact" subtitle="Change or update emergency contact" onPress={() => navigationEmergencyDetails()} />
+
+          <ProfileItem
+            icon={<ProfileIcon />}
+            title="Edit Profile"
+            subtitle="Change name, address, contact"
+            onPress={navigationEditProfile}
+          />
+
+          <ProfileItem
+            icon={<ChangePwd />}
+            title="Change Password"
+            subtitle="Change or update password"
+            onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
+          />
+
+          <ProfileItem
+            icon={<EmryIcon />}
+            title="Emergency Contact"
+            subtitle="Change or update emergency contact"
+            onPress={navigationEmergencyDetails}
+          />
         </View>
 
+        {/* Professional Information */}
         <View style={styles.card}>
           <Text style={styles.section}>Professional Information</Text>
-          <ProfileItem icon={<RoleIcon />} title="Current Role" subtitle={UserDetailsData?.job_id[1]|| ""} />
-          <ProfileItem icon={<DepartIcon />} title="Department" subtitle={UserDetailsData?.department_id[1]|| ""} />
-          <ProfileItem icon={<ReportMnrIcon />} title="Reporting Manager" subtitle={UserDetailsData?.reporting_manager_id[1]} />
+
+          <ProfileItem
+            icon={<RoleIcon />}
+            title="Current Role"
+            subtitle={safeValue(UserDetailsData?.job_id?.[1])}
+          />
+
+          <ProfileItem
+            icon={<DepartIcon />}
+            title="Department"
+            subtitle={safeValue(UserDetailsData?.department_id?.[1])}
+          />
+
+          <ProfileItem
+            icon={<ReportMnrIcon />}
+            title="Reporting Manager"
+            subtitle={safeValue(UserDetailsData?.reporting_manager_id?.[1])}
+          />
         </View>
 
+        {/* Employment History */}
         <Text style={styles.section}>Employment History</Text>
         <View style={styles.card}>
-          <ProfileItem icon={<JoiningDateIcon/>} title="Joining Date" subtitle={UserDetailsData?.joining_date || ""} />
-          <ProfileItem icon={<TenureIcon/>} title="Job tenure" subtitle={`${UserDetailsData?.total_experiance || ""} Years`} />
+          <ProfileItem
+            icon={<JoiningDateIcon />}
+            title="Joining Date"
+            subtitle={safeValue(UserDetailsData?.joining_date)}
+          />
+
+          <ProfileItem
+            icon={<TenureIcon />}
+            title="Job tenure"
+            subtitle={
+              UserDetailsData?.total_experiance
+                ? `${UserDetailsData.total_experiance} Years`
+                : "—"
+            }
+          />
         </View>
 
+        {/* Logout */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => handleOnLogout()}>
+          <TouchableOpacity style={styles.button} onPress={handleOnLogout}>
             <Text style={styles.text}>Log out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Image Picker */}
       <ImagePickerSheet
         visible={pickerVisible}
         onClose={() => setPickerVisible(false)}
-        onResult={(image) => handleProfileUpload(image)}
+        onResult={handleProfileUpload}
       />
-      {IsReSetmodalvisible &&
+
+      {/* Reset Password Modal */}
+      {IsReSetmodalvisible && (
         <ForgotPasswordModal
           visible={IsReSetmodalvisible}
-          onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
-        />}
-        <Text style={styles.verisonText}>{`version : ${currentVersion}`}</Text>
+          onClose={() => setIsReSetmodalvisible(false)}
+        />
+      )}
+
+      {/* App Version */}
+      <Text style={styles.verisonText}>
+        {`version : ${DeviceInfo.getVersion()}`}
+      </Text>
     </CommonView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { backgroundColor: "#F4F4F5", padding: 16, paddingBottom: 80, },
-  header: { fontSize: 18, fontWeight: "700", marginBottom: 16 },
+  container: {
+    backgroundColor: "#F4F4F5",
+    padding: 16,
+    paddingBottom: 80,
+  },
   card: {
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
-  },
-  headerContainer: {
-    marginTop: Platform.OS === 'android' ? responsiveHeight(3) : responsiveHeight(3)
   },
   profilecard: {
     backgroundColor: "#fff",
@@ -136,18 +199,9 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     marginBottom: 20,
   },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: "#FBBF24",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
+  headerContainer: {
+    marginTop: responsiveHeight(3),
   },
-  avatarText: { color: "#fff", fontWeight: "700" },
-  name: { fontSize: 16, fontWeight: "600" },
-  email: { color: "#6B7280", fontSize: 12 },
   section: {
     ...GlobalFonts.subtitle,
     fontWeight: "600",
@@ -168,13 +222,19 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.dark5,
     marginRight: 12,
   },
-  rowTitle: { ...GlobalFonts.subtitle, fontSize: FontSize.Font16 },
-  rowSub: { ...GlobalFonts.subtitle, fontSize: FontSize.Font16, color: COLOR.Placeholder },
+  rowTitle: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font16,
+  },
+  rowSub: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font16,
+    color: COLOR.Placeholder,
+  },
   buttonContainer: {
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-
   button: {
     height: 50,
     borderRadius: 10,
@@ -183,20 +243,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   text: {
     fontSize: FontSize.Font18,
     fontWeight: '500',
     color: COLOR.Black1,
   },
-  verisonText : {backgroundColor:COLOR.Primary1,
+  verisonText: {
+    backgroundColor: COLOR.Primary1,
     fontSize: FontSize.Font16,
-    textAlign:'center',
-    justifyContent:'center',
-    alignItems:'center',
+    textAlign: 'center',
     fontWeight: '500',
-    paddingVertical:20,
+    paddingVertical: 20,
     color: COLOR.TextPlaceholder,
-  }
-
+  },
 });
