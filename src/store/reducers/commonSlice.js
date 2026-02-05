@@ -3,6 +3,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
+import Service from '../../utils/service';
 
 const errorMassage = (error) => {
     if (error === "Network Error") {
@@ -18,7 +19,7 @@ export const UserToken = createAsyncThunk(
             const response = await API.post('api/auth', payload);
             if (response.data.status === 'success') {
                 const token = response.data.token;
-                await AsyncStorage.setItem('USER_TOKEN', token);
+                Service.saveToken(token, 172800);
                 return token;
             }
             return thunkAPI.rejectWithValue(

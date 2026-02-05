@@ -8,12 +8,22 @@ export const bootstrapAuth = async (dispatch) => {
   isBootstrapping = true;
 
   const token = await AsyncStorage.getItem('USER_TOKEN');
+  const expiresAt = await AsyncStorage.getItem('TOKEN_EXPIRES_AT');
 
-  if (!token) {
-    console.log('No token found → fetching new token');
+  const isExpired =
+    !expiresAt || Date.now() > Number(expiresAt);
+    
+  if (!token || isExpired) {
+    console.log('Token missing or expired → fetching new token');
+
+    await AsyncStorage.multiRemove([
+      'USER_TOKEN',
+      'TOKEN_EXPIRES_AT',
+    ]);
+
     await dispatch(UserToken({ user_name: 'john' })).unwrap();
   } else {
-    console.log('Token restored from storage');
+    console.log('Valid token restored from storage');
   }
 
   isBootstrapping = false;

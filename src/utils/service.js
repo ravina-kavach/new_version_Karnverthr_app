@@ -176,11 +176,21 @@ const GetAsyncAttendanceData = async () => {
     }
 }
 
+
+const saveToken = async (token, expiresInSeconds) => {
+  const expiresAt = Date.now() + expiresInSeconds * 1000;
+
+  await AsyncStorage.multiSet([
+    ['USER_TOKEN', token],
+    ['TOKEN_EXPIRES_AT', expiresAt.toString()],
+  ]);
+};
+
 const Service = {
     setRemember, GetRemember, removeRemember, GetisFirstime, removeisFirstime, setisFirstime, ClearStorage,
     FormatIndianNumber, getDayDifference, GetisBiomatic, removeisBiomatic, setisBiomatic,OpenLocaitonbutton,
     setisVerified,removeisVerified,GetisVerified,setAsyncAttendanceData,removeAsyncAttendanceData,GetAsyncAttendanceData,
-    setVerifiedUser,GetVerifiedUser
+    setVerifiedUser,GetVerifiedUser,saveToken
 };
 
 export default Service;

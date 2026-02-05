@@ -8,7 +8,7 @@ import {
 import CommonButton from './CommonButton';
 import { useTranslation } from 'react-i18next';
 import { COLOR } from "../theme/theme";
-import { CheckIn } from '../assets/svgs';
+import { ProfileIcon , CheckIn } from '../assets/svgs';
 import dayjs from "dayjs";
 import { GlobalFonts } from "../theme/typography";
 import { FontSize, responsiveHeight } from "../utils/metrics";
@@ -24,7 +24,12 @@ const WorkingHoursCard = ({
   const IsAttanced = localAttendanceData?.action === "CHECK_IN";
 
   const ShowImage = ({ image }) => {
-    if (!image) return <CheckIn />;
+    if (!image) return (
+    <View style={styles.borderImage}>
+    <ProfileIcon width={22} height={22} />
+    </View>
+  
+  )
 
     return (
       <View style={styles.imageContainer}>
@@ -152,6 +157,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 0.5,
     borderColor: COLOR.Black1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  borderImage:{
+    height: 34,
+    width: 34,
+    borderRadius: 6,
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: COLOR.dark1,
     justifyContent: 'center',
     alignItems: 'center',
   },
