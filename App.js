@@ -12,12 +12,29 @@ import VersionCheck from 'react-native-version-check';
 import { bootstrapAuth } from './src/utils/bootstrapAuth';
 import UpdateModal from './src/components/UpdateModal'
 import DeviceInfo from 'react-native-device-info';
+import NetInfo from '@react-native-community/netinfo';
+import OfflineModal from './src/components/OfflineModal';
 
 
 const Root = () => {
   const dispatch = useDispatch();
   const [showUpdate, setShowUpdate] = useState(false);
   const [storeUrl, setStoreUrl] = useState('');
+  const [isOffline, setIsOffline] = useState(false);
+
+    useEffect(() => {
+        const unsubscribe = NetInfo.addEventListener(state => {
+         
+            setIsOffline(!state.isConnected);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const handleRetry = async () => {
+        const state = await NetInfo.fetch();
+        setIsOffline(!state.isConnected);
+    };
 
   useEffect(() => {
     bootstrapAuth(dispatch);
@@ -71,6 +88,10 @@ const Root = () => {
         visible={showUpdate}
         storeUrl={storeUrl}
       />
+       <OfflineModal
+            visible={isOffline}
+            onRetry={handleRetry}
+        />
     </SafeAreaProvider>
   );
 };
