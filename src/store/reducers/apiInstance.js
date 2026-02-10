@@ -16,6 +16,7 @@ API.interceptors.request.use(
       console.log("TOKEN===>",token)
     if (!skipAuthUrls.some(url => config.url.includes(url))) {
       if (!token) {
+        await AsyncStorage.multiRemove(['USER_TOKEN', 'TOKEN_EXPIRES_AT']);
         return Promise.reject({
           response: { status: 401 },
         });
