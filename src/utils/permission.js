@@ -172,11 +172,11 @@ const handleOnCamera = async () => {
       launchCamera(
         {
           mediaType: 'photo',
-          quality: 0.8,
+          quality: 0.6,
           cameraType: 'front',
           includeBase64: true,
           saveToPhotos: false,
-          presentationStyle: 'fullScreen',
+          // presentationStyle: 'fullScreen',
         },
         response => {
           if (response?.didCancel || response?.errorCode) {

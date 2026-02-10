@@ -74,7 +74,7 @@ const FontSize = {
 };
 
 export const EXPENSE_STATUS = {
-  draft: 'Darft',
+  draft: 'Draft',
   reported:'Reported',
   submitted: 'Submitted',
   approved: 'Approved',
