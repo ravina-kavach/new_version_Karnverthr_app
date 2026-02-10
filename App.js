@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FlashMessage from 'react-native-flash-message';
@@ -21,8 +21,9 @@ const Root = () => {
   const [showUpdate, setShowUpdate] = useState(false);
   const [storeUrl, setStoreUrl] = useState('');
   const [isOffline, setIsOffline] = useState(false);
+  const appStateRef = useRef(AppState.currentState);
 
- const isNetworkStable = (state) => {
+  const isNetworkStable = (state) => {
   const details = state.details || {};
   const linkSpeed = details.linkSpeed || 0;
   const strength = details.strength ?? 0;
@@ -109,14 +110,18 @@ const Root = () => {
   }, []);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', state => {
-      if (state === 'active') {
-        bootstrapAuth(dispatch);
-      }
-    });
+  const subscription = AppState.addEventListener('change', nextState => {
+    if (
+      appStateRef.current.match(/inactive|background/) &&
+      nextState === 'active'
+    ) {
+      bootstrapAuth(dispatch);
+    }
+    appStateRef.current = nextState;
+  });
 
-    return () => subscription.remove();
-  }, [dispatch]);
+  return () => subscription.remove();
+}, [dispatch]);
 
   const checkAppVersion = async () => {
     try {

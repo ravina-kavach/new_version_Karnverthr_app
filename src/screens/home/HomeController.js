@@ -72,25 +72,25 @@ export const useHome = () => {
   useEffect(() => {
     if (!isFocused) return;
 
-  const initLocation = async () => {
-  try {
-    await BackgroundGeolocation.ready({
-      desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
-      distanceFilter: 10,
-      stopOnTerminate: false,
-      startOnBoot: true,
-    });
+    const initLocation = async () => {
+      try {
+        await BackgroundGeolocation.ready({
+          desiredAccuracy: BackgroundGeolocation.DESIRED_ACCURACY_HIGH,
+          distanceFilter: 10,
+          stopOnTerminate: false,
+          startOnBoot: true,
+        });
 
         const pos = await BackgroundGeolocation.getCurrentPosition({
-        samples: 1,
-        persist: false,
+          samples: 1,
+          persist: false,
           timeout: 30,
-      });
+        });
 
-    setLocation({
-      latitude: pos.coords.latitude,
-      longitude: pos.coords.longitude,
-    });
+        setLocation({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
 
         const subscription = BackgroundGeolocation.onLocation(loc =>
           setLocation({
@@ -100,14 +100,14 @@ export const useHome = () => {
         );
 
         return () => subscription.remove();
-  } catch (err) {
-    showMessage({
-      icon: "danger",
-      message: "Unable to fetch location. Please enable GPS.",
-      type: "danger",
-    });
-  }
-};
+      } catch (err) {
+        showMessage({
+          icon: "danger",
+          message: "Unable to fetch location. Please enable GPS.",
+          type: "danger",
+        });
+      }
+    };
 
     initLocation();
   }, [isFocused]);
