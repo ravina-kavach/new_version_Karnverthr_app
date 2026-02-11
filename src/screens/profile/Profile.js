@@ -28,6 +28,7 @@ import useProfile from './ProfileController';
 import ImagePickerSheet from '../../components/ImagePickerSheet';
 import ForgotPasswordModal from "../../components/ForgotPasswordModal";
 import DeviceInfo from "react-native-device-info";
+import LogoutModal from '../../components/LogoutModal';
 
 const ProfileItem = ({ icon, title, subtitle, onPress }) => (
   <TouchableOpacity style={styles.row} activeOpacity={1} onPress={onPress}>
@@ -56,11 +57,13 @@ export default function Profile() {
     setPickerVisible,
     avatar,
     IsReSetmodalvisible,
-    setIsReSetmodalvisible
+    setIsReSetmodalvisible,
+    logoutVisible,
+    setLogoutVisible
   } = useProfile();
 
   const safeValue = (value) => value ?? "—";
-
+  console.log("VERSION ===>",DeviceInfo.getBuildNumber())
   return (
     <CommonView>
       <CommonHeader title="Profile" />
@@ -152,7 +155,7 @@ export default function Profile() {
 
         {/* Logout */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleOnLogout}>
+          <TouchableOpacity style={styles.button} onPress={() => setLogoutVisible(true)}>
             <Text style={styles.text}>Log out</Text>
           </TouchableOpacity>
         </View>
@@ -173,9 +176,18 @@ export default function Profile() {
         />
       )}
 
+      <LogoutModal
+        visible={logoutVisible}
+        onCancel={() => setLogoutVisible(false)}
+        onLogout={() => {
+          setLogoutVisible(false);
+          handleOnLogout();
+        }}
+      />
+
       {/* App Version */}
       <Text style={styles.verisonText}>
-        {`version : ${DeviceInfo.getVersion()}`}
+        {`version : ${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
       </Text>
     </CommonView>
   );

@@ -7,6 +7,7 @@ import { RenderBox } from '../../components/RenderBox.js'
 import GreetingHeader from '../../components/GreetingHeader.js'
 import { COLOR } from '../../theme/theme.js';
 import { ChatBotIcon } from '../../assets/svgs/index.js';
+import LogoutModal from '../../components/LogoutModal.js';
 const Home = () => {
   const {
     MENUDATA,
@@ -14,7 +15,10 @@ const Home = () => {
     takeImage,
     attendance,
     isAttendanceFetching,
-    navigateChatBot
+    navigateChatBot,
+    logoutVisible,  
+    setLogoutVisible,
+    handleOnLogout
   } = useHome();
   return (
     <CommonView>
@@ -52,6 +56,14 @@ const Home = () => {
           <ChatBotIcon width={60} height={60} />
         </View>
       </TouchableWithoutFeedback> */}
+      <LogoutModal
+        visible={logoutVisible}
+        onCancel={() => setLogoutVisible(false)}
+        onLogout={() => {
+          setLogoutVisible(false);
+          handleOnLogout();
+        }}
+      />
     </CommonView>
   );
 };

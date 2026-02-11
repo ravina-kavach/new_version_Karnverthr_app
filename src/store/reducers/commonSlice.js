@@ -19,7 +19,7 @@ export const UserToken = createAsyncThunk(
             const response = await API.post('api/auth', payload);
             if (response.data.status === 'success') {
                 const token = response.data.token;
-                Service.saveToken(token, 172800);
+                await AsyncStorage.setItem('USER_TOKEN', token);
                 return token;
             }
             return thunkAPI.rejectWithValue(
@@ -97,14 +97,17 @@ export const UserVerification = createAsyncThunk(
 export const UserAttendance = createAsyncThunk(
     'UserAttendance',
     async (userdata, thunkAPI) => {
+        console.log("userdata====>",JSON.stringify(userdata,null,2))
         try {
             let result = await API.post('api/employee/attandence', userdata)
             if (result.data.success) {
                 return { ...result.data.data, message: result?.data.successMessage, action: result?.data?.action };
             } else {
+                console.log("ESLE ERROR====>",error)
                 return thunkAPI.rejectWithValue({ error: errorMassage(error.response?.data?.errorMessage || error.message) });
             }
         } catch (error) {
+            console.log("userdata====>",error.response)
             return thunkAPI.rejectWithValue({
                 error: errorMassage(error.response?.data?.errorMessage || error.message)
             });

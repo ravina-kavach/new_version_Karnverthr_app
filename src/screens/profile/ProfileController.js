@@ -16,6 +16,7 @@ const useProfile = () => {
   const [avatar, setAvatar] = useState(
     UserDetailsData?.image_url || null
   );
+  const [logoutVisible, setLogoutVisible] = useState(false);
 
 
   useEffect(() => {
@@ -113,7 +114,9 @@ const useProfile = () => {
     isProfileUpdateFetching,
     isUserDetailsFetching,
     IsReSetmodalvisible,
-    setIsReSetmodalvisible
+    setIsReSetmodalvisible,
+    logoutVisible,
+    setLogoutVisible
   }
 }
 
