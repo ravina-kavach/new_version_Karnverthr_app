@@ -125,36 +125,36 @@ const Root = () => {
 
   const checkAppVersion = async () => {
   try {
+    const provider = Platform.OS === 'ios' ? 'appStore' : 'playStore';
+
     const currentVersion = DeviceInfo.getVersion();
-    const currentBuild = DeviceInfo.getBuildNumber();
+    const latestVersion = await VersionCheck.getLatestVersion({ provider });
+    const storeUrl = await VersionCheck.getStoreUrl({ provider });
 
-    const latestVersion = await VersionCheck.getLatestVersion();
-    const latestBuild = await VersionCheck.getLatestBuildNumber();
-    const url = await VersionCheck.getStoreUrl();
+    if (!latestVersion || !storeUrl) return;
 
-    if (!currentVersion || !latestVersion || !url) return;
+    console.log("Current Version:", currentVersion);
+    console.log("Latest Version:", latestVersion);
 
-    let isUpdateNeeded = false;
+    const needUpdate = await VersionCheck.needUpdate({
+      currentVersion,
+      latestVersion,
+    });
 
-    // Check version first
-    if (currentVersion !== latestVersion) {
-      isUpdateNeeded = true;
-    }
+    console.log("Need Update:", needUpdate);
 
-    // If version same, check build number
-    else if (currentBuild !== latestBuild) {
-      isUpdateNeeded = true;
-    }
-
-    if (isUpdateNeeded) {
-      setStoreUrl(url);
+    if (needUpdate?.isNeeded) {
+      setStoreUrl(storeUrl);
       setShowUpdate(true);
     }
 
   } catch (error) {
-    console.log('Version check failed:', error);
+    console.log("Version check failed:", error);
   }
 };
+
+
+
 
   useEffect(() => {
     checkAppVersion();
