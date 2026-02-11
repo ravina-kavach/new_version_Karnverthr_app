@@ -124,26 +124,37 @@ const Root = () => {
 }, [dispatch]);
 
   const checkAppVersion = async () => {
-    try {
-      const currentVersion = DeviceInfo.getVersion();
-      const latestVersion = await VersionCheck.getLatestVersion();
-      const url = await VersionCheck.getStoreUrl();
+  try {
+    const currentVersion = DeviceInfo.getVersion();
+    const currentBuild = DeviceInfo.getBuildNumber();
 
+    const latestVersion = await VersionCheck.getLatestVersion();
+    const latestBuild = await VersionCheck.getLatestBuildNumber();
+    const url = await VersionCheck.getStoreUrl();
 
-      if (!currentVersion || !latestVersion || !url) return;
+    if (!currentVersion || !latestVersion || !url) return;
 
-      const updateNeeded = VersionCheck.needUpdate({
-        currentVersion,
-        latestVersion,
-      });
-      if (updateNeeded?.isNeeded) {
-        setStoreUrl(url);
-        setShowUpdate(true);
-      }
-    } catch (error) {
-      console.log('Version check failed:', error);
+    let isUpdateNeeded = false;
+
+    // Check version first
+    if (currentVersion !== latestVersion) {
+      isUpdateNeeded = true;
     }
-  };
+
+    // If version same, check build number
+    else if (currentBuild !== latestBuild) {
+      isUpdateNeeded = true;
+    }
+
+    if (isUpdateNeeded) {
+      setStoreUrl(url);
+      setShowUpdate(true);
+    }
+
+  } catch (error) {
+    console.log('Version check failed:', error);
+  }
+};
 
   useEffect(() => {
     checkAppVersion();
