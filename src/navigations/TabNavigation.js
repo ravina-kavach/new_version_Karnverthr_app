@@ -97,7 +97,6 @@ const TabNavigation = () => {
           header: () => (
             <CommonHeader
               title="Leaves"
-              subtitle="Manage your leaves"
             />
           ),
           tabBarIcon: ({ focused }) =>
@@ -117,7 +116,6 @@ const TabNavigation = () => {
           header: () => (
             <CommonHeader
               title="Calendar"
-              subtitle="Your monthly schedule"
             />
           ),
           tabBarIcon: ({ focused }) =>

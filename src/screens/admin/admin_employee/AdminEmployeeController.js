@@ -1,0 +1,5 @@
+export const userAdminEmployee = () =>{
+    return {
+
+    }
+}

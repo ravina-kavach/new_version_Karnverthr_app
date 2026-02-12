@@ -44,7 +44,7 @@ const Home = () => {
             style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id.toString()}
-            numColumns={1}   // explicitly set
+            numColumns={1}
             renderItem={({ item }) => (
                 <AdminRenderBox
                   image={item.image}

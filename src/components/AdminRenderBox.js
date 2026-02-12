@@ -10,7 +10,7 @@ import { COLOR } from "../theme/theme";
 import { FontSize, responsiveHeight, responsiveWidth } from "../utils/metrics";
 import { GlobalFonts } from "../theme/typography";
 
-const ENABLED_SCREENS = [ "master","adminAttendance", "adminEmployee", "adminLeave", "adminPayroll" ];
+const ENABLED_SCREENS = [ "adminMaster","adminAttendance", "adminEmployee", "adminLeave", "adminPayroll" ];
 
 // const ENABLED_SCREENS = [ "master","adminAttendance", "adminEmployee", "adminLeave", "adminPayroll" ];
 export const AdminRenderBox = ({ image, title, screen }) => {

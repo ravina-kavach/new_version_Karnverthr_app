@@ -26,6 +26,7 @@ import {
   CalendarIcon,
   DeclarationIcon,
   ExpenseIcon,
+  GovIcon,
   LeaveMenuIcon,
   PaySlipIcon,
   ReportIcon,
@@ -65,11 +66,11 @@ export const useHome = () => {
   // "master","adminAttendance", "adminEmployee", "adminLeave", "adminPayroll"
 
   const ADMIN_MENUDATA = [
-    { id: "1", image: <ShiftIcon />, title: t("Home.Master"), screen: "master" },
+    { id: "1", image: <ApprovelsIcon />, title: t("Home.Master"), screen: "adminMaster" },
     { id: "2", image: <AttendanceIcon />, title: t("Home.Attendance_manage"), screen: "adminAttendance" },
-    { id: "3", image: <PaySlipIcon />, title: t("Home.Employee_manage"), screen: "adminEmployee" },
+    { id: "3", image: <ShiftIcon />, title: t("Home.Employee_manage"), screen: "adminEmployee" },
     { id: "4", image: <LeaveMenuIcon />, title: t("Home.Leave_manage"), screen: "adminLeave" },
-    { id: "5", image: <ReportIcon />, title: t("Home.Payroll"), screen: "adminPayroll" },
+    { id: "5", image: <PaySlipIcon />, title: t("Home.Payroll"), screen: "adminPayroll" },
   ];
   useFocusEffect(
   useCallback(() => {

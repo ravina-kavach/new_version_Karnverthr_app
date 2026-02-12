@@ -17,17 +17,22 @@ import Approvals from '../screens/approvels/Approvals'
 import EditProfile from '../screens/profile/EditProfile'
 import Termsofuse from '../screens/Termsofuse/Termsofuse'
 import PrivacyPolicy from '../screens/PrivacyPolicy/PrivacyPolicy'
-import TabNavigation from './TabNavigation'
+import TabNavigation from './TabNavigation';
+import AdminTabNavigation from './AdminTabNavigation';
 import SignInScreen from '../screens/authscreens/signInScreen/SignInScreen';
 import EmergencyDetails from '../screens/profile/EmergencyDetails';
 import Leaves from '../screens/leaves/Leaves';
 import Chatbot from '../screens/chatbot/Chatbot';
 import ExpenseDetail from '../screens/expenses/ExpenseDetail';
+import AdminAttendance from '../screens/admin/admin_attendance/AdminAttendance';
+import AdminPayroll from '../screens/admin/admin_payroll/AdminPayroll';
 import PaySlip from '../screens/paySlip/PaySlip';
-
+import { useSelector } from 'react-redux';
+import { CommonSelector } from '../store/reducers/commonSlice';
 const Stack = createNativeStackNavigator();
 
 function Navigation({ props }) {
+  const { UsersigninData } = useSelector(CommonSelector);
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="splash">
@@ -57,7 +62,8 @@ function Navigation({ props }) {
             <Stack.Screen name="approvals" component={Approvals} />
             <Stack.Screen name="chatbot" component={Chatbot} />
             <Stack.Screen name="expenseDetail" component={ExpenseDetail} />
-
+            <Stack.Screen name="adminAttendance" component={AdminAttendance} />
+            <Stack.Screen name="adminPayroll" component={AdminPayroll} />
             
         </Stack.Group>
         {/* ============ Bottom Tab ============= */}
@@ -72,7 +78,7 @@ function Navigation({ props }) {
               headerTransparent: false,
           }}
           >
-          <Stack.Screen name="myTab" component={TabNavigation}  />
+          <Stack.Screen name="myTab" component={UsersigninData.user_role === "REGISTER_ADMIN"? AdminTabNavigation : TabNavigation}  />
           <Stack.Group>
           <Stack.Screen
             name="privacyPolicy"
