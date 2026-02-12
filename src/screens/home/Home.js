@@ -4,6 +4,7 @@ import { ScrollView, FlatList, View, StyleSheet, TouchableWithoutFeedback } from
 import WorkingHoursCard from '../../components/WorkingHoursCard';
 import { useHome } from './HomeController.js';
 import { RenderBox } from '../../components/RenderBox.js'
+import { AdminRenderBox } from '../../components/AdminRenderBox.js'
 import GreetingHeader from '../../components/GreetingHeader.js'
 import { COLOR } from '../../theme/theme.js';
 import { ChatBotIcon } from '../../assets/svgs/index.js';
@@ -16,9 +17,11 @@ const Home = () => {
     attendance,
     isAttendanceFetching,
     navigateChatBot,
-    logoutVisible,  
+    logoutVisible,
     setLogoutVisible,
-    handleOnLogout
+    handleOnLogout,
+    isAdmin,
+    ADMIN_MENUDATA
   } = useHome();
   return (
     <CommonView>
@@ -34,22 +37,42 @@ const Home = () => {
           onPress={takeImage}
           loading={isAttendanceFetching}
         />
-        <FlatList
-          data={MENUDATA}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={3}
-          contentContainerStyle={styles.container}
-          renderItem={({ item }) => (
-            <View style={styles.itemContainer}>
-              <RenderBox
-                image={item.image}
-                title={item.title}
-                screen={item.screen}
-              />
-            </View>
-          )}
-        />
+        {isAdmin ? (
+          <FlatList
+            key="admin-list"
+            data={ADMIN_MENUDATA}
+            style={{ flex: 1 }}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={1}   // explicitly set
+            renderItem={({ item }) => (
+                <AdminRenderBox
+                  image={item.image}
+                  title={item.title}
+                  screen={item.screen}
+                />
+            )}
+          />
+        ) : (
+          <FlatList
+            key="user-grid"
+            data={MENUDATA}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={3}
+            contentContainerStyle={styles.container}
+            renderItem={({ item }) => (
+              <View style={styles.itemContainer}>
+                <RenderBox
+                  image={item.image}
+                  title={item.title}
+                  screen={item.screen}
+                />
+              </View>
+            )}
+          />
+        )}
+
       </ScrollView>
       {/* <TouchableWithoutFeedback onPress={() => navigateChatBot()}>
         <View style={styles.plusContainer}>

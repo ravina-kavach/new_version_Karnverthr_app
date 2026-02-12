@@ -115,13 +115,16 @@ export const UserAttendance = createAsyncThunk(
 export const UserAttendanceRegularization = createAsyncThunk(
     'UserAttendanceRegularization',
     async (userdata, thunkAPI) => {
+        // console.log("PAYLOAD====>",userdata)
         try {
             const result = await API.post(
                  APIS_ENDPOINTS.REGULARIZATION(userdata.id),
                 userdata.data
             );
+            // console.log("RESULT====>",result)
             return result.data;
         } catch (error) {
+            // console.log("ERROR====>",error.response)
             return thunkAPI.rejectWithValue({ error: error.response?.data?.message });
         }
     }

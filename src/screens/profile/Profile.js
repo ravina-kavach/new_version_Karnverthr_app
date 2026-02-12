@@ -63,7 +63,6 @@ export default function Profile() {
   } = useProfile();
 
   const safeValue = (value) => value ?? "—";
-  console.log("VERSION ===>",DeviceInfo.getBuildNumber())
   return (
     <CommonView>
       <CommonHeader title="Profile" />

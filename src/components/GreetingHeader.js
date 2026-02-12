@@ -50,7 +50,7 @@ const GreetingHeader = ({
   };
 
   const initials = getInitials(
-    UserDetailsData.name
+    UserDetailsData?.name
   );
   const bgColor = getAvatarColor(initials);
   return (
@@ -64,18 +64,18 @@ const GreetingHeader = ({
         onPress={screenName === 'editProfile' ? onAvatarPress : undefined}
       >
         <View style={styles.avatarWrapper}>
-          {UserDetailsData.image_url ? (
+          {UserDetailsData?.image_url ? (
             <Image
-              source={{ uri: avatar || UserDetailsData.image_url }}
+              source={{ uri: avatar || UserDetailsData?.image_url }}
               style={styles.avatar}
             />
           ) : (
-            <View style={[styles.initialAvatar, { backgroundColor: !UserDetailsData.image_url ? COLOR.Transparent : bgColor }]}>
+            <View style={[styles.initialAvatar, { backgroundColor: !UserDetailsData?.image_url ? COLOR.Transparent : bgColor }]}>
               <Text style={styles.initialText}>{initials}</Text>
             </View>
           )}
 
-          {isProfileUpdateFetching || !UserDetailsData.image_url  && (
+          {isProfileUpdateFetching || !UserDetailsData?.image_url  && (
             <View style={styles.loaderOverlay}>
               <ActivityIndicator size="small" color="#fff" />
             </View>

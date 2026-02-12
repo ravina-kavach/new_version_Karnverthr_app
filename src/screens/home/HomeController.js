@@ -43,11 +43,13 @@ export const useHome = () => {
     isError,
     errorMessage,
     UserAttendanceData,
+    UserDetailsData,
     isAttendanceFetching,
   } = useSelector(CommonSelector);
 
   const [attendance, setAttendance] = useState(null);
   const [location, setLocation] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false)
     const [logoutVisible, setLogoutVisible] = useState(false);
   const MENUDATA = [
     { id: "1", image: <AttendanceIcon />, title: t("Home.Attendance"), screen: "attendance" },
@@ -60,7 +62,15 @@ export const useHome = () => {
     { id: "8", image: <DeclarationIcon />, title: t("Home.Announcement"), screen: "announcement" },
     { id: "9", image: <ShiftIcon />, title: t("Home.Shift_Timings"), screen: "shiftTiming" },
   ];
+  // "master","adminAttendance", "adminEmployee", "adminLeave", "adminPayroll"
 
+  const ADMIN_MENUDATA = [
+    { id: "1", image: <ShiftIcon />, title: t("Home.Master"), screen: "master" },
+    { id: "2", image: <AttendanceIcon />, title: t("Home.Attendance_manage"), screen: "adminAttendance" },
+    { id: "3", image: <PaySlipIcon />, title: t("Home.Employee_manage"), screen: "adminEmployee" },
+    { id: "4", image: <LeaveMenuIcon />, title: t("Home.Leave_manage"), screen: "adminLeave" },
+    { id: "5", image: <ReportIcon />, title: t("Home.Payroll"), screen: "adminPayroll" },
+  ];
   useFocusEffect(
   useCallback(() => {
     const onBackPress = () => {
@@ -75,11 +85,17 @@ export const useHome = () => {
 
     return () => backHandler.remove();
   }, [])
+
+  
 );
 
   useEffect(() => {
     if (!isFocused) return;
-
+    // console.log("UserDetailsData====>",JSON.stringify(UserDetailsData,null,2))
+    // console.log("UsersigninData====>",JSON.stringify(UsersigninData.user_role,null,2))
+    if(UsersigninData.user_role === "REGISTER_ADMIN"){
+      setIsAdmin(true)
+    }
     const initLocation = async () => {
       try {
         await BackgroundGeolocation.ready({
@@ -260,6 +276,8 @@ export const useHome = () => {
     navigateChatBot,
     logoutVisible,  
     setLogoutVisible,
-    handleOnLogout
+    handleOnLogout,
+    isAdmin,
+    ADMIN_MENUDATA
   };
 };

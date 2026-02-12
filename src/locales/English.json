@@ -41,7 +41,12 @@
     "Reports": "Reports",
     "PaySlip": "Pay Slip",
     "Announcement": "Declaration",
-    "Shift_Timings": "Shift Time"
+    "Shift_Timings": "Shift Time",
+    "Master": "Master",
+    "Payroll": "Payroll",
+    "Employee_manage": "Employee Management",
+    "Attendance_manage": "Attendance Management",
+    "Leave_manage": "Leave Management"
   },
   "Expenses": {
     "Name": "Name",
