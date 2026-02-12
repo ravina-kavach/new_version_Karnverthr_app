@@ -46,13 +46,13 @@ const Welcome3 = () => {
           <Subcomponent title={t('Welcome2.dis2')} />
           <Subcomponent title={t('Welcome2.dis3')} />
         </View>
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}> */}
           <CommonButton
             containerStyle={styles.buttonInnerContainer}
             title={t('Button.Sign_In')}
             onPress={navigateToSignIn}
           />
-        </View>
+        {/* </View> */}
       </View>
     </CommonView>
   );

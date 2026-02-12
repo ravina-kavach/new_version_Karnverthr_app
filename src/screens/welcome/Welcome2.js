@@ -43,13 +43,13 @@ const Welcome2 = () => {
           <Subcomponent title={t('Welcome2.subtitle2')} desc={t('Welcome2.dis2')} />
           <Subcomponent title={t('Welcome2.subtitle3')} desc={t('Welcome2.dis3')} />
         </View>
-        <View style={styles.buttonContainer}>
+        {/* <View style={styles.buttonContainer}> */}
           <CommonButton
             containerStyle={styles.buttonInnerContainer}
             title={t('Button.Continue')}
             onPress={navigateToWelcome3}
           />
-        </View>
+        {/* </View> */}
       </View>
     </CommonView>
   );
@@ -64,7 +64,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   buttonInnerContainer: {
-    width: responsiveWidth(90)
+    width: responsiveWidth(90),
+    bottom:responsiveHeight(2)
   },
 
   descText: {
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
   subContainer:{
     paddingBottom:responsiveHeight(1.5)
   },
-  buttonContainer: {
+   buttonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
