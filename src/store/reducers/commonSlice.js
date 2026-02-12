@@ -127,6 +127,23 @@ export const UserAttendanceRegularization = createAsyncThunk(
     }
 );
 
+export const GetAttendanceRegularization = createAsyncThunk(
+    'GetAttendanceRegularization',
+    async (userdata, thunkAPI) => {
+        try {
+            let result = await API.get(APIS_ENDPOINTS.GET_REGULARIZATION(userdata.id));
+            if (result.data.status === 'success') {
+                return result.data.data
+            } else {
+                return thunkAPI.rejectWithValue({ error: errorMassage(result?.data?.errorMessage) });
+            }
+        } catch (error) {
+            console.log("Error >>>", error.response?.data || error.message);
+            return error;
+        }
+    },
+);
+
 export const UserAttendanceRegcategories = createAsyncThunk(
     'UserAttendanceRegcategories',
     async (userdata, thunkAPI) => {
@@ -801,6 +818,7 @@ export const CommonSlice = createSlice({
         UserAttendanceRegcategoriesData: [],
         UserAttendanceRegurationData: [],
         isFeatchAttendanceReguration: false,
+        GetAttendanceRegurationData: [],
 
         GetExpenseListData: [],
         isGetExpenseList: false,
@@ -1334,6 +1352,39 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(UserAttendanceRegularization.pending, state => {
             state.isFeatchAttendanceReguration = true;
+        });
+
+        //========= GetAttendanceRegularization
+
+        builder.addCase(GetAttendanceRegularization.fulfilled, (state, { payload }) => {
+            try {
+                state.GetAttendanceRegurationData = payload;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetAttendanceRegularization.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetAttendanceRegularization.rejected, (state, { payload }) => {
+            console.log("[GetAttendanceRegularization.rejected]>>>", payload)
+            try {
+                state.GetAttendanceRegurationData = [];
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetAttendanceRegularization.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetAttendanceRegularization.pending, state => {
+            return state
         });
 
         //========= UserAttendanceRegcategories

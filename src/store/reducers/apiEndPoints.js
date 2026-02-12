@@ -17,6 +17,8 @@ const APIS_ENDPOINTS = {
     `api/checkin_checkout_status?email=${encodeURIComponent(email)}`,
   REGULARIZATION: (userId) =>
     `api/create/regularization?user_id=${userId}`,
+  GET_REGULARIZATION: (userId) =>
+    `api/regularization?user_id=${userId}`,
   REG_CATEGORIES: (userId) =>
     `api/regcategories?user_id=${userId}`,
   MONTHLY_ATTENDANCE_REPORT: 'api/hr/attendance/monthly',

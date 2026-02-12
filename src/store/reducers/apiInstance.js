@@ -3,13 +3,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
 import store from '../index';
 import { UserToken } from './commonSlice';
+import APIS_ENDPOINTS from './apiEndPoints';
 
 const API = axios.create({
   baseURL: Config.BASE_URL,
   timeout: 20000,
 });
 
-const skipAuthUrls = ['api/auth'];
+const skipAuthUrls = [APIS_ENDPOINTS.AUTH_TOKEN];
 
 let isRefreshing = false;
 let failedQueue = [];
