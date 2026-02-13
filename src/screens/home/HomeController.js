@@ -93,7 +93,7 @@ export const useHome = () => {
   useEffect(() => {
     if (!isFocused) return;
     // console.log("UserDetailsData====>",JSON.stringify(UserDetailsData,null,2))
-    // console.log("UsersigninData====>",JSON.stringify(UsersigninData.user_role,null,2))
+    // console.log("UsersigninData====>",JSON.stringify(UsersigninData,null,2))
     if(UsersigninData.user_role === "REGISTER_ADMIN"){
       setIsAdmin(true)
     }

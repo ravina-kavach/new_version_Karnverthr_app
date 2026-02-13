@@ -71,10 +71,11 @@ export const CheckGST = createAsyncThunk(
 
 export const AttendancePolicyList = createAsyncThunk(
     'AttendancePolicyList',
-    async (_, thunkAPI) => {
+    async (userdata, thunkAPI) => {
+        console.log("calllll====>")
         try {
             const result = await API.get(
-                APIS_ENDPOINTS.ATTENDANCE_POLICY_LIST
+                APIS_ENDPOINTS.ATTENDANCE_POLICY_LIST(userdata.id)
             );
 
             if (result.data.status === 'error') {
@@ -82,9 +83,10 @@ export const AttendancePolicyList = createAsyncThunk(
                     error: errorMassage(result?.data?.message),
                 });
             }
-
+            console.log("result.data====>",result)
             return result.data;
         } catch (error) {
+            console.log("ERROR===>",error)
             return thunkAPI.rejectWithValue({
                 error: errorMassage(
                     error.response?.data?.message || error.message
@@ -1907,5 +1909,5 @@ export const AdminSlice = createSlice({
 });
 export const { updateState } = AdminSlice.actions;
 export const { clearState } = AdminSlice.actions;
-export const CommonSelector = state => state.main.Common;
+export const AdminSelector = state => state.main.Admin;
 
