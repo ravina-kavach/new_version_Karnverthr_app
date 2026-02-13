@@ -50,6 +50,11 @@ import ChatBotIcon from './ChatBot.svg'
 import SortIcon from './Sort.svg'
 import DotsIcon from './Dots.svg'
 import DownloadIcon from './Download.svg'
+import EmailIcon from './EmailIcon.svg'
+import EyeCloseIcon from './EyeCloseIcon.svg'
+import EyeIcon from './EyeIcon.svg'
+import KeyIcon from './KeyIcon.svg'
+
 export {
   Check,
   FillCheck,
@@ -102,5 +107,9 @@ export {
   ChatBotIcon,
   SortIcon,
   DotsIcon,
-  DownloadIcon
+  DownloadIcon,
+  EmailIcon,
+  EyeCloseIcon,
+  EyeIcon,
+  KeyIcon,
 };
