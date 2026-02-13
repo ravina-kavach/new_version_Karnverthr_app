@@ -54,6 +54,11 @@ import MasterIcon from './MasterIcon.svg'
 import FillMasterIcon from './FillMasterIcon.svg'
 import EmpIcon from './EmpIcon.svg'
 import FillEmpIcon from './FillEmpIcon.svg'
+import EmailIcon from './EmailIcon.svg'
+import EyeCloseIcon from './EyeCloseIcon.svg'
+import EyeIcon from './EyeIcon.svg'
+import KeyIcon from './KeyIcon.svg'
+
 export {
   Check,
   FillCheck,
@@ -110,5 +115,9 @@ export {
   MasterIcon,
   FillMasterIcon,
   EmpIcon,
-  FillEmpIcon
+  FillEmpIcon,
+  EmailIcon,
+  EyeCloseIcon,
+  EyeIcon,
+  KeyIcon,
 };

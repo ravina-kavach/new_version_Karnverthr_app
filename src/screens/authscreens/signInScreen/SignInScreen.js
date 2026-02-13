@@ -22,6 +22,7 @@ import ForgotPasswordModal from '../../../components/ForgotPasswordModal.js'
 import { font, GlobalFonts } from '../../../theme/typography.js';
 import { AppLogo } from '../../../assets/images/index.js';
 import BiometricModal from '../../../components/BiometricModal.js'
+import { EmailIcon, EyeCloseIcon, EyeIcon, KeyIcon } from '../../../assets/svgs/index.js';
 function SignInScreen() {
   const {
     t,
@@ -57,7 +58,7 @@ function SignInScreen() {
         <Image style={styles.appLogo} source={AppLogo} />
         <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
         <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
-          <Image source={Sms} style={styles.icon} />
+          <EmailIcon/>
           <TextInput
             placeholder={t("placeholders.Enter_your_registered_email")}
             placeholderTextColor={COLOR.TextPlaceholder}
@@ -74,7 +75,7 @@ function SignInScreen() {
         </Valide>
 
         <View style={[styles.inputContainer, { borderColor: Formdata.password && Validator.current.errorMessages.password ? COLOR.Red : COLOR.GrayBorder }]}>
-          <Image source={FignerScan} style={styles.icon} />
+          <KeyIcon/>
           <TextInput
             placeholder={t("placeholders.Enter_your_password")}
             secureTextEntry={IsPassVisible}
@@ -88,7 +89,7 @@ function SignInScreen() {
             value={Formdata.password}
           />
           <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
-            <Image source={IsPassVisible ? EyeSlash : Eye} style={styles.icon} />
+            {IsPassVisible?<EyeCloseIcon/>:<EyeIcon/>}
           </TouchableOpacity>
         </View>
         <Valide style={styles.valid}>

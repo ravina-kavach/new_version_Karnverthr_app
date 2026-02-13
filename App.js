@@ -22,7 +22,6 @@ const Root = () => {
   const [storeUrl, setStoreUrl] = useState('');
   const [isOffline, setIsOffline] = useState(false);
   const appStateRef = useRef(AppState.currentState);
-
   const isNetworkStable = (state) => {
   const details = state.details || {};
   const linkSpeed = details.linkSpeed || 0;
@@ -107,7 +106,7 @@ const Root = () => {
 
   useEffect(() => {
     bootstrapAuth(dispatch);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
   const subscription = AppState.addEventListener('change', nextState => {
@@ -126,7 +125,6 @@ const Root = () => {
   const checkAppVersion = async () => {
   try {
     const provider = Platform.OS === 'ios' ? 'appStore' : 'playStore';
-
     const currentVersion = DeviceInfo.getVersion();
     const latestVersion = await VersionCheck.getLatestVersion({ provider });
     const storeUrl = await VersionCheck.getStoreUrl({ provider });
