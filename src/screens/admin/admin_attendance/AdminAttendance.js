@@ -8,7 +8,7 @@ const AdminAttendance = () => {
         <CommonView>
             <CommonHeader title="Attendance Management" />
             <View style={styles.container}>
-                <Text> Admin Attendance</Text>
+                <Text>Admin Attendance</Text>
             </View>
         </CommonView>
     )

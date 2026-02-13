@@ -17,7 +17,7 @@ const AdminMaster = () => {
 
   return (
     <CommonView>
-      <View style={{ flex: 1, paddingHorizontal: 20 }}>
+      <View style={styles.innerContainer}>
         <CommonList
           data={masterData}
           onPressItem={(item) => navigation.navigate(item.screen)}
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
+  innerContainer:{ flex: 1, paddingHorizontal: 20 },
 
   header: {
     ...GlobalFonts.subtitle,

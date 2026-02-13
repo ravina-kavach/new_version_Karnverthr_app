@@ -3,6 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StyleSheet} from 'react-native'
 import { COLOR } from '../theme/theme';
+import { useSelector } from 'react-redux';
+import { CommonSelector } from '../store/reducers/commonSlice';
 //----- welcome Screns
 import Splash from '../screens/splash/Splash';
 import Welcome1 from '../screens/welcome/Welcome1'
@@ -24,11 +26,11 @@ import EmergencyDetails from '../screens/profile/EmergencyDetails';
 import Leaves from '../screens/leaves/Leaves';
 import Chatbot from '../screens/chatbot/Chatbot';
 import ExpenseDetail from '../screens/expenses/ExpenseDetail';
+//================= Admin screens ====================
 import AdminAttendance from '../screens/admin/admin_attendance/AdminAttendance';
 import AdminPayroll from '../screens/admin/admin_payroll/AdminPayroll';
 import PaySlip from '../screens/paySlip/PaySlip';
-import { useSelector } from 'react-redux';
-import { CommonSelector } from '../store/reducers/commonSlice';
+import AttendancePolicy from '../screens/admin/admin_master/master_types/attendancePolicy/AttendancePolicy';
 const Stack = createNativeStackNavigator();
 
 function Navigation({ props }) {
@@ -62,8 +64,11 @@ function Navigation({ props }) {
             <Stack.Screen name="approvals" component={Approvals} />
             <Stack.Screen name="chatbot" component={Chatbot} />
             <Stack.Screen name="expenseDetail" component={ExpenseDetail} />
+
+            {/* ============ Admin master ============= */}
             <Stack.Screen name="adminAttendance" component={AdminAttendance} />
             <Stack.Screen name="adminPayroll" component={AdminPayroll} />
+            <Stack.Screen name="adminAttendancePolicy" component={AttendancePolicy}/>
             
         </Stack.Group>
         {/* ============ Bottom Tab ============= */}
