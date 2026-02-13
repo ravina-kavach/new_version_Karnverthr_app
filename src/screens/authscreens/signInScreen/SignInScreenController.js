@@ -7,6 +7,7 @@ import { showMessage } from 'react-native-flash-message';
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 import SimpleReactValidator from 'simple-react-validator';
 import DeviceInfo from 'react-native-device-info';
+import { bootstrapAuth } from '../../../utils/bootstrapAuth';
 import {
   CommonSelector,
   ForgotPassword,
@@ -71,6 +72,12 @@ export const useSignInScreen = () => {
   const rnBiometrics = new ReactNativeBiometrics({
     allowDeviceCredentials: true,
   });
+
+    React.useEffect(() => {
+      if (IsFocused) {
+      bootstrapAuth(dispatch);
+      }
+    }, [IsFocused]);
 
   React.useEffect(() => {
     if (IsFocused) {
