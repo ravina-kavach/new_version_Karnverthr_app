@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import Service from './service';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import ImageResizer from 'react-native-image-resizer';
+import RNFS from 'react-native-fs';
 
 let isPickerOpen = false;
 
@@ -140,64 +142,160 @@ const getLocation = () => {
 };
 
 
+// const handleOnCamera = async () => {
+//   try {
+//     let hasPermission = false;
+
+//     const checkPermission = async () => {
+//       if (Platform.OS === 'android') {
+//         const granted = await PermissionsAndroid.check(
+//           PermissionsAndroid.PERMISSIONS.CAMERA
+//         );
+//         if (granted) return true;
+
+//         const requestResult = await PermissionsAndroid.request(
+//           PermissionsAndroid.PERMISSIONS.CAMERA
+//         );
+//         return requestResult === PermissionsAndroid.RESULTS.GRANTED;
+//       } else {
+//         const result = await request(PERMISSIONS.IOS.CAMERA);
+//         return result === RESULTS.GRANTED;
+//       }
+//     };
+
+//     while (!hasPermission) {
+//       hasPermission = await checkPermission();
+//       if (!hasPermission) {
+//         await showSettingsAlert();
+//       }
+//     }
+
+//     return new Promise(resolve => {
+//       launchCamera(
+//         {
+//           mediaType: 'photo',
+//           quality: 0.6,
+//           cameraType: 'front',
+//           includeBase64: true,
+//           saveToPhotos: false,
+//           // presentationStyle: 'fullScreen',
+//         },
+//         response => {
+//           if (response?.didCancel || response?.errorCode) {
+//             return resolve({ success: false });
+//           }
+
+//           const asset = response.assets?.[0];
+//           resolve({
+//             success: true,
+//             image: {
+//               base64: asset?.base64,
+//               uri: asset?.uri,
+//               fileName: asset?.fileName,
+//               type: asset?.type,
+//             },
+//           });
+//         }
+//       );
+//     });
+//   } catch (error) {
+//     console.log('Camera error:', error);
+//     return { success: false };
+//   }
+// };
+
 const handleOnCamera = async () => {
   try {
-    let hasPermission = false;
-
     const checkPermission = async () => {
       if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.check(
+        const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.CAMERA
         );
-        if (granted) return true;
 
-        const requestResult = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.CAMERA
-        );
-        return requestResult === PermissionsAndroid.RESULTS.GRANTED;
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
       } else {
         const result = await request(PERMISSIONS.IOS.CAMERA);
+
+        if (result === RESULTS.BLOCKED) {
+          Alert.alert(
+            'Permission Required',
+            'Camera permission is blocked. Please enable it from settings.',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            ]
+          );
+          return false;
+        }
+
         return result === RESULTS.GRANTED;
       }
     };
 
-    while (!hasPermission) {
-      hasPermission = await checkPermission();
-      if (!hasPermission) {
-        await showSettingsAlert();
-      }
+    const hasPermission = await checkPermission();
+
+    if (!hasPermission) {
+      return { success: false };
     }
 
     return new Promise(resolve => {
       launchCamera(
         {
           mediaType: 'photo',
-          quality: 0.6,
+          quality: 0.5,
           cameraType: 'front',
-          includeBase64: true,
+          includeBase64: false,
           saveToPhotos: false,
-          // presentationStyle: 'fullScreen',
         },
-        response => {
-          if (response?.didCancel || response?.errorCode) {
+        async response => {
+          if (response?.didCancel) {
+            return resolve({ success: false });
+          }
+
+          if (response?.errorCode) {
+            console.log('Camera error:', response.errorMessage);
             return resolve({ success: false });
           }
 
           const asset = response.assets?.[0];
-          resolve({
-            success: true,
-            image: {
-              base64: asset?.base64,
-              uri: asset?.uri,
-              fileName: asset?.fileName,
-              type: asset?.type,
-            },
-          });
+
+          if (!asset?.uri) {
+            return resolve({ success: false });
+          }
+
+          try {
+            // ✅ Resize image to prevent 413
+            const resizedImage = await ImageResizer.createResizedImage(
+              asset.uri,
+              800,
+              800,
+              'JPEG',
+              60
+            );
+
+            // ✅ Convert resized image to base64
+            const base64Image = await RNFS.readFile(
+              resizedImage.uri,
+              'base64'
+            );
+
+            resolve({
+              success: true,
+              image: {
+                base64: base64Image,
+                type: 'image/jpeg',
+                fileName: 'photo.jpg',
+              },
+            });
+          } catch (resizeError) {
+            console.log('Resize/Base64 error:', resizeError);
+            resolve({ success: false });
+          }
         }
       );
     });
   } catch (error) {
-    console.log('Camera error:', error);
+    console.log('Camera permission error:', error);
     return { success: false };
   }
 };
