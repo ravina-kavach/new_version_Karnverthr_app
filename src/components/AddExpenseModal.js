@@ -8,6 +8,7 @@ import {
   ScrollView,
   TextInput,
   ActivityIndicator,
+  Platform,
   StyleSheet,
 } from 'react-native';
 import moment from 'moment';
@@ -207,11 +208,11 @@ export const AddExpenseModal = ({
                 <DateTimePicker
                   value={startDate || new Date()}
                   mode="date"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   maximumDate={new Date()}
                   onChange={onChangeStartDate}
                 />
               )}
-
               <View style={styles.footer}>
                 <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
                   <Text style={styles.cancelText}>{t('Button.Cancel')}</Text>
@@ -229,7 +230,6 @@ export const AddExpenseModal = ({
                   )}
                 </TouchableOpacity>
               </View>
-
             </ScrollView>
             {isImagePickerVisible && (
               <ImagePickerSheet
@@ -262,6 +262,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     maxHeight: '90%',
+  },
+  pickerContainer: {
+    position:'absolute',
+    backgroundColor: '#fff',
+    borderColor:COLOR.Black1,
+    borderRadius: 12,
+    padding: 10,
+    marginTop: 10,
   },
   title: {
     ...GlobalFonts.subtitle,

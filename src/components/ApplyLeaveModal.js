@@ -5,6 +5,7 @@ import {
   Modal,
   TouchableOpacity,
   TextInput,
+  Platform,
   StyleSheet,
 } from 'react-native';
 import { COLOR } from '../theme/theme';
@@ -253,21 +254,27 @@ const ApplyLeaveModal = ({
           </View>
         </View>
         {openStartDataPicker && (
-          <DateTimePicker
-            value={selectStartDate || new Date()}
-            mode="date"
-            minimumDate={new Date()}
-            onChange={handleStartDateChange}
-          />
+          <View style={styles.pickerContainer}>
+            <DateTimePicker
+              value={selectStartDate || new Date()}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              minimumDate={new Date()}
+              onChange={handleStartDateChange}
+            />
+          </View>
         )}
 
         {openEndDataPicker && (
-          <DateTimePicker
-            value={selectEndDate || new Date()}
-            mode="date"
-            minimumDate={selectStartDate || new Date()}
-            onChange={handleEndDateChange}
-          />
+          <View style={styles.pickerContainer}>
+            <DateTimePicker
+              value={selectEndDate || new Date()}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              minimumDate={selectStartDate || new Date()}
+              onChange={handleEndDateChange}
+            />
+          </View>
         )}
       </View>
     </Modal>
@@ -365,6 +372,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  pickerContainer: {
+    position:'absolute',
+    backgroundColor: '#fff',
+    borderColor:COLOR.Black1,
+    borderRadius: 12,
+    padding: 10,
+    marginTop: 10,
+  },
+
 
   cancelText: { color: '#333' },
   saveText: { color: '#fff', fontWeight: '600' },
