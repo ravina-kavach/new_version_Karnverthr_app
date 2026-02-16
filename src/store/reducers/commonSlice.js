@@ -806,7 +806,7 @@ export const SupportTicketList = createAsyncThunk(
     async (userdata, thunkAPI) => {
         try {
             const { id, token } = userdata;
-            console.log("USER DATATATA===>", userdata)
+            // console.log("USER DATATATA===>", userdata)
             const response = await fetch(
                 `http://178.236.185.232:9090//api/get_ticket?user_id=${id}`,
                 {
@@ -818,7 +818,7 @@ export const SupportTicketList = createAsyncThunk(
             );
 
             const result = await response.json();
-            console.log("SupportTicketList RESULT=====>", result)
+            // console.log("SupportTicketList RESULT=====>", result)
             if (result?.status === 'success') {
                 return result.data;
             }

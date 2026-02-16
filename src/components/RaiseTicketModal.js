@@ -11,6 +11,7 @@ import {
 import { GlobalFonts } from '../theme/typography'
 import { FontSize } from '../utils/metrics'
 import ImagePickerSheet from './ImagePickerSheet'
+import { COLOR } from '../theme/theme'
 
 const RaiseTicketModal = ({
     visible,
@@ -23,6 +24,7 @@ const RaiseTicketModal = ({
     const [errors, setErrors] = useState({})
     const [pickerVisible, setPickerVisible] = useState(false)
     const [attachment, setAttachment] = useState(null)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
         if (!visible) {
@@ -30,6 +32,7 @@ const RaiseTicketModal = ({
             setDescription('')
             setErrors({})
             setAttachment(null)
+            setIsSubmitting(false)
         }
     }, [visible])
 
@@ -38,10 +41,16 @@ const RaiseTicketModal = ({
         const trimmedTitle = title.trim()
         const trimmedDescription = description.trim()
 
+        // Title validation
         if (!trimmedTitle) {
             newErrors.title = 'Title is required'
+        } else if (trimmedTitle.length < 3) {
+            newErrors.title = 'Minimum 3 characters required'
+        } else if (trimmedTitle.length > 50) {
+            newErrors.title = 'Maximum 50 characters allowed'
         }
 
+        // Description validation
         if (!trimmedDescription) {
             newErrors.description = 'Description is required'
         } else if (trimmedDescription.length < 10) {
@@ -54,24 +63,35 @@ const RaiseTicketModal = ({
         return Object.keys(newErrors).length === 0
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        if (isSubmitting) return
         if (!validate()) return
 
-        const formData = {
-            title: title.trim(),
-            description: description.trim(),
-            attachment: attachment?.base64 || null,
-        }
+        try {
+            setIsSubmitting(true)
 
-        onSave(formData)
+            const formData = {
+                title: title.trim(),
+                description: description.trim(),
+                attachment: attachment?.base64 || null,
+            }
+
+            await onSave(formData)
+
+        } catch (error) {
+            setErrors({ general: 'Something went wrong. Please try again.' })
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const handleAttachment = useCallback((image) => {
         if (image) {
-            setAttachment(image);
+            setAttachment(image)
             setPickerVisible(false)
         }
     }, [])
+
     return (
         <Modal
             visible={visible}
@@ -89,12 +109,16 @@ const RaiseTicketModal = ({
                         </TouchableOpacity>
                     </View>
 
-                    {/* Title */}
                     <Text style={styles.label}>Title</Text>
                     <TextInput
                         style={[styles.input, errors.title && styles.inputError]}
                         value={title}
-                        onChangeText={setTitle}
+                        onChangeText={(text) => {
+                            setTitle(text)
+                            if (errors.title) {
+                                setErrors(prev => ({ ...prev, title: null }))
+                            }
+                        }}
                         placeholder="Enter ticket title"
                         placeholderTextColor="#999"
                     />
@@ -114,6 +138,9 @@ const RaiseTicketModal = ({
                         onChangeText={(text) => {
                             if (text.length <= 250) {
                                 setDescription(text)
+                                if (errors.description) {
+                                    setErrors(prev => ({ ...prev, description: null }))
+                                }
                             }
                         }}
                         placeholder="Describe your issue..."
@@ -167,20 +194,34 @@ const RaiseTicketModal = ({
                         </View>
                     )}
 
+                    {/* General Error */}
+                    {errors.general && (
+                        <Text style={[styles.errorText, { textAlign: 'center', marginTop: 10 }]}>
+                            {errors.general}
+                        </Text>
+                    )}
+
                     {/* Footer */}
                     <View style={styles.footer}>
                         <TouchableOpacity
                             style={styles.cancelBtn}
                             onPress={onClose}
+                            disabled={isSubmitting}
                         >
                             <Text style={styles.cancelText}>Cancel</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={styles.saveBtn}
+                            style={[
+                                styles.saveBtn,
+                                isSubmitting && { opacity: 0.6 }
+                            ]}
                             onPress={handleSubmit}
+                            disabled={isSubmitting}
                         >
-                            <Text style={styles.saveText}>Submit</Text>
+                            <Text style={styles.saveText}>
+                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                            </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -219,6 +260,7 @@ const styles = StyleSheet.create({
     },
 
     titleText: {
+        ...GlobalFonts.subtitle,
         fontSize: 18,
         fontWeight: '600',
     },
@@ -229,14 +271,16 @@ const styles = StyleSheet.create({
     },
 
     label: {
+        ...GlobalFonts.subtitle,
         marginTop: 10,
         marginBottom: 6,
-        color: '#555',
-        ...GlobalFonts.normalText,
+        color: COLOR.Black1,
         fontSize: FontSize.Font14,
     },
 
     input: {
+        ...GlobalFonts.normalText,
+        fontSize: FontSize.Font14,
         height: 45,
         borderWidth: 1,
         borderColor: '#E2E2E2',
