@@ -60,7 +60,8 @@ export default function Expenses() {
     filteredExpenses,
     selectedStatus,
     setSelectedStatus,
-    NavigateExpenseDetail
+    NavigateExpenseDetail,
+    setFileObj
   } = useExpenses();
 
   const renderItem = ({ item }) => {
@@ -73,49 +74,49 @@ export default function Expenses() {
         : null;
 
     return (
-      <TouchableWithoutFeedback  onPress={()=>NavigateExpenseDetail(item)}>
+      <TouchableWithoutFeedback onPress={() => NavigateExpenseDetail(item)}>
         <View style={styles.card}>
-        <View style={styles.headerRow}>
-          <Text numberOfLines={2} style={styles.title}>{item.name}</Text>
+          <View style={styles.headerRow}>
+            <Text numberOfLines={2} style={styles.title}>{item.name}</Text>
 
-          <View style={styles.statusWrap}>
-            <Text
-              numberOfLines={1}
-              style={[styles.statusText, { color: STATE[stateKey] }]}
-            >
-              {EXPENSE_STATUS[item.state].toUpperCase()}
-            </Text>
-            <View
-              style={[
-                styles.statusDot,
-                { backgroundColor: STATE[stateKey] },
-              ]}
-            />
-          </View>
-        </View>
-
-        <View style={styles.contentRow}>
-          <View style={styles.imageBox}>
-            {imageUri ? (
-              <Pressable onPress={() => openImage(imageUri)}>
-                <Image source={{ uri: imageUri }} style={styles.image} />
-              </Pressable>
-            ) : (
-              <View style={styles.placeholder}>
-                <EmptyExpense color={COLOR.dark5} />
-              </View>
-            )}
+            <View style={styles.statusWrap}>
+              <Text
+                numberOfLines={1}
+                style={[styles.statusText, { color: STATE[stateKey] }]}
+              >
+                {EXPENSE_STATUS[item.state].toUpperCase()}
+              </Text>
+              <View
+                style={[
+                  styles.statusDot,
+                  { backgroundColor: STATE[stateKey] },
+                ]}
+              />
+            </View>
           </View>
 
-          <View style={styles.rightInfo}>
-            <Text style={styles.amount}>
-              ₹ {Number(item.total_amount).toFixed(2)}
-            </Text>
-            <Text style={styles.date}>
-              {moment(item.date).format('DD-MM-YYYY')}
-            </Text>
+          <View style={styles.contentRow}>
+            <View style={styles.imageBox}>
+              {imageUri ? (
+                <Pressable onPress={() => openImage(imageUri)}>
+                  <Image source={{ uri: imageUri }} style={styles.image} />
+                </Pressable>
+              ) : (
+                <View style={styles.placeholder}>
+                  <EmptyExpense color={COLOR.dark5} />
+                </View>
+              )}
+            </View>
+
+            <View style={styles.rightInfo}>
+              <Text style={styles.amount}>
+                ₹ {Number(item.total_amount).toFixed(2)}
+              </Text>
+              <Text style={styles.date}>
+                {moment(item.date).format('DD-MM-YYYY')}
+              </Text>
+            </View>
           </View>
-        </View>
         </View>
       </TouchableWithoutFeedback>
     );
@@ -167,6 +168,7 @@ export default function Expenses() {
           SubmitExpense={SubmitExpense}
           isCreateExpensesFetching={isCreateExpensesFetching}
           FileObj={FileObj}
+          setFileObj={setFileObj}
           heandleonCamera={() => setIsImagePickerVisible(true)}
           CategoryListData={CategoryListData}
           Dropdown={Dropdown}
@@ -209,7 +211,7 @@ export default function Expenses() {
           </View>
         </Modal>
 
-        
+
       </View>
     </CommonView>
   );
@@ -227,13 +229,13 @@ const styles = StyleSheet.create({
   headerWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
     alignItems: 'center',
     zIndex: 2000,
     elevation: 20,
     overflow: 'visible',
     backgroundColor: 'transparent',
-    marginBottom:30,
+    marginBottom: 30,
   },
 
   sectionTitle: {
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
 
   title: {
     ...GlobalFonts.subtitle,
-    maxWidth:180,
+    maxWidth: 180,
     fontSize: 16,
     fontWeight: '600',
   },

@@ -4,6 +4,7 @@ import {
   Text,
   Modal,
   TouchableOpacity,
+  Image,
   TouchableWithoutFeedback,
   ScrollView,
   TextInput,
@@ -24,6 +25,7 @@ export const AddExpenseModal = ({
   SubmitExpense,
   isCreateExpensesFetching,
   FileObj,
+  setFileObj,
   heandleonCamera,
   CategoryListData,
   Dropdown,
@@ -132,18 +134,40 @@ export const AddExpenseModal = ({
               {errors.paymentMode && <Text style={styles.errorText}>{errors.paymentMode}</Text>}
 
               <Text style={styles.label}>{t('Expenses.Upload_Document')}</Text>
-              <TouchableOpacity
-                activeOpacity={0.5}
-                style={[styles.uploadBox, errors.file && styles.errorBorder]}
-                onPress={heandleonCamera}
-              >
-                <Text style={styles.placeholder}>
-                  {FileObj?.base64 || isEditMode
-                    ? t('Expenses.Document_Attached')
-                    : t('Expenses.Upload_Document')}
-                </Text>
-              </TouchableOpacity>
-              {errors.file && <Text style={styles.errorText}>{errors.file}</Text>}
+              {/* Upload Box (Only show when no file) */}
+              {!FileObj?.base64 && (
+                <>
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    style={[styles.uploadBox, errors.file && styles.errorBorder]}
+                    onPress={heandleonCamera}
+                  >
+                    <Text style={styles.placeholder}>
+                      {isEditMode
+                        ? t('Expenses.Document_Attached')
+                        : t('Expenses.Upload_Document')}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {errors.file && (
+                    <Text style={styles.errorText}>{errors.file}</Text>
+                  )}
+                </>
+              )}
+              {FileObj?.base64 && (
+                <View style={styles.previewContainer}>
+                  <Image
+                    source={{ uri: `data:image/jpeg;base64,${FileObj.base64}` }}
+                    style={styles.previewImage}
+                  />
+                  <TouchableOpacity
+                    style={styles.removeBtn}
+                    onPress={() => setFileObj({})}
+                  >
+                    <Text style={styles.removeText}>Remove</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
               <Text style={styles.label}>{t('Expenses.Catagory')}</Text>
               <View style={[styles.dropdownWrapper, errors.category && styles.errorBorder]}>
@@ -264,9 +288,9 @@ const styles = StyleSheet.create({
     maxHeight: '90%',
   },
   pickerContainer: {
-    position:'absolute',
+    position: 'absolute',
     backgroundColor: '#fff',
-    borderColor:COLOR.Black1,
+    borderColor: COLOR.Black1,
     borderRadius: 12,
     padding: 10,
     marginTop: 10,
@@ -346,5 +370,26 @@ const styles = StyleSheet.create({
   },
   errorBorder: {
     borderColor: 'red',
+  },
+  previewContainer: {
+    marginTop: 12,
+    alignItems: 'center'
+  },
+
+  previewImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 8
+  },
+
+  removeBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+
+  removeText: {
+    color: '#E53935',
+    fontWeight: '500'
   },
 });

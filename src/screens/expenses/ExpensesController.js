@@ -195,6 +195,7 @@ const NavigateExpenseDetail = (item) => {
     startDate,
     selectedId,
     FileObj,
+    setFileObj,
     IsExoensemodal,
     PreviewVisible,
     PreviewImage,
