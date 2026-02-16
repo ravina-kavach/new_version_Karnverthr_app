@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { StyleSheet} from 'react-native'
+import { StyleSheet } from 'react-native'
 import { COLOR } from '../theme/theme';
 //----- welcome Screns
 import Splash from '../screens/splash/Splash';
@@ -24,6 +24,7 @@ import Leaves from '../screens/leaves/Leaves';
 import Chatbot from '../screens/chatbot/Chatbot';
 import ExpenseDetail from '../screens/expenses/ExpenseDetail';
 import PaySlip from '../screens/paySlip/PaySlip';
+import RaiseTicket from '../screens/raiseTicket/RaiseTicket';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,60 +38,59 @@ function Navigation({ props }) {
           <Stack.Screen name="welcome2" component={Welcome2} />
           <Stack.Screen name="welcome3" component={Welcome3} />
         </Stack.Group>
-        
+
         {/* ============ main screens ============= */}
         <Stack.Group
           screenOptions={{
-            headerShown:false
+            headerShown: false
           }}>
-          <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }}/>   
-            <Stack.Screen name="home" component={Home} options={{ header: () => null }}/> 
-            <Stack.Screen name="profile" component={Profile} />
-            <Stack.Screen name="editProfile" component={EditProfile} />
-            <Stack.Screen name="emergencyDetails" component={EmergencyDetails} />
-            
-            <Stack.Screen name="shiftTiming" component={ShiftTiming} />
-            <Stack.Screen name="paySlip" component={PaySlip} />
-            <Stack.Screen name="attendance" component={Attendance} />
-            <Stack.Screen name="leaves" component={Leaves} />
-            <Stack.Screen name="calendarList" component={CalendarList} />
-            <Stack.Screen name="approvals" component={Approvals} />
-            <Stack.Screen name="chatbot" component={Chatbot} />
-            <Stack.Screen name="expenseDetail" component={ExpenseDetail} />
+          <Stack.Screen name="signInScreen" component={SignInScreen} options={{ header: () => null }} />
+          <Stack.Screen name="home" component={Home} options={{ header: () => null }} />
+          <Stack.Screen name="profile" component={Profile} />
+          <Stack.Screen name="editProfile" component={EditProfile} />
+          <Stack.Screen name="emergencyDetails" component={EmergencyDetails} />
 
-            
+          <Stack.Screen name="shiftTiming" component={ShiftTiming} />
+          <Stack.Screen name="paySlip" component={PaySlip} />
+          <Stack.Screen name="attendance" component={Attendance} />
+          <Stack.Screen name="leaves" component={Leaves} />
+          <Stack.Screen name="calendarList" component={CalendarList} />
+          <Stack.Screen name="approvals" component={Approvals} />
+          <Stack.Screen name="chatbot" component={Chatbot} />
+          <Stack.Screen name="expenseDetail" component={ExpenseDetail} />
+          <Stack.Screen name="raiseTicket" component={RaiseTicket} />
         </Stack.Group>
-        {/* ============ Bottom Tab ============= */}
-         <Stack.Group        
+
+        <Stack.Group
           screenOptions={{
-            contentStyle: {              
+            contentStyle: {
               backgroundColor: COLOR.dark5,
             },
             header: () => null,
-              headerBackVisible: false,
-              headerShadowVisible: true,
-              headerTransparent: false,
+            headerBackVisible: false,
+            headerShadowVisible: true,
+            headerTransparent: false,
           }}
-          >
-          <Stack.Screen name="myTab" component={TabNavigation}  />
+        >
+          <Stack.Screen name="myTab" component={TabNavigation} />
           <Stack.Group>
-          <Stack.Screen
-            name="privacyPolicy"
-            component={PrivacyPolicy}
-          />
-          <Stack.Screen
-            name="termsofuse"
-            component={Termsofuse}
-          />
-        </Stack.Group>
+            <Stack.Screen
+              name="privacyPolicy"
+              component={PrivacyPolicy}
+            />
+            <Stack.Screen
+              name="termsofuse"
+              component={Termsofuse}
+            />
           </Stack.Group>
+        </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  leftIconContainer:{ backgroundColor: COLOR.dark5, width: 35, height: 35, borderRadius: 20, alignItems: 'center', justifyContent: "center" }
+  leftIconContainer: { backgroundColor: COLOR.dark5, width: 35, height: 35, borderRadius: 20, alignItems: 'center', justifyContent: "center" }
 })
 
 export default Navigation

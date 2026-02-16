@@ -18,7 +18,8 @@ const Home = () => {
     navigateChatBot,
     logoutVisible,
     setLogoutVisible,
-    handleOnLogout
+    handleOnLogout,
+    navigateRaiseTicket
   } = useHome();
   return (
     <CommonView>
@@ -51,7 +52,7 @@ const Home = () => {
           )}
         />
       </ScrollView>
-      <TouchableWithoutFeedback onPress={() => navigateChatBot()}>
+      <TouchableWithoutFeedback onPress={() => navigateRaiseTicket()}>
         <View style={styles.plusContainer}>
           <SupportIcon width={60} height={60} />
         </View>

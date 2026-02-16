@@ -48,7 +48,7 @@ export const useHome = () => {
 
   const [attendance, setAttendance] = useState(null);
   const [location, setLocation] = useState(null);
-    const [logoutVisible, setLogoutVisible] = useState(false);
+  const [logoutVisible, setLogoutVisible] = useState(false);
   const MENUDATA = [
     { id: "1", image: <AttendanceIcon />, title: t("Home.Attendance"), screen: "attendance" },
     { id: "2", image: <ExpenseIcon />, title: t("Home.Expense"), screen: "expenses" },
@@ -62,20 +62,20 @@ export const useHome = () => {
   ];
 
   useFocusEffect(
-  useCallback(() => {
-    const onBackPress = () => {
-      setLogoutVisible(true);
-      return true;        
-    };
+    useCallback(() => {
+      const onBackPress = () => {
+        setLogoutVisible(true);
+        return true;
+      };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      onBackPress
-    );
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
 
-    return () => backHandler.remove();
-  }, [])
-);
+      return () => backHandler.remove();
+    }, [])
+  );
 
   useEffect(() => {
     if (!isFocused) return;
@@ -121,43 +121,43 @@ export const useHome = () => {
   }, [isFocused]);
 
   const handleOnLogout = async () => {
-  try {
-   await dispatch(
-      updateState({
-        VerfiedUserData: {},
-        UsersigninData: {},
-        UserDetailsData: {},
-        isVerified: false,
-        isSignin: false,
-      })
-    );
+    try {
+      await dispatch(
+        updateState({
+          VerfiedUserData: {},
+          UsersigninData: {},
+          UserDetailsData: {},
+          isVerified: false,
+          isSignin: false,
+        })
+      );
 
-    const keysToPreserve = ['isFirstTime', 'USER_TOKEN'];
-    const preservedValues = {};
+      const keysToPreserve = ['isFirstTime', 'USER_TOKEN'];
+      const preservedValues = {};
 
-    await Promise.all(
-      keysToPreserve.map(async key => {
-        preservedValues[key] = await AsyncStorage.getItem(key);
-      })
-    );
+      await Promise.all(
+        keysToPreserve.map(async key => {
+          preservedValues[key] = await AsyncStorage.getItem(key);
+        })
+      );
 
-    await Service.ClearStorage();
-    await Promise.all(
-      keysToPreserve.map(async key => {
-        const value = preservedValues[key];
-        if (value !== null) {
-          await AsyncStorage.setItem(key, value);
-        }
-      })
-    );
-    Navigation.reset({
-      index: 0,
-      routes: [{ name: 'signInScreen' }],
-    });
+      await Service.ClearStorage();
+      await Promise.all(
+        keysToPreserve.map(async key => {
+          const value = preservedValues[key];
+          if (value !== null) {
+            await AsyncStorage.setItem(key, value);
+          }
+        })
+      );
+      Navigation.reset({
+        index: 0,
+        routes: [{ name: 'signInScreen' }],
+      });
 
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   const syncAttendance = async () => {
@@ -250,6 +250,10 @@ export const useHome = () => {
     Navigation.navigate("chatbot");
   };
 
+  const navigateRaiseTicket = () => {
+    Navigation.navigate("raiseTicket");
+  };
+
   return {
     MENUDATA,
     UsersigninData,
@@ -258,8 +262,9 @@ export const useHome = () => {
     takeImage,
     location,
     navigateChatBot,
-    logoutVisible,  
+    logoutVisible,
     setLogoutVisible,
-    handleOnLogout
+    handleOnLogout,
+    navigateRaiseTicket
   };
 };
