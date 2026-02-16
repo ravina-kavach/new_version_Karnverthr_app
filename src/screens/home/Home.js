@@ -6,7 +6,7 @@ import { useHome } from './HomeController.js';
 import { RenderBox } from '../../components/RenderBox.js'
 import GreetingHeader from '../../components/GreetingHeader.js'
 import { COLOR } from '../../theme/theme.js';
-import { ChatBotIcon } from '../../assets/svgs/index.js';
+import { SupportIcon } from '../../assets/svgs/index.js';
 import LogoutModal from '../../components/LogoutModal.js';
 const Home = () => {
   const {
@@ -16,7 +16,7 @@ const Home = () => {
     attendance,
     isAttendanceFetching,
     navigateChatBot,
-    logoutVisible,  
+    logoutVisible,
     setLogoutVisible,
     handleOnLogout
   } = useHome();
@@ -51,11 +51,11 @@ const Home = () => {
           )}
         />
       </ScrollView>
-      {/* <TouchableWithoutFeedback onPress={() => navigateChatBot()}>
+      <TouchableWithoutFeedback onPress={() => navigateChatBot()}>
         <View style={styles.plusContainer}>
-          <ChatBotIcon width={60} height={60} />
+          <SupportIcon width={60} height={60} />
         </View>
-      </TouchableWithoutFeedback> */}
+      </TouchableWithoutFeedback>
       <LogoutModal
         visible={logoutVisible}
         onCancel={() => setLogoutVisible(false)}
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   mainContainer: { paddingHorizontal: 10 },
   itemContainer: { flex: 1, alignItems: 'center', marginBottom: 20 },
-  plusContainer: { position: "absolute", right: 20, bottom: 20 },
+  plusContainer: { position: "absolute", right: 20, bottom: 80 },
   iconContainer: { backgroundColor: COLOR.Black1, padding: 13, borderRadius: 14, overflow: 'hidden' },
 
 })

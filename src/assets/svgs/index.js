@@ -54,7 +54,7 @@ import EmailIcon from './EmailIcon.svg'
 import EyeCloseIcon from './EyeCloseIcon.svg'
 import EyeIcon from './EyeIcon.svg'
 import KeyIcon from './KeyIcon.svg'
-
+import SupportIcon from './SupportIcon.svg'
 export {
   Check,
   FillCheck,
@@ -112,4 +112,5 @@ export {
   EyeCloseIcon,
   EyeIcon,
   KeyIcon,
+  SupportIcon
 };

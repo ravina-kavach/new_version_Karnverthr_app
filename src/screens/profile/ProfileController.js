@@ -1,51 +1,89 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { useNavigation } from '@react-navigation/native'
-import { useIsFocused } from '@react-navigation/native'
-import { useDispatch, useSelector } from 'react-redux'
-import { CommonSelector, GetUserDetails, ProfileUpdate, updateState } from '../../store/reducers/commonSlice'
-import Service from '../../utils/service'
+import React, { useState, useCallback } from 'react';
+import {
+  useNavigation,
+  useFocusEffect,
+} from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  CommonSelector,
+  GetUserDetails,
+  ProfileUpdate,
+  updateState,
+} from '../../store/reducers/commonSlice';
+import Service from '../../utils/service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const useProfile = () => {
-  const IsFocused = useIsFocused()
   const dispatch = useDispatch();
-  const Navigation = useNavigation()
-  const { UsersigninData, UserDetailsData, isUserDetailsFetching, isProfileUpdate, isProfileUpdateFetching } = useSelector(CommonSelector);
+  const navigation = useNavigation();
+
+  const {
+    UsersigninData,
+    UserDetailsData,
+    isUserDetailsFetching,
+    isProfileUpdate,
+    isProfileUpdateFetching,
+  } = useSelector(CommonSelector);
+
   const [pickerVisible, setPickerVisible] = useState(false);
-  const [IsReSetmodalvisible, setIsReSetmodalvisible] = useState(false)
+  const [IsReSetmodalvisible, setIsReSetmodalvisible] = useState(false);
+  const [logoutVisible, setLogoutVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
   const [avatar, setAvatar] = useState(
     UserDetailsData?.image_url || null
   );
-  const [logoutVisible, setLogoutVisible] = useState(false);
 
 
-  useEffect(() => {
-  if (!IsFocused) return;
-  const userId = Number(UsersigninData?.user_id);
-  if (!userId || Number.isNaN(userId)) {
-    return;
-  }
-  dispatch(GetUserDetails({ id: userId }));
-}, [IsFocused, UsersigninData]);
+  const fetchUserDetails = useCallback(() => {
+    const userId = Number(UsersigninData?.user_id);
+
+    if (!userId || Number.isNaN(userId)) return;
+
+    dispatch(GetUserDetails({ id: userId }));
+  }, [dispatch, UsersigninData?.user_id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (UsersigninData?.user_id) {
+        fetchUserDetails();
+      }
+    }, [fetchUserDetails, UsersigninData?.user_id])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchUserDetails();
+    setRefreshing(false);
+  }, [fetchUserDetails]);
 
   const navigationEditProfile = () => {
-    Navigation.navigate('editProfile')
-  }
+    navigation.navigate('editProfile');
+  };
 
   const navigationEmergencyDetails = () => {
-    Navigation.navigate("emergencyDetails")
-  }
-  const handleProfileUpload = (image) => {
-    setAvatar(image.uri)
-    const obj = {
-      image_1920 : image.base64
-    }
-    handleProfileUpdate(obj)
-  }
+    navigation.navigate('emergencyDetails');
+  };
+
+  const handleProfileUpload = useCallback(
+    (image) => {
+      if (!image) return;
+
+      setAvatar(image.uri);
+
+      const payload = {
+        image_1920: image.base64,
+      };
+
+      handleProfileUpdate(payload);
+    },
+    []
+  );
 
   const handleProfileUpdate = useCallback(
     (formData) => {
-      if (!UsersigninData || !UserDetailsData) return;
+      if (!UsersigninData?.employee_id || !UsersigninData?.user_id) return;
+
       dispatch(
         ProfileUpdate({
           empId: UsersigninData.employee_id,
@@ -54,50 +92,48 @@ const useProfile = () => {
         })
       );
     },
-    [dispatch, UsersigninData, UserDetailsData]
+    [dispatch, UsersigninData]
   );
 
-  const handleOnLogout = async () => {
-  try {
-   await dispatch(
-      updateState({
-        VerfiedUserData: {},
-        UsersigninData: {},
-        UserDetailsData: {},
-        isVerified: false,
-        isSignin: false,
-      })
-    );
+  const handleOnLogout = useCallback(async () => {
+    try {
+      dispatch(
+        updateState({
+          VerfiedUserData: {},
+          UsersigninData: {},
+          UserDetailsData: {},
+          isVerified: false,
+          isSignin: false,
+        })
+      );
 
-    const keysToPreserve = ['isFirstTime', 'USER_TOKEN'];
-    const preservedValues = {};
+      const keysToPreserve = ['isFirstTime', 'USER_TOKEN'];
+      const preservedValues = {};
 
-    await Promise.all(
-      keysToPreserve.map(async key => {
-        preservedValues[key] = await AsyncStorage.getItem(key);
-      })
-    );
+      await Promise.all(
+        keysToPreserve.map(async (key) => {
+          preservedValues[key] = await AsyncStorage.getItem(key);
+        })
+      );
 
-    await Service.ClearStorage();
-    await Promise.all(
-      keysToPreserve.map(async key => {
-        const value = preservedValues[key];
-        if (value !== null) {
-          await AsyncStorage.setItem(key, value);
-        }
-      })
-    );
-    Navigation.reset({
-      index: 0,
-      routes: [{ name: 'signInScreen' }],
-    });
+      await Service.ClearStorage();
 
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
-};
+      await Promise.all(
+        keysToPreserve.map(async (key) => {
+          if (preservedValues[key] !== null) {
+            await AsyncStorage.setItem(key, preservedValues[key]);
+          }
+        })
+      );
 
-
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'signInScreen' }],
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  }, [dispatch, navigation]);
 
   return {
     UsersigninData,
@@ -116,8 +152,10 @@ const useProfile = () => {
     IsReSetmodalvisible,
     setIsReSetmodalvisible,
     logoutVisible,
-    setLogoutVisible
-  }
-}
+    setLogoutVisible,
+    refreshing,
+    onRefresh,
+  };
+};
 
-export default useProfile
+export default useProfile;

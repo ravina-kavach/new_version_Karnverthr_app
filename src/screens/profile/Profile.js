@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  RefreshControl,
+  ActivityIndicator,
   Platform,
 } from "react-native";
 import { CommonView } from "../../utils/common";
@@ -59,20 +61,33 @@ export default function Profile() {
     IsReSetmodalvisible,
     setIsReSetmodalvisible,
     logoutVisible,
-    setLogoutVisible
+    setLogoutVisible,
+    refreshing,
+    isUserDetailsFetching,
+    onRefresh
   } = useProfile();
 
   const safeValue = (value) => value ?? "—";
-  console.log("VERSION ===>",DeviceInfo.getBuildNumber())
   return (
     <CommonView>
       <CommonHeader title="Profile" />
-
+      {isUserDetailsFetching &&
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color={COLOR.Black1} />
+        </View>
+      }
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[COLOR.Black1]}
+            tintColor={COLOR.Black1}
+          />
+        }
       >
-        {/* Profile Header */}
         <View style={styles.profilecard}>
           <GreetingHeader
             editProfile={pickerVisible}
@@ -84,7 +99,6 @@ export default function Profile() {
           />
         </View>
 
-        {/* Account & Identity */}
         <View style={styles.card}>
           <Text style={styles.section}>Account & Identity</Text>
 
@@ -110,7 +124,6 @@ export default function Profile() {
           />
         </View>
 
-        {/* Professional Information */}
         <View style={styles.card}>
           <Text style={styles.section}>Professional Information</Text>
 
@@ -198,6 +211,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#F4F4F5",
     padding: 16,
     paddingBottom: 80,
+  },
+  loader: {
+    flex: 1,
+    top: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1
   },
   card: {
     backgroundColor: "#fff",
