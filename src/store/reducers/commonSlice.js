@@ -117,7 +117,7 @@ export const UserAttendanceRegularization = createAsyncThunk(
     async (userdata, thunkAPI) => {
         try {
             const result = await API.post(
-                 APIS_ENDPOINTS.REGULARIZATION(userdata.id),
+                APIS_ENDPOINTS.REGULARIZATION(userdata.id),
                 userdata.data
             );
             return result.data;
@@ -321,7 +321,7 @@ export const ProfileUpdate = createAsyncThunk(
     async (userdata, thunkAPI) => {
         const { empId, id, userData } = userdata;
         try {
-            let result = await API.put(APIS_ENDPOINTS.PROFILE_UPDATE(empId,id), userData);
+            let result = await API.put(APIS_ENDPOINTS.PROFILE_UPDATE(empId, id), userData);
             if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result.data.message)
@@ -668,7 +668,7 @@ export const GetPaySlip = createAsyncThunk(
             if (result.data.success) {
                 return result.data
             } else {
-            return thunkAPI.rejectWithValue({ error: result?.data?.message });
+                return thunkAPI.rejectWithValue({ error: result?.data?.message });
             }
         } catch (error) {
             console.log("error>>>", error.response?.data?.error)
@@ -676,6 +676,199 @@ export const GetPaySlip = createAsyncThunk(
         }
     },
 );
+
+// ------ support ticket create ------------
+// export const CreateSupportTicket = createAsyncThunk(
+//     'CreateSupportTicket',
+//     async (userdata, thunkAPI) => {
+//         try {
+//             console.log('CreateSupportTicket payload >>', userdata);
+
+//             const result = await API.post(
+//                 APIS_ENDPOINTS.CREATE_SUPPORT_TICKET,
+//                 userdata
+//             );
+
+//             if (result.data?.status === 'success') {
+//                 return result.data;
+//             }
+
+//             return thunkAPI.rejectWithValue({
+//                 message: result.data?.message,
+//             });
+
+//         } catch (error) {
+//             const message =
+//                 error?.response?.data?.message ||
+//                 error?.message;
+
+//             return thunkAPI.rejectWithValue({ message });
+//         }
+//     }
+// );
+
+// // ------ support ticket list ------------
+// export const SupportTicketList = createAsyncThunk(
+//     'SupportTicketList',
+//     async (userdata, thunkAPI) => {
+//         try {
+//             const result = await API.get(
+//                 APIS_ENDPOINTS.SUPPORT_TICKET_LIST(userdata.id)
+//             );
+
+//             if (result.data?.status === 'success') {
+//                 return result.data.data;
+//             }
+
+//             return thunkAPI.rejectWithValue({
+//                 message: result.data?.message,
+//             });
+
+//         } catch (error) {
+//             const message =
+//                 error?.response?.data?.message ||
+//                 error?.message;
+
+//             return thunkAPI.rejectWithValue({ message });
+//         }
+//     }
+// );
+
+// // ------ support ticket delete ------------
+// export const DeleteSupportTicket = createAsyncThunk(
+//     'DeleteSupportTicket',
+//     async (userdata, thunkAPI) => {
+//         try {
+//             console.log('DeleteSupportTicket payload >>', userdata);
+
+//             const result = await API.delete(
+//                 APIS_ENDPOINTS.DELETE_SUPPORT_TICKET(userdata.id)
+//             );
+
+//             if (result.data?.status === 'success') {
+//                 return result.data;
+//             }
+
+//             return thunkAPI.rejectWithValue({
+//                 message: result.data?.message,
+//             });
+
+//         } catch (error) {
+//             const message =
+//                 error?.response?.data?.message ||
+//                 error?.message;
+
+//             return thunkAPI.rejectWithValue({ message });
+//         }
+//     }
+// );
+
+
+export const CreateSupportTicket = createAsyncThunk(
+    'CreateSupportTicket',
+    async (userdata, thunkAPI) => {
+        try {
+            const { token, id, data } = userdata;
+            const response = await fetch(
+                `http://178.236.185.232:9090//api/create_ticket?user_id=${id}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: token,
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok && result?.status === 'success') {
+                return result;
+            }
+
+            return thunkAPI.rejectWithValue({
+                message: result?.message || 'Something went wrong',
+            });
+
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                message: error?.message,
+            });
+        }
+    }
+);
+
+
+
+export const SupportTicketList = createAsyncThunk(
+    'SupportTicketList',
+    async (userdata, thunkAPI) => {
+        try {
+            const { id, token } = userdata;
+            console.log("USER DATATATA===>", userdata)
+            const response = await fetch(
+                `http://178.236.185.232:9090//api/get_ticket?user_id=${id}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            const result = await response.json();
+            console.log("SupportTicketList RESULT=====>", result)
+            if (result?.status === 'success') {
+                return result.data;
+            }
+
+            return thunkAPI.rejectWithValue({
+                message: result?.message,
+            });
+
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                message: error?.message,
+            });
+        }
+    }
+);
+
+
+export const DeleteSupportTicket = createAsyncThunk(
+    'DeleteSupportTicket',
+    async (userdata, thunkAPI) => {
+        try {
+            const { id, token, ticketId } = userdata;
+
+            const response = await fetch(
+                `http://178.236.185.232:9090//api/delete_ticket?user_id=${id}&ticket_id=${ticketId}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok && result?.status === 'success') {
+                return result;
+            }
+
+            return thunkAPI.rejectWithValue({
+                message: result?.message || 'Delete failed',
+            });
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                message: error?.message,
+            });
+        }
+    }
+);
+
 
 
 export const ApprovalCategory = createAsyncThunk(
@@ -885,11 +1078,18 @@ export const CommonSlice = createSlice({
         isApproveAction: false,
         isApproveActionFetching: false,
 
+        isDeleteSupportTicketFetching: false,
+
         getPaySlipBase64: null,
         isPaySlipBase64Fetching: false,
 
         isCreateNewMeeting: false,
         isCreateNewMeetingFetching: false,
+
+        GetSupportListData: [],
+        isGetSupportListFetching: false,
+
+        isCreateSupportListFetching: false,
 
         isError: false,
         errorMessage: ""
@@ -1847,7 +2047,7 @@ export const CommonSlice = createSlice({
         builder.addCase(ApprovalList.pending, state => {
             state.isGetApprovalListFetching = true;
         });
-        
+
         //==== approvals accept action
         builder.addCase(ApproveActionApprove.fulfilled, (state, { payload }) => {
             // console.log("[ApproveActionApprove.fulfilled]>>>payload>>>", payload)
@@ -1918,6 +2118,74 @@ export const CommonSlice = createSlice({
             state.isApproveActionFetching = true;
         });
 
+        //====== SupportTicket ==================
+
+        builder.addCase(SupportTicketList.fulfilled, (state, { payload }) => {
+            // console.log("[GetPaySlip.fulfilled]>>>payload>>>", payload)
+            try {
+                state.GetSupportListData = payload
+                state.isGetSupportListFetching = false
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: SupportTicketList.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(SupportTicketList.rejected, (state, { payload }) => {
+            console.log("[SupportTicketList.rejected]>>>", payload)
+            try {
+                state.isGetSupportListFetching = false
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [SupportTicketList.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(SupportTicketList.pending, state => {
+            state.isGetSupportListFetching = true;
+        });
+
+        //=============== CreateSupportTicket =====================
+
+        builder.addCase(CreateSupportTicket.fulfilled, (state, { payload }) => {
+            try {
+                state.isCreateSupportListFetching = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: CreateSupportTicket.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(CreateSupportTicket.rejected, (state, { payload }) => {
+            console.log("[CreateSupportTicket.rejected]>>>", payload)
+            try {
+                state.isCreateSupportListFetching = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [CreateSupportTicket.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(CreateSupportTicket.pending, state => {
+            state.isCreateSupportListFetching = true;
+        });
+
         //==== GetPaySlip
         builder.addCase(GetPaySlip.fulfilled, (state, { payload }) => {
             // console.log("[GetPaySlip.fulfilled]>>>payload>>>", payload)
@@ -1951,6 +2219,8 @@ export const CommonSlice = createSlice({
         builder.addCase(GetPaySlip.pending, state => {
             state.isPaySlipBase64Fetching = true;
         });
+
+
 
         //==== approval category list
         builder.addCase(ApprovalCategory.fulfilled, (state, { payload }) => {

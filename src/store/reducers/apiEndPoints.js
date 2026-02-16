@@ -72,6 +72,11 @@ const APIS_ENDPOINTS = {
 
   // ================= DOCUMENTS =================
   REPORT_DOCS: 'api/documents/list',
+
+  // ================  SUPPORT TICKET ==============
+  CREATE_SUPPORT_TICKET: '/support-ticket/create',
+  SUPPORT_TICKET_LIST: (id) => `/support-ticket/list/${id}`,
+  DELETE_SUPPORT_TICKET: (id) => `/support-ticket/delete/${id}`,
 };
 
 export default APIS_ENDPOINTS;

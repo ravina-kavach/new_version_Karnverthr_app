@@ -1,7 +1,6 @@
 import React from 'react'
 import {
     View,
-    ScrollView,
     Text,
     FlatList,
     StyleSheet,
@@ -12,101 +11,93 @@ import { COLOR } from '../../theme/theme'
 import { CommonView } from '../../utils/common'
 import { useRaiseTicket } from './RaiseTicketController'
 import { GlobalFonts } from '../../theme/typography'
-import { FontSize, responsiveHeight } from '../../utils/metrics'
 import RaiseTicketModal from '../../components/RaiseTicketModal'
 import NodataFound from '../../components/NodataFound'
 import moment from 'moment'
 import CommonHeader from "../../components/CommonHeader";
-
-// import CommonFilterDropdown from '../../components/CommonFilterDropdown'
+import { DeleteIcon } from '../../assets/svgs'
+import DeleteSupportTicketModal from '../../components/DeleteSupportTicketModal'
 
 const RaiseTicket = () => {
 
     const {
-        ticketSummary,
-        ticketList,
         visibleModal,
         handleModal,
         handleOpenModal,
+        deleteModalVisible,
+        openDeleteModal,
+        closeDeleteModal,
+        confirmDeleteTicket,
         saveTicket,
-        selectedStatus,
-        setSelectedStatus,
-        filteredTickets,
+        GetSupportListData,
         isFetching,
         onRefresh,
-        getStatusColor
+        getStatusColor,
     } = useRaiseTicket()
 
     return (
         <CommonView statusBarColor={COLOR.LightOrange}>
-            <CommonHeader title="Supoort Ticket" />
+            <CommonHeader title="Support Ticket" />
 
-            <View style={styles.container}>
-                {/* ===== Ticket List ===== */}
+            <View style={{ flex: 1 }}>
                 <FlatList
-                    nestedScrollEnabled
                     refreshControl={
-                        <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />
+                        <RefreshControl
+                            refreshing={isFetching}
+                            onRefresh={onRefresh}
+                        />
                     }
-                    data={filteredTickets}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item }) => (
-                        <View style={styles.ticketCard}>
+                    data={GetSupportListData}
+                    keyExtractor={(item) => item.id?.toString()}
+                    renderItem={({ item }) => {
+                        const statusColor = getStatusColor(item.stage?.toLowerCase());
 
-                            <View style={styles.headerRow}>
-                                <Text numberOfLines={2} style={styles.ticketTitle}>
-                                    {item.title}
-                                </Text>
+                        return (
+                            <View style={styles.ticketCard}>
+                                <View style={styles.cardContent}>
+                                    <View style={styles.headerRow}>
+                                        <Text style={styles.ticketTitle}>
+                                            {`#${item.id} ${item.name}`}
+                                        </Text>
 
-                                <View style={styles.statusBadge}>
-                                    <View
-                                        style={[
-                                            styles.statusDot,
-                                            { backgroundColor: getStatusColor(item.status) }
-                                        ]}
-                                    />
-                                    <Text
-                                        style={[
-                                            styles.statusText,
-                                            { color: getStatusColor(item.status) }
-                                        ]}
-                                    >
-                                        {item.status.toUpperCase()}
+                                        <View style={[
+                                            styles.statusBadge,
+                                            { backgroundColor: `${statusColor}15` }
+                                        ]}>
+                                            <Text style={[styles.statusText, { color: statusColor }]}>
+                                                {item.stage?.toUpperCase()}
+                                            </Text>
+                                        </View>
+
+                                        <TouchableOpacity
+                                            onPress={() => openDeleteModal(item.id)}
+                                        >
+                                            <DeleteIcon width={24} height={24} />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <Text style={styles.description} numberOfLines={2}>
+                                        {item.description}
+                                    </Text>
+
+                                    <Text style={styles.date}>
+                                        {moment(item.create_date).format('DD MMM YYYY')}
                                     </Text>
                                 </View>
                             </View>
-
-                            <Text numberOfLines={2} style={styles.description}>
-                                {item.description}
-                            </Text>
-
-                            <View style={styles.footerRow}>
-                                <Text style={styles.date}>
-                                    {moment(item.created_at).format('DD MMM YYYY')}
-                                </Text>
-                                <Text style={styles.priority}>
-                                    Priority: {item.priority}
-                                </Text>
-                            </View>
-
-                        </View>
-                    )}
+                        );
+                    }}
                     ListEmptyComponent={() => (
-                        <View style={styles.placeHoldeContainer}>
-                            <NodataFound titleText="No Tickets Found" />
-                        </View>
+                        <NodataFound titleText="No Tickets Found" />
                     )}
                 />
 
-                {/* ===== Floating Button ===== */}
                 <TouchableOpacity
                     style={styles.fab}
-                    activeOpacity={0.8}
                     onPress={handleOpenModal}
                 >
-                    <Text style={styles.fabText}>Raise Ticket  + </Text>
+                    <Text style={styles.fabText}>Raise Ticket +</Text>
                 </TouchableOpacity>
-
             </View>
 
             {visibleModal && (
@@ -116,167 +107,70 @@ const RaiseTicket = () => {
                     onSave={saveTicket}
                 />
             )}
+
+            <DeleteSupportTicketModal
+                visible={deleteModalVisible}
+                onCancel={closeDeleteModal}
+                onDelete={confirmDeleteTicket}
+            />
         </CommonView>
     )
 }
 
 const styles = StyleSheet.create({
-
-    container: {
-        flex: 1,
-        backgroundColor: '#F7F7F7',
-    },
-
-    sectionTitle: {
-        ...GlobalFonts.subtitle,
-        fontSize: 18,
-        fontWeight: '600',
-        color: COLOR.Black1,
-    },
-
-    summaryCard: {
-        backgroundColor: '#fff',
-        borderRadius: 14,
-        marginTop: 20,
-        marginHorizontal: 20,
-        padding: 15,
-        elevation: 4,
-    },
-
-    innerSummary: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        marginTop: 10
-    },
-
-    summaryBox: {
-        width: '48%',
-        padding: 15,
-        backgroundColor: '#FAFAFA',
-        borderRadius: 12,
-        marginBottom: 10,
-    },
-
-    summaryTitle: {
-        fontSize: FontSize.Font14,
-        color: COLOR.TextSecondary,
-    },
-
-    summaryCount: {
-        fontSize: 18,
-        fontWeight: '700',
-        marginTop: 5,
-        color: COLOR.Black1
-    },
-
-    summaryEmpty: {
-        backgroundColor: '#fff',
-        borderRadius: 14,
-        marginTop: 20,
-        marginHorizontal: 20,
-        padding: 30,
-        alignItems: 'center',
-    },
-
-    summaryEmptyText: {
-        color: COLOR.TextSecondary,
-    },
-
-    headerWrapper: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        marginTop: 25,
-        marginBottom: 15,
-        alignItems: 'center'
-    },
-
     ticketCard: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 14,
-        marginHorizontal: 20,
+        backgroundColor: COLOR.White1,
+        margin: 15,
+        borderRadius: 12,
+        elevation: 3
     },
-
+    cardContent: {
+        padding: 20
+    },
     headerRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 8,
+        alignItems: 'center'
     },
-
     ticketTitle: {
-        fontSize: 15,
+        ...GlobalFonts.subtitle,
         fontWeight: '600',
-        maxWidth: 180,
-        color: '#1F2937'
+        flex: 1
     },
-
     description: {
+        ...GlobalFonts.normalText,
         fontSize: 14,
-        color: COLOR.TextSecondary,
-        marginBottom: 10,
+        color: COLOR.TextPlaceholder,
+        marginVertical: 10
     },
-
-    footerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-
     date: {
+        ...GlobalFonts.subtitle,
         fontSize: 12,
         color: COLOR.TextSecondary
     },
-
-    priority: {
-        fontSize: 12,
-        fontWeight: '600'
-    },
-
     statusBadge: {
-        flexDirection: 'row',
-        alignItems: 'center',
         paddingHorizontal: 10,
         paddingVertical: 4,
         borderRadius: 20,
-        backgroundColor: '#F9FAFB',
+        marginHorizontal: 6
     },
-
-    statusDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        marginRight: 6,
-    },
-
     statusText: {
-        fontSize: 12,
-        fontWeight: '600',
+        ...GlobalFonts.subtitle,
+        fontSize: 12
     },
-
     fab: {
         position: 'absolute',
-        alignSelf: 'center',
         bottom: 20,
-        backgroundColor: '#000',
-        borderRadius: 10,
-        paddingVertical: 12,
-        paddingHorizontal: 20,
+        alignSelf: 'center',
+        backgroundColor: COLOR.Black1,
+        padding: 12,
+        borderRadius: 10
     },
-
     fabText: {
-        color: COLOR.White1,
-        fontWeight: '600',
-        fontSize: 15,
-    },
-
-    placeHoldeContainer: {
-        flex: 1,
-        top: 100,
-        height: 500,
-    },
-
+        ...GlobalFonts.subtitle,
+        fontSize: 14,
+        color: COLOR.White1
+    }
 })
 
 export default RaiseTicket

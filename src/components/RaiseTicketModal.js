@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import {
     View,
     Text,
@@ -6,9 +6,11 @@ import {
     TouchableOpacity,
     TextInput,
     StyleSheet,
+    Image,
 } from 'react-native'
 import { GlobalFonts } from '../theme/typography'
 import { FontSize } from '../utils/metrics'
+import ImagePickerSheet from './ImagePickerSheet'
 
 const RaiseTicketModal = ({
     visible,
@@ -19,12 +21,15 @@ const RaiseTicketModal = ({
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
     const [errors, setErrors] = useState({})
+    const [pickerVisible, setPickerVisible] = useState(false)
+    const [attachment, setAttachment] = useState(null)
 
     useEffect(() => {
         if (!visible) {
             setTitle('')
             setDescription('')
             setErrors({})
+            setAttachment(null)
         }
     }, [visible])
 
@@ -55,15 +60,18 @@ const RaiseTicketModal = ({
         const formData = {
             title: title.trim(),
             description: description.trim(),
+            attachment: attachment?.base64 || null,
         }
 
         onSave(formData)
     }
 
-    const isDisabled =
-        !title.trim() ||
-        description.trim().length < 5
-
+    const handleAttachment = useCallback((image) => {
+        if (image) {
+            setAttachment(image);
+            setPickerVisible(false)
+        }
+    }, [])
     return (
         <Modal
             visible={visible}
@@ -81,6 +89,7 @@ const RaiseTicketModal = ({
                         </TouchableOpacity>
                     </View>
 
+                    {/* Title */}
                     <Text style={styles.label}>Title</Text>
                     <TextInput
                         style={[styles.input, errors.title && styles.inputError]}
@@ -93,6 +102,7 @@ const RaiseTicketModal = ({
                         <Text style={styles.errorText}>{errors.title}</Text>
                     )}
 
+                    {/* Description */}
                     <Text style={styles.label}>Description</Text>
                     <TextInput
                         style={[
@@ -131,12 +141,33 @@ const RaiseTicketModal = ({
                         </Text>
                     </View>
 
-                    <TouchableOpacity style={styles.attachmentBtn}>
+                    {/* Attachment Button */}
+                    <TouchableOpacity
+                        style={styles.attachmentBtn}
+                        onPress={() => setPickerVisible(true)}
+                    >
                         <Text style={styles.attachmentText}>
                             + Add Attachment
                         </Text>
                     </TouchableOpacity>
 
+                    {/* Attachment Preview */}
+                    {attachment && (
+                        <View style={styles.previewContainer}>
+                            <Image
+                                source={{ uri: `data:image/jpeg;base64,${attachment.base64}` }}
+                                style={styles.previewImage}
+                            />
+                            <TouchableOpacity
+                                style={styles.removeBtn}
+                                onPress={() => setAttachment(null)}
+                            >
+                                <Text style={styles.removeText}>Remove</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+
+                    {/* Footer */}
                     <View style={styles.footer}>
                         <TouchableOpacity
                             style={styles.cancelBtn}
@@ -146,9 +177,7 @@ const RaiseTicketModal = ({
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[
-                                styles.saveBtn,
-                            ]}
+                            style={styles.saveBtn}
                             onPress={handleSubmit}
                         >
                             <Text style={styles.saveText}>Submit</Text>
@@ -157,6 +186,12 @@ const RaiseTicketModal = ({
 
                 </View>
             </View>
+
+            <ImagePickerSheet
+                visible={pickerVisible}
+                onClose={() => setPickerVisible(false)}
+                onResult={handleAttachment}
+            />
         </Modal>
     )
 }
@@ -252,6 +287,28 @@ const styles = StyleSheet.create({
     },
 
     attachmentText: {
+        fontWeight: '500'
+    },
+
+    previewContainer: {
+        marginTop: 12,
+        alignItems: 'center'
+    },
+
+    previewImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 10,
+        marginBottom: 8
+    },
+
+    removeBtn: {
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+    },
+
+    removeText: {
+        color: '#E53935',
         fontWeight: '500'
     },
 
