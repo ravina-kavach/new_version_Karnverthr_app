@@ -169,14 +169,15 @@ const RaiseTicketModal = ({
                     </View>
 
                     {/* Attachment Button */}
-                    <TouchableOpacity
-                        style={styles.attachmentBtn}
-                        onPress={() => setPickerVisible(true)}
-                    >
-                        <Text style={styles.attachmentText}>
-                            + Add Attachment
-                        </Text>
-                    </TouchableOpacity>
+                    {!attachment &&
+                        <TouchableOpacity
+                            style={styles.attachmentBtn}
+                            onPress={() => setPickerVisible(true)}
+                        >
+                            <Text style={styles.attachmentText}>
+                                + Add Attachment
+                            </Text>
+                        </TouchableOpacity>}
 
                     {/* Attachment Preview */}
                     {attachment && (

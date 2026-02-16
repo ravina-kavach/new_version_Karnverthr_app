@@ -76,7 +76,7 @@ const RaiseTicket = () => {
                                         </TouchableOpacity>
                                     </View>
 
-                                    <Text style={styles.description} numberOfLines={2}>
+                                    <Text style={styles.description}>
                                         {item.description}
                                     </Text>
 
