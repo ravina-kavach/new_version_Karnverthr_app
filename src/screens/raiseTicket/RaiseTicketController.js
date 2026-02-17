@@ -173,7 +173,7 @@ export const useRaiseTicket = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'new': return STATE.partial;
-            case 'in progress ': return STATE.pending;
+            case 'in progress': return STATE.pending;
             case 'on hold': return STATE.reported;
             case 'solved': return STATE.approve;
             case 'cancelled': return STATE.reject;

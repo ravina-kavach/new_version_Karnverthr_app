@@ -50,7 +50,7 @@ const RaiseTicket = () => {
                     data={GetSupportListData}
                     keyExtractor={(item) => item.id?.toString()}
                     renderItem={({ item }) => {
-                        const statusColor = getStatusColor(item.stage?.toLowerCase());
+                        const statusColor = getStatusColor(item.stage?.trim().toLowerCase());
 
                         return (
                             <View style={styles.ticketCard}>
