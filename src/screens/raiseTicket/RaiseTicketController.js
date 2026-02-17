@@ -9,6 +9,7 @@ import {
     DeleteSupportTicket
 } from '../../store/reducers/commonSlice';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { ODOO_BASE_URL } from '../../store/reducers/commonSlice';
 
 export const useRaiseTicket = () => {
 
@@ -26,7 +27,6 @@ export const useRaiseTicket = () => {
     const handleOpenModal = () => setVisibleModal(true);
     const handleModal = () => setVisibleModal(false);
 
-    // ================== FETCH TOKEN ==================
     useFocusEffect(
         useCallback(() => {
             getApiToken();
@@ -46,7 +46,7 @@ export const useRaiseTicket = () => {
 
     const getApiToken = async () => {
         try {
-            const response = await fetch("http://178.236.185.232:9090/api/auth", {
+            const response = await fetch(`${ODOO_BASE_URL}api/auth`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ user_name: "ravina" }),
@@ -61,7 +61,6 @@ export const useRaiseTicket = () => {
         }
     };
 
-    // ================== CREATE TICKET ==================
     const saveTicket = async (data) => {
         try {
             const payload = {
@@ -107,7 +106,6 @@ export const useRaiseTicket = () => {
         }
     };
 
-    // ================== DELETE LOGIC ==================
 
     const openDeleteModal = (id) => {
         setSelectedTicketId(id);
@@ -160,8 +158,6 @@ export const useRaiseTicket = () => {
             });
         }
     };
-
-    // ================== PULL TO REFRESH ==================
     const onRefresh = useCallback(async () => {
         try {
             setIsFetching(true);
@@ -174,14 +170,13 @@ export const useRaiseTicket = () => {
         }
     }, [token, UsersigninData?.user_id]);
 
-    // ================== STATUS COLOR ==================
     const getStatusColor = (status) => {
         switch (status) {
             case 'new': return STATE.partial;
-            case 'open': return '#F59E0B';
-            case 'closed': return '#10B981';
-            case 'in_progress': return '#3B82F6';
-            case 'rejected': return '#EF4444';
+            case 'in progress ': return STATE.pending;
+            case 'on hold': return STATE.reported;
+            case 'solved': return STATE.approve;
+            case 'cancelled': return STATE.reject;
             default: return COLOR.Black1;
         }
     };
@@ -196,7 +191,6 @@ export const useRaiseTicket = () => {
         onRefresh,
         getStatusColor,
 
-        // delete
         deleteModalVisible,
         openDeleteModal,
         closeDeleteModal,

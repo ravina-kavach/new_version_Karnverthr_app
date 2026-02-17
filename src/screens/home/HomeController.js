@@ -120,46 +120,6 @@ export const useHome = () => {
     initLocation();
   }, [isFocused]);
 
-  const handleOnLogout = async () => {
-    try {
-      await dispatch(
-        updateState({
-          VerfiedUserData: {},
-          UsersigninData: {},
-          UserDetailsData: {},
-          isVerified: false,
-          isSignin: false,
-        })
-      );
-
-      const keysToPreserve = ['isFirstTime', 'USER_TOKEN'];
-      const preservedValues = {};
-
-      await Promise.all(
-        keysToPreserve.map(async key => {
-          preservedValues[key] = await AsyncStorage.getItem(key);
-        })
-      );
-
-      await Service.ClearStorage();
-      await Promise.all(
-        keysToPreserve.map(async key => {
-          const value = preservedValues[key];
-          if (value !== null) {
-            await AsyncStorage.setItem(key, value);
-          }
-        })
-      );
-      Navigation.reset({
-        index: 0,
-        routes: [{ name: 'signInScreen' }],
-      });
-
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  };
-
   const syncAttendance = async () => {
     try {
       const res = await dispatch(
@@ -264,7 +224,6 @@ export const useHome = () => {
     navigateChatBot,
     logoutVisible,
     setLogoutVisible,
-    handleOnLogout,
     navigateRaiseTicket
   };
 };

@@ -7,7 +7,7 @@ import { RenderBox } from '../../components/RenderBox.js'
 import GreetingHeader from '../../components/GreetingHeader.js'
 import { COLOR } from '../../theme/theme.js';
 import { SupportIcon } from '../../assets/svgs/index.js';
-import LogoutModal from '../../components/LogoutModal.js';
+import ExitModal from '../../components/ExitModal.js';
 const Home = () => {
   const {
     MENUDATA,
@@ -18,7 +18,6 @@ const Home = () => {
     navigateChatBot,
     logoutVisible,
     setLogoutVisible,
-    handleOnLogout,
     navigateRaiseTicket
   } = useHome();
   return (
@@ -57,12 +56,11 @@ const Home = () => {
           <SupportIcon width={60} height={60} />
         </View>
       </TouchableWithoutFeedback>
-      <LogoutModal
+      <ExitModal
         visible={logoutVisible}
         onCancel={() => setLogoutVisible(false)}
         onLogout={() => {
           setLogoutVisible(false);
-          handleOnLogout();
         }}
       />
     </CommonView>

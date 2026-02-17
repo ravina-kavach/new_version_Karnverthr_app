@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
 import APIS_ENDPOINTS from './apiEndPoints'
 
+export const ODOO_BASE_URL = 'https://konverthr.fact-byte.com//'
+
 const errorMassage = (error) => {
     if (error === "Network Error") {
         return "Server not responding. Please try again later."
@@ -770,7 +772,7 @@ export const CreateSupportTicket = createAsyncThunk(
         try {
             const { token, id, data } = userdata;
             const response = await fetch(
-                `http://178.236.185.232:9090//api/create_ticket?user_id=${id}`,
+                `${ODOO_BASE_URL}api/create_ticket?user_id=${id}`,
                 {
                     method: 'POST',
                     headers: {
@@ -788,12 +790,12 @@ export const CreateSupportTicket = createAsyncThunk(
             }
 
             return thunkAPI.rejectWithValue({
-                message: result?.message || 'Something went wrong',
+                error: result?.message || 'Something went wrong',
             });
 
         } catch (error) {
             return thunkAPI.rejectWithValue({
-                message: error?.message,
+                error: error?.message,
             });
         }
     }
@@ -806,9 +808,8 @@ export const SupportTicketList = createAsyncThunk(
     async (userdata, thunkAPI) => {
         try {
             const { id, token } = userdata;
-            // console.log("USER DATATATA===>", userdata)
             const response = await fetch(
-                `http://178.236.185.232:9090//api/get_ticket?user_id=${id}`,
+                `${ODOO_BASE_URL}api/get_ticket?user_id=${id}`,
                 {
                     method: 'GET',
                     headers: {
@@ -818,18 +819,17 @@ export const SupportTicketList = createAsyncThunk(
             );
 
             const result = await response.json();
-            // console.log("SupportTicketList RESULT=====>", result)
             if (result?.status === 'success') {
                 return result.data;
             }
 
             return thunkAPI.rejectWithValue({
-                message: result?.message,
+                error: result?.message,
             });
 
         } catch (error) {
             return thunkAPI.rejectWithValue({
-                message: error?.message,
+                error: error?.message,
             });
         }
     }
@@ -843,7 +843,7 @@ export const DeleteSupportTicket = createAsyncThunk(
             const { id, token, ticketId } = userdata;
 
             const response = await fetch(
-                `http://178.236.185.232:9090//api/delete_ticket?user_id=${id}&ticket_id=${ticketId}`,
+                `${ODOO_BASE_URL}api/delete_ticket?user_id=${id}&ticket_id=${ticketId}`,
                 {
                     method: 'DELETE',
                     headers: {
@@ -859,11 +859,11 @@ export const DeleteSupportTicket = createAsyncThunk(
             }
 
             return thunkAPI.rejectWithValue({
-                message: result?.message || 'Delete failed',
+                error: result?.message,
             });
         } catch (error) {
             return thunkAPI.rejectWithValue({
-                message: error?.message,
+                error: error?.message,
             });
         }
     }
