@@ -23,6 +23,8 @@ import { font, GlobalFonts } from '../../../theme/typography.js';
 import { AppLogo } from '../../../assets/images/index.js';
 import BiometricModal from '../../../components/BiometricModal.js'
 import { EmailIcon, EyeCloseIcon, EyeIcon, KeyIcon } from '../../../assets/svgs/index.js';
+import DeviceInfo from "react-native-device-info";
+
 function SignInScreen() {
   const {
     t,
@@ -58,7 +60,7 @@ function SignInScreen() {
         <Image style={styles.appLogo} source={AppLogo} />
         <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
         <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
-          <EmailIcon/>
+          <EmailIcon />
           <TextInput
             placeholder={t("placeholders.Enter_your_registered_email")}
             placeholderTextColor={COLOR.TextPlaceholder}
@@ -75,7 +77,7 @@ function SignInScreen() {
         </Valide>
 
         <View style={[styles.inputContainer, { borderColor: Formdata.password && Validator.current.errorMessages.password ? COLOR.Red : COLOR.GrayBorder }]}>
-          <KeyIcon/>
+          <KeyIcon />
           <TextInput
             placeholder={t("placeholders.Enter_your_password")}
             secureTextEntry={IsPassVisible}
@@ -89,7 +91,7 @@ function SignInScreen() {
             value={Formdata.password}
           />
           <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
-            {IsPassVisible?<EyeCloseIcon/>:<EyeIcon/>}
+            {IsPassVisible ? <EyeCloseIcon /> : <EyeIcon />}
           </TouchableOpacity>
         </View>
         <Valide style={styles.valid}>
@@ -156,21 +158,24 @@ function SignInScreen() {
             : t('Button.LoginWithFaceId')
         }
       />
-    <View style={styles.policyContainer}>
-    <Text
-      style={styles.linkText}
-      onPress={() => navigateTerms()}
-    >
-      Terms of Use
-    </Text>
-    <Text style={styles.policyText}>and</Text>
-    <Text
-      style={styles.linkText}
-      onPress={() => navigatePrivacyPolicy()}
-    >
-      Privacy Policy
-    </Text>
-</View>
+      <View style={styles.policyContainer}>
+        <Text
+          style={styles.linkText}
+          onPress={() => navigateTerms()}
+        >
+          Terms of Use
+        </Text>
+        <Text style={styles.policyText}>and</Text>
+        <Text
+          style={styles.linkText}
+          onPress={() => navigatePrivacyPolicy()}
+        >
+          Privacy Policy
+        </Text>
+      </View>
+      <Text style={styles.verisonText}>
+        {`${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
+      </Text>
     </CommonView>
   );
 }
@@ -374,30 +379,37 @@ const styles = StyleSheet.create({
     color: '#444',
   },
   policyContainer: {
-  paddingBottom: 25,
-  paddingHorizontal: 10,
-  backgroundColor:COLOR.White1,
-  justifyContent:'center',
-  alignItems: 'center',
-  flexDirection:'row'
-},
+    paddingHorizontal: 10,
+    backgroundColor: COLOR.White1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
 
-policyText: {
-  ...GlobalFonts.subtitleText,
-  fontSize: FontSize.Font14,
-  color: COLOR.TextPlaceholder,
-  textAlign: 'center',
-  paddingHorizontal:10,
-  lineHeight: 20,
-},
+  policyText: {
+    ...GlobalFonts.subtitleText,
+    fontSize: FontSize.Font14,
+    color: COLOR.TextPlaceholder,
+    textAlign: 'center',
+    paddingHorizontal: 10,
+    lineHeight: 20,
+  },
 
-linkText: {
-  ...GlobalFonts.subtitleText,
-  fontSize:FontSize.Font14,
-  color: COLOR.Black1,
-  fontWeight: '600',
-  textDecorationLine: 'underline',
-},
+  linkText: {
+    ...GlobalFonts.subtitleText,
+    fontSize: FontSize.Font14,
+    color: COLOR.Black1,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+  verisonText: {
+    backgroundColor: COLOR.White1,
+    fontSize: FontSize.Font16,
+    textAlign: 'center',
+    fontWeight: '500',
+    paddingVertical: 10,
+    color: COLOR.TextPlaceholder,
+  },
 });
 
 export default SignInScreen;

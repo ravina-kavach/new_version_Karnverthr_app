@@ -1789,7 +1789,7 @@ PODS:
     - SocketRocket
   - react-native-biometrics (3.0.1):
     - React-Core
-  - react-native-blob-util (0.24.6):
+  - react-native-blob-util (0.24.7):
     - boost
     - DoubleConversion
     - fast_float
@@ -2743,7 +2743,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNScreens (4.22.0):
+  - RNScreens (4.23.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2770,10 +2770,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.22.0)
+    - RNScreens/common (= 4.23.0)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.22.0):
+  - RNScreens/common (4.23.0):
     - boost
     - DoubleConversion
     - fast_float
@@ -2802,7 +2802,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNSVG (15.15.2):
+  - RNSVG (15.15.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -2828,10 +2828,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.15.2)
+    - RNSVG/common (= 15.15.3)
     - SocketRocket
     - Yoga
-  - RNSVG/common (15.15.2):
+  - RNSVG/common (15.15.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3211,7 +3211,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 06d59c448da7e34eb05b3fb2189e12f6a30fec57
   React-microtasksnativemodule: d1ee999dc9052e23f6488b730fa2d383a4ea40e5
   react-native-biometrics: 43ed5b828646a7862dbc7945556446be00798e7d
-  react-native-blob-util: 04189c38b188b2b76ee453be34765241c552547f
+  react-native-blob-util: 6dec9023ecc3ee5ac8ad377598e943f9ca63f741
   react-native-config: 2249b7e68644c86ea68358f5a0d746d1c648f900
   react-native-geolocation-service: 32b2c2a3b91e70ce2a8d0c684801aaeb0a07e0ec
   react-native-image-picker: 0314366753615115fa55c3cc937ac44cb7e75702
@@ -3263,8 +3263,8 @@ SPEC CHECKSUMS:
   RNGestureHandler: f97d19585553412302394c42495cdaf499589d34
   RNLocalize: 23e6689ec46c6cba49eb8cde959e30e49160a35b
   RNPermissions: 1210a2da4b9bca8e3741d84a916b3559e0abc915
-  RNScreens: c77cc7a5d1fbc23f0725b54e96eec81118453382
-  RNSVG: 84fa21d6ec8de3808b83a743b96b5a3b491b2272
+  RNScreens: afaf526a9c804c3b4503f950cf3e67ed81e29ada
+  RNSVG: 91da5f4f11f562cafee06e2a6f04bb4401ef1090
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   TSBackgroundFetch: 0afbeaae4e1132866e1d4b6e55265af26b5958ae
   Yoga: 689c8e04277f3ad631e60fe2a08e41d411daf8eb

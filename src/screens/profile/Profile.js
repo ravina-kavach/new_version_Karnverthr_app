@@ -157,7 +157,7 @@ export default function Profile() {
 
           <ProfileItem
             icon={<TenureIcon />}
-            title="Job tenure"
+            title="Job Tenure"
             subtitle={
               UserDetailsData?.total_experiance
                 ? `${UserDetailsData.total_experiance} Years`
