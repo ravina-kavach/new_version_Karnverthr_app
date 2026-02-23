@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const KeyboardAvoidWrapper = ({ children, contentContainerStyle, style }) => {
@@ -20,12 +20,10 @@ const KeyboardAvoidWrapper = ({ children, contentContainerStyle, style }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent"
 
   },
   contentContainer: {
     flexGrow: 1,
-    padding: Platform.OS === 'android' ? 16 : 0,
   },
 });
 

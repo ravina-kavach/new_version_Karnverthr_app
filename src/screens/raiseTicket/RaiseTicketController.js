@@ -38,7 +38,7 @@ export const useRaiseTicket = () => {
             dispatch(
                 SupportTicketList({
                     token: token,
-                    id: UsersigninData.user_id,
+                    id: Number(UsersigninData.user_id),
                 })
             );
         }
