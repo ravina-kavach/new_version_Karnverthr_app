@@ -194,6 +194,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
             <TextInput
               style={[styles.input, errors.subject && styles.errorInput]}
               placeholder="Enter meeting subject"
+              placeholderTextColor={COLOR.TextPlaceholder}
               value={subject}
               onChangeText={(text) => setSubject(text)}
             />
@@ -241,6 +242,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
               placeholder="Enter location"
               value={location}
               onChangeText={setLocation}
+              placeholderTextColor={COLOR.TextPlaceholder}
             />
             {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
 
@@ -249,6 +251,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
               style={[styles.input, errors.organizer && styles.errorInput]}
               placeholder="Enter organizer"
               value={organizer}
+              placeholderTextColor={COLOR.TextPlaceholder}
               onChangeText={setOrganizer}
             />
             {errors.organizer && <Text style={styles.errorText}>{errors.organizer}</Text>}
@@ -260,6 +263,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
               maxLength={150}
               placeholder="Enter description"
               value={description}
+              placeholderTextColor={COLOR.TextPlaceholder}
               onChangeText={setDescription}
             />
             <Text style={styles.charCount}>{description.length}/150</Text>

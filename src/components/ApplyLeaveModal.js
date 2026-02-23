@@ -245,7 +245,7 @@ const ApplyLeaveModal = ({
                 });
               }}
               placeholder="Add a description..."
-              placeholderTextColor="#999"
+              placeholderTextColor={COLOR.TextPlaceholder}
               multiline
             />
             {errors.description && (
