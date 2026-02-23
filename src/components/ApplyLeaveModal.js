@@ -14,6 +14,7 @@ import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import KeyboardAvoidWrapper from './KeyboardAvoidWrapper';
 
 const ApplyLeaveModal = ({
   UsersigninData,
@@ -141,142 +142,151 @@ const ApplyLeaveModal = ({
   };
 
   return (
-    <Modal visible={visible} statusBarTranslucent transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Apply Leave</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Text style={styles.close}>✕</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={styles.label}>Employee</Text>
-          <View style={styles.userInput}>
-            <Text style={styles.placeholder}>
-              {UserDetailsData?.name}
-            </Text>
-          </View>
-          <Text style={styles.label}>Leave Type</Text>
-          <View
-            style={[
-              styles.dropdownBox,
-              errors.leaveType && styles.inputError,
-            ]}
-          >
-            <Dropdown
-              DropdownData={leaveTypeData}
-              Selecteditem={selectedLeaveType}
-              setSelecteditem={(item) => {
-                setSelectedLeaveType(item);
+    <Modal visible={visible} statusBarTranslucent transparent animationType="fade" >
+      <KeyboardAvoidWrapper keyboardShouldPersistTaps="handled">
+        <View style={styles.overlay}>
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Apply Leave</Text>
+              <TouchableOpacity onPress={onClose}>
+                <Text style={styles.close}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            {/* <Text style={styles.label}>Employee</Text>
+            <View style={styles.userInput}>
+              <Text style={styles.placeholder}>
+                {UserDetailsData?.name}
+              </Text>
+            </View> */}
+            <Text style={styles.label}>Leave Type</Text>
+            {leaveTypeData?.length > 0 ? (
+              <View
+                style={[
+                  styles.dropdownBox,
+                  errors.leaveType && styles.inputError,
+                ]}
+              >
+                <Dropdown
+                  DropdownData={leaveTypeData}
+                  Selecteditem={selectedLeaveType}
+                  setSelecteditem={(item) => {
+                    setSelectedLeaveType(item);
+                    setErrors((prev) => {
+                      const { leaveType, ...rest } = prev;
+                      return rest;
+                    });
+                  }}
+                />
+              </View>
+            ) : (
+              <Text style={styles.noLeaveText}>
+                No Leave Types Available
+              </Text>
+            )}
+            {errors.leaveType && (
+              <Text style={styles.errorText}>{errors.leaveType}</Text>
+            )}
+
+            <View style={styles.row}>
+              <View style={styles.flex}>
+                <Text style={styles.label}>Start Date</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.input,
+                    errors.startDate && styles.inputError,
+                  ]}
+                  onPress={() => setOpenStartDatePicker(true)}
+                >
+                  <Text style={styles.placeholder}>
+                    {selectStartDate
+                      ? moment(selectStartDate).format('DD/MM/YYYY')
+                      : 'Select date'}
+                  </Text>
+                </TouchableOpacity>
+                {errors.startDate && (
+                  <Text style={styles.errorText}>{errors.startDate}</Text>
+                )}
+              </View>
+
+              <View style={styles.flex}>
+                <Text style={styles.label}>End Date</Text>
+                <TouchableOpacity
+                  style={[
+                    styles.input,
+                    errors.endDate && styles.inputError,
+                  ]}
+                  onPress={() => setOpenEndDatePicker(true)}
+                >
+                  <Text style={styles.placeholder}>
+                    {selectEndDate
+                      ? moment(selectEndDate).format('DD/MM/YYYY')
+                      : 'Select date'}
+                  </Text>
+                </TouchableOpacity>
+                {errors.endDate && (
+                  <Text style={styles.errorText}>{errors.endDate}</Text>
+                )}
+              </View>
+            </View>
+
+            <Text style={styles.label}>Description</Text>
+            <TextInput
+              style={[
+                styles.input,
+                styles.textArea,
+                errors.description && styles.inputError,
+              ]}
+              value={resonText}
+              onChangeText={(text) => {
+                setResonText(text);
                 setErrors((prev) => {
-                  const { leaveType, ...rest } = prev;
+                  const { description, ...rest } = prev;
                   return rest;
                 });
               }}
+              placeholder="Add a description..."
+              placeholderTextColor="#999"
+              multiline
             />
-          </View>
-          {errors.leaveType && (
-            <Text style={styles.errorText}>{errors.leaveType}</Text>
-          )}
-
-          <View style={styles.row}>
-            <View style={styles.flex}>
-              <Text style={styles.label}>Start Date</Text>
-              <TouchableOpacity
-                style={[
-                  styles.input,
-                  errors.startDate && styles.inputError,
-                ]}
-                onPress={() => setOpenStartDatePicker(true)}
-              >
-                <Text style={styles.placeholder}>
-                  {selectStartDate
-                    ? moment(selectStartDate).format('DD/MM/YYYY')
-                    : 'Select date'}
-                </Text>
+            {errors.description && (
+              <Text style={styles.errorText}>{errors.description}</Text>
+            )}
+            <View style={styles.footer}>
+              <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
+                <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-              {errors.startDate && (
-                <Text style={styles.errorText}>{errors.startDate}</Text>
-              )}
-            </View>
 
-            <View style={styles.flex}>
-              <Text style={styles.label}>End Date</Text>
-              <TouchableOpacity
-                style={[
-                  styles.input,
-                  errors.endDate && styles.inputError,
-                ]}
-                onPress={() => setOpenEndDatePicker(true)}
-              >
-                <Text style={styles.placeholder}>
-                  {selectEndDate
-                    ? moment(selectEndDate).format('DD/MM/YYYY')
-                    : 'Select date'}
-                </Text>
+              <TouchableOpacity style={styles.saveBtn} onPress={validateAndSubmit}>
+                <Text style={styles.saveText}>Save</Text>
               </TouchableOpacity>
-              {errors.endDate && (
-                <Text style={styles.errorText}>{errors.endDate}</Text>
-              )}
             </View>
           </View>
-
-          <Text style={styles.label}>Description</Text>
-          <TextInput
-            style={[
-              styles.input,
-              styles.textArea,
-              errors.description && styles.inputError,
-            ]}
-            value={resonText}
-            onChangeText={(text) => {
-              setResonText(text);
-              setErrors((prev) => {
-                const { description, ...rest } = prev;
-                return rest;
-              });
-            }}
-            placeholder="Add a description..."
-            placeholderTextColor="#999"
-            multiline
-          />
-          {errors.description && (
-            <Text style={styles.errorText}>{errors.description}</Text>
+          {openStartDataPicker && (
+            <View style={styles.pickerContainer}>
+              <DateTimePicker
+                value={selectStartDate || new Date()}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                minimumDate={new Date()}
+                onChange={handleStartDateChange}
+              />
+            </View>
           )}
-          <View style={styles.footer}>
-            <TouchableOpacity style={styles.cancelBtn} onPress={onClose}>
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity style={styles.saveBtn} onPress={validateAndSubmit}>
-              <Text style={styles.saveText}>Save</Text>
-            </TouchableOpacity>
-          </View>
+          {openEndDataPicker && (
+            <View style={styles.pickerContainer}>
+              <DateTimePicker
+                value={selectEndDate || new Date()}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                minimumDate={selectStartDate || new Date()}
+                onChange={handleEndDateChange}
+              />
+            </View>
+          )}
         </View>
-        {openStartDataPicker && (
-          <View style={styles.pickerContainer}>
-            <DateTimePicker
-              value={selectStartDate || new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              minimumDate={new Date()}
-              onChange={handleStartDateChange}
-            />
-          </View>
-        )}
+      </KeyboardAvoidWrapper>
 
-        {openEndDataPicker && (
-          <View style={styles.pickerContainer}>
-            <DateTimePicker
-              value={selectEndDate || new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              minimumDate={selectStartDate || new Date()}
-              onChange={handleEndDateChange}
-            />
-          </View>
-        )}
-      </View>
     </Modal>
   );
 };
@@ -299,6 +309,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingBottom: 10,
   },
   title: { fontSize: 18, fontWeight: '600' },
   close: { fontSize: 18, color: '#666' },
@@ -332,10 +343,19 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR.White1,
   },
 
+
   placeholder: {
     color: COLOR.Secondary,
     ...GlobalFonts.normalText,
     fontSize: FontSize.Font14,
+  },
+
+  noLeaveText: {
+    // textAlign: 'center',
+    color: COLOR.TextPlaceholder,
+    ...GlobalFonts.normalText,
+    fontSize: FontSize.Font14,
+    paddingVertical: 10,
   },
 
   row: { flexDirection: 'row', gap: 10 },
@@ -374,9 +394,9 @@ const styles = StyleSheet.create({
   },
 
   pickerContainer: {
-    position:'absolute',
+    position: 'absolute',
     backgroundColor: '#fff',
-    borderColor:COLOR.Black1,
+    borderColor: COLOR.Black1,
     borderRadius: 12,
     padding: 10,
     marginTop: 10,

@@ -1,9 +1,9 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import FlashMessage from 'react-native-flash-message';
 import { Provider, useDispatch } from 'react-redux';
-import { AppState } from 'react-native';
+import { AppState, Platform } from 'react-native';
 import Navigation from './src/navigations/Navigation';
 import store from './src/store';
 import './src/utils/i18n';
@@ -23,85 +23,85 @@ const Root = () => {
   const [isOffline, setIsOffline] = useState(false);
   const appStateRef = useRef(AppState.currentState);
   const isNetworkStable = (state) => {
-  const details = state.details || {};
-  const linkSpeed = details.linkSpeed || 0;
-  const strength = details.strength ?? 0;
+    const details = state.details || {};
+    const linkSpeed = details.linkSpeed || 0;
+    const strength = details.strength ?? 0;
 
-  if (linkSpeed && linkSpeed < 5) {
+    if (linkSpeed && linkSpeed < 5) {
+      return {
+        stable: false,
+        reason: 'Your internet connection is very slow. Please switch to a faster network.',
+      };
+    }
+
+    if (strength && strength < 40) {
+      return {
+        stable: false,
+        reason: 'Your Wi-Fi signal is weak. Move closer to the router or try another network.',
+      };
+    }
+
+    if (state.type === 'cellular' && state.isConnectionExpensive) {
+      return {
+        stable: false,
+        reason: 'Your mobile data connection is unstable. Network performance may be limited.',
+      };
+    }
+
     return {
-      stable: false,
-      reason: 'Your internet connection is very slow. Please switch to a faster network.',
+      stable: true,
+      reason: null,
     };
-  }
-
-  if (strength && strength < 40) {
-    return {
-      stable: false,
-      reason: 'Your Wi-Fi signal is weak. Move closer to the router or try another network.',
-    };
-  }
-
-  if (state.type === 'cellular' && state.isConnectionExpensive) {
-    return {
-      stable: false,
-      reason: 'Your mobile data connection is unstable. Network performance may be limited.',
-    };
-  }
-
-  return {
-    stable: true,
-    reason: null,
   };
-};
 
   useEffect(() => {
-  let lastReason = null;
-  const unsubscribe = NetInfo.addEventListener(state => {
-    const offline = !state.isConnected || state.isInternetReachable === false;
-    setIsOffline(offline);
+    let lastReason = null;
+    const unsubscribe = NetInfo.addEventListener(state => {
+      const offline = !state.isConnected || state.isInternetReachable === false;
+      setIsOffline(offline);
 
-    if (offline) {
-      lastReason = null; 
-      return;
-    }
-    const { stable, reason } = isNetworkStable(state);
+      if (offline) {
+        lastReason = null;
+        return;
+      }
+      const { stable, reason } = isNetworkStable(state);
 
-    if (!stable && reason !== lastReason) {
-      lastReason = reason;
+      if (!stable && reason !== lastReason) {
+        lastReason = reason;
 
-      showMessage({
-        icon: 'danger',
-        message: reason,
-        type: 'danger',
-        duration: 3000,
-      });
-    }
+        showMessage({
+          icon: 'danger',
+          message: reason,
+          type: 'danger',
+          duration: 3000,
+        });
+      }
 
-    if (stable) {
-      lastReason = null;
-    }
-  });
+      if (stable) {
+        lastReason = null;
+      }
+    });
 
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, []);
 
   const handleRetry = async () => {
-  const state = await NetInfo.fetch();
-  const offline = !state.isConnected || state.isInternetReachable === false;
-  setIsOffline(offline);
-  if (!offline) {
-    const { stable, reason } = isNetworkStable(state);
+    const state = await NetInfo.fetch();
+    const offline = !state.isConnected || state.isInternetReachable === false;
+    setIsOffline(offline);
+    if (!offline) {
+      const { stable, reason } = isNetworkStable(state);
 
-    if (!stable) {
-      showMessage({
-        icon: 'danger',
-        message: reason,
-        type: 'danger',
-        duration: 3000,
-      });
+      if (!stable) {
+        showMessage({
+          icon: 'danger',
+          message: reason,
+          type: 'danger',
+          duration: 3000,
+        });
+      }
     }
-  }
-};
+  };
 
 
   useEffect(() => {
@@ -109,48 +109,86 @@ const Root = () => {
   }, [dispatch]);
 
   useEffect(() => {
-  const subscription = AppState.addEventListener('change', nextState => {
-    if (
-      appStateRef.current.match(/inactive|background/) &&
-      nextState === 'active'
-    ) {
-      bootstrapAuth(dispatch);
-    }
-    appStateRef.current = nextState;
-  });
-
-  return () => subscription.remove();
-}, [dispatch]);
-
-  const checkAppVersion = async () => {
-  try {
-    const provider = Platform.OS === 'ios' ? 'appStore' : 'playStore';
-    const currentVersion = DeviceInfo.getVersion();
-    const latestVersion = await VersionCheck.getLatestVersion({ provider });
-    const storeUrl = await VersionCheck.getStoreUrl({ provider });
-
-    if (!latestVersion || !storeUrl) return;
-
-    console.log("Current Version:", currentVersion);
-    console.log("Latest Version:", latestVersion);
-
-    const needUpdate = await VersionCheck.needUpdate({
-      currentVersion,
-      latestVersion,
+    const subscription = AppState.addEventListener('change', nextState => {
+      if (
+        appStateRef.current.match(/inactive|background/) &&
+        nextState === 'active'
+      ) {
+        bootstrapAuth(dispatch);
+      }
+      appStateRef.current = nextState;
     });
 
-    console.log("Need Update:", needUpdate);
+    return () => subscription.remove();
+  }, [dispatch]);
 
-    if (needUpdate?.isNeeded) {
-      setStoreUrl(storeUrl);
-      setShowUpdate(true);
+  const checkAppVersion = async () => {
+    try {
+      const currentVersion = DeviceInfo.getVersion();
+      if (Platform.OS === 'ios') {
+        const response = await fetch(
+          'https://itunes.apple.com/lookup?id=6758077368&country=in'
+        );
+        const data = await response.json();
+
+        if (data.resultCount === 0) return;
+
+        const latestVersion = data.results[0].version;
+        let storeUrl = data.results[0].trackViewUrl;
+        if (storeUrl.startsWith('https://')) {
+          storeUrl = storeUrl.replace('https://', 'itms-apps://');
+        }
+
+        const needUpdate = await VersionCheck.needUpdate({
+          currentVersion,
+          latestVersion,
+        });
+
+        console.log("Current Version:", currentVersion);
+        console.log("Latest Version:", latestVersion);
+        console.log("Store URL:", storeUrl);
+        console.log("Version Check Response:", needUpdate);
+
+        console.log("Need Update:", needUpdate);
+
+        if (needUpdate?.isNeeded) {
+          setStoreUrl(storeUrl);
+          setShowUpdate(true);
+        }
+      } else if (Platform.OS === 'android') {
+        try {
+          const currentVersion = DeviceInfo.getVersion();
+
+          // Automatically detects Play Store or App Store
+          const latestVersion = await VersionCheck.getLatestVersion({
+            provider: "playStore",
+          });
+
+          const needUpdate = await VersionCheck.needUpdate({
+            currentVersion,
+            latestVersion,
+          });
+
+          console.log("Current Version:", currentVersion);
+          console.log("Latest Version:", latestVersion);
+          console.log("Need Update:", needUpdate);
+
+          if (needUpdate?.isNeeded) {
+            const storeUrl = await VersionCheck.getStoreUrl({
+              provider: Platform.OS === "playStore",
+            });
+
+            setStoreUrl(storeUrl);
+            setShowUpdate(true);
+          }
+        } catch (error) {
+          console.log("Version check failed:", error);
+        }
+      }
+    } catch (error) {
+      console.log("Version check failed:", error);
     }
-
-  } catch (error) {
-    console.log("Version check failed:", error);
-  }
-};
-
+  };
 
 
 

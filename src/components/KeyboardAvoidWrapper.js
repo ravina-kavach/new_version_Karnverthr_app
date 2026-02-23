@@ -9,7 +9,6 @@ const KeyboardAvoidWrapper = ({ children, contentContainerStyle, style }) => {
       contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
       keyboardShouldPersistTaps="handled"
       enableOnAndroid={true}
-      extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
       showsVerticalScrollIndicator={false}
       resetScrollToCoords={{ x: 0, y: 0 }}
     >
@@ -21,10 +20,12 @@ const KeyboardAvoidWrapper = ({ children, contentContainerStyle, style }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "transparent"
+
   },
   contentContainer: {
-    // flexGrow: 1,
-    // padding: Platform.OS === 'android' ? 16 : 0,
+    flexGrow: 1,
+    padding: Platform.OS === 'android' ? 16 : 0,
   },
 });
 

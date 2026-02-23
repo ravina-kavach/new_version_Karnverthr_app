@@ -1805,7 +1805,10 @@ export const CommonSlice = createSlice({
         builder.addCase(GetLeavetype.fulfilled, (state, { payload }) => {
             // console.log("[GetLeavetype.fulfilled]>>>payload>>>", payload)
             try {
-                state.GetLeavetypeData = [{ "name": "Select Leave Type", value: 0, }, ...payload];
+                state.GetLeavetypeData =
+                    payload && payload.length > 0
+                        ? [{ name: "Select Leave Type", value: 0 }, ...payload]
+                        : [];
                 state.isGetLeavetype = true;
                 state.isGetLeavetypeFetching = false;
                 state.isError = false;

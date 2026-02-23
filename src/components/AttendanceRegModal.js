@@ -16,6 +16,7 @@ import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
 import Dropdown from './Dropdown';
 import { useTranslation } from 'react-i18next';
+import KeyboardAvoidWrapper from './KeyboardAvoidWrapper';
 
 const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) => {
     const { t } = useTranslation();
@@ -172,189 +173,192 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
 
     return (
         <Modal visible={visible} statusBarTranslucent transparent>
-            <View style={styles.overlay}>
-                <View style={styles.modalContent}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>
-                            Attendance Regularization
-                        </Text>
-                        <TouchableOpacity onPress={onClose}>
-                            <Text style={styles.close}>✕</Text>
-                        </TouchableOpacity>
-                    </View>
+            <KeyboardAvoidWrapper keyboardShouldPersistTaps="handled">
 
-                    <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-                        <Text style={styles.label}>Regularization</Text>
-                        <View
-                            style={[
-                                styles.dropdownWrapper,
-                                errors.regCategory && styles.errorBorder,
-                            ]}
-                        >
-                            <Dropdown
-                                DropdownData={updatedData}
-                                Selecteditem={regCategories}
-                                setSelecteditem={(item) => {
-                                    setRegCategories(item);
-                                    setErrors((prev) => ({
-                                        ...prev,
-                                        regCategory: '',
-                                    }));
-                                }}
-                            />
-                        </View>
-
-                        {errors.regCategory && (
-                            <Text style={styles.errorText}>
-                                {errors.regCategory}
+                <View style={styles.overlay}>
+                    <View style={styles.modalContent}>
+                        <View style={styles.header}>
+                            <Text style={styles.title}>
+                                Attendance Regularization
                             </Text>
-                        )}
-
-                        <Text style={styles.label}>Check In</Text>
-                        <View style={styles.row}>
-                            <TouchableOpacity
-                                style={styles.dateTimeBox}
-                                onPress={() => setPickerMode('startDate')}
-                            >
-                                <Text style={styles.dateTimeText}>
-                                    {formatUIDate(startDate)}
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                style={styles.dateTimeBox}
-                                onPress={() => setPickerMode('startTime')}
-                            >
-                                <Text style={styles.dateTimeText}>
-                                    {startDate.toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </Text>
+                            <TouchableOpacity onPress={onClose}>
+                                <Text style={styles.close}>✕</Text>
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.label}>Check Out</Text>
-                        <View style={styles.row}>
-                            <TouchableOpacity
+                        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+                            <Text style={styles.label}>Regularization</Text>
+                            <View
                                 style={[
-                                    styles.dateTimeBox,
-                                    errors.checkout && styles.errorBorder,
+                                    styles.dropdownWrapper,
+                                    errors.regCategory && styles.errorBorder,
                                 ]}
-                                onPress={() => setPickerMode('endDate')}
                             >
-                                <Text style={styles.dateTimeText}>
-                                    {formatUIDate(endDate)}
-                                </Text>
-                            </TouchableOpacity>
+                                <Dropdown
+                                    DropdownData={updatedData}
+                                    Selecteditem={regCategories}
+                                    setSelecteditem={(item) => {
+                                        setRegCategories(item);
+                                        setErrors((prev) => ({
+                                            ...prev,
+                                            regCategory: '',
+                                        }));
+                                    }}
+                                />
+                            </View>
 
-                            <TouchableOpacity
-                                style={[
-                                    styles.dateTimeBox,
-                                    errors.checkout && styles.errorBorder,
-                                ]}
-                                onPress={() => setPickerMode('endTime')}
-                            >
-                                <Text style={styles.dateTimeText}>
-                                    {endDate.toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        {errors.checkout && (
-                            <Text style={styles.errorText}>
-                                {errors.checkout}
-                            </Text>
-                        )}
-
-                        {pickerMode && (
-                            <DateTimePicker
-                                value={
-                                    pickerMode.includes('start')
-                                        ? startDate
-                                        : endDate
-                                }
-                                mode={
-                                    pickerMode.includes('Date')
-                                        ? 'date'
-                                        : 'time'
-                                }
-                                display={
-                                    Platform.OS === 'ios'
-                                        ? 'spinner'
-                                        : 'default'
-                                }
-                                maximumDate={
-                                    pickerMode.includes('Date')
-                                        ? maxSelectableDate
-                                        : undefined
-                                }
-                                is24Hour={false}
-                                onChange={onChangePicker}
-                            />
-                        )}
-
-                        <Text style={styles.label}>Description</Text>
-                        <TextInput
-                            placeholder="Add a description"
-                            placeholderTextColor={COLOR.TextPlaceholder}
-                            value={description}
-                            onChangeText={(text) => {
-                                if (text.length <= MAX_DESC_LENGTH) {
-                                    setDescription(text);
-                                    setErrors((prev) => ({
-                                        ...prev,
-                                        description: '',
-                                    }));
-                                }
-                            }}
-                            style={[
-                                styles.input,
-                                { height: 80 },
-                                errors.description && styles.errorBorder,
-                            ]}
-                            multiline
-                        />
-
-                        {errors.description && (
-                            <Text style={styles.errorText}>
-                                {errors.description}
-                            </Text>
-                        )}
-
-                        <Text style={styles.charCount}>
-                            {description.length}/{MAX_DESC_LENGTH}
-                        </Text>
-                    </ScrollView>
-
-                    <View style={styles.footer}>
-                        <TouchableOpacity
-                            style={styles.cancelBtn}
-                            onPress={onClose}
-                        >
-                            <Text style={styles.cancelText}>
-                                {t('Button.Cancel')}
-                            </Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.saveBtn}
-                            onPress={handleCreateReg}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <Text style={styles.saveText}>
-                                    {t('Button.Save')}
+                            {errors.regCategory && (
+                                <Text style={styles.errorText}>
+                                    {errors.regCategory}
                                 </Text>
                             )}
-                        </TouchableOpacity>
+
+                            <Text style={styles.label}>Check In</Text>
+                            <View style={styles.row}>
+                                <TouchableOpacity
+                                    style={styles.dateTimeBox}
+                                    onPress={() => setPickerMode('startDate')}
+                                >
+                                    <Text style={styles.dateTimeText}>
+                                        {formatUIDate(startDate)}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={styles.dateTimeBox}
+                                    onPress={() => setPickerMode('startTime')}
+                                >
+                                    <Text style={styles.dateTimeText}>
+                                        {startDate.toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        })}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <Text style={styles.label}>Check Out</Text>
+                            <View style={styles.row}>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.dateTimeBox,
+                                        errors.checkout && styles.errorBorder,
+                                    ]}
+                                    onPress={() => setPickerMode('endDate')}
+                                >
+                                    <Text style={styles.dateTimeText}>
+                                        {formatUIDate(endDate)}
+                                    </Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={[
+                                        styles.dateTimeBox,
+                                        errors.checkout && styles.errorBorder,
+                                    ]}
+                                    onPress={() => setPickerMode('endTime')}
+                                >
+                                    <Text style={styles.dateTimeText}>
+                                        {endDate.toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        })}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            {errors.checkout && (
+                                <Text style={styles.errorText}>
+                                    {errors.checkout}
+                                </Text>
+                            )}
+
+                            {pickerMode && (
+                                <DateTimePicker
+                                    value={
+                                        pickerMode.includes('start')
+                                            ? startDate
+                                            : endDate
+                                    }
+                                    mode={
+                                        pickerMode.includes('Date')
+                                            ? 'date'
+                                            : 'time'
+                                    }
+                                    display={
+                                        Platform.OS === 'ios'
+                                            ? 'spinner'
+                                            : 'default'
+                                    }
+                                    maximumDate={
+                                        pickerMode.includes('Date')
+                                            ? maxSelectableDate
+                                            : undefined
+                                    }
+                                    is24Hour={false}
+                                    onChange={onChangePicker}
+                                />
+                            )}
+
+                            <Text style={styles.label}>Description</Text>
+                            <TextInput
+                                placeholder="Add a description"
+                                placeholderTextColor={COLOR.TextPlaceholder}
+                                value={description}
+                                onChangeText={(text) => {
+                                    if (text.length <= MAX_DESC_LENGTH) {
+                                        setDescription(text);
+                                        setErrors((prev) => ({
+                                            ...prev,
+                                            description: '',
+                                        }));
+                                    }
+                                }}
+                                style={[
+                                    styles.input,
+                                    { height: 80 },
+                                    errors.description && styles.errorBorder,
+                                ]}
+                                multiline
+                            />
+
+                            {errors.description && (
+                                <Text style={styles.errorText}>
+                                    {errors.description}
+                                </Text>
+                            )}
+
+                            <Text style={styles.charCount}>
+                                {description.length}/{MAX_DESC_LENGTH}
+                            </Text>
+                        </ScrollView>
+
+                        <View style={styles.footer}>
+                            <TouchableOpacity
+                                style={styles.cancelBtn}
+                                onPress={onClose}
+                            >
+                                <Text style={styles.cancelText}>
+                                    {t('Button.Cancel')}
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.saveBtn}
+                                onPress={handleCreateReg}
+                            >
+                                {loading ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <Text style={styles.saveText}>
+                                        {t('Button.Save')}
+                                    </Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </KeyboardAvoidWrapper>
         </Modal>
     );
 };
@@ -392,7 +396,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#666',
     },
-    
+
     label: {
         ...GlobalFonts.subtitle,
         fontSize: FontSize.Font15,

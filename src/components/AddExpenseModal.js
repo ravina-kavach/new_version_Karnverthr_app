@@ -18,6 +18,7 @@ import RadioGroup from 'react-native-radio-buttons-group';
 import { GlobalFonts } from '../theme/typography';
 import { COLOR } from '../theme/theme';
 import ImagePickerSheet from './ImagePickerSheet';
+import KeyboardAvoidWrapper from './KeyboardAvoidWrapper';
 
 export const AddExpenseModal = ({
   visible,
@@ -109,162 +110,164 @@ export const AddExpenseModal = ({
 
   return (
     <Modal animationType="fade" presentationStyle="overFullScreen" statusBarTranslucent transparent visible={visible}>
-      <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={handleClose}>
-        <TouchableWithoutFeedback>
-          <View style={styles.card}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidWrapper>
+        <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={handleClose}>
+          <TouchableWithoutFeedback>
+            <View style={styles.card}>
+              <ScrollView showsVerticalScrollIndicator={false}>
 
-              <Text style={styles.title}>
-                {isEditMode ? t('Expenses.Edit_Expense') : t('Expenses.Create_Expense')}
-              </Text>
+                <Text style={styles.title}>
+                  {isEditMode ? t('Expenses.Edit_Expense') : t('Expenses.Create_Expense')}
+                </Text>
 
-              <Text style={styles.label}>{t('Expenses.Payment_Mode')}</Text>
-              <RadioGroup
-                radioButtons={[
-                  { id: 1, label: t('Expenses.Own_account'), value: 'own' },
-                  { id: 2, label: t('Expenses.Compnay'), value: 'company' },
-                ]}
-                onPress={(id) => {
-                  setSelectedId(id);
-                  setErrors((p) => ({ ...p, paymentMode: null }));
-                }}
-                selectedId={selectedId}
-                containerStyle={styles.radioRow}
-              />
-              {errors.paymentMode && <Text style={styles.errorText}>{errors.paymentMode}</Text>}
+                <Text style={styles.label}>{t('Expenses.Payment_Mode')}</Text>
+                <RadioGroup
+                  radioButtons={[
+                    { id: 1, label: t('Expenses.Own_account'), value: 'own' },
+                    { id: 2, label: t('Expenses.Compnay'), value: 'company' },
+                  ]}
+                  onPress={(id) => {
+                    setSelectedId(id);
+                    setErrors((p) => ({ ...p, paymentMode: null }));
+                  }}
+                  selectedId={selectedId}
+                  containerStyle={styles.radioRow}
+                />
+                {errors.paymentMode && <Text style={styles.errorText}>{errors.paymentMode}</Text>}
 
-              <Text style={styles.label}>{t('Expenses.Upload_Document')}</Text>
-              {/* Upload Box (Only show when no file) */}
-              {!FileObj?.base64 && (
-                <>
-                  <TouchableOpacity
-                    activeOpacity={0.5}
-                    style={[styles.uploadBox, errors.file && styles.errorBorder]}
-                    onPress={heandleonCamera}
-                  >
-                    <Text style={styles.placeholder}>
-                      {isEditMode
-                        ? t('Expenses.Document_Attached')
-                        : t('Expenses.Upload_Document')}
-                    </Text>
+                <Text style={styles.label}>{t('Expenses.Upload_Document')}</Text>
+                {/* Upload Box (Only show when no file) */}
+                {!FileObj?.base64 && (
+                  <>
+                    <TouchableOpacity
+                      activeOpacity={0.5}
+                      style={[styles.uploadBox, errors.file && styles.errorBorder]}
+                      onPress={heandleonCamera}
+                    >
+                      <Text style={styles.placeholder}>
+                        {isEditMode
+                          ? t('Expenses.Document_Attached')
+                          : t('Expenses.Upload_Document')}
+                      </Text>
+                    </TouchableOpacity>
+
+                    {errors.file && (
+                      <Text style={styles.errorText}>{errors.file}</Text>
+                    )}
+                  </>
+                )}
+                {FileObj?.base64 && (
+                  <View style={styles.previewContainer}>
+                    <Image
+                      source={{ uri: `data:image/jpeg;base64,${FileObj.base64}` }}
+                      style={styles.previewImage}
+                    />
+                    <TouchableOpacity
+                      style={styles.removeBtn}
+                      onPress={() => setFileObj({})}
+                    >
+                      <Text style={styles.removeText}>Remove</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                <Text style={styles.label}>{t('Expenses.Catagory')}</Text>
+                <View style={[styles.dropdownWrapper, errors.category && styles.errorBorder]}>
+                  <Dropdown
+                    DropdownData={CategoryListData}
+                    Selecteditem={selectCategoryType}
+                    setSelecteditem={(item) => {
+                      setSelectedCategoryType(item);
+                      setErrors((p) => ({ ...p, category: null }));
+                    }}
+                  />
+                </View>
+                {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
+                <Text style={styles.label}>{t('Expenses.Account')}</Text>
+                <View style={[styles.dropdownWrapper, errors.account && styles.errorBorder]}>
+                  <Dropdown
+                    DropdownData={AccountListData}
+                    Selecteditem={selectAccountType}
+                    setSelecteditem={(item) => {
+                      setSelectedAccountType(item);
+                      setErrors((p) => ({ ...p, account: null }));
+                    }}
+                  />
+                </View>
+                {errors.account && <Text style={styles.errorText}>{errors.account}</Text>}
+
+                <Text style={styles.label}>{t('Expenses.Expense_Name')}</Text>
+                <TextInput
+                  style={[styles.input, errors.expenseName && styles.errorBorder]}
+                  placeholder='Expense name'
+                  placeholderTextColor={COLOR.TextPlaceholder}
+                  value={Formdata.ExpenseName}
+                  onChangeText={(v) => {
+                    setFormdata({ ...Formdata, ExpenseName: v });
+                    setErrors((p) => ({ ...p, expenseName: null }));
+                  }}
+                />
+
+                <Text style={styles.label}>{t('Expenses.Amount')}</Text>
+                <TextInput
+                  style={[styles.input, errors.amount && styles.errorBorder]}
+                  placeholder='Amount'
+                  placeholderTextColor={COLOR.TextPlaceholder}
+                  keyboardType="numeric"
+                  value={Formdata.Amount}
+                  onChangeText={(v) => {
+                    setFormdata({ ...Formdata, Amount: v });
+                    setErrors((p) => ({ ...p, amount: null }));
+                  }}
+                />
+                <Text style={styles.label}>{t('Expenses.Expense_Date')}</Text>
+                <TouchableOpacity
+                  style={[styles.input, errors.date && styles.errorBorder]}
+                  onPress={() => setIsStartdatepickeropen(true)}
+                >
+                  <Text>
+                    {startDate ? moment(startDate).format('DD/MM/YYYY') : t('Expenses.Expense_Date')}
+                  </Text>
+                </TouchableOpacity>
+
+                {IsStartdatepickeropen && (
+                  <DateTimePicker
+                    value={startDate || new Date()}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    maximumDate={new Date()}
+                    onChange={onChangeStartDate}
+                  />
+                )}
+                <View style={styles.footer}>
+                  <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
+                    <Text style={styles.cancelText}>{t('Button.Cancel')}</Text>
                   </TouchableOpacity>
 
-                  {errors.file && (
-                    <Text style={styles.errorText}>{errors.file}</Text>
-                  )}
-                </>
-              )}
-              {FileObj?.base64 && (
-                <View style={styles.previewContainer}>
-                  <Image
-                    source={{ uri: `data:image/jpeg;base64,${FileObj.base64}` }}
-                    style={styles.previewImage}
-                  />
                   <TouchableOpacity
-                    style={styles.removeBtn}
-                    onPress={() => setFileObj({})}
+                    style={styles.saveBtn}
+                    onPress={onSubmit}
+                    disabled={isCreateExpensesFetching}
                   >
-                    <Text style={styles.removeText}>Remove</Text>
+                    {isCreateExpensesFetching ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.saveText}>{t('Button.Save')}</Text>
+                    )}
                   </TouchableOpacity>
                 </View>
-              )}
-
-              <Text style={styles.label}>{t('Expenses.Catagory')}</Text>
-              <View style={[styles.dropdownWrapper, errors.category && styles.errorBorder]}>
-                <Dropdown
-                  DropdownData={CategoryListData}
-                  Selecteditem={selectCategoryType}
-                  setSelecteditem={(item) => {
-                    setSelectedCategoryType(item);
-                    setErrors((p) => ({ ...p, category: null }));
-                  }}
-                />
-              </View>
-              {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
-              <Text style={styles.label}>{t('Expenses.Account')}</Text>
-              <View style={[styles.dropdownWrapper, errors.account && styles.errorBorder]}>
-                <Dropdown
-                  DropdownData={AccountListData}
-                  Selecteditem={selectAccountType}
-                  setSelecteditem={(item) => {
-                    setSelectedAccountType(item);
-                    setErrors((p) => ({ ...p, account: null }));
-                  }}
-                />
-              </View>
-              {errors.account && <Text style={styles.errorText}>{errors.account}</Text>}
-
-              <Text style={styles.label}>{t('Expenses.Expense_Name')}</Text>
-              <TextInput
-                style={[styles.input, errors.expenseName && styles.errorBorder]}
-                placeholder='Expense name'
-                placeholderTextColor={COLOR.TextPlaceholder}
-                value={Formdata.ExpenseName}
-                onChangeText={(v) => {
-                  setFormdata({ ...Formdata, ExpenseName: v });
-                  setErrors((p) => ({ ...p, expenseName: null }));
-                }}
-              />
-
-              <Text style={styles.label}>{t('Expenses.Amount')}</Text>
-              <TextInput
-                style={[styles.input, errors.amount && styles.errorBorder]}
-                placeholder='Amount'
-                placeholderTextColor={COLOR.TextPlaceholder}
-                keyboardType="numeric"
-                value={Formdata.Amount}
-                onChangeText={(v) => {
-                  setFormdata({ ...Formdata, Amount: v });
-                  setErrors((p) => ({ ...p, amount: null }));
-                }}
-              />
-              <Text style={styles.label}>{t('Expenses.Expense_Date')}</Text>
-              <TouchableOpacity
-                style={[styles.input, errors.date && styles.errorBorder]}
-                onPress={() => setIsStartdatepickeropen(true)}
-              >
-                <Text>
-                  {startDate ? moment(startDate).format('DD/MM/YYYY') : t('Expenses.Expense_Date')}
-                </Text>
-              </TouchableOpacity>
-
-              {IsStartdatepickeropen && (
-                <DateTimePicker
-                  value={startDate || new Date()}
-                  mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                  maximumDate={new Date()}
-                  onChange={onChangeStartDate}
+              </ScrollView>
+              {isImagePickerVisible && (
+                <ImagePickerSheet
+                  visible={isImagePickerVisible}
+                  onClose={() => setIsImagePickerVisible(false)}
+                  onResult={onImagePicked}
                 />
               )}
-              <View style={styles.footer}>
-                <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
-                  <Text style={styles.cancelText}>{t('Button.Cancel')}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.saveBtn}
-                  onPress={onSubmit}
-                  disabled={isCreateExpensesFetching}
-                >
-                  {isCreateExpensesFetching ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.saveText}>{t('Button.Save')}</Text>
-                  )}
-                </TouchableOpacity>
-              </View>
-            </ScrollView>
-            {isImagePickerVisible && (
-              <ImagePickerSheet
-                visible={isImagePickerVisible}
-                onClose={() => setIsImagePickerVisible(false)}
-                onResult={onImagePicked}
-              />
-            )}
-          </View>
-        </TouchableWithoutFeedback>
-      </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      </KeyboardAvoidWrapper>
     </Modal>
   );
 };

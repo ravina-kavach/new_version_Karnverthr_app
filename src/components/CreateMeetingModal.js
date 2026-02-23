@@ -13,6 +13,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { COLOR } from '../theme/theme';
 import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
+import KeyboardAvoidWrapper from '../components/KeyboardAvoidWrapper'
 
 const isSameDay = (d1, d2) =>
   d1.getFullYear() === d2.getFullYear() &&
@@ -174,16 +175,20 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <View style={styles.overlay}>
-        <View style={styles.modalContent}>
-          <View style={styles.header}>
-            <Text style={styles.title}>New Meeting</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <Text style={styles.close}>✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView showsVerticalScrollIndicator={false}>
+      <KeyboardAvoidWrapper showsVerticalScrollIndicator={false}
+        enableOnAndroid
+        extraScrollHeight={30}
+        contentContainerStyle={{ flex: 1 }}
+        keyboardShouldPersistTaps="handled">
+        <View style={styles.overlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.header}>
+              <Text style={styles.title}>New Meeting</Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+                <Text style={styles.close}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            {/* <ScrollView> */}
             {/* Subject */}
             <Text style={styles.label}>Meeting Subject</Text>
             <TextInput
@@ -258,13 +263,14 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
               onChangeText={setDescription}
             />
             <Text style={styles.charCount}>{description.length}/150</Text>
-          </ScrollView>
+            {/* </ScrollView> */}
 
-          <TouchableOpacity style={styles.createButton} onPress={handleCreateMeeting}>
-            <Text style={styles.createButtonText}>Create New Meeting +</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.createButton} onPress={handleCreateMeeting}>
+              <Text style={styles.createButtonText}>Create New Meeting +</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidWrapper>
     </Modal>
   );
 };
@@ -273,86 +279,86 @@ export default NewMeetingModal;
 
 
 const styles = StyleSheet.create({
-    overlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        justifyContent: 'center',
-        paddingHorizontal: 16,
-    },
-    modalContent: {
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        padding: 20,
-        maxHeight: '90%',
-    },
-    header: {
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    closeBtn: {
-        position: 'absolute',
-        right: 0,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#111',
-    },
-    label: {
-        ...GlobalFonts.subtitle,
-        fontSize: FontSize.Font16,
-        color: COLOR.Black1,
-        marginTop: 12,
-        marginBottom: 6,
-    },
-    input: {
-        ...GlobalFonts.subtitle,
-        backgroundColor: '#F3F4F6',
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        fontSize: 15,
-    },
-    errorInput: {
-        borderWidth: 1,
-        borderColor: '#DC2626',
-    },
-    errorText: {
-        color: '#DC2626',
-        fontSize: 12,
-        marginTop: 4,
-    },
-    row: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    dateTimeBox: {
-        flex: 1,
-        backgroundColor: '#F3F4F6',
-        paddingVertical: 12,
-        borderRadius: 12,
-        alignItems: 'center',
-    },
-    charCount: {
-        alignSelf: 'flex-end',
-        fontSize: 12,
-        color: '#6B7280',
-        marginTop: 4,
-    },
-    createButton: {
-        backgroundColor: '#111827',
-        paddingVertical: 16,
-        borderRadius: 18,
-        marginTop: 12,
-        alignItems: 'center',
-    },
-    createButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    close: {
-        fontSize: 18,
-        color: '#666',
-    },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    maxHeight: '90%',
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 0,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111',
+  },
+  label: {
+    ...GlobalFonts.subtitle,
+    fontSize: FontSize.Font16,
+    color: COLOR.Black1,
+    marginTop: 12,
+    marginBottom: 6,
+  },
+  input: {
+    ...GlobalFonts.subtitle,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 15,
+  },
+  errorInput: {
+    borderWidth: 1,
+    borderColor: '#DC2626',
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  row: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  dateTimeBox: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  charCount: {
+    alignSelf: 'flex-end',
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  createButton: {
+    backgroundColor: '#111827',
+    paddingVertical: 16,
+    borderRadius: 18,
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  createButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  close: {
+    fontSize: 18,
+    color: '#666',
+  },
 });
