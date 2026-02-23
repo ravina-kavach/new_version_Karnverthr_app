@@ -175,10 +175,10 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <KeyboardAvoidWrapper showsVerticalScrollIndicator={false}
+      <KeyboardAvoidWrapper
+        showsVerticalScrollIndicator={false}
         enableOnAndroid
         extraScrollHeight={30}
-        contentContainerStyle={{ flex: 1 }}
         keyboardShouldPersistTaps="handled">
         <View style={styles.overlay}>
           <View style={styles.modalContent}>

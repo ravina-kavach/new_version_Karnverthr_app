@@ -19,6 +19,7 @@ import { GlobalFonts } from '../theme/typography';
 import { COLOR } from '../theme/theme';
 import ImagePickerSheet from './ImagePickerSheet';
 import KeyboardAvoidWrapper from './KeyboardAvoidWrapper';
+import { FontSize } from '../utils/metrics';
 
 export const AddExpenseModal = ({
   visible,
@@ -172,28 +173,40 @@ export const AddExpenseModal = ({
                 )}
 
                 <Text style={styles.label}>{t('Expenses.Catagory')}</Text>
-                <View style={[styles.dropdownWrapper, errors.category && styles.errorBorder]}>
-                  <Dropdown
-                    DropdownData={CategoryListData}
-                    Selecteditem={selectCategoryType}
-                    setSelecteditem={(item) => {
-                      setSelectedCategoryType(item);
-                      setErrors((p) => ({ ...p, category: null }));
-                    }}
-                  />
-                </View>
+                {CategoryListData?.length > 0 ? (
+                  <View style={[styles.dropdownWrapper, errors.category && styles.errorBorder]}>
+                    <Dropdown
+                      DropdownData={CategoryListData}
+                      Selecteditem={selectCategoryType}
+                      setSelecteditem={(item) => {
+                        setSelectedCategoryType(item);
+                        setErrors((p) => ({ ...p, category: null }));
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <Text style={styles.noLeaveText}>
+                    No Catagory Types Available
+                  </Text>
+                )}
                 {errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
                 <Text style={styles.label}>{t('Expenses.Account')}</Text>
-                <View style={[styles.dropdownWrapper, errors.account && styles.errorBorder]}>
-                  <Dropdown
-                    DropdownData={AccountListData}
-                    Selecteditem={selectAccountType}
-                    setSelecteditem={(item) => {
-                      setSelectedAccountType(item);
-                      setErrors((p) => ({ ...p, account: null }));
-                    }}
-                  />
-                </View>
+                {AccountListData?.length > 0 ? (
+                  <View style={[styles.dropdownWrapper, errors.account && styles.errorBorder]}>
+                    <Dropdown
+                      DropdownData={AccountListData}
+                      Selecteditem={selectAccountType}
+                      setSelecteditem={(item) => {
+                        setSelectedAccountType(item);
+                        setErrors((p) => ({ ...p, account: null }));
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <Text style={styles.noLeaveText}>
+                    No Account Types Available
+                  </Text>
+                )}
                 {errors.account && <Text style={styles.errorText}>{errors.account}</Text>}
 
                 <Text style={styles.label}>{t('Expenses.Expense_Name')}</Text>
@@ -358,6 +371,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
+  noLeaveText: {
+    // textAlign: 'center',
+    color: COLOR.TextPlaceholder,
+    ...GlobalFonts.normalText,
+    fontSize: FontSize.Font14,
+    paddingVertical: 10,
+  },
+
   cancelText: {
     color: '#000',
     fontWeight: '500',

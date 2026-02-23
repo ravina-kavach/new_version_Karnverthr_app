@@ -25,8 +25,8 @@ export const useExpenses = () => {
   const [selectAccountType, setSelectedAccountType] = useState({})
   const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
   const [selectedStatus, setSelectedStatus] = React.useState(
-  EXPENSE_STATUS[0]
-);
+    EXPENSE_STATUS[0]
+  );
 
 
 
@@ -65,23 +65,23 @@ export const useExpenses = () => {
   };
 
   const resetExpenseForm = () => {
-  setFormdata({});
-  setStartDate(null);
-  setSelectedId(1);
+    setFormdata({});
+    setStartDate(null);
+    setSelectedId(1);
 
-  setFileObj({});
-  setPreviewImage(false);
-  setPreviewVisible(false);
+    setFileObj({});
+    setPreviewImage(false);
+    setPreviewVisible(false);
 
-  setSelectedCategoryType({ id: 0, category_name: "Select category" });
-  setSelectedAccountType({ id: 0, name: "Select account" });
+    setSelectedCategoryType({ id: 0, category_name: "Select category" });
+    setSelectedAccountType({ id: 0, name: "Select account" });
 
-  setIsStartdatepickeropen(false);
-  setIsImagePickerVisible(false);
+    setIsStartdatepickeropen(false);
+    setIsImagePickerVisible(false);
 
-  Validator.current.hideMessages();
-  forceUpdate(0);
-};
+    Validator.current.hideMessages();
+    forceUpdate(0);
+  };
 
   const SubmitExpense = async () => {
     const formvalid = Validator.current.allValid();
@@ -170,21 +170,21 @@ export const useExpenses = () => {
   };
 
   const onImagePicked = (image) => {
-  setFileObj(image);
-};
+    setFileObj(image);
+  };
 
-const filteredExpenses = React.useMemo(() => {
-  if (!selectedStatus || selectedStatus.id === 'all') {
-    return GetExpenseListData;
-  }
-  return GetExpenseListData?.filter(item => {
-    const itemLabel = EXPENSE_STATUS[item.state]; 
-    return itemLabel === selectedStatus.name;
-  });
-}, [GetExpenseListData, selectedStatus]);
+  const filteredExpenses = React.useMemo(() => {
+    if (!selectedStatus || selectedStatus.id === 'all') {
+      return GetExpenseListData;
+    }
+    return GetExpenseListData?.filter(item => {
+      const itemLabel = EXPENSE_STATUS[item.state];
+      return itemLabel === selectedStatus.name;
+    });
+  }, [GetExpenseListData, selectedStatus]);
 
-const NavigateExpenseDetail = (item) => {
-  Navigation.navigate('expenseDetail', {
+  const NavigateExpenseDetail = (item) => {
+    Navigation.navigate('expenseDetail', {
       expense: item,
     })
   }
@@ -225,7 +225,7 @@ const NavigateExpenseDetail = (item) => {
     isImagePickerVisible,
     setIsImagePickerVisible,
     filteredExpenses,
-    selectedStatus, 
+    selectedStatus,
     setSelectedStatus,
     NavigateExpenseDetail
   }
