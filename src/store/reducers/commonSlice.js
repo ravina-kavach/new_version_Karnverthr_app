@@ -375,7 +375,6 @@ export const CategoryList = createAsyncThunk(
         // console.log('CategoryList userdata >>', userdata);
         try {
             let result = await API.get(APIS_ENDPOINTS.EXPENSE_CATEGORY(userdata.id));
-            // console.log('CategoryList result.data >>', result);
             if (result.data.status === "error") {
                 return thunkAPI.rejectWithValue({
                     error: errorMassage(result.data.message)
@@ -383,10 +382,8 @@ export const CategoryList = createAsyncThunk(
             }
             return result.data.data;
         } catch (error) {
-            console.log("Axios Error:", error);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.message || error.message)
-            });
+            // console.log("Axios Error:", error.message, error.response?.data?.message);
+            return;
         }
     },
 );
@@ -405,9 +402,8 @@ export const AccountList = createAsyncThunk(
             return result.data.data;
         } catch (error) {
             console.log("Axios Error:", error);
-            return thunkAPI.rejectWithValue({
-                error: errorMassage(error.response?.data?.message || error.message)
-            });
+            return;
+
         }
     },
 );
@@ -1379,9 +1375,9 @@ export const CommonSlice = createSlice({
 
         //========= CategoryList
         builder.addCase(CategoryList.fulfilled, (state, { payload }) => {
-            // console.log("[CategoryList.fulfilled]>>>payload>>>", payload)
+            console.log("[CategoryList.fulfilled]>>>payload>>>", payload)
             try {
-                state.CategoryListData = [{ id: 0, name: "Select category" }, ...payload];
+                state.CategoryListData = payload && payload.length > 0 ? [{ id: 0, name: "Select category" }, ...payload] : [];
                 state.isCategoryList = true;
                 state.isCategoryListFetching = false;
                 state.isError = false;
@@ -1418,7 +1414,7 @@ export const CommonSlice = createSlice({
         builder.addCase(AccountList.fulfilled, (state, { payload }) => {
             // console.log("[AccountList.fulfilled]>>>payload>>>", payload)
             try {
-                state.AccountListData = [{ id: 0, name: "Select account" }, ...payload];
+                state.AccountListData = payload && payload.length > 0 ? [{ id: 0, name: "Select account" }, ...payload] : [];
                 state.isError = false;
                 state.errorMessage = '';
                 return state;
