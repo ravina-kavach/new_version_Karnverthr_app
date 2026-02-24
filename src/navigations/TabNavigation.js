@@ -49,7 +49,7 @@ const TabNavigation = () => {
       screenOptions={{
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
-        tabBarStyle: { ...styles.tabBar, height: Platform.OS === 'android' ? responsiveHeight(8) + insets.bottom : responsiveHeight(10) },
+        tabBarStyle: { ...styles.tabBar, height: Platform.OS === 'android' ? responsiveHeight(10) + insets.bottom : responsiveHeight(10) },
       }}
     >
       <Tab.Screen

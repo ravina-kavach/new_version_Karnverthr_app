@@ -186,7 +186,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+                        <ScrollView contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}>
                             <Text style={styles.label}>Regularization</Text>
                             <View
                                 style={[
