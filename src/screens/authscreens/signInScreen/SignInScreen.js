@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
 
-  bottomContainer: { position: 'absolute', bottom: 0, justifyContent: 'center', alignSelf: 'center' },
+  bottomContainer: { position: 'absolute', backgroundColor: COLOR.White1, bottom: 0, justifyContent: 'center', alignSelf: 'center' },
 
   leftIcon: {
     marginRight: 10,
