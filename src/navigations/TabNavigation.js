@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
 
@@ -34,8 +34,8 @@ const TabNavigation = () => {
 
   const renderTabIcon = (focused, ActiveIcon, InactiveIcon, label) => (
     <View style={styles.tabItem}>
-      <View style={{marginVertical:2}}>
-      {focused ? <ActiveIcon /> : <InactiveIcon />}
+      <View style={{ marginVertical: 2 }}>
+        {focused ? <ActiveIcon /> : <InactiveIcon />}
       </View>
       <Text style={[styles.tabText, focused && styles.activeText]}>
         {label}
@@ -49,14 +49,14 @@ const TabNavigation = () => {
       screenOptions={{
         tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
-        tabBarStyle: {...styles.tabBar,bottom: insets.bottom},
+        tabBarStyle: { ...styles.tabBar, height: Platform.OS === 'android' ? responsiveHeight(8) + insets.bottom : responsiveHeight(10) },
       }}
     >
       <Tab.Screen
         name="home"
         component={Home}
         options={{
-          headerShown:false,
+          headerShown: false,
           tabBarIcon: ({ focused }) =>
             renderTabIcon(
               focused,
@@ -81,13 +81,13 @@ const TabNavigation = () => {
               ExpensesIcon,
               t('Tabs.Expense')
             ),
-            header:(()=>(
-              <CommonHeader 
+          header: (() => (
+            <CommonHeader
               title={t('Expenses.Expense')}
-              />
-            ))
+            />
+          ))
         }}
-        
+
       />
 
       <Tab.Screen
@@ -135,7 +135,6 @@ const TabNavigation = () => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    height: responsiveHeight(10),
     backgroundColor: '#FFFFFF',
     borderTopWidth: 0.5,
     borderTopColor: '#E5E7EB',
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 6,
-    width:responsiveWidth(25),
+    width: responsiveWidth(25),
   },
 
   tabText: {
@@ -168,7 +167,7 @@ const styles = StyleSheet.create({
     width: '40%',
     borderRadius: 2,
     backgroundColor: COLOR.LightOrange,
-    width:responsiveWidth(12),
+    width: responsiveWidth(12),
   },
 });
 

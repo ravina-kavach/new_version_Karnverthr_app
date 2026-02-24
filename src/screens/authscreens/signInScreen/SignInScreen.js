@@ -174,7 +174,7 @@ function SignInScreen() {
         </Text>
       </View>
       <Text style={styles.verisonText}>
-        {`${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
+        {`${DeviceInfo.getVersion()}`}
       </Text>
     </CommonView>
   );
@@ -409,6 +409,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     paddingVertical: 10,
     color: COLOR.TextPlaceholder,
+    paddingBottom: 20,
   },
 });
 

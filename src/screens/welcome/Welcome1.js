@@ -3,13 +3,14 @@ import {
   StyleSheet,
   View,
   Image,
+  Platform,
 } from 'react-native';
 import CommonButton from '../../components/CommonButton';
 import { welcome1Image } from '../../assets/images/index';
 import { COLOR } from '../../theme/theme';
 import { H5, H4, H3, CommonView } from '../../utils/common';
 import { useWelcome } from '../welcome/WelcomeController.js';
-import { responsiveHeight, responsiveWidth } from '../../utils/metrics.js';
+import { insets, responsiveHeight, responsiveWidth } from '../../utils/metrics.js';
 import { GlobalFonts } from '../../theme/typography.js';
 
 const Welcome1 = () => {
@@ -20,27 +21,27 @@ const Welcome1 = () => {
   return (
     <CommonView>
       <View style={styles.container}>
-          <Image style={styles.welcomeImage} source={welcome1Image} />
+        <Image style={styles.welcomeImage} source={welcome1Image} />
         <View style={styles.dotsContainer}>
           <View style={styles.activeDot} />
           <View style={[styles.inActiveDot, styles.dotsMargin]} />
           <View style={styles.inActiveDot} />
         </View>
-         <View style={styles.titleContainer}>
-              <H3 style={styles.titleText}>
-                {t('Welcome1.title')}
-              </H3>
-              <H4 style={styles.subtitleText}>
-                {t('Welcome1.subtitle')}
-              </H4>
-          </View>
+        <View style={styles.titleContainer}>
+          <H3 style={styles.titleText}>
+            {t('Welcome1.title')}
+          </H3>
+          <H4 style={styles.subtitleText}>
+            {t('Welcome1.subtitle')}
+          </H4>
+        </View>
         <View style={styles.buttonContainer}>
-            <CommonButton
-              containerStyle={styles.buttonInnerContainer}
-              title={t('Button.Continue')}
-              // gradientColors={[COLOR.grediant1, COLOR.grediant2]}
-              onPress={navigateToWelcome2}
-            />
+          <CommonButton
+            containerStyle={styles.buttonInnerContainer}
+            title={t('Button.Continue')}
+            // gradientColors={[COLOR.grediant1, COLOR.grediant2]}
+            onPress={navigateToWelcome2}
+          />
         </View>
       </View>
     </CommonView>
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLOR.White1,
     alignItems: 'center',
-    justifyContent:'space-around',
+    justifyContent: 'space-around',
     paddingHorizontal: 20
   },
   buttonInnerContainer: {
@@ -61,30 +62,30 @@ const styles = StyleSheet.create({
 
   welcomeImage: {
     alignSelf: 'center',
-    resizeMode:'contain',
+    resizeMode: 'contain',
 
-    marginTop:responsiveHeight(15),
-    marginBottom:responsiveHeight(8),
+    marginTop: responsiveHeight(15),
+    marginBottom: responsiveHeight(8),
     justifyContent: 'center',
     alignItems: 'center',
   },
   subtitleText: {
     color: COLOR.Gray,
     ...GlobalFonts.normalText,
-    textAlign:'center'
+    textAlign: 'center'
   },
   buttonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     alignContent: 'flex-end',
-    paddingBottom: responsiveHeight(4),
+    paddingBottom: Platform.OS === 'android' ? responsiveHeight(4) + insets.bottom : responsiveHeight(6),
   },
-  titleContainer: { 
-    justifyContent:'center',
-    alignItems:'center'
-   },
-  titleText: { paddingVertical: '2%',textAlign:'center' },
+  titleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  titleText: { paddingVertical: '2%', textAlign: 'center' },
   dotsMargin: { marginHorizontal: '1%' },
   dotsContainer: {
     flexDirection: 'row',

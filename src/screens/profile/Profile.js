@@ -200,7 +200,7 @@ export default function Profile() {
 
       {/* App Version */}
       <Text style={styles.verisonText}>
-        {`version : ${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
+        {`version : ${DeviceInfo.getVersion()}`}
       </Text>
     </CommonView>
   );

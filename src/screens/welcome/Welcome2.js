@@ -3,13 +3,14 @@ import {
   StyleSheet,
   View,
   Image,
+  Platform
 } from 'react-native';
 import CommonButton from '../../components/CommonButton';
 import { welcome2Image } from '../../assets/images/index';
 import { COLOR } from '../../theme/theme';
 import { H4, H3, CommonView, H5 } from '../../utils/common';
 import { useWelcome } from '../welcome/WelcomeController.js';
-import { responsiveHeight, responsiveWidth } from '../../utils/metrics.js';
+import { insets, responsiveHeight, responsiveWidth } from '../../utils/metrics.js';
 import { GlobalFonts } from '../../theme/typography.js';
 const Welcome2 = () => {
   const {
@@ -29,7 +30,7 @@ const Welcome2 = () => {
   return (
     <CommonView statusBarColor={COLOR.Primary1}>
       <View style={styles.container}>
-          <Image style={styles.welcomeImage} source={welcome2Image} />
+        <Image style={styles.welcomeImage} source={welcome2Image} />
         <View style={styles.dotsContainer}>
           <View style={styles.inActiveDot} />
           <View style={[styles.activeDot, styles.dotsMargin]} />
@@ -43,13 +44,13 @@ const Welcome2 = () => {
           <Subcomponent title={t('Welcome2.subtitle2')} desc={t('Welcome2.dis2')} />
           <Subcomponent title={t('Welcome2.subtitle3')} desc={t('Welcome2.dis3')} />
         </View>
-        {/* <View style={styles.buttonContainer}> */}
+        <View style={styles.buttonContainer}>
           <CommonButton
             containerStyle={styles.buttonInnerContainer}
             title={t('Button.Continue')}
             onPress={navigateToWelcome3}
           />
-        {/* </View> */}
+        </View>
       </View>
     </CommonView>
   );
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
   },
   buttonInnerContainer: {
     width: responsiveWidth(90),
-    bottom:responsiveHeight(2)
+    bottom: responsiveHeight(2)
   },
 
   descText: {
@@ -75,8 +76,8 @@ const styles = StyleSheet.create({
   welcomeImage: {
     alignSelf: 'center',
     resizeMode: 'contain',
-   marginTop:responsiveHeight(10),
-    marginBottom:responsiveHeight(8),
+    marginTop: responsiveHeight(10),
+    marginBottom: responsiveHeight(8),
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -85,21 +86,21 @@ const styles = StyleSheet.create({
     ...GlobalFonts.subtitle,
     textAlign: 'center'
   },
-  subContainer:{
-    paddingBottom:responsiveHeight(1.5)
+  subContainer: {
+    paddingBottom: responsiveHeight(1.5)
   },
-   buttonContainer: {
+  buttonContainer: {
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     alignContent: 'flex-end',
-    paddingBottom: responsiveHeight(4),
+    paddingBottom: Platform.OS === 'android' ? responsiveHeight(2) + insets.bottom : responsiveHeight(4),
   },
   titleContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  titleText: { paddingVertical: '2%', textAlign: 'center',paddingBottom:responsiveHeight(2) },
+  titleText: { paddingVertical: '2%', textAlign: 'center', paddingBottom: responsiveHeight(2) },
   dotsMargin: { marginHorizontal: '1%' },
   dotsContainer: {
     flexDirection: 'row',

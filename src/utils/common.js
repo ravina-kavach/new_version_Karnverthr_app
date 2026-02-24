@@ -1,25 +1,25 @@
 import React from 'react';
-import { Text, StyleSheet, StatusBar,View, Platform } from 'react-native';
+import { Text, StyleSheet, StatusBar, View, Platform } from 'react-native';
 import { FontSize } from './metrics';
 import { COLOR } from '../theme/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlobalStyle from '../theme/globalstyle';
-import {GlobalFonts} from '../theme/typography'
+import { GlobalFonts } from '../theme/typography'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const CommonView = props => {
   const insets = useSafeAreaInsets();
   return (
-    <View 
-    style={{
+    <View
+      style={{
         ...GlobalStyle.flexContainer,
-        paddingBottom: insets.bottom,
+        // paddingBottom: insets.bottom,
       }}
->
+    >
       <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
       {props.children}
     </View>
-  
+
   );
 };
 
@@ -65,76 +65,76 @@ export const commonStyle = StyleSheet.create({
     color: COLOR.Secondary,
     ...GlobalFonts.body
   },
-   row: {
-      flexDirection: "row",
-      marginHorizontal: -5,
-      alignItems: "center",
-   },
-   col: {
-      flex: 1,
-      paddingHorizontal: 5,
-   },
-   Label: {
-      fontSize: 17,
-      textTransform: "capitalize",
-      color: COLOR.dark2,
-      marginBottom: 3,
-      fontWeight: "400",
-   },
-   Valide: {
-      fontSize: 15,
-      color: COLOR.Red,
-      fontWeight: "400",
-   },
-    input: {
-      height: 50,
-      fontSize: 15,
-      lineHeight: 20,
-      color: COLOR.Black1,
-      paddingVertical: 3,
-      paddingLeft: 15,
-      paddingRight: 35,
-      borderColor: COLOR.dark2,
-      backgroundColor: COLOR.White1,
-      borderWidth: 0.5,
-      borderStyle: "solid",
-      borderRadius: 10,
-   },
-   btn_primary: {
-      paddingHorizontal: 15,
-      paddingVertical: 5,
-      fontSize: 15,
-      color: COLOR.White1,
-      alignItems: "center",
-      textTransform: 'capitalize',
-      justifyContent: "center",
-      textAlign: "center",
-      borderRadius: 5,
-      fontWeight: "600",
-      backgroundColor: COLOR.Primary1,
-      overflow: 'hidden',
-   },
-     shodowBox: {
-      padding: 10,
-      borderRadius: 10,
-      backgroundColor: COLOR.White1,
-      shadowColor: COLOR.Black1,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.29,
-      shadowRadius: 4.65,
-      elevation: 7,
-   },
-    btn_primary_round: {
-      paddingHorizontal: 15,
-      paddingVertical: 10,
-      fontSize: 18,
-      color: COLOR.White1,
-      alignItems: "center",
-      textTransform: 'capitalize',
-      justifyContent: "center",
-      textAlign: "center",
-      borderRadius: 20,
-      backgroundColor: COLOR.Primary1,
-      overflow: 'hidden',
-   },
+  row: {
+    flexDirection: "row",
+    marginHorizontal: -5,
+    alignItems: "center",
+  },
+  col: {
+    flex: 1,
+    paddingHorizontal: 5,
+  },
+  Label: {
+    fontSize: 17,
+    textTransform: "capitalize",
+    color: COLOR.dark2,
+    marginBottom: 3,
+    fontWeight: "400",
+  },
+  Valide: {
+    fontSize: 15,
+    color: COLOR.Red,
+    fontWeight: "400",
+  },
+  input: {
+    height: 50,
+    fontSize: 15,
+    lineHeight: 20,
+    color: COLOR.Black1,
+    paddingVertical: 3,
+    paddingLeft: 15,
+    paddingRight: 35,
+    borderColor: COLOR.dark2,
+    backgroundColor: COLOR.White1,
+    borderWidth: 0.5,
+    borderStyle: "solid",
+    borderRadius: 10,
+  },
+  btn_primary: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    fontSize: 15,
+    color: COLOR.White1,
+    alignItems: "center",
+    textTransform: 'capitalize',
+    justifyContent: "center",
+    textAlign: "center",
+    borderRadius: 5,
+    fontWeight: "600",
+    backgroundColor: COLOR.Primary1,
+    overflow: 'hidden',
+  },
+  shodowBox: {
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: COLOR.White1,
+    shadowColor: COLOR.Black1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.29,
+    shadowRadius: 4.65,
+    elevation: 7,
+  },
+  btn_primary_round: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 18,
+    color: COLOR.White1,
+    alignItems: "center",
+    textTransform: 'capitalize',
+    justifyContent: "center",
+    textAlign: "center",
+    borderRadius: 20,
+    backgroundColor: COLOR.Primary1,
+    overflow: 'hidden',
+  },
 });
