@@ -174,12 +174,8 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <KeyboardAvoidWrapper
-        showsVerticalScrollIndicator={false}
-        enableOnAndroid
-        extraScrollHeight={30}
-        keyboardShouldPersistTaps="handled">
+    <Modal visible={visible} transparent animationType="fade" presentationStyle="overFullScreen" statusBarTranslucent>
+      <KeyboardAvoidWrapper>
         <View style={styles.overlay}>
           <View style={styles.modalContent}>
             <View style={styles.header}>
@@ -188,86 +184,86 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
                 <Text style={styles.close}>✕</Text>
               </TouchableOpacity>
             </View>
-            {/* <ScrollView> */}
-            {/* Subject */}
-            <Text style={styles.label}>Meeting Subject</Text>
-            <TextInput
-              style={[styles.input, errors.subject && styles.errorInput]}
-              placeholder="Enter meeting subject"
-              placeholderTextColor={COLOR.TextPlaceholder}
-              value={subject}
-              onChangeText={(text) => setSubject(text)}
-            />
-            {errors.subject && <Text style={styles.errorText}>{errors.subject}</Text>}
-
-            {/* From */}
-            <Text style={styles.label}>From</Text>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startDate')}>
-                <Text>{startDate.toLocaleDateString()}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startTime')}>
-                <Text>{startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-              </TouchableOpacity>
-            </View>
-            {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
-
-            {/* To */}
-            <Text style={styles.label}>To</Text>
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endDate')}>
-                <Text>{endDate.toLocaleDateString()}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endTime')}>
-                <Text>{endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
-              </TouchableOpacity>
-            </View>
-            {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
-
-            {pickerMode && (
-              <DateTimePicker
-                value={pickerMode.includes('start') ? startDate : endDate}
-                mode={pickerMode.includes('Date') ? 'date' : 'time'}
-                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                minimumDate={
-                  pickerMode.includes('start') ? new Date() : startDate
-                }
-                onChange={onChangePicker}
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+              {/* Subject */}
+              <Text style={styles.label}>Meeting Subject</Text>
+              <TextInput
+                style={[styles.input, errors.subject && styles.errorInput]}
+                placeholder="Enter meeting subject"
+                placeholderTextColor={COLOR.TextPlaceholder}
+                value={subject}
+                onChangeText={(text) => setSubject(text)}
               />
-            )}
+              {errors.subject && <Text style={styles.errorText}>{errors.subject}</Text>}
 
-            <Text style={styles.label}>Location</Text>
-            <TextInput
-              style={[styles.input, errors.location && styles.errorInput]}
-              placeholder="Enter location"
-              value={location}
-              onChangeText={setLocation}
-              placeholderTextColor={COLOR.TextPlaceholder}
-            />
-            {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
+              {/* From */}
+              <Text style={styles.label}>From</Text>
+              <View style={styles.row}>
+                <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startDate')}>
+                  <Text>{startDate.toLocaleDateString()}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('startTime')}>
+                  <Text>{startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                </TouchableOpacity>
+              </View>
+              {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
 
-            <Text style={styles.label}>Organizer</Text>
-            <TextInput
-              style={[styles.input, errors.organizer && styles.errorInput]}
-              placeholder="Enter organizer"
-              value={organizer}
-              placeholderTextColor={COLOR.TextPlaceholder}
-              onChangeText={setOrganizer}
-            />
-            {errors.organizer && <Text style={styles.errorText}>{errors.organizer}</Text>}
+              {/* To */}
+              <Text style={styles.label}>To</Text>
+              <View style={styles.row}>
+                <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endDate')}>
+                  <Text>{endDate.toLocaleDateString()}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.dateTimeBox} onPress={() => setPickerMode('endTime')}>
+                  <Text>{endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+                </TouchableOpacity>
+              </View>
+              {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
 
-            <Text style={styles.label}>Description</Text>
-            <TextInput
-              style={[styles.input, { height: 80 }]}
-              multiline
-              maxLength={150}
-              placeholder="Enter description"
-              value={description}
-              placeholderTextColor={COLOR.TextPlaceholder}
-              onChangeText={setDescription}
-            />
-            <Text style={styles.charCount}>{description.length}/150</Text>
-            {/* </ScrollView> */}
+              {pickerMode && (
+                <DateTimePicker
+                  value={pickerMode.includes('start') ? startDate : endDate}
+                  mode={pickerMode.includes('Date') ? 'date' : 'time'}
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  minimumDate={
+                    pickerMode.includes('start') ? new Date() : startDate
+                  }
+                  onChange={onChangePicker}
+                />
+              )}
+
+              <Text style={styles.label}>Location</Text>
+              <TextInput
+                style={[styles.input, errors.location && styles.errorInput]}
+                placeholder="Enter location"
+                value={location}
+                onChangeText={setLocation}
+                placeholderTextColor={COLOR.TextPlaceholder}
+              />
+              {errors.location && <Text style={styles.errorText}>{errors.location}</Text>}
+
+              <Text style={styles.label}>Organizer</Text>
+              <TextInput
+                style={[styles.input, errors.organizer && styles.errorInput]}
+                placeholder="Enter organizer"
+                value={organizer}
+                placeholderTextColor={COLOR.TextPlaceholder}
+                onChangeText={setOrganizer}
+              />
+              {errors.organizer && <Text style={styles.errorText}>{errors.organizer}</Text>}
+
+              <Text style={styles.label}>Description</Text>
+              <TextInput
+                style={[styles.input, { height: 80 }]}
+                multiline
+                maxLength={150}
+                placeholder="Enter description"
+                value={description}
+                placeholderTextColor={COLOR.TextPlaceholder}
+                onChangeText={setDescription}
+              />
+              <Text style={styles.charCount}>{description.length}/150</Text>
+            </ScrollView>
 
             <TouchableOpacity style={styles.createButton} onPress={handleCreateMeeting}>
               <Text style={styles.createButtonText}>Create New Meeting +</Text>
