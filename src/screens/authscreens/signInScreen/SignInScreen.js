@@ -4,16 +4,14 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  ActivityIndicator,
   StyleSheet,
   ScrollView,
   Platform,
   Image,
 } from 'react-native';
 import { useSignInScreen } from './SignInScreenController.js'
-import { commonStyle, CommonView, H4, H3, Valide, Label } from '../../../utils/common';
-import { CheckBox, FignerScan, Sms, Emp, Phone, Eye, EyeSlash, FillCheckbox, FaceIdIcon, BiometricIcon } from '../../../assets/icons/index.js';
+import { CommonView, H3, Valide } from '../../../utils/common';
+import { CheckBox, FillCheckbox, FaceIdIcon, BiometricIcon } from '../../../assets/icons/index.js';
 import CommonButton from '../../../components/CommonButton';
 import { COLOR } from '../../../theme/theme';
 import { FontSize, responsiveHeight, responsiveWidth } from '../../../utils/metrics';
@@ -24,6 +22,7 @@ import { AppLogo } from '../../../assets/images/index.js';
 import BiometricModal from '../../../components/BiometricModal.js'
 import { EmailIcon, EyeCloseIcon, EyeIcon, KeyIcon } from '../../../assets/svgs/index.js';
 import DeviceInfo from "react-native-device-info";
+import KeyboardAvoidWrapper from '../../../components/KeyboardAvoidWrapper.js';
 
 function SignInScreen() {
   const {
@@ -56,71 +55,72 @@ function SignInScreen() {
   } = useSignInScreen();
   return (
     <CommonView>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Image style={styles.appLogo} source={AppLogo} />
-        <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
-        <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
-          <EmailIcon />
-          <TextInput
-            placeholder={t("placeholders.Enter_your_registered_email")}
-            placeholderTextColor={COLOR.TextPlaceholder}
-            cursorColor={COLOR.Gray}
-            style={styles.input}
-            onChangeText={value =>
-              setFormdata({ ...Formdata, email: value })
-            }
-            value={Formdata.email}
-          />
-        </View>
-        <Valide style={styles.valid}>
-          {Validator.current.message('email', Formdata.email, 'required')}
-        </Valide>
-
-        <View style={[styles.inputContainer, { borderColor: Formdata.password && Validator.current.errorMessages.password ? COLOR.Red : COLOR.GrayBorder }]}>
-          <KeyIcon />
-          <TextInput
-            placeholder={t("placeholders.Enter_your_password")}
-            secureTextEntry={IsPassVisible}
-            placeholderTextColor={COLOR.TextPlaceholder}
-            style={styles.input}
-            cursorColor={COLOR.Gray}
-            onChangeText={value =>
-              setFormdata({ ...Formdata, password: value })
-            }
-            maxLength={15}
-            value={Formdata.password}
-          />
-          <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
-            {IsPassVisible ? <EyeCloseIcon /> : <EyeIcon />}
-          </TouchableOpacity>
-        </View>
-        <Valide style={styles.valid}>
-          {Validator.current.message(
-            'password',
-            Formdata.password,
-            'required',
-          )}
-        </Valide>
-        <View style={styles.rowContainer}>
-          <View style={styles.row}>
-            <TouchableOpacity onPress={() => setisChecked(!isChecked)}>
-              <Image source={isChecked ? FillCheckbox : CheckBox} />
-            </TouchableOpacity>
-            <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
+      <KeyboardAvoidWrapper>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps='handled'>
+          <Image style={styles.appLogo} source={AppLogo} />
+          <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
+          <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
+            <EmailIcon />
+            <TextInput
+              placeholder={t("placeholders.Enter_your_registered_email")}
+              placeholderTextColor={COLOR.TextPlaceholder}
+              cursorColor={COLOR.Gray}
+              style={styles.input}
+              onChangeText={value =>
+                setFormdata({ ...Formdata, email: value })
+              }
+              value={Formdata.email}
+            />
           </View>
-          <TouchableOpacity style={styles.colmnCotainer} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
-            <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
-            <View style={styles.lineContainer} />
-          </TouchableOpacity>
-        </View>
+          <Valide style={styles.valid}>
+            {Validator.current.message('email', Formdata.email, 'required')}
+          </Valide>
 
-        <CommonButton
-          loading={!isShowbiomatric && isSigninFetching}
-          onPress={() => heandleonSignin()}
-          title={t('Button.Sign_In')}
-        />
+          <View style={[styles.inputContainer, { borderColor: Formdata.password && Validator.current.errorMessages.password ? COLOR.Red : COLOR.GrayBorder }]}>
+            <KeyIcon />
+            <TextInput
+              placeholder={t("placeholders.Enter_your_password")}
+              secureTextEntry={IsPassVisible}
+              placeholderTextColor={COLOR.TextPlaceholder}
+              style={styles.input}
+              cursorColor={COLOR.Gray}
+              onChangeText={value =>
+                setFormdata({ ...Formdata, password: value })
+              }
+              maxLength={15}
+              value={Formdata.password}
+            />
+            <TouchableOpacity onPress={() => { setIsPassVisible(!IsPassVisible) }}>
+              {IsPassVisible ? <EyeCloseIcon /> : <EyeIcon />}
+            </TouchableOpacity>
+          </View>
+          <Valide style={styles.valid}>
+            {Validator.current.message(
+              'password',
+              Formdata.password,
+              'required',
+            )}
+          </Valide>
+          <View style={styles.rowContainer}>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => setisChecked(!isChecked)}>
+                <Image source={isChecked ? FillCheckbox : CheckBox} />
+              </TouchableOpacity>
+              <Text style={styles.rememberText}>{t("SignIn.Remember_Me")}</Text>
+            </View>
+            <TouchableOpacity style={styles.colmnCotainer} onPress={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}>
+              <Text style={styles.forgotText}>{t("Button.Forgot_password")}</Text>
+              <View style={styles.lineContainer} />
+            </TouchableOpacity>
+          </View>
 
-        {/* <Text style={styles.or}>OR</Text>
+          <CommonButton
+            loading={!isShowbiomatric && isSigninFetching}
+            onPress={() => heandleonSignin()}
+            title={t('Button.Sign_In')}
+          />
+
+          {/* <Text style={styles.or}>OR</Text>
           <TouchableOpacity style={styles.outlineBtn}>
             <Image source={Emp} />
             <Text style={styles.outlineText}>Sign in With Employee ID</Text>
@@ -130,18 +130,19 @@ function SignInScreen() {
             <Image source={Phone} />
             <Text style={styles.outlineText}>Sign in With Phone</Text>
           </TouchableOpacity> */}
-        {isVisibleVerifiedModal &&
-          <EmailVerificationModal
-            visible={isVisibleVerifiedModal}
-            onSubmit={handleVerificationModal}
-            isVerifiedFetching={isVerifiedFetching}
-          />}
-        {IsReSetmodalvisible &&
-          <ForgotPasswordModal
-            visible={IsReSetmodalvisible}
-            onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
-          />}
-      </ScrollView>
+          {isVisibleVerifiedModal &&
+            <EmailVerificationModal
+              visible={isVisibleVerifiedModal}
+              onSubmit={handleVerificationModal}
+              isVerifiedFetching={isVerifiedFetching}
+            />}
+          {IsReSetmodalvisible &&
+            <ForgotPasswordModal
+              visible={IsReSetmodalvisible}
+              onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
+            />}
+        </ScrollView>
+      </KeyboardAvoidWrapper>
       <BiometricModal
         visible={isShowbiomatric}
         onClose={() => setisShowbiomatric(false)}
@@ -158,24 +159,26 @@ function SignInScreen() {
             : t('Button.LoginWithFaceId')
         }
       />
-      <View style={styles.policyContainer}>
-        <Text
-          style={styles.linkText}
-          onPress={() => navigateTerms()}
-        >
-          Terms of Use
-        </Text>
-        <Text style={styles.policyText}>and</Text>
-        <Text
-          style={styles.linkText}
-          onPress={() => navigatePrivacyPolicy()}
-        >
-          Privacy Policy
+      <View style={styles.bottomContainer}>
+        <View style={styles.policyContainer}>
+          <Text
+            style={styles.linkText}
+            onPress={() => navigateTerms()}
+          >
+            Terms of Use
+          </Text>
+          <Text style={styles.policyText}>and</Text>
+          <Text
+            style={styles.linkText}
+            onPress={() => navigatePrivacyPolicy()}
+          >
+            Privacy Policy
+          </Text>
+        </View>
+        <Text style={styles.verisonText}>
+          {`${DeviceInfo.getVersion()}`}
         </Text>
       </View>
-      <Text style={styles.verisonText}>
-        {`${DeviceInfo.getVersion()}`}
-      </Text>
     </CommonView>
   );
 }
@@ -257,6 +260,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
   },
+
+  bottomContainer: { position: 'absolute', bottom: 0, justifyContent: 'center', alignSelf: 'center' },
 
   leftIcon: {
     marginRight: 10,

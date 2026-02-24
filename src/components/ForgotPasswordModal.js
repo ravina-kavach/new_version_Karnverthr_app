@@ -21,11 +21,12 @@ import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
 import { useSelector } from 'react-redux';
 import { CommonSelector } from '../store/reducers/commonSlice';
+import KeyboardAvoidWrapper from './KeyboardAvoidWrapper';
 const ForgotPasswordModal = ({
   visible,
   onClose,
 }) => {
-  const {VerfiedUserData} = useSelector(CommonSelector);
+  const { VerfiedUserData } = useSelector(CommonSelector);
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
@@ -45,60 +46,60 @@ const ForgotPasswordModal = ({
   );
 
   const onSendTempPassword = async () => {
-  const enteredEmail = resetEmail?.toLowerCase().trim();
-  const verifiedEmail = VerfiedUserData?.private_email?.toLowerCase().trim();
-  if (enteredEmail !== verifiedEmail) {
-    showMessage({
-      message: 'Email does not match the registered email.',
-      type: 'danger',
-    });
-    return;
-  }
-
-  if (!resetValidator.current.allValid()) {
-    resetValidator.current.showMessages();
-    forceUpdate(n => n + 1);
-    return;
-  }
-
-  try {
-    setLoading(true);
-    const token = await AsyncStorage.getItem('USER_TOKEN');
-    const response = await fetch(
-      `${Config.BASE_URL}api/forgot-password/request`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: token,
-        },
-        body: JSON.stringify({
-          email: enteredEmail,
-        }),
-      }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result?.message || 'Failed to send password');
+    const enteredEmail = resetEmail?.toLowerCase().trim();
+    const verifiedEmail = VerfiedUserData?.private_email?.toLowerCase().trim();
+    if (enteredEmail !== verifiedEmail) {
+      showMessage({
+        message: 'Email does not match the registered email.',
+        type: 'danger',
+      });
+      return;
     }
 
-    showMessage({
-      message: 'Temporary password sent to your email',
-      type: 'success',
-    });
+    if (!resetValidator.current.allValid()) {
+      resetValidator.current.showMessages();
+      forceUpdate(n => n + 1);
+      return;
+    }
 
-    setStep(2);
-  } catch (error) {
-    showMessage({
-      message: error.message,
-      type: 'danger',
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('USER_TOKEN');
+      const response = await fetch(
+        `${Config.BASE_URL}api/forgot-password/request`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token,
+          },
+          body: JSON.stringify({
+            email: enteredEmail,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || 'Failed to send password');
+      }
+
+      showMessage({
+        message: 'Temporary password sent to your email',
+        type: 'success',
+      });
+
+      setStep(2);
+    } catch (error) {
+      showMessage({
+        message: error.message,
+        type: 'danger',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   const onResetPassword = async () => {
@@ -181,16 +182,13 @@ const ForgotPasswordModal = ({
       visible={visible}
       onRequestClose={onClose}
     >
-      
+
       <TouchableOpacity
         style={styles.modalContainer}
         activeOpacity={1}
         onPress={handleClose}
       >
-        <KeyboardAwareScrollView
-          enableOnAndroid
-          extraScrollHeight={30}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidWrapper
           contentContainerStyle={{ alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}
         >
 
@@ -241,7 +239,7 @@ const ForgotPasswordModal = ({
               )}
 
               {step === 2 && (
-                <>                   
+                <>
                   <View style={styles.inputContainer}>
                     <CommonTextInput
                       value={tempPassword}
@@ -300,7 +298,7 @@ const ForgotPasswordModal = ({
               )}
             </View>
           </TouchableOpacity>
-        </KeyboardAwareScrollView>
+        </KeyboardAvoidWrapper>
       </TouchableOpacity>
     </Modal>
   );
@@ -366,7 +364,7 @@ const styles = StyleSheet.create({
 
   backText: {
     textAlign: 'center',
-    fontSize:FontSize.Font16,
+    fontSize: FontSize.Font16,
     color: COLOR.Secondary,
     fontWeight: '500',
   },
