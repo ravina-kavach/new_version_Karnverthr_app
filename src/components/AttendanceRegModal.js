@@ -175,7 +175,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
         <Modal visible={visible} statusBarTranslucent transparent>
             <KeyboardAvoidWrapper keyboardShouldPersistTaps="handled">
 
-                <View style={styles.overlay}>
+                <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
                     <View style={styles.modalContent}>
                         <View style={styles.header}>
                             <Text style={styles.title}>
@@ -357,7 +357,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                             </TouchableOpacity>
                         </View>
                     </View>
-                </View>
+                </TouchableOpacity>
             </KeyboardAvoidWrapper>
         </Modal>
     );

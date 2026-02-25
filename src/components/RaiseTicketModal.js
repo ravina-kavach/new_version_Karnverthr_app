@@ -12,6 +12,7 @@ import { GlobalFonts } from '../theme/typography'
 import { FontSize } from '../utils/metrics'
 import ImagePickerSheet from './ImagePickerSheet'
 import { COLOR } from '../theme/theme'
+import KeyboardAvoidWrapper from './KeyboardAvoidWrapper'
 
 const RaiseTicketModal = ({
     visible,
@@ -99,141 +100,143 @@ const RaiseTicketModal = ({
             animationType="fade"
             statusBarTranslucent
         >
-            <View style={styles.overlay}>
-                <View style={styles.container}>
-
-                    <View style={styles.header}>
-                        <Text style={styles.titleText}>Raise Ticket</Text>
-                        <TouchableOpacity onPress={onClose}>
-                            <Text style={styles.close}>✕</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <Text style={styles.label}>Title</Text>
-                    <TextInput
-                        style={[styles.input, errors.title && styles.inputError]}
-                        value={title}
-                        onChangeText={(text) => {
-                            setTitle(text)
-                            if (errors.title) {
-                                setErrors(prev => ({ ...prev, title: null }))
-                            }
-                        }}
-                        placeholder="Enter ticket title"
-                        placeholderTextColor="#999"
-                    />
-                    {errors.title && (
-                        <Text style={styles.errorText}>{errors.title}</Text>
-                    )}
-
-                    {/* Description */}
-                    <Text style={styles.label}>Description</Text>
-                    <TextInput
-                        style={[
-                            styles.input,
-                            styles.textArea,
-                            errors.description && styles.inputError
-                        ]}
-                        value={description}
-                        onChangeText={(text) => {
-                            if (text.length <= 250) {
-                                setDescription(text)
-                                if (errors.description) {
-                                    setErrors(prev => ({ ...prev, description: null }))
-                                }
-                            }
-                        }}
-                        placeholder="Describe your issue..."
-                        placeholderTextColor="#999"
-                        multiline
-                        maxLength={250}
-                    />
-
-                    <View style={styles.bottomRow}>
-                        <View style={{ flex: 1 }}>
-                            {errors.description && (
-                                <Text style={styles.errorText}>
-                                    {errors.description}
-                                </Text>
-                            )}
-                        </View>
-
-                        <Text
-                            style={[
-                                styles.counterText,
-                                description.length > 200 && styles.counterWarning
-                            ]}
-                        >
-                            {description.length}/250
-                        </Text>
-                    </View>
-
-                    {/* Attachment Button */}
-                    {!attachment &&
-                        <TouchableOpacity
-                            style={styles.attachmentBtn}
-                            onPress={() => setPickerVisible(true)}
-                        >
-                            <Text style={styles.attachmentText}>
-                                + Add Attachment
-                            </Text>
-                        </TouchableOpacity>}
-
-                    {/* Attachment Preview */}
-                    {attachment && (
-                        <View style={styles.previewContainer}>
-                            <Image
-                                source={{ uri: `data:image/jpeg;base64,${attachment.base64}` }}
-                                style={styles.previewImage}
-                            />
-                            <TouchableOpacity
-                                style={styles.removeBtn}
-                                onPress={() => setAttachment(null)}
-                            >
-                                <Text style={styles.removeText}>Remove</Text>
+            <KeyboardAvoidWrapper>
+                <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
+                    <View style={styles.container}>
+                        <View style={styles.header}>
+                            <Text style={styles.titleText}>Raise Ticket</Text>
+                            <TouchableOpacity onPress={onClose}>
+                                <Text style={styles.close}>✕</Text>
                             </TouchableOpacity>
                         </View>
-                    )}
 
-                    {/* General Error */}
-                    {errors.general && (
-                        <Text style={[styles.errorText, { textAlign: 'center', marginTop: 10 }]}>
-                            {errors.general}
-                        </Text>
-                    )}
+                        <Text style={styles.label}>Title</Text>
+                        <TextInput
+                            style={[styles.input, errors.title && styles.inputError]}
+                            value={title}
+                            onChangeText={(text) => {
+                                setTitle(text)
+                                if (errors.title) {
+                                    setErrors(prev => ({ ...prev, title: null }))
+                                }
+                            }}
+                            placeholder="Enter ticket title"
+                            placeholderTextColor="#999"
+                        />
+                        {errors.title && (
+                            <Text style={styles.errorText}>{errors.title}</Text>
+                        )}
 
-                    {/* Footer */}
-                    <View style={styles.footer}>
-                        <TouchableOpacity
-                            style={styles.cancelBtn}
-                            onPress={onClose}
-                            disabled={isSubmitting}
-                        >
-                            <Text style={styles.cancelText}>Cancel</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
+                        {/* Description */}
+                        <Text style={styles.label}>Description</Text>
+                        <TextInput
                             style={[
-                                styles.saveBtn,
-                                isSubmitting && { opacity: 0.6 }
+                                styles.input,
+                                styles.textArea,
+                                errors.description && styles.inputError
                             ]}
-                            onPress={handleSubmit}
-                            disabled={isSubmitting}
-                        >
-                            <Text style={styles.saveText}>
-                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                            value={description}
+                            onChangeText={(text) => {
+                                if (text.length <= 250) {
+                                    setDescription(text)
+                                    if (errors.description) {
+                                        setErrors(prev => ({ ...prev, description: null }))
+                                    }
+                                }
+                            }}
+                            placeholder="Describe your issue..."
+                            placeholderTextColor="#999"
+                            multiline
+                            maxLength={250}
+                        />
+
+                        <View style={styles.bottomRow}>
+                            <View style={{ flex: 1 }}>
+                                {errors.description && (
+                                    <Text style={styles.errorText}>
+                                        {errors.description}
+                                    </Text>
+                                )}
+                            </View>
+
+                            <Text
+                                style={[
+                                    styles.counterText,
+                                    description.length > 200 && styles.counterWarning
+                                ]}
+                            >
+                                {description.length}/250
                             </Text>
-                        </TouchableOpacity>
+                        </View>
+
+                        {/* Attachment Button */}
+                        {!attachment &&
+                            <TouchableOpacity
+                                style={styles.attachmentBtn}
+                                onPress={() => setPickerVisible(true)}
+                            >
+                                <Text style={styles.attachmentText}>
+                                    + Add Attachment
+                                </Text>
+                            </TouchableOpacity>}
+
+                        {/* Attachment Preview */}
+                        {attachment && (
+                            <View style={styles.previewContainer}>
+                                <Image
+                                    source={{ uri: `data:image/jpeg;base64,${attachment.base64}` }}
+                                    style={styles.previewImage}
+                                />
+                                <TouchableOpacity
+                                    style={styles.removeBtn}
+                                    onPress={() => setAttachment(null)}
+                                >
+                                    <Text style={styles.removeText}>Remove</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {/* General Error */}
+                        {errors.general && (
+                            <Text style={[styles.errorText, { textAlign: 'center', marginTop: 10 }]}>
+                                {errors.general}
+                            </Text>
+                        )}
+
+                        {/* Footer */}
+                        <View style={styles.footer}>
+                            <TouchableOpacity
+                                style={styles.cancelBtn}
+                                onPress={onClose}
+                                disabled={isSubmitting}
+                            >
+                                <Text style={styles.cancelText}>Cancel</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[
+                                    styles.saveBtn,
+                                    isSubmitting && { opacity: 0.6 }
+                                ]}
+                                onPress={handleSubmit}
+                                disabled={isSubmitting}
+                            >
+                                <Text style={styles.saveText}>
+                                    {isSubmitting ? 'Submitting...' : 'Submit'}
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+
                     </View>
+                </TouchableOpacity>
 
-                </View>
-            </View>
+                <ImagePickerSheet
+                    visible={pickerVisible}
+                    onClose={() => setPickerVisible(false)}
+                    onResult={handleAttachment}
+                />
+            </KeyboardAvoidWrapper>
 
-            <ImagePickerSheet
-                visible={pickerVisible}
-                onClose={() => setPickerVisible(false)}
-                onResult={handleAttachment}
-            />
         </Modal>
     )
 }

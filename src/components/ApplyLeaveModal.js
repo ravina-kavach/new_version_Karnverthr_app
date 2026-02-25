@@ -144,7 +144,7 @@ const ApplyLeaveModal = ({
   return (
     <Modal visible={visible} statusBarTranslucent transparent animationType="fade" >
       <KeyboardAvoidWrapper keyboardShouldPersistTaps="handled">
-        <View style={styles.overlay}>
+        <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.container}>
             <View style={styles.header}>
               <Text style={styles.title}>Apply Leave</Text>
@@ -284,7 +284,7 @@ const ApplyLeaveModal = ({
               />
             </View>
           )}
-        </View>
+        </TouchableOpacity>
       </KeyboardAvoidWrapper>
 
     </Modal>

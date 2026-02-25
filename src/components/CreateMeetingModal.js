@@ -176,7 +176,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
   return (
     <Modal visible={visible} transparent animationType="fade" presentationStyle="overFullScreen" statusBarTranslucent>
       <KeyboardAvoidWrapper>
-        <View style={styles.overlay}>
+        <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.header}>
               <Text style={styles.title}>New Meeting</Text>
@@ -269,7 +269,7 @@ const NewMeetingModal = ({ t, visible, onClose, onCreateMeeting }) => {
               <Text style={styles.createButtonText}>Create New Meeting +</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </TouchableOpacity>
       </KeyboardAvoidWrapper>
     </Modal>
   );
