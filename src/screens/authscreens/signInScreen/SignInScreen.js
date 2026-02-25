@@ -54,7 +54,7 @@ function SignInScreen() {
     navigatePrivacyPolicy
   } = useSignInScreen();
   return (
-    <CommonView>
+    <CommonView style={styles.mainContainer}>
       <KeyboardAvoidWrapper>
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps='handled'>
           <Image style={styles.appLogo} source={AppLogo} />
@@ -167,7 +167,7 @@ function SignInScreen() {
           >
             Terms of Use
           </Text>
-          <Text style={styles.policyText}>and</Text>
+          <Text style={styles.policyText}>&</Text>
           <Text
             style={styles.linkText}
             onPress={() => navigatePrivacyPolicy()}
@@ -176,7 +176,7 @@ function SignInScreen() {
           </Text>
         </View>
         <Text style={styles.verisonText}>
-          {`${DeviceInfo.getVersion()}`}
+          {`version. ${DeviceInfo.getVersion()}`}
         </Text>
       </View>
     </CommonView>
@@ -185,10 +185,9 @@ function SignInScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: COLOR.White1,
+    flexGrow: 1,
     paddingHorizontal: 25,
-    paddingBottom: 40,
+    paddingBottom: 120,
     alignItems: 'center',
     paddingTop: responsiveHeight(10),
   },
@@ -261,8 +260,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
 
-  bottomContainer: { position: 'absolute', backgroundColor: COLOR.White1, bottom: 0, justifyContent: 'center', alignSelf: 'center' },
-
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
   leftIcon: {
     marginRight: 10,
     backgroundColor: 'green',
@@ -281,6 +285,8 @@ const styles = StyleSheet.create({
     fontSize: FontSize.Font16,
     color: COLOR.Secondary
   },
+
+  mainContainer: { flex: 1, backgroundColor: COLOR.White1 },
 
   row: {
     flexDirection: 'row',
@@ -385,7 +391,6 @@ const styles = StyleSheet.create({
   },
   policyContainer: {
     paddingHorizontal: 10,
-    backgroundColor: COLOR.White1,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row'
@@ -394,7 +399,7 @@ const styles = StyleSheet.create({
   policyText: {
     ...GlobalFonts.subtitleText,
     fontSize: FontSize.Font14,
-    color: COLOR.TextPlaceholder,
+    color: COLOR.Black1,
     textAlign: 'center',
     paddingHorizontal: 10,
     lineHeight: 20,

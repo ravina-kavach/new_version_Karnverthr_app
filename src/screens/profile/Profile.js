@@ -200,7 +200,7 @@ export default function Profile() {
 
       {/* App Version */}
       <Text style={styles.verisonText}>
-        {`version : ${DeviceInfo.getVersion()}`}
+        {`version. ${DeviceInfo.getVersion()}`}
       </Text>
     </CommonView>
   );
@@ -286,6 +286,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
     paddingVertical: 20,
+    bottom: 50,
     color: COLOR.TextPlaceholder,
   },
 });

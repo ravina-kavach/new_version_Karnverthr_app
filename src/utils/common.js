@@ -13,6 +13,7 @@ export const CommonView = props => {
     <View
       style={{
         ...GlobalStyle.flexContainer,
+        ...props.style
         // paddingBottom: insets.bottom,
       }}
     >
