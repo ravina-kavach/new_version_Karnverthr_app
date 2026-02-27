@@ -16,21 +16,22 @@ const KeyboardAvoidWrapper = ({
   return (
     <KeyboardAvoidingView
       style={[styles.container, style]}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
           contentContainerStyle={[
             styles.contentContainer,
             contentContainerStyle,
           ]}
-          keyboardShouldPersistTaps="always"
           showsVerticalScrollIndicator={false}
+          bounces={false}
         >
           {children}
         </ScrollView>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView >
+    </KeyboardAvoidingView>
   );
 };
 
@@ -38,7 +39,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'transparent',
-    zIndex: 999
   },
   contentContainer: {
     flexGrow: 1,

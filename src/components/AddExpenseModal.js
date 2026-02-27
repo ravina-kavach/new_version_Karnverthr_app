@@ -115,12 +115,10 @@ export const AddExpenseModal = ({
         <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={handleClose}>
           <TouchableWithoutFeedback>
             <View style={styles.card}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-
-                <Text style={styles.title}>
-                  {isEditMode ? t('Expenses.Edit_Expense') : t('Expenses.Create_Expense')}
-                </Text>
-
+              <Text style={styles.title}>
+                {isEditMode ? t('Expenses.Edit_Expense') : t('Expenses.Create_Expense')}
+              </Text>
+              <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps='handled'>
                 <Text style={styles.label}>{t('Expenses.Payment_Mode')}</Text>
                 <RadioGroup
                   radioButtons={[
@@ -252,24 +250,24 @@ export const AddExpenseModal = ({
                     onChange={onChangeStartDate}
                   />
                 )}
-                <View style={styles.footer}>
-                  <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
-                    <Text style={styles.cancelText}>{t('Button.Cancel')}</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.saveBtn}
-                    onPress={onSubmit}
-                    disabled={isCreateExpensesFetching}
-                  >
-                    {isCreateExpensesFetching ? (
-                      <ActivityIndicator color="#fff" />
-                    ) : (
-                      <Text style={styles.saveText}>{t('Button.Save')}</Text>
-                    )}
-                  </TouchableOpacity>
-                </View>
               </ScrollView>
+              <View style={styles.footer}>
+                <TouchableOpacity style={styles.cancelBtn} onPress={handleClose}>
+                  <Text style={styles.cancelText}>{t('Button.Cancel')}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.saveBtn}
+                  onPress={onSubmit}
+                  disabled={isCreateExpensesFetching}
+                >
+                  {isCreateExpensesFetching ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.saveText}>{t('Button.Save')}</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
               {isImagePickerVisible && (
                 <ImagePickerSheet
                   visible={isImagePickerVisible}
