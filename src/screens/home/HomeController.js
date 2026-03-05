@@ -17,8 +17,6 @@ import { showMessage } from "react-native-flash-message";
 import { useTranslation } from "react-i18next";
 import BackgroundGeolocation from "react-native-background-geolocation";
 import BackgroundHandler from "../../utils/BackgroundHandler";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Service from "../../utils/service";
 
 import {
   ApprovelsIcon,
