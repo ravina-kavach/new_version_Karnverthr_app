@@ -25,6 +25,8 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        // ADD THIS for Firebase
+        classpath("com.google.gms:google-services:4.4.4")
     }
 }
 allprojects {   // <-- NOTE:  allprojects container -- If you don't see this, create it.

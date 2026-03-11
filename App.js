@@ -15,6 +15,13 @@ import DeviceInfo from 'react-native-device-info';
 import NetInfo from '@react-native-community/netinfo';
 import OfflineModal from './src/components/OfflineModal';
 import { showMessage } from 'react-native-flash-message';
+import {
+  requestUserPermission,
+  getFCMToken,
+  notificationListener,
+  backgroundNotificationHandler,
+  onNotificationOpened
+} from './src/utils/PushNotificationService';
 
 const Root = () => {
   const dispatch = useDispatch();
@@ -83,6 +90,22 @@ const Root = () => {
     });
 
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const initNotifications = async () => {
+      const granted = await requestUserPermission();
+      if (!granted) {
+        return;
+      }
+      await getFCMToken();
+      backgroundNotificationHandler();
+      const unsubscribe = notificationListener();
+      onNotificationOpened();
+      return unsubscribe;
+
+    };
+    initNotifications();
   }, []);
 
   const handleRetry = async () => {

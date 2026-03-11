@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <application
       android:name=".MainApplication"
@@ -62,6 +64,12 @@
 			android:resource="@xml/file_viewer_provider_paths"
 		/>
 	</provider>
+  <meta-data
+  android:name="com.google.firebase.messaging.default_notification_icon"
+  android:resource="@drawable/ic_notification"/>
+  <meta-data
+  android:name="com.google.firebase.messaging.default_notification_color"
+  android:resource="@color/colorWhite"/>
   </application>
     <queries>
     <intent>

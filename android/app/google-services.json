@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "499603694281",
+    "project_id": "konverthr-66419",
+    "storage_bucket": "konverthr-66419.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499603694281:android:060f81aff9fcd153bbe318",
+        "android_client_info": {
+          "package_name": "com.konverthr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyA2LVptakM5Kqp0C5smVSSvLbAmgTfF8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
