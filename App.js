@@ -19,8 +19,7 @@ import {
   requestUserPermission,
   getFCMToken,
   notificationListener,
-  backgroundNotificationHandler,
-  onNotificationOpened
+  notificationOpenHandler,
 } from './src/utils/PushNotificationService';
 
 const Root = () => {
@@ -93,19 +92,13 @@ const Root = () => {
   }, []);
 
   useEffect(() => {
-    const initNotifications = async () => {
-      const granted = await requestUserPermission();
-      if (!granted) {
-        return;
-      }
-      await getFCMToken();
-      backgroundNotificationHandler();
-      const unsubscribe = notificationListener();
-      onNotificationOpened();
-      return unsubscribe;
+    requestUserPermission();
+    getFCMToken();
 
-    };
-    initNotifications();
+    const unsubscribe = notificationListener();
+    notificationOpenHandler();
+
+    return unsubscribe;
   }, []);
 
   const handleRetry = async () => {

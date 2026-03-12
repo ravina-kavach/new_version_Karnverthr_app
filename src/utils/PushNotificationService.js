@@ -2,45 +2,32 @@ import { Platform, PermissionsAndroid, Alert } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 
-
+/*
+|--------------------------------------------------------------------------
+| REQUEST PERMISSION
+|--------------------------------------------------------------------------
+*/
 
 export const requestUserPermission = async () => {
     try {
-
         let permissionGranted = true;
 
-        /*
-        ---------------------------
-        ANDROID 13+ PERMISSION
-        ---------------------------
-        */
-
+        // ANDROID 13+
         if (Platform.OS === 'android' && Platform.Version >= 33) {
-
-            const hasPermission = await PermissionsAndroid.check(
+            const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
             );
 
-            if (!hasPermission) {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
-                );
-                if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-                    permissionGranted = false;
-                }
+            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+                permissionGranted = false;
             }
         }
 
-        /*
-        ---------------------------
-        IOS PERMISSION
-        ---------------------------
-        */
-
+        // IOS
         const authStatus = await messaging().requestPermission({
             alert: true,
             badge: true,
-            sound: true
+            sound: true,
         });
 
         const enabled =
@@ -48,60 +35,64 @@ export const requestUserPermission = async () => {
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
         if (!enabled) {
-
             permissionGranted = false;
-
-            Alert.alert(
-                "Notification Disabled",
-                "Push notifications are disabled. Enable them in settings to receive updates."
-            );
         }
 
         return permissionGranted;
-
-    } catch (error) {
-
-        console.log("Permission Error:", error);
+    } catch (e) {
+        console.log('Permission error:', e);
         return false;
-
     }
 };
 
 /*
 |--------------------------------------------------------------------------
-| GET FCM TOKEN (ONLY IF PERMISSION GRANTED)
+| GET FCM TOKEN
 |--------------------------------------------------------------------------
 */
 
 export const getFCMToken = async () => {
     try {
+        await messaging().registerDeviceForRemoteMessages();
         const token = await messaging().getToken();
-        console.log("FCM Token:", token);
+        console.log('FCM TOKEN:', token);
         return token;
-    } catch (error) {
-
-        console.log("FCM Token Error:", error);
-
+    } catch (e) {
+        console.log('Token error:', e);
     }
 };
 
 /*
 |--------------------------------------------------------------------------
-| DISPLAY NOTIFICATION USING NOTIFEE
+| CREATE CHANNEL (ANDROID)
 |--------------------------------------------------------------------------
 */
 
-export const displayNotification = async (title, body, data = {}) => {
+export const createNotificationChannel = async () => {
+    return await notifee.createChannel({
+        id: 'default',
+        name: 'Default Channel',
+        importance: AndroidImportance.HIGH,
+    });
+};
+
+/*
+|--------------------------------------------------------------------------
+| DISPLAY NOTIFICATION
+|--------------------------------------------------------------------------
+*/
+
+export const displayNotification = async (
+    title = '',
+    body = '',
+    data = {}
+) => {
     try {
-        const channelId = await notifee.createChannel({
-            id: 'default',
-            name: 'Default Channel',
-            importance: AndroidImportance.HIGH,
-        });
+        const channelId = await createNotificationChannel();
 
         await notifee.displayNotification({
-            title: title || '',
-            body: body || '',
+            title,
+            body,
             data,
 
             android: {
@@ -114,26 +105,23 @@ export const displayNotification = async (title, body, data = {}) => {
 
             ios: {
                 sound: 'default',
-            }
-
+            },
         });
-
-    } catch (error) {
-        console.log("Display Notification Error:", error);
-
+    } catch (e) {
+        console.log('Display error:', e);
     }
 };
 
 /*
 |--------------------------------------------------------------------------
-| FOREGROUND NOTIFICATION LISTENER
+| FOREGROUND LISTENER
 |--------------------------------------------------------------------------
 */
 
 export const notificationListener = () => {
-
     return messaging().onMessage(async remoteMessage => {
-        console.log("Foreground Notification:", remoteMessage);
+        console.log('Foreground message:', remoteMessage);
+
         const title =
             remoteMessage?.notification?.title ||
             remoteMessage?.data?.title ||
@@ -143,52 +131,31 @@ export const notificationListener = () => {
             remoteMessage?.notification?.body ||
             remoteMessage?.data?.body ||
             '';
-        displayNotification(title, body, remoteMessage?.data || {});
+
+        await displayNotification(title, body, remoteMessage?.data);
     });
 };
 
 /*
 |--------------------------------------------------------------------------
-| BACKGROUND NOTIFICATION HANDLER
+| OPEN EVENTS
 |--------------------------------------------------------------------------
 */
 
-export const backgroundNotificationHandler = () => {
-    messaging().setBackgroundMessageHandler(async remoteMessage => {
-        console.log("Background Notification:", remoteMessage);
-        const title =
-            remoteMessage?.notification?.title ||
-            remoteMessage?.data?.title ||
-            '';
-
-        const body =
-            remoteMessage?.notification?.body ||
-            remoteMessage?.data?.body ||
-            '';
-        displayNotification(title, body, remoteMessage?.data || {});
-
-    });
-};
-
-/*
-|--------------------------------------------------------------------------
-| NOTIFICATION OPEN EVENTS
-|--------------------------------------------------------------------------
-*/
-
-export const onNotificationOpened = () => {
-
+export const notificationOpenHandler = () => {
     messaging().onNotificationOpenedApp(remoteMessage => {
-        console.log("Opened from background:", remoteMessage);
+        console.log('Opened from background:', remoteMessage);
     });
+
     messaging()
         .getInitialNotification()
         .then(remoteMessage => {
             if (remoteMessage) {
-                console.log("Opened from quit state:", remoteMessage);
+                console.log('Opened from quit state:', remoteMessage);
             }
         });
+
     notifee.onForegroundEvent(({ type, detail }) => {
-        console.log("Notifee Event:", type, detail);
+        console.log('Notifee event:', type, detail);
     });
 };

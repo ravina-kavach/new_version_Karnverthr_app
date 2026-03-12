@@ -114,6 +114,8 @@
 		<string>Inter_28pt-Thin.ttf</string>
 		<string>Inter_28pt-ThinItalic.ttf</string>
 	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
