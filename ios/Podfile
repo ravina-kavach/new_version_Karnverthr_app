@@ -7,14 +7,11 @@ require Pod::Executable.execute_command('node', ['-p',
 
 require_relative '../node_modules/react-native-permissions/scripts/setup.rb'
 platform :ios, min_ios_version_supported
-use_frameworks! :linkage => :static
+
 prepare_react_native_project!
 
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
+use_frameworks! :linkage => :static
+$RNFirebaseAsStaticFramework = true
 
 permissions_path = '../node_modules/react-native-permissions/ios'
 
@@ -37,8 +34,7 @@ target 'KonvertHR' do
   )
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
-  pod 'RNFileViewer', :path => '../node_modules/react-native-file-viewer'
-  
+
   post_install do |installer|
     react_native_post_install(
       installer,
