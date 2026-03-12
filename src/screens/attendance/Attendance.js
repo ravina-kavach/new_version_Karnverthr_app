@@ -30,7 +30,7 @@ export default function Attendance() {
     handleModal,
     onCreateRegularization
   } = useAttendance();
-  
+
   const insets = useSafeAreaInsets();
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
@@ -41,7 +41,7 @@ export default function Attendance() {
         <RowView style={styles.filterRow}>
           <View style={styles.filterItem}>
             <Dropdown
-              type = "Attendance"
+              type="Attendance"
               DropdownData={months}
               setSelecteditem={setSelectedmonth}
               Selecteditem={Selectedmonth}
@@ -50,7 +50,7 @@ export default function Attendance() {
 
           <View style={styles.filterItem}>
             <Dropdown
-              type = "Attendance"
+              type="Attendance"
               DropdownData={YEARDATA}
               setSelecteditem={setSelectedYear}
               Selecteditem={SelectedYear}
@@ -77,10 +77,11 @@ export default function Attendance() {
             onRefresh={onRefresh}
           />
         }
+
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={() => <NodataFound />}
       />
-      <TouchableOpacity style={[styles.fab,{bottom:insets.bottom + 20}]} activeOpacity={0.8} onPress={() => handleModal()}>
+      <TouchableOpacity style={[styles.fab, { bottom: insets.bottom + 20 }]} activeOpacity={0.8} onPress={() => handleModal()}>
         <Text style={styles.fabText}>Attendance Regularization</Text>
       </TouchableOpacity>
       <AttendanceRegModal
@@ -136,5 +137,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingVertical: 10,
+    paddingBottom: 120
+
   },
 });

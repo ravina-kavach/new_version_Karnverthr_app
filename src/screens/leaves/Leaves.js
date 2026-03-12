@@ -1,7 +1,6 @@
 import React from 'react'
 import {
   View,
-  ScrollView,
   Text,
   FlatList,
   StyleSheet,
@@ -12,7 +11,7 @@ import { COLOR } from '../../theme/theme'
 import { CommonView } from '../../utils/common'
 import { useLeaves } from './LeavesController'
 import { GlobalFonts } from '../../theme/typography'
-import { FontSize, LEAVE_STATUS_FILTER_OPTIONS, responsiveHeight } from '../../utils/metrics'
+import { FontSize, LEAVE_STATUS_FILTER_OPTIONS } from '../../utils/metrics'
 import ApplyLeaveModal from '../../components/ApplyLeaveModal'
 import NodataFound from '../../components/NodataFound'
 import moment from 'moment'
@@ -41,7 +40,6 @@ const Leaves = () => {
     setOpenEndDatePicker,
     resonText,
     setResonText,
-    GetLeaveListData,
     isGetLeaveListFetching,
     onRefresh,
     isPublicLeave,
@@ -56,118 +54,138 @@ const Leaves = () => {
     filteredLeaves
   } = useLeaves()
 
-  return (
-    <CommonView statusBarColor={COLOR.LightOrange}>
-      <View style={styles.container}>
-        <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
+  const renderHeader = () => (
+    <>
+      {leavesSummary.length === 0 ? (
+        <View style={styles.summaryEmpty}>
+          <Text style={styles.summaryEmptyText}>
+            No leave allocation available
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.summaryCard}>
+          <Text style={styles.sectionTitle}>My Leaves</Text>
 
-          {leavesSummary.length === 0 ? (
-            <View style={styles.summaryEmpty}>
-              <Text style={styles.summaryEmptyText}>
-                No leave allocation available
-              </Text>
-            </View>
-          ) : (
-            <View style={styles.summaryCard}>
-            <View>
-            <Text style={styles.sectionTitle}>My Leaves</Text>
-            </View>
-            <View style={styles.innnerSummaryCard}>    
-              {leavesSummary.map((item, index) => (
-                <View key={index} style={styles.leaveBox}>
-                  <Text numberOfLines={1} style={styles.leaveTitle}>{item.title}</Text>
-                  <View style={styles.innerLeaveCotainer}>
+          <FlatList
+            data={leavesSummary}
+            numColumns={2}
+            scrollEnabled={false}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.leaveBox}>
+                <Text numberOfLines={1} style={styles.leaveTitle}>
+                  {item.title}
+                </Text>
+
+                <View style={styles.innerLeaveCotainer}>
                   <Text style={styles.leaveCount}>
                     {item.used}/{item.total}
                   </Text>
-                  <Text style={styles.leaveCount}>Left: {item.left}</Text>
-                  </View>
+
+                  <Text style={styles.leaveCount}>
+                    Left: {item.left}
+                  </Text>
                 </View>
-              ))}
-              </View>
-            </View>
-          )}
-          <View style={styles.headerWrapper}>
-            <Text style={styles.sectionTitle}>Submitted Leaves</Text>
-            <CommonFilterDropdown
-              data={LEAVE_STATUS_FILTER_OPTIONS}
-              selectedItem={selectedStatus}
-              setSelectedItem={setSelectedStatus}
-            />
-          </View>
-          <FlatList
-            nestedScrollEnabled
-            refreshControl={
-              <RefreshControl
-                refreshing={isGetLeaveListFetching}
-                onRefresh={onRefresh}
-              />
-            }
-            data={filteredLeaves}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => {
-              return (
-                <View style={styles.leaveCard}>
-
-                  <View style={styles.headerRow}>
-                    <Text numberOfLines={2} style={styles.leaveType}>
-                      {item.leave_type_name}
-                    </Text>
-
-                    <View style={styles.statusBadge}>
-                      <View
-                        style={[
-                          styles.statusDot,
-                          { backgroundColor: getStatusColor(item.status) },
-                        ]}
-                      />
-                      <Text
-                        numberOfLines={1}
-                        style={[
-                          styles.statusText,
-                          { color: getStatusColor(item.status) },
-                        ]}
-                      >
-                        {LEAVE_STATUS[item.status].toUpperCase() || item.status.toUpperCase()}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.innerBox}>
-                    <View>
-                      <Text style={styles.label}>From-To</Text>
-                      <Text style={styles.value}>
-                        {moment(item?.from).format('DD MMM')} -{' '}
-                        {moment(item?.to).format('DD MMM')}
-                      </Text>
-                    </View>
-
-                    <View style={styles.totalBox}>
-                      <Text style={styles.label}>Total</Text>
-                      <Text style={styles.days}>
-                        {item.days}{' '}
-                        {item.days > 1 ? 'Days' : 'Day'}
-                      </Text>
-                    </View>
-                  </View>
-                  <Text numberOfLines={2} style={[styles.value,{paddingTop:10}]}>Reason : <Text numberOfLines={2} style={styles.label}>{item.reason}</Text></Text>
-                </View>
-              )
-            }}
-            ListEmptyComponent={() => (
-              <View style={styles.placeHoldeContainer}>
-                <NodataFound titleText="Add Leaves" />
               </View>
             )}
           />
-        </ScrollView>
+        </View>
+      )}
+
+      <View style={styles.headerWrapper}>
+        <Text style={styles.sectionTitle}>Submitted Leaves</Text>
+
+        <CommonFilterDropdown
+          data={LEAVE_STATUS_FILTER_OPTIONS}
+          selectedItem={selectedStatus}
+          setSelectedItem={setSelectedStatus}
+        />
+      </View>
+    </>
+  )
+
+  const renderItem = ({ item }) => (
+    <View style={styles.leaveCard}>
+      <View style={styles.headerRow}>
+        <Text numberOfLines={2} style={styles.leaveType}>
+          {item.leave_type_name}
+        </Text>
+
+        <View style={styles.statusBadge}>
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: getStatusColor(item.status) }
+            ]}
+          />
+
+          <Text
+            style={[
+              styles.statusText,
+              { color: getStatusColor(item.status) }
+            ]}
+          >
+            {LEAVE_STATUS[item.status]?.toUpperCase() ||
+              item.status.toUpperCase()}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.innerBox}>
+        <View>
+          <Text style={styles.label}>From-To</Text>
+
+          <Text style={styles.value}>
+            {moment(item?.from).format('DD MMM')} -{' '}
+            {moment(item?.to).format('DD MMM')}
+          </Text>
+        </View>
+
+        <View style={styles.totalBox}>
+          <Text style={styles.label}>Total</Text>
+
+          <Text style={styles.days}>
+            {item.days} {item.days > 1 ? 'Days' : 'Day'}
+          </Text>
+        </View>
+      </View>
+
+      <Text style={[styles.value, { paddingTop: 10 }]}>
+        Reason : <Text style={styles.label}>{item.reason}</Text>
+      </Text>
+    </View>
+  )
+
+  return (
+    <CommonView statusBarColor={COLOR.LightOrange}>
+      <View style={styles.container}>
+
+        <FlatList
+          data={filteredLeaves}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem}
+          ListHeaderComponent={renderHeader}
+          refreshControl={
+            <RefreshControl
+              refreshing={isGetLeaveListFetching}
+              onRefresh={onRefresh}
+            />
+          }
+          ListEmptyComponent={() => (
+            <View style={styles.placeHoldeContainer}>
+              <NodataFound titleText="Add Leaves" />
+            </View>
+          )}
+          contentContainerStyle={{ paddingBottom: 120 }}
+        />
 
         <TouchableOpacity
           style={styles.fab}
           activeOpacity={0.8}
           onPress={handleOpenModal}
         >
-          <Text style={styles.fabText}>Apply Leave  + </Text>
+          <Text style={styles.fabText}>Apply Leave +</Text>
         </TouchableOpacity>
       </View>
 
@@ -212,11 +230,11 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
+    ...GlobalFonts.subtitle,
     fontSize: 18,
     fontWeight: '600',
-    marginVertical: responsiveHeight(3),
-    marginHorizontal: 20,
-    color: COLOR.TextSecondary,
+    marginVertical: 12,
+    color: COLOR.Black1,
   },
 
   summaryCard: {
@@ -225,16 +243,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginHorizontal: 20,
     padding: 15,
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    elevation: 4,
-  },
-
-  innnerSummaryCard: {
-    padding: 15,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    elevation: 3,
   },
 
   summaryEmpty: {
@@ -253,44 +262,50 @@ const styles = StyleSheet.create({
     color: COLOR.TextSecondary,
     ...GlobalFonts.subtitle,
   },
-  innerLeaveCotainer:{
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center'
-  },
+
   leaveBox: {
-    width: '48%',
+    flex: 1,
     backgroundColor: '#fff',
     padding: 12,
     borderRadius: 12,
     marginBottom: 10,
+    marginHorizontal: 5,
     borderWidth: 1,
     borderColor: '#eee',
   },
 
   leaveTitle: {
     ...GlobalFonts.subtitle,
-    color:COLOR.Black1,
+    color: COLOR.Black1,
     fontSize: FontSize.Font14,
+  },
+
+  innerLeaveCotainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
 
   leaveCount: {
     ...GlobalFonts.subtitle,
     fontSize: FontSize.Font14,
-    color:COLOR.TextSecondary,
+    color: COLOR.TextSecondary,
     fontWeight: '700',
     marginTop: 10,
   },
 
-  leftText: {
-    fontSize: 13,
-    color: COLOR.TextSecondary,
+  headerWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 25,
+    alignItems: 'center',
   },
 
   placeHoldeContainer: {
     flex: 1,
-    top: 100,
-    height: 800,
+    alignItems: 'center',
+    marginTop: 80,
   },
 
   leaveCard: {
@@ -312,7 +327,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
     color: '#1F2937',
-    maxWidth:180,
+    maxWidth: 180,
   },
 
   statusBadge: {
@@ -382,23 +397,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 15,
   },
-
-  headerWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 30,
-    paddingTop: 30,
-    alignItems: 'center',
-    zIndex: 2000,
-    overflow: 'visible',
-    backgroundColor: 'transparent',
-    marginBottom: 30,
-  },
-
-  sectionTitle: {
-    ...GlobalFonts.subtitle,
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLOR.Black1,
-  },
 })
+

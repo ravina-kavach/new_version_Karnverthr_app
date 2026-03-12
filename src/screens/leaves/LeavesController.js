@@ -10,7 +10,7 @@ import { LEAVE_STATUS } from '../../utils/metrics';
 
 export const useLeaves = () => {
   const { t } = useTranslation();
-  const { UsersigninData, GetLeavetypeData,UserDetailsData, GetLeaveAllocationData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
+  const { UsersigninData, GetLeavetypeData, UserDetailsData, GetLeaveAllocationData, GetLeaveListData, isGetLeaveListFetching } = useSelector(CommonSelector);
   const dispatch = useDispatch();
   const IsFocused = useIsFocused();
   const [visibleModal, setVisibleModel] = useState(false)
@@ -44,14 +44,16 @@ export const useLeaves = () => {
 
 
   const getLeaveList = () => {
+    if (!UsersigninData?.user_id) return;
     const data = {
       id: Number(UsersigninData.user_id),
     };
-    dispatch(GetLeaveList(data))
-  }
+
+    dispatch(GetLeaveList(data));
+  };
 
   useEffect(() => {
-    
+
     if (GetLeaveAllocationData && IsFocused) {
       updateLeaveSummary(GetLeaveAllocationData);
     } else {
@@ -61,22 +63,22 @@ export const useLeaves = () => {
 
 
   const updateLeaveSummary = (res) => {
-  const cards = Array.isArray(res) ? res : [];
-  const mappedData = cards.map((item) => {
-    const total = Number(item?.total) || 0;
-    const used = Number(item?.used) || 0;
-    const remaining = Number(item?.remaining) || 0;
+    const cards = Array.isArray(res) ? res : [];
+    const mappedData = cards.map((item) => {
+      const total = Number(item?.total) || 0;
+      const used = Number(item?.used) || 0;
+      const remaining = Number(item?.remaining) || 0;
 
-    return {
-      title: item.leave_type,         
-      used: String(used).padStart(2, '0'),
-      total: String(total).padStart(2, '0'),
-      left: remaining,
-    };
-  });
+      return {
+        title: item.leave_type,
+        used: String(used).padStart(2, '0'),
+        total: String(total).padStart(2, '0'),
+        left: remaining,
+      };
+    });
 
-  setLeavesSummary(mappedData);
-};
+    setLeavesSummary(mappedData);
+  };
   const resetLeaveForm = () => {
     setSelectedLeaveType({ id: '', name: t("Leaves.Select_Leave_Type") });
     setSelectedDeptType({ id: '', name: t("Leaves.Select_Department_Type") });
@@ -134,39 +136,39 @@ export const useLeaves = () => {
   };
 
   const saveLeave = async () => {
-  try {
-    const data = {
-      holiday_status_id: selectedLeaveType?.id,
-      date_from: moment(selectStartDate).format("YYYY-MM-DD"),
-      date_to: moment(selectEndDate).format("YYYY-MM-DD"),
-      reason: resonText,
-    };
+    try {
+      const data = {
+        holiday_status_id: selectedLeaveType?.id,
+        date_from: moment(selectStartDate).format("YYYY-MM-DD"),
+        date_to: moment(selectEndDate).format("YYYY-MM-DD"),
+        reason: resonText,
+      };
 
-    const obj = {
-      userid: UsersigninData.user_id,
-      userData: data,
-    };
+      const obj = {
+        userid: UsersigninData.user_id,
+        userData: data,
+      };
 
-    const result = await dispatch(CreateLeave(obj)).unwrap();
-    showMessage({
-      icon: "success",
-      message: result?.message,
-      type: "success",
-    });
-  } catch (error) {
-    showMessage({
-      icon: "danger",
-      message: error?.message,
-      type: "danger",
-    });
-  }
-  handleModal();
-  getLeaveList();
-};
+      const result = await dispatch(CreateLeave(obj)).unwrap();
+      showMessage({
+        icon: "success",
+        message: result?.message,
+        type: "success",
+      });
+    } catch (error) {
+      showMessage({
+        icon: "danger",
+        message: error?.message,
+        type: "danger",
+      });
+    }
+    handleModal();
+    getLeaveList();
+  };
 
   const onRefresh = useCallback(() => {
-    dispatch(GetLeaveList())
-  }, []);
+    getLeaveList();
+  }, [UsersigninData]);
 
   const filteredLeaves = useMemo(() => {
     if (!selectedStatus || selectedStatus.id === 'all') {
