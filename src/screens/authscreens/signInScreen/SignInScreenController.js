@@ -68,16 +68,16 @@ export const useSignInScreen = () => {
     isForgotPasswordFetching,
   } = useSelector(CommonSelector);
 
-    
+
   const rnBiometrics = new ReactNativeBiometrics({
     allowDeviceCredentials: true,
   });
 
-    React.useEffect(() => {
-      if (IsFocused) {
+  React.useEffect(() => {
+    if (IsFocused) {
       bootstrapAuth(dispatch);
-      }
-    }, [IsFocused]);
+    }
+  }, [IsFocused]);
 
   React.useEffect(() => {
     if (IsFocused) {
@@ -92,7 +92,7 @@ export const useSignInScreen = () => {
   }, [IsFocused]);
 
   React.useEffect(() => {
-    if (isError && !isSignin) { 
+    if (isError && !isSignin) {
       showMessage({
         icon: 'danger',
         message: errorMessage,
@@ -103,24 +103,24 @@ export const useSignInScreen = () => {
       setReSetemail('');
       setIsReSetmodalvisible(false);
     }
-  }, [isError,isSignin]);
-  
+  }, [isError, isSignin]);
+
   React.useEffect(() => {
-  if (!UsersigninData?.user_id) return;
-  if (isSignin) {
-    dispatch(GetUserDetails({ id: Number(UsersigninData.user_id) }));
+    if (!UsersigninData?.user_id) return;
+    if (isSignin) {
+      dispatch(GetUserDetails({ id: Number(UsersigninData.user_id) }));
 
-    showMessage({
-      icon: 'success',
-      message: t('messages.Welcome_back'),
-      type: 'success',
-    });
+      showMessage({
+        icon: 'success',
+        message: t('messages.Welcome_back'),
+        type: 'success',
+      });
 
-    dispatch(updateState({ isSignin: false }));
-    setdata()
-    Navigation.navigate('myTab');
-  }
-}, [isSignin]);
+      dispatch(updateState({ isSignin: false }));
+      setdata()
+      Navigation.navigate('myTab');
+    }
+  }, [isSignin]);
 
   React.useEffect(() => {
     if (VerfiedUserData?.message) {
@@ -150,54 +150,54 @@ export const useSignInScreen = () => {
 
   //-----------------
   const setdata = async () => {
-  if (isChecked && Formdata?.email && Formdata?.password) {
-    await Service.setRemember({
-      email: Formdata.email,
-      password: Formdata.password,
-    });
-    await Service.setisBiomatic('true');
-  } else {
-    await Service.setRemember(null);
-    await Service.setisBiomatic('false');
-  }
+    if (isChecked && Formdata?.email && Formdata?.password) {
+      await Service.setRemember({
+        email: Formdata.email,
+        password: Formdata.password,
+      });
+      await Service.setisBiomatic('true');
+    } else {
+      await Service.setRemember(null);
+      await Service.setisBiomatic('false');
+    }
 
-  dispatch(updateState({ isSignin: false }));
+    dispatch(updateState({ isSignin: false }));
 
-  if (!isUserDetailsFetching) {
-    Navigation.navigate('myTab');
-  }
-  await Service.setisFirstime('true');
-};
+    if (!isUserDetailsFetching) {
+      Navigation.navigate('myTab');
+    }
+    await Service.setisFirstime('true');
+  };
 
   const Getdata = async () => {
-  const isVerifiedUser = await Service.GetisVerified();
-  setIsVisibleVerifiedModal(!isVerifiedUser);
-  
-  const verifiedEmail = await Service.GetVerifiedUser();
-  setFormdata({ ...Formdata, email: verifiedEmail });
-  if (verifiedEmail) {
-    dispatch(updateState({ VerfiedUserData: { private_email: verifiedEmail } , isVerified:isVerifiedUser}));
-  }
+    const isVerifiedUser = await Service.GetisVerified();
+    setIsVisibleVerifiedModal(!isVerifiedUser);
 
-  const rememberedUser = await Service.GetRemember();
-  setRememberData(rememberedUser);
+    const verifiedEmail = await Service.GetVerifiedUser();
+    setFormdata({ ...Formdata, email: verifiedEmail });
+    if (verifiedEmail) {
+      dispatch(updateState({ VerfiedUserData: { private_email: verifiedEmail }, isVerified: isVerifiedUser }));
+    }
 
-  const biometricEnabled = await Service.GetisBiomatic();
-  const shouldShowBiometric =
-    biometricEnabled === 'true' &&
-    rememberedUser?.email &&
-    rememberedUser?.password;
+    const rememberedUser = await Service.GetRemember();
+    setRememberData(rememberedUser);
 
-  setisChecked(biometricEnabled === 'true');
+    const biometricEnabled = await Service.GetisBiomatic();
+    const shouldShowBiometric =
+      biometricEnabled === 'true' &&
+      rememberedUser?.email &&
+      rememberedUser?.password;
 
-  if (shouldShowBiometric) {
-    setFormdata(rememberedUser);
+    setisChecked(biometricEnabled === 'true');
 
-    setTimeout(() => {
-      setisShowbiomatric(true);
-    }, 300);
-  }
-};
+    if (shouldShowBiometric) {
+      setFormdata(rememberedUser);
+
+      setTimeout(() => {
+        setisShowbiomatric(true);
+      }, 300);
+    }
+  };
 
 
 
@@ -221,35 +221,35 @@ export const useSignInScreen = () => {
   };
 
   const heandleonSignin = async () => {
-  const enteredEmail = Formdata.email?.trim();
-  const verifiedEmail = VerfiedUserData?.private_email?.trim();
-  dispatch(updateState({ isError: false, errorMessage: '' }));
-  if (!verifiedEmail || enteredEmail !== verifiedEmail) {
-    dispatch(
-      updateState({
-        isError: true,
-        errorMessage: 'This email is not registered with verification code',
-      })
-    );
-    return;
-  }
-  const formvalid = Validator.current.allValid();
+    const enteredEmail = Formdata.email?.trim();
+    const verifiedEmail = VerfiedUserData?.private_email?.trim();
+    dispatch(updateState({ isError: false, errorMessage: '' }));
+    if (!verifiedEmail || enteredEmail !== verifiedEmail) {
+      dispatch(
+        updateState({
+          isError: true,
+          errorMessage: 'This email is not registered with verification code',
+        })
+      );
+      return;
+    }
+    const formvalid = Validator.current.allValid();
 
-  if (formvalid) {
-    Validator.current.hideMessages();
-    forceUpdate(0);
+    if (formvalid) {
+      Validator.current.hideMessages();
+      forceUpdate(0);
 
-    dispatch(
-      Usersignin({
-        email: enteredEmail,
-        password: Formdata.password,
-      })
-    );
-  } else {
-    Validator.current.showMessages();
-    forceUpdate(1);
-  }
-};
+      dispatch(
+        Usersignin({
+          email: enteredEmail,
+          password: Formdata.password,
+        })
+      );
+    } else {
+      Validator.current.showMessages();
+      forceUpdate(1);
+    }
+  };
 
 
   const BiometricLogin = async () => {
@@ -320,20 +320,20 @@ export const useSignInScreen = () => {
     }
   };
 
- const handleVerificationModal = async secreatCode => {
-  if (isVisibleVerifiedModal) {
-    const payloadObj = { ...DeviceData, random_code_for_reg: String(secreatCode) };
-    try {
-      const result = await dispatch(UserVerification(payloadObj)).unwrap();
-      await Service.setVerifiedUser(result.private_email);
-      await Service.setisVerified(true);
-      setIsVisibleVerifiedModal(false);
-      dispatch(updateState({ VerfiedUserData: result}));
-    } catch (err) {
-      console.log(err);
+  const handleVerificationModal = async secreatCode => {
+    if (isVisibleVerifiedModal) {
+      const payloadObj = { ...DeviceData, random_code_for_reg: String(secreatCode.trim()) };
+      try {
+        const result = await dispatch(UserVerification(payloadObj)).unwrap();
+        await Service.setVerifiedUser(result.private_email);
+        await Service.setisVerified(true);
+        setIsVisibleVerifiedModal(false);
+        dispatch(updateState({ VerfiedUserData: result }));
+      } catch (err) {
+        console.log(err);
+      }
     }
-  }
-};
+  };
 
   const navigateTerms = () => {
     Navigation.navigate('termsofuse')

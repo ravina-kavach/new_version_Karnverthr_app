@@ -8,6 +8,7 @@ import {
   ScrollView,
   Platform,
   Image,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useSignInScreen } from './SignInScreenController.js'
 import { CommonView, H3, Valide } from '../../../utils/common';
@@ -22,7 +23,6 @@ import { AppLogo } from '../../../assets/images/index.js';
 import BiometricModal from '../../../components/BiometricModal.js'
 import { EmailIcon, EyeCloseIcon, EyeIcon, KeyIcon } from '../../../assets/svgs/index.js';
 import DeviceInfo from "react-native-device-info";
-import KeyboardAvoidWrapper from '../../../components/KeyboardAvoidWrapper.js';
 
 function SignInScreen() {
   const {
@@ -55,8 +55,17 @@ function SignInScreen() {
   } = useSignInScreen();
   return (
     <CommonView style={styles.mainContainer}>
-      <KeyboardAvoidWrapper>
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps='handled'>
+
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 20}
+      >
+        <ScrollView
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           <Image style={styles.appLogo} source={AppLogo} />
           <H3 style={styles.titleContainer}>{t('Button.Sign_In')}</H3>
           <View style={[styles.inputContainer, { borderColor: Formdata.email && Validator.current.errorMessages?.email ? COLOR.Red : COLOR.GrayBorder }]}>
@@ -142,43 +151,43 @@ function SignInScreen() {
               onClose={() => setIsReSetmodalvisible(!IsReSetmodalvisible)}
             />}
         </ScrollView>
-      </KeyboardAvoidWrapper>
-      <BiometricModal
-        visible={isShowbiomatric}
-        onClose={() => setisShowbiomatric(false)}
-        isSigninFetching={isSigninFetching}
-        onBiometricPress={() =>
-          Platform.OS === 'android'
-            ? BiometricLogin()
-            : FacelockLogin()
-        }
-        icon={Platform.OS === 'android' ? BiometricIcon : FaceIdIcon}
-        title={
-          Platform.OS === 'android'
-            ? t('Button.LoginWithFigerprint')
-            : t('Button.LoginWithFaceId')
-        }
-      />
+
+        <BiometricModal
+          visible={isShowbiomatric}
+          onClose={() => setisShowbiomatric(false)}
+          isSigninFetching={isSigninFetching}
+          onBiometricPress={() =>
+            Platform.OS === 'android'
+              ? BiometricLogin()
+              : FacelockLogin()
+          }
+          icon={Platform.OS === 'android' ? BiometricIcon : FaceIdIcon}
+          title={
+            Platform.OS === 'android'
+              ? t('Button.LoginWithFigerprint')
+              : t('Button.LoginWithFaceId')
+          }
+        />
+
+      </KeyboardAvoidingView>
+
+      {/* 🔽 Bottom Section OUTSIDE */}
       <View style={styles.bottomContainer}>
         <View style={styles.policyContainer}>
-          <Text
-            style={styles.linkText}
-            onPress={() => navigateTerms()}
-          >
+          <Text style={styles.linkText} onPress={() => navigateTerms()}>
             Terms of Use
           </Text>
           <Text style={styles.policyText}>&</Text>
-          <Text
-            style={styles.linkText}
-            onPress={() => navigatePrivacyPolicy()}
-          >
+          <Text style={styles.linkText} onPress={() => navigatePrivacyPolicy()}>
             Privacy Policy
           </Text>
         </View>
+
         <Text style={styles.verisonText}>
           {`version. ${DeviceInfo.getVersion()}`}
         </Text>
       </View>
+
     </CommonView>
   );
 }
@@ -261,11 +270,13 @@ const styles = StyleSheet.create({
   },
 
   bottomContainer: {
+    flex: 1,
     position: 'absolute',
-    bottom: 40,
+    bottom: 0,
     left: 0,
     right: 0,
     alignItems: 'center',
+    backgroundColor: COLOR.White1,
   },
   leftIcon: {
     marginRight: 10,

@@ -7,12 +7,13 @@ import { MailIcon } from '../assets/icons';
 import { CommonTextInput } from '../components/CommonTextInput';
 import SimpleReactValidator from 'simple-react-validator';
 import { GlobalFonts } from '../theme/typography';
+import KeyboardAvoidWrapper from './KeyboardAvoidWrapper';
 
 const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
   const { t, i18n } = useTranslation();
   const [textInput, setTextInput] = React.useState('');
   const [, forceUpdate] = React.useState(0);
-  
+
   const Validator = React.useRef(
     new SimpleReactValidator({
       validators: {
@@ -44,37 +45,39 @@ const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
       transparent
       animationType="fade"
     >
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          <View style={styles.iconWrapper}>
-            <Image style={styles.imageStyle}source={MailIcon}/>
-          </View>
-          <Text style={styles.title}>{t('verification.Email_verification')}</Text>
+      <KeyboardAvoidWrapper keyboardShouldPersistTaps="handled">
+        <View style={styles.overlay}>
+          <View style={styles.container}>
+            <View style={styles.iconWrapper}>
+              <Image style={styles.imageStyle} source={MailIcon} />
+            </View>
+            <Text style={styles.title}>{t('verification.Email_verification')}</Text>
 
-          <Text style={styles.description}>
-            {t('verification.Email_verific_desc')}
-          </Text>
+            <Text style={styles.description}>
+              {t('verification.Email_verific_desc')}
+            </Text>
             <CommonTextInput
               value={textInput}
-              onChangeText={(value)=>setTextInput(value)}
+              onChangeText={(value) => setTextInput(value)}
               placeholder={t('verification.key_placeholder')}
               errorMassage={Validator.current.message(
                 'key',
                 textInput,
                 'required|uuid',
               )}
-              />
-
-          <View style={styles.inputContainer}>
-          <CommonButton
-            onPress={() => onButtonPress()}
-            title={t('Button.Submit')}
-            gradientColors={[COLOR.grediant1, COLOR.grediant2]}
-            loading={isVerifiedFetching}
             />
+
+            <View style={styles.inputContainer}>
+              <CommonButton
+                onPress={() => onButtonPress()}
+                title={t('Button.Submit')}
+                gradientColors={[COLOR.grediant1, COLOR.grediant2]}
+                loading={isVerifiedFetching}
+              />
             </View>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidWrapper>
     </Modal>
   );
 };
@@ -82,14 +85,13 @@ const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  imageStyle:{
-    width:35,
-     height:35,
-     resizeMode:'contain'
+  imageStyle: {
+    width: 35,
+    height: 35,
+    resizeMode: 'contain'
   },
   container: {
     width: '90%',

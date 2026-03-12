@@ -16,7 +16,7 @@ const KeyboardAvoidWrapper = ({
   return (
     <KeyboardAvoidingView
       style={[styles.container, style]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={'padding'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -38,7 +38,7 @@ const KeyboardAvoidWrapper = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0,0,0,0.45)',
   },
   contentContainer: {
     flexGrow: 1,
