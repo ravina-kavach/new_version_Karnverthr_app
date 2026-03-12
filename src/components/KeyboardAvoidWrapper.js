@@ -17,7 +17,6 @@ const KeyboardAvoidWrapper = ({
     <KeyboardAvoidingView
       style={[styles.container, style]}
       behavior={'padding'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
