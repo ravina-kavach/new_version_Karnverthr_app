@@ -16,7 +16,6 @@ import CommonButton from './CommonButton';
 import Config from 'react-native-config';
 import { Eye, EyeSlash } from '../assets/icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { GlobalFonts } from '../theme/typography';
 import { FontSize } from '../utils/metrics';
 import { useSelector } from 'react-redux';
@@ -182,14 +181,11 @@ const ForgotPasswordModal = ({
       visible={visible}
       onRequestClose={onClose}
     >
-
-      <TouchableOpacity
-        style={styles.modalContainer}
-        activeOpacity={1}
-        onPress={handleClose}
-      >
-        <KeyboardAvoidWrapper
-          contentContainerStyle={{ alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}
+      <KeyboardAvoidWrapper>
+        <TouchableOpacity
+          style={styles.modalContainer}
+          activeOpacity={1}
+          onPress={handleClose}
         >
 
           <TouchableOpacity activeOpacity={1}>
@@ -276,6 +272,13 @@ const ForgotPasswordModal = ({
                       />
                     </View>
                   </View>
+                  <View style={{ paddingTop: 20, paddingLeft: 5 }}>
+                    <Text style={styles.passwordIntroText}>* Use at least 1 letter, 1 number, and 1 symbol.</Text>
+                    <Text style={styles.passwordIntroText}>* Keep your password up to 8 characters.</Text>
+                    <Text style={styles.passwordIntroText}>* Avoid simple passwords like 123456.</Text>
+                    <Text style={styles.passwordIntroText}>* Do not use your name or personal details.</Text>
+                    <Text style={styles.passwordIntroText}>* Make your password hard to guess.</Text>
+                  </View>
 
                   <View style={styles.buttonContainer}>
                     <CommonButton
@@ -298,8 +301,8 @@ const ForgotPasswordModal = ({
               )}
             </View>
           </TouchableOpacity>
-        </KeyboardAvoidWrapper>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </KeyboardAvoidWrapper>
     </Modal>
   );
 };
@@ -333,6 +336,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
+  },
+  passwordIntroText: {
+    paddingBottom: 5,
+    fontSize: 12,
+    fontWeight: '500',
+    color: COLOR.Black1
   },
 
   forgotText: {
