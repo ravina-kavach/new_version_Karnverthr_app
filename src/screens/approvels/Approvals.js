@@ -322,6 +322,7 @@ export default function Approvals() {
                     setRejectReason(text);
                     if (text.trim()) setReasonError(false);
                   }}
+                  maxLength={150}
                   multiline
                   style={[
                     styles.reasonInput,

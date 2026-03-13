@@ -75,6 +75,7 @@ function SignInScreen() {
               placeholderTextColor={COLOR.TextPlaceholder}
               cursorColor={COLOR.Gray}
               style={styles.input}
+              maxLength={50}
               onChangeText={value =>
                 setFormdata({ ...Formdata, email: value })
               }

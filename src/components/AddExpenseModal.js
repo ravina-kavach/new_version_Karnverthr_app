@@ -212,6 +212,7 @@ export const AddExpenseModal = ({
                   style={[styles.input, errors.expenseName && styles.errorBorder]}
                   placeholder='Expense name'
                   placeholderTextColor={COLOR.TextPlaceholder}
+                  maxLength={50}
                   value={Formdata.ExpenseName}
                   onChangeText={(v) => {
                     setFormdata({ ...Formdata, ExpenseName: v });
@@ -225,6 +226,7 @@ export const AddExpenseModal = ({
                   placeholder='Amount'
                   placeholderTextColor={COLOR.TextPlaceholder}
                   keyboardType="numeric"
+                  maxLength={20}
                   value={Formdata.Amount}
                   onChangeText={(v) => {
                     setFormdata({ ...Formdata, Amount: v });

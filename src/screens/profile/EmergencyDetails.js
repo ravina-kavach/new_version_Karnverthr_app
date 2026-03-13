@@ -19,7 +19,7 @@ import { FontSize } from "../../utils/metrics";
 import { GlobalFonts } from "../../theme/typography";
 
 const Input = memo(
-  ({ label, value, onChangeText, placeholder, keyboardType, multiline }) => (
+  ({ label, value, onChangeText, placeholder, keyboardType, multiline, maxLength }) => (
     <View style={{ marginBottom: 16 }}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
@@ -29,6 +29,7 @@ const Input = memo(
         ]}
         value={value}
         multiline
+        maxLength={maxLength}
         placeholder={placeholder}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
@@ -102,6 +103,7 @@ export default function EmergencyDetails() {
               <Input
                 label="Name"
                 placeholder="Emergency name"
+                maxLength={50}
                 value={form.emergency_contact_name}
                 onChangeText={(text) =>
                   setForm((prev) => ({
@@ -114,6 +116,7 @@ export default function EmergencyDetails() {
               <Input
                 label="Relation"
                 placeholder="Emergency relation"
+                maxLength={50}
                 value={form.emergency_contact_relation}
                 onChangeText={(text) =>
                   setForm((prev) => ({
@@ -126,6 +129,7 @@ export default function EmergencyDetails() {
                 label="Phone Number"
                 placeholder="Emergency phone number"
                 keyboardType="phone-pad"
+                maxLength={15}
                 value={form.emergency_contact_mobile}
                 onChangeText={(text) =>
                   setForm((prev) => ({
@@ -138,6 +142,7 @@ export default function EmergencyDetails() {
               <Input
                 label="Address"
                 placeholder="Emergency address"
+                maxLength={250}
                 value={form.emergency_contact_address}
                 multiline
                 onChangeText={(text) =>

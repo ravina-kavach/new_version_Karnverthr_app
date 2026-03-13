@@ -19,7 +19,7 @@ import { FontSize } from "../../utils/metrics";
 import { GlobalFonts } from "../../theme/typography";
 
 const Input = memo(
-  ({ label, value, editable = true, onChangeText, placeholder, keyboardType, multiline }) => (
+  ({ label, value, editable = true, onChangeText, placeholder, keyboardType, multiline, maxLength }) => (
     <View style={{ marginBottom: 16 }}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
@@ -32,6 +32,7 @@ const Input = memo(
         placeholder={placeholder}
         editable={editable}
         multiline={multiline}
+        maxLength={maxLength}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
         autoCorrect={false}
@@ -57,7 +58,7 @@ export default function EditProfile() {
     work_phone: "",
     present_address: "",
   });
-  
+
   const isFormInitialized = useRef(false);
 
   useEffect(() => {
@@ -100,6 +101,7 @@ export default function EditProfile() {
               <Input
                 label="Employee Name"
                 placeholder="Employee name"
+                maxLength={50}
                 value={form.name}
                 onChangeText={(text) =>
                   setForm((prev) => ({ ...prev, name: text }))
@@ -108,6 +110,7 @@ export default function EditProfile() {
 
               <Input
                 label="Email"
+                maxLength={50}
                 placeholder="Email"
                 editable={false}
                 value={form.private_email}
@@ -119,6 +122,7 @@ export default function EditProfile() {
 
               <Input
                 label="Phone Number"
+                maxLength={15}
                 placeholder="Phone number"
                 keyboardType="phone-pad"
                 value={form.work_phone}
@@ -129,6 +133,7 @@ export default function EditProfile() {
 
               <Input
                 label="Address"
+                maxLength={250}
                 placeholder="Address"
                 multiline
                 value={form.present_address}
@@ -213,8 +218,8 @@ const styles = StyleSheet.create({
     color: COLOR.Black1,
   },
   multilineInput: {
-  height: 100,
-  paddingTop: 12,
-  textAlignVertical: "top",
-},
+    height: 100,
+    paddingTop: 12,
+    textAlignVertical: "top",
+  },
 });

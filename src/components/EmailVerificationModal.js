@@ -58,6 +58,7 @@ const EmailVerificationModal = ({ visible, onSubmit, isVerifiedFetching, }) => {
             </Text>
             <CommonTextInput
               value={textInput}
+              maxLength={8}
               onChangeText={(value) => setTextInput(value)}
               placeholder={t('verification.key_placeholder')}
               errorMassage={Validator.current.message(

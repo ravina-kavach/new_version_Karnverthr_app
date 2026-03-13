@@ -244,6 +244,7 @@ const ApplyLeaveModal = ({
                   return rest;
                 });
               }}
+              maxLength={150}
               placeholder="Add a description..."
               placeholderTextColor={COLOR.TextPlaceholder}
               multiline

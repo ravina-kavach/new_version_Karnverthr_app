@@ -1,41 +1,42 @@
 import React from 'react'
-import { Image, StyleSheet, TextInput ,View,TouchableOpacity} from 'react-native'
+import { Image, StyleSheet, TextInput, View, TouchableOpacity } from 'react-native'
 import { COLOR } from '../theme/theme'
-import {Valide} from '../utils/common'
+import { Valide } from '../utils/common'
 import { responsiveWidth } from '../utils/metrics'
 import { GlobalFonts } from '../theme/typography'
 export const CommonTextInput = (props) => {
-  const {leftIcon,rightIcon, value,rightIconPress,placeholder,secureTextEntry,onChangeText,errorMassage, inputContainerStyle, textInputStyle} = props
+  const { leftIcon, rightIcon, value, rightIconPress, placeholder, secureTextEntry, onChangeText, errorMassage, inputContainerStyle, textInputStyle, maxLength = 50 } = props
   return (
     <View>
-       <View style={[styles.inputContainer,inputContainerStyle]}>
-          {leftIcon && <Image source={leftIcon} />}
-          <TextInput
-            placeholder={placeholder}
-            secureTextEntry={secureTextEntry}
-            placeholderTextColor={COLOR.Gray}
-            style={[styles.input, textInputStyle]}
-            cursorColor={COLOR.Gray}
-            onChangeText={onChangeText}
-            value={value}
-          />
-          {rightIcon && <TouchableOpacity onPress={rightIconPress}>
-            <Image source={rightIcon} tintColor={COLOR.Secondary}/>
-          </TouchableOpacity>}
-        </View>
-       {errorMassage &&
-       <Valide style={styles.valid}>
+      <View style={[styles.inputContainer, inputContainerStyle]}>
+        {leftIcon && <Image source={leftIcon} />}
+        <TextInput
+          placeholder={placeholder}
+          secureTextEntry={secureTextEntry}
+          placeholderTextColor={COLOR.Gray}
+          style={[styles.input, textInputStyle]}
+          cursorColor={COLOR.Gray}
+          onChangeText={onChangeText}
+          value={value}
+          maxLength={maxLength}
+        />
+        {rightIcon && <TouchableOpacity onPress={rightIconPress}>
+          <Image source={rightIcon} tintColor={COLOR.Secondary} />
+        </TouchableOpacity>}
+      </View>
+      {errorMassage &&
+        <Valide style={styles.valid}>
           {errorMassage}
         </Valide>}
-  </View>       
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
-  errorText:{
-    color:COLOR.Red
+  errorText: {
+    color: COLOR.Red
   },
-   inputContainer: {
+  inputContainer: {
     width: '100%',
     height: 55,
     // marginTop: responsiveHeight(2),
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     paddingHorizontal: responsiveWidth(2),
-      ...GlobalFonts.subtitle,
-    color:COLOR.Secondary
+    ...GlobalFonts.subtitle,
+    color: COLOR.Secondary
   },
 })

@@ -114,6 +114,7 @@ const RaiseTicketModal = ({
                         <TextInput
                             style={[styles.input, errors.title && styles.inputError]}
                             value={title}
+                            maxLength={50}
                             onChangeText={(text) => {
                                 setTitle(text)
                                 if (errors.title) {
