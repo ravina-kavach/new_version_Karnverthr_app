@@ -88,7 +88,7 @@ const RaiseTicket = () => {
                         );
                     }}
                     ListEmptyComponent={() => (
-                        <NodataFound titleText="No Tickets Found" />
+                        <NodataFound titleText="No Tickets Found" style={styles.emptyList} />
                     )}
                 />
 
@@ -170,6 +170,9 @@ const styles = StyleSheet.create({
         ...GlobalFonts.subtitle,
         fontSize: 14,
         color: COLOR.White1
+    },
+    emptyList: {
+        paddingTop: 150
     }
 })
 

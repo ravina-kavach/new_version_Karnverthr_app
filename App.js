@@ -91,15 +91,17 @@ const Root = () => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    requestUserPermission();
-    getFCMToken();
+  // notification configation
 
-    const unsubscribe = notificationListener();
-    notificationOpenHandler();
+  // useEffect(() => {
+  //   requestUserPermission();
+  //   getFCMToken();
 
-    return unsubscribe;
-  }, []);
+  //   const unsubscribe = notificationListener();
+  //   notificationOpenHandler();
+
+  //   return unsubscribe;
+  // }, []);
 
   const handleRetry = async () => {
     const state = await NetInfo.fetch();
@@ -141,41 +143,45 @@ const Root = () => {
   const checkAppVersion = async () => {
     try {
       const currentVersion = DeviceInfo.getVersion();
-      if (Platform.OS === 'ios') {
-        const response = await fetch(
-          'https://itunes.apple.com/lookup?id=6758077368&country=in'
-        );
-        const data = await response.json();
 
-        if (data.resultCount === 0) return;
+      console.log("Current Version:", currentVersion);
 
-        const latestVersion = data.results[0].version;
-        let storeUrl = data.results[0].trackViewUrl;
-        if (storeUrl.startsWith('https://')) {
-          storeUrl = storeUrl.replace('https://', 'itms-apps://');
-        }
-
-        const needUpdate = await VersionCheck.needUpdate({
-          currentVersion,
-          latestVersion,
-        });
-
-        console.log("Current Version:", currentVersion);
-        console.log("Latest Version:", latestVersion);
-        console.log("Store URL:", storeUrl);
-        console.log("Version Check Response:", needUpdate);
-
-        console.log("Need Update:", needUpdate);
-
-        if (needUpdate?.isNeeded) {
-          setStoreUrl(storeUrl);
-          setShowUpdate(true);
-        }
-      } else if (Platform.OS === 'android') {
+      if (Platform.OS === "ios") {
         try {
-          const currentVersion = DeviceInfo.getVersion();
+          const response = await fetch(
+            "https://itunes.apple.com/lookup?id=6758077368&country=in"
+          );
 
-          // Automatically detects Play Store or App Store
+          const data = await response.json();
+
+          if (!data?.results?.length) return;
+
+          const latestVersion = data.results[0].version;
+          let storeUrl = data.results[0].trackViewUrl;
+
+          if (storeUrl.startsWith("https://")) {
+            storeUrl = storeUrl.replace("https://", "itms-apps://");
+          }
+
+          const needUpdate = await VersionCheck.needUpdate({
+            currentVersion,
+            latestVersion,
+          });
+
+          console.log("Latest Version:", latestVersion);
+          console.log("Need Update:", needUpdate);
+
+          if (needUpdate?.isNeeded) {
+            setStoreUrl(storeUrl);
+            setShowUpdate(true);
+          }
+        } catch (error) {
+          console.log("iOS version check failed:", error);
+        }
+      }
+
+      if (Platform.OS === "android") {
+        try {
           const latestVersion = await VersionCheck.getLatestVersion({
             provider: "playStore",
           });
@@ -185,20 +191,19 @@ const Root = () => {
             latestVersion,
           });
 
-          console.log("Current Version:", currentVersion);
           console.log("Latest Version:", latestVersion);
           console.log("Need Update:", needUpdate);
 
           if (needUpdate?.isNeeded) {
             const storeUrl = await VersionCheck.getStoreUrl({
-              provider: Platform.OS === "playStore",
+              provider: "playStore",
             });
 
             setStoreUrl(storeUrl);
             setShowUpdate(true);
           }
         } catch (error) {
-          console.log("Version check failed:", error);
+          console.log("Android version check failed:", error);
         }
       }
     } catch (error) {
