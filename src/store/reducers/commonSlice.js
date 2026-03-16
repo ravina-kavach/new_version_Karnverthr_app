@@ -5,8 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
 import APIS_ENDPOINTS from './apiEndPoints'
 
-export const ODOO_BASE_URL = 'https://konverthr.fact-byte.com//'
-
+export const ODOO_BASE_URL = 'https://odooprod.konverthr.com//'
+// export const ODOO_BASE_URL = 'https://odooapi.konverthr.com//'
 const errorMassage = (error) => {
     if (error === "Network Error") {
         return "Server not responding. Please try again later."
@@ -34,6 +34,46 @@ export const UserToken = createAsyncThunk(
         }
     }
 );
+
+
+export const StoreFCMToken = createAsyncThunk(
+    'StoreFCMToken',
+    async (payload, thunkAPI) => {
+        try {
+
+            const { token, userId, data } = payload;
+
+            const response = await fetch(
+                `${ODOO_BASE_URL}api/set_fcm_token?user_id=${userId}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: token,
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
+
+            const result = await response.json();
+            console.log("result notification==========>", result)
+            if (response.ok && result?.status === 'success') {
+                return result;
+            }
+
+            return thunkAPI.rejectWithValue({
+                error: result?.message || 'Something went wrong',
+            });
+
+        } catch (error) {
+            console.log("error==========>", error)
+            return thunkAPI.rejectWithValue({
+                error: error?.message,
+            });
+        }
+    }
+);
+
 export const GetUserDetails = createAsyncThunk(
     'GetUserDetails',
     async (userdata, thunkAPI) => {

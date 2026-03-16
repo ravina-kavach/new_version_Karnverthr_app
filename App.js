@@ -93,15 +93,15 @@ const Root = () => {
 
   // notification configation
 
-  // useEffect(() => {
-  //   requestUserPermission();
-  //   getFCMToken();
+  useEffect(() => {
+    requestUserPermission();
+    getFCMToken();
 
-  //   const unsubscribe = notificationListener();
-  //   notificationOpenHandler();
+    const unsubscribe = notificationListener();
+    notificationOpenHandler();
 
-  //   return unsubscribe;
-  // }, []);
+    return unsubscribe;
+  }, []);
 
   const handleRetry = async () => {
     const state = await NetInfo.fetch();
