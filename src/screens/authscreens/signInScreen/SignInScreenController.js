@@ -8,6 +8,7 @@ import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics';
 import SimpleReactValidator from 'simple-react-validator';
 import DeviceInfo from 'react-native-device-info';
 import { bootstrapAuth } from '../../../utils/bootstrapAuth';
+import { getFCMToken } from '../../../utils/PushNotificationService';
 import {
   CommonSelector,
   ForgotPassword,
@@ -322,7 +323,13 @@ export const useSignInScreen = () => {
 
   const handleVerificationModal = async secreatCode => {
     if (isVisibleVerifiedModal) {
-      const payloadObj = { ...DeviceData, random_code_for_reg: String(secreatCode.trim()) };
+      const FCMToken = await getFCMToken()
+
+      const payloadObj = {
+        ...DeviceData,
+        random_code_for_reg: String(secreatCode.trim()),
+        FCMToken: FCMToken
+      };
       try {
         const result = await dispatch(UserVerification(payloadObj)).unwrap();
         await Service.setVerifiedUser(result.private_email);
