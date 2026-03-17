@@ -18,14 +18,16 @@ export default function TimeSheet() {
 
     const [tasks, setTasks] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [selectedHour, setSelectedHour] = useState(null);
+
+    // ✅ default current hour
+    const [selectedHour, setSelectedHour] = useState(new Date().getHours());
 
     const [taskTitle, setTaskTitle] = useState("");
     const [duration, setDuration] = useState("");
 
-    // LONG PRESS HANDLER
+    // LONG PRESS
     const onLongPressHour = (hour) => {
-        setSelectedHour(hour);
+        setSelectedHour(hour ?? new Date().getHours());
         setModalVisible(true);
     };
 
@@ -33,12 +35,14 @@ export default function TimeSheet() {
     const addTask = () => {
         if (!taskTitle) return;
 
+        const parsedDuration = parseFloat(duration) || 1;
+
         setTasks([
             ...tasks,
             {
                 title: taskTitle,
                 hour: selectedHour,
-                duration: Number(duration || 1),
+                duration: parsedDuration,
             },
         ]);
 
@@ -82,11 +86,13 @@ export default function TimeSheet() {
                                             key={i}
                                             style={[
                                                 styles.taskBlock,
-                                                { height: task.duration * 60 },
+                                                {
+                                                    height: task.duration * 50, // ✅ improved scaling
+                                                },
                                             ]}
                                         >
                                             <Text style={styles.taskText}>
-                                                {task.title}
+                                                {task.title} ({task.duration}h)
                                             </Text>
                                         </View>
                                     ))}
@@ -96,8 +102,7 @@ export default function TimeSheet() {
                 </ScrollView>
             </View>
 
-            {/* ADD TASK MODAL */}
-            {/* ADD TASK MODAL */}
+            {/* MODAL */}
             <Modal visible={modalVisible} transparent animationType="slide">
                 <View style={styles.modalOverlay}>
                     <View style={styles.bottomSheet}>
@@ -132,7 +137,7 @@ export default function TimeSheet() {
                             />
                         </View>
 
-                        {/* DURATION QUICK SELECT */}
+                        {/* DURATION */}
                         <View style={styles.field}>
                             <Text style={styles.label}>Duration</Text>
 
@@ -157,6 +162,16 @@ export default function TimeSheet() {
                                     </TouchableOpacity>
                                 ))}
                             </View>
+
+                            {/* ✅ CUSTOM INPUT */}
+                            <TextInput
+                                placeholder="Custom duration (e.g. 1.5)"
+                                placeholderTextColor="#aaa"
+                                keyboardType="numeric"
+                                style={[styles.modernInput, { marginTop: 10 }]}
+                                value={duration}
+                                onChangeText={setDuration}
+                            />
                         </View>
 
                         {/* NOTES */}
@@ -170,7 +185,7 @@ export default function TimeSheet() {
                             />
                         </View>
 
-                        {/* ACTION BUTTONS */}
+                        {/* BUTTONS */}
                         <View style={styles.modalBtns}>
                             <TouchableOpacity
                                 style={styles.cancelBtn}
@@ -179,7 +194,10 @@ export default function TimeSheet() {
                                 <Text style={styles.btnText}>Cancel</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.saveBtn} onPress={addTask}>
+                            <TouchableOpacity
+                                style={styles.saveBtn}
+                                onPress={addTask}
+                            >
                                 <Text style={styles.btnText}>Save Entry</Text>
                             </TouchableOpacity>
                         </View>
@@ -235,34 +253,6 @@ const styles = StyleSheet.create({
         fontWeight: "600",
     },
 
-    /* MODAL */
-    modalWrap: {
-        flex: 1,
-        backgroundColor: "rgba(0,0,0,0.4)",
-        justifyContent: "center",
-        padding: 20,
-    },
-
-    modal: {
-        backgroundColor: "#fff",
-        borderRadius: 12,
-        padding: 16,
-    },
-
-    modalTitle: {
-        fontSize: 16,
-        fontWeight: "700",
-        marginBottom: 10,
-    },
-
-    input: {
-        borderWidth: 1,
-        borderColor: "#ddd",
-        borderRadius: 8,
-        padding: 10,
-        marginBottom: 10,
-    },
-
     modalOverlay: {
         flex: 1,
         backgroundColor: "rgba(0,0,0,0.45)",
@@ -295,6 +285,11 @@ const styles = StyleSheet.create({
 
     field: {
         marginBottom: 16,
+    },
+
+    label: {
+        fontWeight: "600",
+        marginBottom: 6,
     },
 
     modernInput: {
