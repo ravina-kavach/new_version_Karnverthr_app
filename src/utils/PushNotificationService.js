@@ -1,6 +1,7 @@
 import { Platform, PermissionsAndroid, Alert } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import notifee, { AndroidImportance } from '@notifee/react-native';
+import { navigate } from '../navigations/NavigationService';
 
 /*
 |--------------------------------------------------------------------------
@@ -143,19 +144,57 @@ export const notificationListener = () => {
 */
 
 export const notificationOpenHandler = () => {
+
+    // 🔹 App in background
     messaging().onNotificationOpenedApp(remoteMessage => {
         console.log('Opened from background:', remoteMessage);
+
+        handleNotificationNavigation(remoteMessage?.data);
     });
 
+    // 🔹 App in quit state
     messaging()
         .getInitialNotification()
         .then(remoteMessage => {
             if (remoteMessage) {
                 console.log('Opened from quit state:', remoteMessage);
+
+                handleNotificationNavigation(remoteMessage?.data);
             }
         });
 
+    // 🔹 Foreground (Notifee)
     notifee.onForegroundEvent(({ type, detail }) => {
         console.log('Notifee event:', type, detail);
+
+        if (type === EventType.PRESS) {
+            handleNotificationNavigation(detail.notification?.data);
+        }
     });
+};
+
+export const handleNotificationNavigation = (data) => {
+    if (!data) return;
+
+    const { type, screen, id, extra } = data;
+
+    switch (type) {
+        case 'ATTENDANCE':
+            navigate('attendance');
+            break;
+
+        case 'LEAVE':
+            navigate('leaves')
+
+        case 'EXPENSE':
+            navigate('expenses');
+            break;
+
+        case 'ANNOUNCEMENT':
+            navigate('AnnouncementScreen');
+            break;
+
+        default:
+            navigate('home');
+    }
 };
