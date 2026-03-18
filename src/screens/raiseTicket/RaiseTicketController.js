@@ -8,8 +8,8 @@ import {
     CreateSupportTicket,
     DeleteSupportTicket
 } from '../../store/reducers/commonSlice';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
-import { ODOO_BASE_URL } from '../../store/reducers/commonSlice';
+import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useRaiseTicket = () => {
 
@@ -19,7 +19,6 @@ export const useRaiseTicket = () => {
     const [visibleModal, setVisibleModal] = useState(false);
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [selectedTicketId, setSelectedTicketId] = useState(null);
-    const [token, setToken] = useState(null);
     const [isFetching, setIsFetching] = useState(false);
 
     const isFocused = useIsFocused();
@@ -27,41 +26,25 @@ export const useRaiseTicket = () => {
     const handleOpenModal = () => setVisibleModal(true);
     const handleModal = () => setVisibleModal(false);
 
-    useFocusEffect(
-        useCallback(() => {
-            getApiToken();
-        }, [])
-    );
-
     useEffect(() => {
-        if (isFocused && token && UsersigninData?.user_id) {
-            dispatch(
-                SupportTicketList({
-                    token: token,
-                    id: Number(UsersigninData.user_id),
-                })
-            );
-        }
-    }, [isFocused, token, UsersigninData?.user_id]);
+        const fetchTickets = async () => {
+            const token = await AsyncStorage.getItem('USER_ODOO_TOKEN');
 
-    const getApiToken = async () => {
-        try {
-            const response = await fetch(`${ODOO_BASE_URL}api/auth`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_name: "ravina" }),
-            });
-
-            const data = await response.json();
-            if (data?.token) {
-                setToken(data.token);
+            if (isFocused && token && UsersigninData?.user_id) {
+                dispatch(
+                    SupportTicketList({
+                        token: token,
+                        id: Number(UsersigninData.user_id),
+                    })
+                );
             }
-        } catch (error) {
-            console.error("API ERROR ======>", error);
-        }
-    };
+        };
+
+        fetchTickets();
+    }, [isFocused, UsersigninData?.user_id]);
 
     const saveTicket = async (data) => {
+        const token = await AsyncStorage.getItem('USER_ODOO_TOKEN');
         try {
             const payload = {
                 token: token,
@@ -119,7 +102,9 @@ export const useRaiseTicket = () => {
 
     const confirmDeleteTicket = async () => {
         if (!selectedTicketId) return;
+        const token = await AsyncStorage.getItem('USER_ODOO_TOKEN');
 
+        console.log("confirmDeleteTicket===>", token)
         try {
             const payload = {
                 ticketId: selectedTicketId,
@@ -159,6 +144,7 @@ export const useRaiseTicket = () => {
         }
     };
     const onRefresh = useCallback(async () => {
+        const token = await AsyncStorage.getItem('USER_ODOO_TOKEN');
         try {
             setIsFetching(true);
             await dispatch(SupportTicketList({
@@ -168,7 +154,7 @@ export const useRaiseTicket = () => {
         } finally {
             setIsFetching(false);
         }
-    }, [token, UsersigninData?.user_id]);
+    }, [UsersigninData?.user_id]);
 
     const getStatusColor = (status) => {
         switch (status) {

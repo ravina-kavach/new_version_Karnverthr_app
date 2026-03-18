@@ -35,6 +35,27 @@ export const UserToken = createAsyncThunk(
     }
 );
 
+export const UserOdooToken = createAsyncThunk(
+    'auth/UserOdooToken',
+    async (payload, thunkAPI) => {
+        // { user_name: "ravina" }
+        try {
+            const response = await fetch(`${ODOO_BASE_URL}api/auth`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (data?.token) {
+                console.log("ODOO TOKEN====>", data?.token)
+                await AsyncStorage.setItem('USER_ODOO_TOKEN', data.token);
+                return data.token;
+            }
+        } catch (error) {
+            console.error("API ERROR ======>", error);
+        }
+    }
+);
 
 export const StoreFCMToken = createAsyncThunk(
     'StoreFCMToken',

@@ -20,7 +20,7 @@ import BackgroundGeolocation from "react-native-background-geolocation";
 import BackgroundHandler from "../../utils/BackgroundHandler";
 import { getFCMToken } from "../../utils/PushNotificationService";
 import DeviceInfo from "react-native-device-info";
-import { ODOO_BASE_URL } from "../../store/reducers/commonSlice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ApprovelsIcon,
   AttendanceIcon,
@@ -82,7 +82,7 @@ export const useHome = () => {
 
   useEffect(() => {
     const init = async () => {
-      const apiToken = await getApiToken();
+      const apiToken = await AsyncStorage.getItem('USER_ODOO_TOKEN');
       if (apiToken) {
         await storeNotificationToken(apiToken);
       }
@@ -132,23 +132,6 @@ export const useHome = () => {
 
     initLocation();
   }, [isFocused]);
-
-  const getApiToken = async () => {
-    try {
-      const response = await fetch(`${ODOO_BASE_URL}api/auth`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_name: "ravina" }),
-      });
-
-      const data = await response.json();
-      if (data?.token) {
-        return data?.token
-      }
-    } catch (error) {
-      console.log("API ERROR ======>", error);
-    }
-  };
 
   const storeNotificationToken = async (apiToken) => {
     if (!UsersigninData?.user_id) return;

@@ -27,12 +27,13 @@ import PaySlip from '../screens/paySlip/PaySlip';
 import RaiseTicket from '../screens/raiseTicket/RaiseTicket';
 import TimeSheet from '../screens/timesheet/TimeSheet';
 import Notifications from '../screens/notifications/Notifications';
+import { navigationRef } from './NavigationService';
 
 const Stack = createNativeStackNavigator();
 
 function Navigation({ props }) {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator initialRouteName="splash">
         <Stack.Group screenOptions={{ header: () => null }}>
           <Stack.Screen name="splash" component={Splash} />
