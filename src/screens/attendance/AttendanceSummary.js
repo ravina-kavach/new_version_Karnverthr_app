@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
     View,
     Text,
@@ -9,68 +9,52 @@ import {
     Pressable,
 } from "react-native";
 import { CommonView } from "../../utils/common";
+import moment from "moment";
 
 const { width } = Dimensions.get("window");
 
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-const AttendanceSummary = ({ attendanceData }) => {
+const AttendanceSummary = ({ attendanceData, month, year }) => {
 
-    const today = new Date().getDate();
+    const todayDate = new Date();
 
-    const [selectedDay, setSelectedDay] = useState(() => {
-        const todayDate = new Date().getDate();
-        return {
-            day: todayDate,
-            status: "present",
-        };
-    });
+    const isCurrentMonth =
+        Number(month) === todayDate.getMonth() + 1 &&
+        Number(year) === todayDate.getFullYear();
 
-    const holidays = {
-        "2026-01-14": "Makar Sankranti",
-        "2026-01-26": "Republic Day",
-        "2026-03-04": "Dhuleti",
-        "2026-08-15": "Independence Day",
-        "2026-08-28": "Raksha Bandhan",
-        "2026-10-20": "Vijaya Dashami",
-        "2026-11-09": "Diwali Break",
-        "2026-11-10": "Diwali Break",
-        "2026-11-11": "Diwali Break",
-        "2026-11-12": "Diwali Break",
-    };
+    const today = isCurrentMonth ? todayDate.getDate() : null;
 
-    const formatCalendarData = () => {
-        const year = 2026;
-        const month = 2;
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const todayDate = new Date();
+    // ✅ CALENDAR DATA (DYNAMIC)
+    const calendarData = useMemo(() => {
+        if (!month || !year) return [];
+
+        const monthIndex = Number(month) - 1;
+        const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
         const data = [];
 
         for (let i = 1; i <= daysInMonth; i++) {
-            const currentDate = new Date(year, month, i);
+            const currentDate = new Date(year, monthIndex, i);
 
-            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+            const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
 
             const found = attendanceData?.find(item => item.date === dateStr);
-            const dayOfWeek = currentDate.getDay();
 
-            if (currentDate > todayDate) {
+            const isFuture =
+                year > todayDate.getFullYear() ||
+                (year == todayDate.getFullYear() && monthIndex > todayDate.getMonth()) ||
+                (year == todayDate.getFullYear() &&
+                    monthIndex == todayDate.getMonth() &&
+                    i > todayDate.getDate());
+
+            if (isFuture) {
                 data.push({ day: i, status: "future" });
                 continue;
             }
 
-            if (dayOfWeek === 0) {
+            if (currentDate.getDay() === 0) {
                 data.push({ day: i, status: "weekoff" });
-                continue;
-            }
-
-            if (holidays[dateStr]) {
-                data.push({
-                    day: i,
-                    status: "holiday",
-                    holidayName: holidays[dateStr],
-                });
                 continue;
             }
 
@@ -89,32 +73,30 @@ const AttendanceSummary = ({ attendanceData }) => {
         }
 
         return data;
-    };
+    }, [attendanceData, month, year]);
 
-    const calendarData = formatCalendarData();
+    // ✅ SELECT DAY
+    const [selectedDay, setSelectedDay] = useState(null);
 
     useEffect(() => {
-        const todayData = calendarData.find(d => d.day === today);
-        if (todayData) setSelectedDay(todayData);
-    }, [attendanceData]);
+        if (!calendarData.length) return;
 
-    const getCardStyle = (status) => {
-        switch (status) {
-            case "present": return styles.present;
-            case "holiday": return styles.holiday;
-            case "weekoff": return styles.weekoff;
-            case "absent": return styles.absent;
-            default: return styles.empty;
+        if (today) {
+            const todayData = calendarData.find(d => d.day === today);
+            setSelectedDay(todayData || calendarData[0]);
+        } else {
+            setSelectedDay(calendarData[0]);
         }
-    };
+    }, [calendarData]);
 
+    // ✅ MONTH TITLE
+    const monthName = moment(`${year}-${month}`, "YYYY-MM").format("MMMM YYYY");
+
+    // ✅ TODAY DETAILS
     const getTodayDetails = () => {
-        const todayDate = new Date();
+        if (!isCurrentMonth) return null;
 
-        const todayStr = `${todayDate.getFullYear()}-${String(
-            todayDate.getMonth() + 1
-        ).padStart(2, "0")}-${String(todayDate.getDate()).padStart(2, "0")}`;
-
+        const todayStr = moment().format("YYYY-MM-DD");
         const todayRecord = attendanceData?.find(item => item.date === todayStr);
         if (!todayRecord) return null;
 
@@ -126,6 +108,7 @@ const AttendanceSummary = ({ attendanceData }) => {
         if (checkIn) {
             const endTime = checkOut || new Date();
             const diff = endTime - checkIn;
+
             const hours = Math.floor(diff / (1000 * 60 * 60));
             const minutes = Math.floor((diff / (1000 * 60)) % 60);
 
@@ -142,10 +125,34 @@ const AttendanceSummary = ({ attendanceData }) => {
 
     const todayDetails = getTodayDetails();
 
+    // ✅ LATE FORMAT
+    const formatLateTime = (value) => {
+        if (!value || value === "On Time") return "";
+
+        const mins = parseInt(value);
+        if (isNaN(mins)) return value;
+
+        const hours = Math.floor(mins / 60);
+        const minutes = mins % 60;
+
+        return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    };
+
+    const getCardStyle = (status) => {
+        switch (status) {
+            case "present": return styles.present;
+            case "holiday": return styles.holiday;
+            case "weekoff": return styles.weekoff;
+            case "absent": return styles.absent;
+            default: return styles.empty;
+        }
+    };
+
     return (
         <CommonView>
-            <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-                <Text style={styles.header}>March 2026</Text>
+            <ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={styles.containerWrapper}>
+
+                <Text style={styles.header}>{monthName}</Text>
 
                 {/* CALENDAR */}
                 <View style={styles.calendar}>
@@ -161,7 +168,7 @@ const AttendanceSummary = ({ attendanceData }) => {
                         scrollEnabled={false}
                         keyExtractor={(item) => item.day.toString()}
                         renderItem={({ item }) => {
-                            const isToday = item.day === today;
+                            const isToday = today && item.day === today;
                             const isLate = item.lateTime && item.lateTime !== "On Time";
 
                             return (
@@ -193,54 +200,38 @@ const AttendanceSummary = ({ attendanceData }) => {
                     <View style={styles.detailCardPremium}>
                         <View style={styles.detailHeader}>
                             <Text style={styles.detailDate}>
-                                {selectedDay.day} March 2026
+                                {selectedDay.day} {monthName}
                             </Text>
 
-                            {/* ✅ UPDATED BADGE */}
                             {(() => {
-                                const isTodaySelected = selectedDay.day === today;
-
-                                const lateValue = isTodaySelected
-                                    ? todayDetails?.lateTime
-                                    : selectedDay.lateTime;
+                                const lateValue =
+                                    selectedDay.day === today
+                                        ? todayDetails?.lateTime
+                                        : selectedDay.lateTime;
 
                                 const isLate = lateValue && lateValue !== "On Time";
-
-                                // ✅ CONVERT LATE TIME TO HOURS
-                                const formatLateTime = (value) => {
-                                    if (!value || value === "On Time") return "";
-
-                                    const mins = parseInt(value); // assuming "15 min" or "15"
-                                    if (isNaN(mins)) return value;
-
-                                    const hours = Math.floor(mins / 60);
-                                    const minutes = mins % 60;
-
-                                    if (hours > 0) {
-                                        return `${hours}h ${minutes}m`;
-                                    }
-                                    return `${minutes}m`;
-                                };
+                                const isPresent = selectedDay.status === "present";
 
                                 return (
                                     <View
                                         style={[
                                             styles.statusBadge,
-                                            selectedDay.status === "present" && !isLate && styles.present,
-                                            selectedDay.status === "present" && isLate && styles.lateBadge,
-                                            selectedDay.status !== "present" && getCardStyle(selectedDay.status),
+                                            isPresent && !isLate && styles.present,
+                                            isPresent && isLate && styles.lateBadge,
+                                            !isPresent && getCardStyle(selectedDay.status),
                                         ]}
                                     >
                                         <Text
                                             style={[
                                                 styles.statusBadgeText,
-                                                selectedDay.status === "present" && isLate && styles.lateText,
-                                                selectedDay.status === "present" && !isLate && styles.presentText,
+                                                isPresent && isLate && styles.lateText,
+                                                isPresent && !isLate && styles.presentText,
+                                                !isPresent && styles.absentText, // ✅ FIXED
                                             ]}
                                         >
-                                            {selectedDay.status === "present"
+                                            {isPresent
                                                 ? isLate
-                                                    ? `LATE ${formatLateTime(lateValue)}`  // ✅ UPDATED
+                                                    ? `LATE ${formatLateTime(lateValue)}`
                                                     : "PRESENT"
                                                 : selectedDay.status.toUpperCase()}
                                         </Text>
@@ -289,13 +280,6 @@ const AttendanceSummary = ({ attendanceData }) => {
                             </View>
                         )}
 
-                        {selectedDay.status === "holiday" && (
-                            <View style={styles.centerRow}>
-                                <Text style={styles.bigEmoji}>🎉</Text>
-                                <Text style={styles.holidayName}>{selectedDay.holidayName}</Text>
-                            </View>
-                        )}
-
                         {selectedDay.status === "weekoff" && (
                             <View style={styles.centerRow}>
                                 <Text style={styles.bigEmoji}>🛌</Text>
@@ -319,24 +303,25 @@ const AttendanceSummary = ({ attendanceData }) => {
                     <View style={styles.rowBetween}>
                         <Text>Present</Text>
                         <Text style={styles.green}>
-                            {calendarData.filter((d) => d.status === "present").length}
+                            {calendarData.filter(d => d.status === "present").length}
                         </Text>
                     </View>
 
                     <View style={styles.rowBetween}>
                         <Text>Absent</Text>
                         <Text style={styles.red}>
-                            {calendarData.filter((d) => d.status === "absent").length}
+                            {calendarData.filter(d => d.status === "absent").length}
                         </Text>
                     </View>
 
                     <View style={styles.rowBetween}>
-                        <Text>Holiday</Text>
+                        <Text>Week Off</Text>
                         <Text>
-                            {calendarData.filter((d) => d.status === "holiday").length}
+                            {calendarData.filter(d => d.status === "weekoff").length}
                         </Text>
                     </View>
                 </View>
+
             </ScrollView>
         </CommonView>
     );
@@ -350,6 +335,10 @@ const styles = StyleSheet.create({
     calendar: { backgroundColor: "#fff", borderRadius: 20, padding: 14, marginBottom: 16 },
     row: { flexDirection: "row", justifyContent: "space-between" },
     dayText: { width: boxSize, textAlign: "center", fontSize: 11, color: "#999" },
+
+    containerWrapper: {
+        paddingBottom: 100
+    },
 
     dateBox: {
         width: boxSize,
@@ -417,19 +406,9 @@ const styles = StyleSheet.create({
 
     green: { color: "green" },
     red: { color: "red" },
-    lateBadge: {
-        backgroundColor: "#fff4cc",
-    },
 
-    lateText: {
-        color: "#ffb300",
-        fontWeight: "700",
-    },
-
-    presentText: {
-        color: "green",
-        fontWeight: "700",
-    },
+    lateText: { color: "#ffb300", fontWeight: "700" },
+    presentText: { color: "green", fontWeight: "700" },
 });
 
 export default AttendanceSummary;

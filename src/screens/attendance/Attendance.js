@@ -1,145 +1,90 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
-  FlatList,
-  RefreshControl,
   StyleSheet,
   TouchableOpacity,
   Text,
+  ActivityIndicator,
 } from 'react-native';
-import Dropdown from '../../components/Dropdown';
 import { COLOR } from '../../theme/theme';
-import NodataFound from '../../components/NodataFound';
 import { useAttendance } from './AttendanceController';
-import { RowView, CommonView } from '../../utils/common';
-import AttendanceItem from '../../components/AttendanceItem';
+import { CommonView } from '../../utils/common';
 import CommonHeader from '../../components/CommonHeader';
 import AttendanceRegModal from '../../components/AttendanceRegModal';
-import { GlobalFonts } from '../../theme/typography';
+import { font, GlobalFonts } from '../../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AttendanceSummary from './AttendanceSummary';
 
 export default function Attendance() {
   const {
     t,
-    months,
     Selectedmonth,
     SelectedYear,
-    YEARDATA,
     GetAttandanceListData,
-    isGetAttandanceListFetching,
     UserAttendanceRegcategoriesData,
     isFeatchAttendanceReguration,
-    getDuration,
-    onRefresh,
-    setSelectedmonth,
-    setSelectedYear,
+    isGetAttandanceListFetching,
+    changeMonth,
     visible,
     handleModal,
     onCreateRegularization,
   } = useAttendance();
 
   const insets = useSafeAreaInsets();
-  const [viewType, setViewType] = useState('calendar');
+
+  const attendanceList = GetAttandanceListData?.attandancelist || [];
 
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
       <CommonHeader title={t('Attendance.AttendanceList')} />
 
-      {/* FILTERS */}
-      <View style={styles.filterContainer}>
-        <RowView style={styles.filterRow}>
-          <View style={styles.filterItem}>
-            <Dropdown
-              type="Attendance"
-              DropdownData={months}
-              setSelecteditem={setSelectedmonth}
-              Selecteditem={Selectedmonth}
-            />
-          </View>
-
-          <View style={styles.filterItem}>
-            <Dropdown
-              type="Attendance"
-              DropdownData={YEARDATA}
-              setSelecteditem={setSelectedYear}
-              Selecteditem={SelectedYear}
-            />
-          </View>
-        </RowView>
-      </View>
-
-      {/* 🔥 TOGGLE */}
-      <View style={styles.toggleContainer}>
-
-
+      {/* MONTH NAV */}
+      <View style={styles.monthNavContainer}>
         <TouchableOpacity
-          style={[
-            styles.toggleBtn,
-            viewType === 'calendar' && styles.activeToggle,
-          ]}
-          onPress={() => setViewType('calendar')}
+          style={styles.navBtn}
+          onPress={() => !isGetAttandanceListFetching && changeMonth("prev")}
+          disabled={isGetAttandanceListFetching}
         >
-          <Text
-            style={[
-              styles.toggleText,
-              viewType === 'calendar' && styles.activeText,
-            ]}
-          >
-            Calendar
-          </Text>
+          <Text style={styles.navText}>◀</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.toggleBtn,
-            viewType === 'list' && styles.activeToggle,
-          ]}
-          onPress={() => setViewType('list')}
-        >
-          <Text
-            style={[
-              styles.toggleText,
-              viewType === 'list' && styles.activeText,
-            ]}
-          >
-            List
+
+        <View style={styles.monthCenter}>
+          <Text style={styles.monthText}>
+            {Selectedmonth?.name} {SelectedYear?.name}
           </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.navBtn}
+          onPress={() => !isGetAttandanceListFetching && changeMonth("next")}
+          disabled={isGetAttandanceListFetching}
+        >
+          <Text style={styles.navText}>▶</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 🔥 CALENDAR VIEW */}
-      {viewType === 'calendar' && (
-        <AttendanceSummary attendanceData={GetAttandanceListData?.attandancelist} />
-      )}
-
-      {/* 🔥 LIST VIEW */}
-      {viewType === 'list' && (
-        <FlatList
-          data={GetAttandanceListData?.attandancelist}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => (
-            <AttendanceItem
-              item={item}
-              t={t}
-              getDuration={getDuration}
-            />
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={isGetAttandanceListFetching}
-              onRefresh={onRefresh}
-            />
-          }
-          contentContainerStyle={styles.listContent}
-          ListEmptyComponent={() => <NodataFound />}
+      {/* CONTENT */}
+      {isGetAttandanceListFetching ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={COLOR.Black1} />
+          <Text style={styles.loadingText}>Loading attendance...</Text>
+        </View>
+      ) : attendanceList.length > 0 ? (
+        <AttendanceSummary
+          attendanceData={attendanceList}
+          month={Selectedmonth?.id}
+          year={SelectedYear?.name}
         />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No attendance data found</Text>
+        </View>
       )}
 
       {/* FAB */}
       <TouchableOpacity
         style={[styles.fab, { bottom: insets.bottom + 20 }]}
-        activeOpacity={0.8}
-        onPress={() => handleModal()}
+        onPress={handleModal}
       >
         <Text style={styles.fabText}>Attendance Regularization</Text>
       </TouchableOpacity>
@@ -148,7 +93,7 @@ export default function Attendance() {
       <AttendanceRegModal
         visible={visible}
         data={UserAttendanceRegcategoriesData}
-        onClose={() => handleModal()}
+        onClose={handleModal}
         onCreateReq={onCreateRegularization}
         loading={isFeatchAttendanceReguration}
       />
@@ -157,99 +102,59 @@ export default function Attendance() {
 }
 
 const styles = StyleSheet.create({
-  filterContainer: {
-    paddingHorizontal: 20,
-    marginTop: 12,
-    marginBottom: 8,
-  },
-
-  filterRow: {
-    justifyContent: 'space-between',
-  },
-
-  filterItem: {
-    width: '48%',
-  },
-
-  /* 🔥 TOGGLE */
-  toggleContainer: {
+  monthNavContainer: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginBottom: 10,
-    backgroundColor: '#f1f1f1',
-    borderRadius: 10,
-  },
-
-  toggleBtn: {
-    flex: 1,
-    padding: 10,
     alignItems: 'center',
-    borderRadius: 10,
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+    marginTop: 12,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    elevation: 3,
   },
-
-  activeToggle: {
-    backgroundColor: '#000',
+  navBtn: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#f2f2f2',
   },
-
-  toggleText: {
-    color: '#000',
+  navText: {
+    fontSize: 16,
     fontWeight: '600',
   },
-
-  activeText: {
-    color: '#fff',
-  },
-
-  /* 🔥 CALENDAR */
-  calendar: {
-    marginHorizontal: 10,
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    padding: 10,
-  },
-
-  dateBox: {
+  monthCenter: {
     flex: 1,
-    height: 45,
-    margin: 3,
-    borderRadius: 10,
+    alignItems: 'center',
+  },
+  monthText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  /* LOADER */
+  loaderContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fafafa',
+    marginTop: 50,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#666',
   },
 
-  dateText: {
-    fontWeight: '600',
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#999',
   },
 
-  greenDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'green',
-    marginTop: 3,
-  },
-
-  redDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'red',
-    marginTop: 3,
-  },
-
-  holidayText: {
-    fontSize: 10,
-    color: 'blue',
-  },
-
-  /* LIST */
-  listContent: {
-    paddingVertical: 10,
-    paddingBottom: 120,
-  },
-
-  /* FAB */
   fab: {
     position: 'absolute',
     alignSelf: 'center',
@@ -258,11 +163,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
   },
-
   fabText: {
     color: COLOR.White1,
-    ...GlobalFonts.subtitle,
+    ...GlobalFonts.buttonText,
+    fontSize: 14,
     fontWeight: '600',
-    fontSize: 15,
   },
 });
