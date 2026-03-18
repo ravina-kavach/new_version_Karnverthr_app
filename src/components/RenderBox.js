@@ -10,7 +10,7 @@ import { COLOR } from "../theme/theme";
 import { FontSize, responsiveHeight, responsiveWidth } from "../utils/metrics";
 import { GlobalFonts } from "../theme/typography";
 
-const ENABLED_SCREENS = ["attendance", "leaves","expenses", "calender", "approvals", "shiftTiming", "paySlip" ];
+const ENABLED_SCREENS = ["attendance", "leaves", "expenses", "calender", "approvals", "shiftTiming", "paySlip", "timeSheet"];
 // const ENABLED_SCREENS = ["attendance", "leaves", "expenses", "calender", "approvals"];
 
 export const RenderBox = ({ image, title, screen }) => {
@@ -37,7 +37,7 @@ export const RenderBox = ({ image, title, screen }) => {
         ]}
       >
         {!isEnabled && (
-            <Text style={styles.badgeText}>Coming soon</Text>
+          <Text style={styles.badgeText}>Coming soon</Text>
         )}
 
         {image}
@@ -54,9 +54,9 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLOR.White1,
     padding: 18,
-    width:responsiveWidth(28),
-    height:responsiveHeight(14),
-    maxHeight:300,
+    width: responsiveWidth(28),
+    height: responsiveHeight(14),
+    maxHeight: 300,
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "space-around",
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   badgeText: {
     color: COLOR.LightOrange,
     fontSize: FontSize.Font10,
-    bottom:5,
+    bottom: 5,
     fontWeight: "600",
   },
 });
