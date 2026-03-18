@@ -61,7 +61,8 @@ const GreetingHeader = ({
     >
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={screenName === 'editProfile' ? onAvatarPress : undefined}
+        disabled={screenName !== 'editProfile'}
+        onPress={onAvatarPress}
       >
         <View style={styles.avatarWrapper}>
           {UserDetailsData.image_url ? (
@@ -75,7 +76,7 @@ const GreetingHeader = ({
             </View>
           )}
 
-          {isProfileUpdateFetching || !UserDetailsData.image_url  && (
+          {isProfileUpdateFetching || !UserDetailsData.image_url && (
             <View style={styles.loaderOverlay}>
               <ActivityIndicator size="small" color="#fff" />
             </View>
@@ -122,19 +123,19 @@ const styles = StyleSheet.create({
         ? responsiveHeight(3)
         : responsiveHeight(6),
   },
- avatar: {
-  width: 44,
-  height: 44,
-  borderRadius: 22,
-},
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
 
- initialAvatar: {
-  width: 44,
-  height: 44,
-  borderRadius: 22,
-  alignItems: 'center',
-  justifyContent: 'center',
-},
+  initialAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   initialText: {
     color: '#fff',
     fontSize: 18,
@@ -157,21 +158,21 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   avatarWrapper: {
-  width: 44,
-  height: 44,
-  marginRight: 12,
-  position: 'relative',
-},
+    width: 44,
+    height: 44,
+    marginRight: 12,
+    position: 'relative',
+  },
   loaderOverlay: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  borderRadius: 22,
-  backgroundColor: 'rgba(0,0,0,0.4)',
-  alignItems: 'center',
-  justifyContent: 'center',
-  zIndex: 10,
-},
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
 });
