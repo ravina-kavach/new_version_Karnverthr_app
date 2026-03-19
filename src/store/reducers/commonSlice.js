@@ -3,6 +3,7 @@ import axios from 'axios';
 import Config from 'react-native-config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
+import ODOO_API from './odooApiInstance'
 import APIS_ENDPOINTS from './apiEndPoints'
 
 // export const ODOO_BASE_URL = 'https://odooprod.konverthr.com//'
@@ -155,7 +156,7 @@ export const Usersignin = createAsyncThunk(
             password: userdata.password,
         }, null, 2))
         try {
-            const result = await API.post(APIS_ENDPOINTS.LOGIN, {
+            const result = await ODOO_API.post(APIS_ENDPOINTS.LOGIN, {
                 email: userdata.email,
                 password: userdata.password,
             });

@@ -1,7 +1,7 @@
 const APIS_ENDPOINTS = {
   // ================= AUTH =================
   AUTH_TOKEN: 'api/auth',
-  LOGIN: 'api/login',
+  LOGIN: 'api/custom_login',
   DEVICE_REGISTER: 'api/employee/device-register',
   FORGOT_PASSWORD: 'fact/reset_password',
 
