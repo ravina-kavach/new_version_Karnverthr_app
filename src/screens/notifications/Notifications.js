@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     FlatList,
     ActivityIndicator,
+    TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 import { CommonView } from '../../utils/common';
@@ -12,9 +13,20 @@ import CommonHeader from '../../components/CommonHeader';
 import useNotifications from './NotificationsController';
 
 const Notifications = () => {
-    const { GetAllNotificationData, isGetAllNotificationfeatching } = useNotifications();
 
-    const notifications = GetAllNotificationData?.data || [];
+    const {
+        uniqueNotifications,
+        isGetAllNotificationfeatching,
+        markAllAsSeen,
+        navigateToScreen
+    } = useNotifications();
+
+    useEffect(() => {
+        const init = async () => {
+            await markAllAsSeen();
+        };
+        init();
+    }, []);
 
     const getSectionTitle = (date) => {
         const mDate = moment(date);
@@ -25,19 +37,20 @@ const Notifications = () => {
         return mDate.format('DD MMM YYYY');
     };
 
-    const groupedData = notifications.reduce((acc, item) => {
-        const section = getSectionTitle(item.created_on);
-        if (!acc[section]) acc[section] = [];
-        acc[section].push(item);
-        return acc;
-    }, {});
+    const sections = useMemo(() => {
+        const groupedData = uniqueNotifications.reduce((acc, item) => {
+            const section = getSectionTitle(item.created_on);
+            if (!acc[section]) acc[section] = [];
+            acc[section].push(item);
+            return acc;
+        }, {});
 
-    const sections = Object.keys(groupedData).map((title) => ({
-        title,
-        data: groupedData[title],
-    }));
+        return Object.keys(groupedData).map((title) => ({
+            title,
+            data: groupedData[title],
+        }));
+    }, [uniqueNotifications]);
 
-    // 🔥 ICON + COLOR + BG
     const getEventMeta = (event) => {
         switch (event) {
             case 'support_ticket_created':
@@ -59,17 +72,13 @@ const Notifications = () => {
         const meta = getEventMeta(item.event);
 
         return (
-            <View style={[styles.card, { borderLeftColor: meta.color }]}>
+            <TouchableOpacity style={[styles.card, { borderLeftColor: meta.color }]} onPress={() => navigateToScreen(item?.model)}>
 
-                {/* ICON */}
                 <View style={[styles.iconBox, { backgroundColor: meta.bg }]}>
                     <Text style={styles.icon}>{meta.icon}</Text>
                 </View>
 
-                {/* CONTENT */}
                 <View style={styles.content}>
-
-                    {/* TITLE + TIME */}
                     <View style={styles.row}>
                         <Text style={styles.title}>{item.title}</Text>
                         <Text style={styles.time}>
@@ -77,10 +86,9 @@ const Notifications = () => {
                         </Text>
                     </View>
 
-                    {/* MESSAGE */}
                     <Text style={styles.message}>{item.message}</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
     };
 
@@ -105,7 +113,6 @@ const Notifications = () => {
                 <FlatList
                     data={sections}
                     keyExtractor={(item) => item.title}
-                    showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <View>
                             <Text style={styles.sectionTitle}>{item.title}</Text>

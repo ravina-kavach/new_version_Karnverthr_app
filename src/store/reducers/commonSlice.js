@@ -6,8 +6,8 @@ import API from './apiInstance'
 import ODOO_API from './odooApiInstance'
 import APIS_ENDPOINTS from './apiEndPoints'
 
-// export const ODOO_BASE_URL = 'https://odooprod.konverthr.com//'
-export const ODOO_BASE_URL = 'https://odooapi.konverthr.com//'
+export const ODOO_BASE_URL = 'https://odooprod.konverthr.com//'
+// export const ODOO_BASE_URL = 'https://odooapi.konverthr.com//'
 const errorMassage = (error) => {
     if (error === "Network Error") {
         return "Server not responding. Please try again later."
@@ -73,7 +73,6 @@ export const GetNotifications = createAsyncThunk(
             });
 
             const result = await response.json();
-            console.log("PUSH NOTIFICATION====>", result)
             if (response.ok && result?.status === 'success') {
                 return result;
             }
@@ -82,7 +81,6 @@ export const GetNotifications = createAsyncThunk(
                 error: result?.message,
             });
         } catch (error) {
-            console.error("NOTIFICATION API ERROR ======>", error);
             return thunkAPI.rejectWithValue({
                 error: error?.message,
             });
@@ -110,13 +108,13 @@ export const StoreFCMToken = createAsyncThunk(
             );
 
             const result = await response.json();
-            console.log("result notification==========>", result)
+            console.log("StoreFCMToken RESULT==========>", result)
             if (response.ok && result?.status === 'success') {
                 return result;
             }
 
             return thunkAPI.rejectWithValue({
-                error: result?.message || 'Something went wrong',
+                error: result?.message,
             });
 
         } catch (error) {
@@ -151,10 +149,6 @@ export const GetUserDetails = createAsyncThunk(
 export const Usersignin = createAsyncThunk(
     'Usersignin',
     async (userdata, thunkAPI) => {
-        console.log("Pay===>", JSON.stringify({
-            email: userdata.email,
-            password: userdata.password,
-        }, null, 2))
         try {
             const result = await ODOO_API.post(APIS_ENDPOINTS.LOGIN, {
                 email: userdata.email,
@@ -963,6 +957,38 @@ export const DeleteSupportTicket = createAsyncThunk(
     }
 );
 
+export const GetPublicHolidaysList = createAsyncThunk(
+    'GetPublicHolidaysList',
+    async (userdata, thunkAPI) => {
+        try {
+            const { id, token } = userdata;
+            const response = await fetch(
+                `${ODOO_BASE_URL}${APIS_ENDPOINTS.PUBLIC_HOLIDAY(id)}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        Authorization: token,
+                    },
+                }
+            );
+
+            const result = await response.json();
+
+            if (result?.status === 'success') {
+                return result.data;
+            }
+
+            return thunkAPI.rejectWithValue({
+                error: result?.message,
+            });
+
+        } catch (error) {
+            return thunkAPI.rejectWithValue({
+                error: error?.message,
+            });
+        }
+    }
+);
 
 
 export const ApprovalCategory = createAsyncThunk(
@@ -1182,6 +1208,8 @@ export const CommonSlice = createSlice({
 
         GetSupportListData: [],
         isGetSupportListFetching: false,
+
+        GetPublicHolidayData: [],
 
         isCreateSupportListFetching: false,
 
@@ -2251,6 +2279,40 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(SupportTicketList.pending, state => {
             state.isGetSupportListFetching = true;
+        });
+
+        //================= GetPublicHolidaysList =================
+
+        builder.addCase(GetPublicHolidaysList.fulfilled, (state, { payload }) => {
+            // console.log("[GetPublicHolidaysList.fulfilled]>>>payload>>>", payload)
+            try {
+                state.GetPublicHolidayData = payload
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetPublicHolidaysList.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetPublicHolidaysList.rejected, (state, { payload }) => {
+            console.log("[GetPublicHolidaysList.rejected]>>>", payload)
+            try {
+
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetPublicHolidaysList.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetPublicHolidaysList.pending, state => {
+            return state
         });
 
         //=============== CreateSupportTicket =====================

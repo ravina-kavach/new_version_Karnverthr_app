@@ -1,93 +1,100 @@
 import React from 'react';
-import { View, FlatList, RefreshControl, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import Dropdown from '../../components/Dropdown'
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import { COLOR } from '../../theme/theme';
-import NodataFound from '../../components/NodataFound'
 import { useAttendance } from './AttendanceController';
-import { RowView, CommonView } from '../../utils/common';
-import AttendanceItem from '../../components/AttendanceItem'
+import { CommonView } from '../../utils/common';
 import CommonHeader from '../../components/CommonHeader';
-import AttendanceRegModal from '../../components/AttendanceRegModal'
-import { GlobalFonts } from '../../theme/typography';
+import AttendanceRegModal from '../../components/AttendanceRegModal';
+import { font, GlobalFonts } from '../../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import AttendanceSummary from './AttendanceSummary';
 
 export default function Attendance() {
   const {
     t,
-    months,
     Selectedmonth,
     SelectedYear,
-    YEARDATA,
     GetAttandanceListData,
-    isGetAttandanceListFetching,
     UserAttendanceRegcategoriesData,
     isFeatchAttendanceReguration,
-    getDuration,
-    onRefresh,
-    setSelectedmonth,
-    setSelectedYear,
+    isGetAttandanceListFetching,
+    GetPublicHolidayData,
+    changeMonth,
     visible,
     handleModal,
-    onCreateRegularization
+    onCreateRegularization,
   } = useAttendance();
-
   const insets = useSafeAreaInsets();
+
+  const attendanceList = GetAttandanceListData?.attandancelist || [];
+
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
-      <CommonHeader
-        title={t('Attendance.AttendanceList')}
-      />
-      <View style={styles.filterContainer}>
-        <RowView style={styles.filterRow}>
-          <View style={styles.filterItem}>
-            <Dropdown
-              type="Attendance"
-              DropdownData={months}
-              setSelecteditem={setSelectedmonth}
-              Selecteditem={Selectedmonth}
-            />
-          </View>
+      <CommonHeader title={t('Attendance.AttendanceList')} />
 
-          <View style={styles.filterItem}>
-            <Dropdown
-              type="Attendance"
-              DropdownData={YEARDATA}
-              setSelecteditem={setSelectedYear}
-              Selecteditem={SelectedYear}
-            />
-          </View>
-        </RowView>
+      {/* MONTH NAV */}
+      <View style={styles.monthNavContainer}>
+        <TouchableOpacity
+          style={styles.navBtn}
+          onPress={() => !isGetAttandanceListFetching && changeMonth("prev")}
+          disabled={isGetAttandanceListFetching}
+        >
+          <Text style={styles.navText}>◀</Text>
+        </TouchableOpacity>
+
+        <View style={styles.monthCenter}>
+          <Text style={styles.monthText}>
+            {Selectedmonth?.name} {SelectedYear?.name}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.navBtn}
+          onPress={() => !isGetAttandanceListFetching && changeMonth("next")}
+          disabled={isGetAttandanceListFetching}
+        >
+          <Text style={styles.navText}>▶</Text>
+        </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={GetAttandanceListData?.attandancelist}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => {
-          return (
-            <AttendanceItem
-              item={item}
-              t={t}
-              getDuration={getDuration}
-            />
-          )
-        }}
-        refreshControl={
-          <RefreshControl
-            refreshing={isGetAttandanceListFetching}
-            onRefresh={onRefresh}
-          />
-        }
+      {/* CONTENT */}
+      {isGetAttandanceListFetching ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color={COLOR.Black1} />
+          <Text style={styles.loadingText}>Loading attendance...</Text>
+        </View>
+      ) : attendanceList.length > 0 ? (
+        <AttendanceSummary
+          attendanceData={attendanceList}
+          publicHolidayData={GetPublicHolidayData}
+          month={Selectedmonth?.id}
+          year={SelectedYear?.name}
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No attendance data found</Text>
+        </View>
+      )}
 
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={() => <NodataFound />}
-      />
-      <TouchableOpacity style={[styles.fab, { bottom: insets.bottom + 20 }]} activeOpacity={0.8} onPress={() => handleModal()}>
+      {/* FAB */}
+      <TouchableOpacity
+        style={[styles.fab, { bottom: insets.bottom + 20 }]}
+        onPress={handleModal}
+      >
         <Text style={styles.fabText}>Attendance Regularization</Text>
       </TouchableOpacity>
+
+      {/* MODAL */}
       <AttendanceRegModal
         visible={visible}
         data={UserAttendanceRegcategoriesData}
-        onClose={() => handleModal()}
+        onClose={handleModal}
         onCreateReq={onCreateRegularization}
         loading={isFeatchAttendanceReguration}
       />
@@ -95,49 +102,73 @@ export default function Attendance() {
   );
 }
 
-
 const styles = StyleSheet.create({
-  filterContainer: {
-    paddingHorizontal: 20,
+  monthNavContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
     marginTop: 12,
-    marginBottom: 8,
-  },
-  filterRow: {
-    justifyContent: "space-between",
-  },
-  dropdownBox: {
     marginBottom: 10,
-    backgroundColor: COLOR.White1,
-    borderRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 5,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    elevation: 3,
   },
-  filterItem: {
-    width: "48%",
+  navBtn: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#f2f2f2',
+  },
+  navText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  monthCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  monthText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+
+  /* LOADER */
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    ...GlobalFonts.small,
+    color: '#666',
+  },
+
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#999',
   },
 
   fab: {
-    flex: 1,
     position: 'absolute',
     alignSelf: 'center',
-    bottom: 60,
     backgroundColor: '#000',
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 20,
   },
-
   fabText: {
     color: COLOR.White1,
-    ...GlobalFonts.subtitle,
+    ...GlobalFonts.buttonText,
+    fontSize: 14,
     fontWeight: '600',
-    fontSize: 15,
-  },
-  listContent: {
-    paddingVertical: 10,
-    paddingBottom: 120
-
   },
 });

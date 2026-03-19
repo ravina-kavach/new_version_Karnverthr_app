@@ -1,58 +1,74 @@
+import { useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
-import { useEffect } from "react";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GetNotifications } from "../../store/reducers/commonSlice";
-import { CommonSelector } from "../../store/reducers/commonSlice";
+import { GetNotifications, CommonSelector } from "../../store/reducers/commonSlice";
+import {
+    NotificationEmitter,
+    NOTIFICATION_RECEIVED
+} from '../../utils/NotificationEmitter'
+
+const SEEN_NOTIFICATION_KEY = "SEEN_NOTIFICATIONS";
 
 const useNotifications = () => {
     const isFocused = useIsFocused();
     const dispatch = useDispatch();
-    const { UsersigninData, GetAllNotificationData, isGetAllNotificationfeatching } = useSelector(CommonSelector);
+    const Navigation = useNavigation();
+    const {
+        UsersigninData,
+        GetAllNotificationData,
+        isGetAllNotificationfeatching
+    } = useSelector(CommonSelector);
+
+    const [unseenNotifications, setUnseenNotifications] = useState([]);
+
+    useEffect(() => {
+        const refreshNotifications = () => {
+            getAllNotification();
+        };
+
+        NotificationEmitter.on(
+            NOTIFICATION_RECEIVED,
+            refreshNotifications
+        );
+
+        return () => {
+            NotificationEmitter.off(
+                NOTIFICATION_RECEIVED,
+                refreshNotifications
+            );
+        };
+    }, []);
 
     useEffect(() => {
         if (isFocused) {
             getAllNotification();
         }
-    }, [isFocused])
+    },
+        [isFocused])
 
     const getAllNotification = async () => {
-        const token = await AsyncStorage.getItem('USER_ODOO_TOKEN');
+        const token = await AsyncStorage.getItem("USER_ODOO_TOKEN");
+
         try {
             const payload = {
-                token: token,
+                token,
                 id: UsersigninData?.user_id,
             };
 
-            const result = await dispatch(GetNotifications(payload)).unwrap();
-
-            if (result?.status === "success") {
-                showMessage({
-                    icon: 'success',
-                    message: result?.message,
-                    type: 'success',
-                });
-            } else {
-                showMessage({
-                    icon: 'danger',
-                    message: result?.message,
-                    type: 'danger',
-                });
-            }
+            await dispatch(GetNotifications(payload)).unwrap();
 
         } catch (error) {
-            showMessage({
-                icon: 'danger',
-                message: error?.message || error?.error,
-                type: 'danger',
-            });
-        };
-    }
+            console.log("Notification error ===>", error);
+        }
+    };
 
+    // ================= UNIQUE FILTER =================
     const getUniqueNotifications = (data) => {
         const seen = new Set();
 
-        return data.filter(item => {
+        return data.filter((item) => {
             const key = `${item.reference_id}-${item.created_on}`;
 
             if (seen.has(key)) return false;
@@ -62,15 +78,88 @@ const useNotifications = () => {
         });
     };
 
-    const uniqueNotifications = getUniqueNotifications(GetAllNotificationData?.data || []);
+    const uniqueNotifications = useMemo(() => {
+        return getUniqueNotifications(
+            GetAllNotificationData?.data || []
+        );
+    }, [GetAllNotificationData?.data]);
 
-    const badgeCount = uniqueNotifications.length;
+    // ================= STORAGE HELPERS =================
+    const getSeenNotifications = async () => {
+        const data = await AsyncStorage.getItem(SEEN_NOTIFICATION_KEY);
+        return data ? JSON.parse(data) : [];
+    };
+
+    const saveSeenNotifications = async (ids) => {
+        await AsyncStorage.setItem(
+            SEEN_NOTIFICATION_KEY,
+            JSON.stringify(ids)
+        );
+    };
+
+    // ================= UNSEEN CALCULATION =================
+    const calculateUnseen = async () => {
+        const seenIds = await getSeenNotifications();
+
+        const unseen = uniqueNotifications.filter(
+            (item) => !seenIds.includes(item.id)
+        );
+
+        setUnseenNotifications(prev => {
+            if (JSON.stringify(prev) === JSON.stringify(unseen)) {
+                return prev; // 🚀 prevent rerender
+            }
+            return unseen;
+        });
+    };
+
+    useEffect(() => {
+        calculateUnseen();
+    }, [uniqueNotifications]);
+
+    // ================= MARK ALL AS SEEN =================
+    const markAllAsSeen = async () => {
+        const ids = uniqueNotifications.map((n) => n.id);
+        await saveSeenNotifications(ids);
+        setUnseenNotifications([]);
+    };
+
+    const badgeCount = unseenNotifications.length;
+
+
+    const navigateToScreen = (model) => {
+        const screenMap = {
+            calendar: "calender",
+            leave: "leaves",
+            attendance: "attendance",
+            expence: "expenses",
+            check_in: "attendance",
+            check_out: "attendance",
+            ticket: "raiseTicket",
+            approval_request: "approvals",
+            // birthday: "BirthdayScreen",
+            // work_anniversary: "WorkAnniversaryScreen",
+        };
+
+
+        const screenName = screenMap[model];
+        console.log("MODEL===>", model, screenName)
+        if (screenName) {
+            Navigation.navigate(screenName);
+        } else {
+            console.log("No screen mapped for:", model);
+        }
+    }
 
     return {
+        uniqueNotifications,
+        unseenNotifications,
+        badgeCount,
+        markAllAsSeen,
         GetAllNotificationData,
         isGetAllNotificationfeatching,
-        badgeCount
-    }
-}
+        navigateToScreen
+    };
+};
 
 export default useNotifications;
