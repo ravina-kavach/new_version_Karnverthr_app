@@ -5,8 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
 import APIS_ENDPOINTS from './apiEndPoints'
 
-// export const ODOO_BASE_URL = 'https://odooprod.konverthr.com//'
-export const ODOO_BASE_URL = 'https://odooapi.konverthr.com//'
+export const ODOO_BASE_URL = 'https://odooprod.konverthr.com//'
+// export const ODOO_BASE_URL = 'https://odooapi.konverthr.com//'
 const errorMassage = (error) => {
     if (error === "Network Error") {
         return "Server not responding. Please try again later."

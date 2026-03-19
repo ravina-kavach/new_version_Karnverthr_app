@@ -26,7 +26,7 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
         const map = {};
 
         publicHolidayData.forEach(h => {
-            const date = moment(h.date_from).format("YYYY-MM-DD");
+            const date = moment(h.date_to).format("YYYY-MM-DD");
             map[date] = h;
         });
 

@@ -21,7 +21,6 @@ const WorkingHoursCard = ({
   loading,
 }) => {
   const { t } = useTranslation();
-
   const IsAttanced = localAttendanceData?.action === "CHECK_IN";
 
   const ShowImage = ({ image }) => {
@@ -107,17 +106,19 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 15,
-    ...GlobalFonts.buttonText,
+    fontFamily: font('Medium'),
+    fontWeight: 'bold',
     fontSize: FontSize.Font16,
-    color: COLOR.Placeholder,
+    color: COLOR.Black1,
   },
 
   weekText: {
-    fontSize: 14,
+    fontSize: FontSize.Font14,
     fontFamily: font('Medium'),
     fontWeight: 'bold',
-    color: COLOR.Secondary,
+    maxWidth: 200,
+    color: COLOR.Placeholder,
+
   },
 
   timeRow: {
