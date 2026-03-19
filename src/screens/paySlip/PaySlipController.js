@@ -107,7 +107,7 @@ export const usePaySlip = () => {
         month: Number(Selectedmonth.id),
         year: Number(SelectedYear.name),
       };
-      console.log("payload====>", payload)
+      // console.log("payload====>", payload)
       const result = await dispatch(GetPaySlip(payload)).unwrap();
 
       setPaySlip(result?.data?.pdf_base64 || null);

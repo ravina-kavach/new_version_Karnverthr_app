@@ -5,8 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import API from './apiInstance'
 import APIS_ENDPOINTS from './apiEndPoints'
 
-export const ODOO_BASE_URL = 'https://konverthr.fact-byte.com//'
-
+// export const ODOO_BASE_URL = 'https://odooprod.konverthr.com//'
+export const ODOO_BASE_URL = 'https://odooapi.konverthr.com//'
 const errorMassage = (error) => {
     if (error === "Network Error") {
         return "Server not responding. Please try again later."
@@ -34,6 +34,99 @@ export const UserToken = createAsyncThunk(
         }
     }
 );
+
+export const UserOdooToken = createAsyncThunk(
+    'auth/UserOdooToken',
+    async (payload, thunkAPI) => {
+        // { user_name: "ravina" }
+        try {
+            const response = await fetch(`${ODOO_BASE_URL}api/auth`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json();
+            if (data?.token) {
+                console.log("ODOO TOKEN====>", data?.token)
+                await AsyncStorage.setItem('USER_ODOO_TOKEN', data.token);
+                return data.token;
+            }
+        } catch (error) {
+            console.error("API ERROR ======>", error);
+        }
+    }
+);
+
+export const GetNotifications = createAsyncThunk(
+    'auth/GetNotifications',
+    async (userdata, thunkAPI) => {
+        const { id, token } = userdata
+
+        try {
+            const response = await fetch(`${ODOO_BASE_URL}api/get_notification?user_id=${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            });
+
+            const result = await response.json();
+            console.log("PUSH NOTIFICATION====>", result)
+            if (response.ok && result?.status === 'success') {
+                return result;
+            }
+
+            return thunkAPI.rejectWithValue({
+                error: result?.message,
+            });
+        } catch (error) {
+            console.error("NOTIFICATION API ERROR ======>", error);
+            return thunkAPI.rejectWithValue({
+                error: error?.message,
+            });
+        }
+    }
+);
+
+export const StoreFCMToken = createAsyncThunk(
+    'StoreFCMToken',
+    async (payload, thunkAPI) => {
+        try {
+
+            const { token, userId, data } = payload;
+
+            const response = await fetch(
+                `${ODOO_BASE_URL}api/set_fcm_token?user_id=${userId}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: token,
+                    },
+                    body: JSON.stringify(data),
+                }
+            );
+
+            const result = await response.json();
+            console.log("result notification==========>", result)
+            if (response.ok && result?.status === 'success') {
+                return result;
+            }
+
+            return thunkAPI.rejectWithValue({
+                error: result?.message || 'Something went wrong',
+            });
+
+        } catch (error) {
+            console.log("error==========>", error)
+            return thunkAPI.rejectWithValue({
+                error: error?.message,
+            });
+        }
+    }
+);
+
 export const GetUserDetails = createAsyncThunk(
     'GetUserDetails',
     async (userdata, thunkAPI) => {
@@ -57,6 +150,10 @@ export const GetUserDetails = createAsyncThunk(
 export const Usersignin = createAsyncThunk(
     'Usersignin',
     async (userdata, thunkAPI) => {
+        console.log("Pay===>", JSON.stringify({
+            email: userdata.email,
+            password: userdata.password,
+        }, null, 2))
         try {
             const result = await API.post(APIS_ENDPOINTS.LOGIN, {
                 email: userdata.email,
@@ -1086,6 +1183,9 @@ export const CommonSlice = createSlice({
         isGetSupportListFetching: false,
 
         isCreateSupportListFetching: false,
+
+        GetAllNotificationData: [],
+        isGetAllNotificationfeatching: false,
 
         isError: false,
         errorMessage: ""
@@ -2183,6 +2283,40 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(CreateSupportTicket.pending, state => {
             state.isCreateSupportListFetching = true;
+        });
+
+        //==== GetNotifications
+
+        builder.addCase(GetNotifications.fulfilled, (state, { payload }) => {
+            try {
+                state.GetAllNotificationData = payload
+                state.isGetAllNotificationfeatching = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetNotifications.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetNotifications.rejected, (state, { payload }) => {
+            console.log("[GetNotifications.rejected]>>>", payload)
+            try {
+                state.isGetAllNotificationfeatching = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetNotifications.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetNotifications.pending, state => {
+            state.isGetAllNotificationfeatching = true;
         });
 
         //==== GetPaySlip

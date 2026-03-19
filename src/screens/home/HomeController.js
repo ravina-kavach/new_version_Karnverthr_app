@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   CommonSelector,
   UserAttendance,
+  StoreFCMToken,
   CheckAttandanceStatus,
   updateState,
 } from "../../store/reducers/commonSlice";
@@ -17,7 +18,9 @@ import { showMessage } from "react-native-flash-message";
 import { useTranslation } from "react-i18next";
 import BackgroundGeolocation from "react-native-background-geolocation";
 import BackgroundHandler from "../../utils/BackgroundHandler";
-
+import { getFCMToken } from "../../utils/PushNotificationService";
+import DeviceInfo from "react-native-device-info";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   ApprovelsIcon,
   AttendanceIcon,
@@ -28,6 +31,7 @@ import {
   PaySlipIcon,
   ReportIcon,
   ShiftIcon,
+  TimeSheeetIcon
 } from "../../assets/svgs";
 
 export const useHome = () => {
@@ -53,10 +57,11 @@ export const useHome = () => {
     { id: "3", image: <LeaveMenuIcon />, title: t("Home.Leave"), screen: "leaves" },
     { id: "4", image: <CalendarIcon />, title: t("Home.Calendar"), screen: "calender" },
     { id: "5", image: <ApprovelsIcon />, title: t("Home.Approvals"), screen: "approvals" },
-    { id: "6", image: <ReportIcon />, title: t("Home.Reports"), screen: "reports" },
-    { id: "7", image: <PaySlipIcon />, title: t("Home.PaySlip"), screen: "paySlip" },
-    { id: "8", image: <DeclarationIcon />, title: t("Home.Announcement"), screen: "announcement" },
-    { id: "9", image: <ShiftIcon />, title: t("Home.Shift_Timings"), screen: "shiftTiming" },
+    { id: "6", image: <PaySlipIcon />, title: t("Home.PaySlip"), screen: "paySlip" },
+    // { id: "7", image: <TimeSheeetIcon />, title: t("Home.TimeSheet"), screen: "timeSheet" },
+    { id: "8", image: <ShiftIcon />, title: t("Home.Shift_Timings"), screen: "shiftTiming" },
+    { id: "9", image: <ReportIcon />, title: t("Home.Reports"), screen: "reports" },
+    { id: "10", image: <DeclarationIcon />, title: t("Home.Announcement"), screen: "announcement" },
   ];
 
   useFocusEffect(
@@ -74,6 +79,16 @@ export const useHome = () => {
       return () => backHandler.remove();
     }, [])
   );
+
+  useEffect(() => {
+    const init = async () => {
+      const apiToken = await AsyncStorage.getItem('USER_ODOO_TOKEN');
+      if (apiToken) {
+        await storeNotificationToken(apiToken);
+      }
+    };
+    init();
+  }, []);
 
   useEffect(() => {
     if (!isFocused) return;
@@ -117,6 +132,29 @@ export const useHome = () => {
 
     initLocation();
   }, [isFocused]);
+
+  const storeNotificationToken = async (apiToken) => {
+    if (!UsersigninData?.user_id) return;
+
+    const FCM_token = await getFCMToken();
+
+    if (FCM_token) {
+      let getDeviceName = await DeviceInfo.getDeviceName();
+
+      const payload = {
+        FCMToken: FCM_token,
+        device_name: getDeviceName,
+      };
+
+      await dispatch(
+        StoreFCMToken({
+          userId: UsersigninData?.user_id,
+          token: apiToken,
+          data: payload,
+        })
+      );
+    }
+  };
 
   const syncAttendance = async () => {
     try {

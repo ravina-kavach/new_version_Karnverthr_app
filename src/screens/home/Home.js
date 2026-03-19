@@ -3,6 +3,7 @@ import { CommonView } from '../../utils/common';
 import { ScrollView, FlatList, View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import WorkingHoursCard from '../../components/WorkingHoursCard';
 import { useHome } from './HomeController.js';
+import { useNotifications } from '../notifications/NotificationsController.js';
 import { RenderBox } from '../../components/RenderBox.js'
 import GreetingHeader from '../../components/GreetingHeader.js'
 import { COLOR } from '../../theme/theme.js';
@@ -20,6 +21,8 @@ const Home = () => {
     setLogoutVisible,
     navigateRaiseTicket
   } = useHome();
+  const { badgeCount } = useNotifications();
+  console.log("badgeCount===>", badgeCount)
   return (
     <CommonView>
       <GreetingHeader />
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20
   },
   mainContainer: { paddingHorizontal: 10 },
-  itemContainer: { flex: 1, alignItems: 'center', marginBottom: 20 },
+  itemContainer: { flex: 1, marginBottom: 20 },
   plusContainer: { position: "absolute", right: 20, bottom: 20 },
   iconContainer: { backgroundColor: COLOR.Black1, padding: 13, borderRadius: 14, overflow: 'hidden' },
 

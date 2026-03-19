@@ -15,7 +15,7 @@ import RNFS from 'react-native-fs';
 let isPickerOpen = false;
 
 const requestLocationPermission = async () => {
- 
+
   if (Platform.OS === 'android') {
     const fineGranted = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
@@ -116,7 +116,7 @@ const getLocation = () => {
     error => {
       console.log('location error:', error);
 
-  
+
       if (Platform.OS === 'android') {
         Service.OpenLocaitonbutton();
       }
@@ -243,6 +243,7 @@ const handleOnCamera = async () => {
         {
           mediaType: 'photo',
           quality: 0.5,
+
           cameraType: 'front',
           includeBase64: false,
           saveToPhotos: false,
