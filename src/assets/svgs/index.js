@@ -19,6 +19,7 @@ import ApprovelsIcon from './homeMenu/ApprovelsIcon.svg';
 import AttendanceIcon from './homeMenu/Attendance.svg';
 import CalendarIcon from './homeMenu/Calendar.svg';
 import DeclarationIcon from './homeMenu/DeclarationIcon.svg';
+import TimeSheeetIcon from './homeMenu/TimeSheeetIcon.svg';
 import ExpenseIcon from './homeMenu/Expense.svg';
 import LeaveMenuIcon from './homeMenu/Leave.svg';
 import PaySlipIcon from './homeMenu/Payslip.svg';
@@ -56,6 +57,7 @@ import EyeIcon from './EyeIcon.svg'
 import KeyIcon from './KeyIcon.svg'
 import SupportIcon from './SupportIcon.svg'
 import DeleteIcon from './DeleteIcon.svg'
+import NotificationIcon from './NotificationIcon.svg'
 export {
   Check,
   FillCheck,
@@ -114,5 +116,7 @@ export {
   EyeIcon,
   KeyIcon,
   SupportIcon,
-  DeleteIcon
+  DeleteIcon,
+  TimeSheeetIcon,
+  NotificationIcon
 };

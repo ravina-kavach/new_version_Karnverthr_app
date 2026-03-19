@@ -1,18 +1,22 @@
-import { Platform, PermissionsAndroid, Alert } from 'react-native';
+import { Platform, PermissionsAndroid } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, {
+    AndroidImportance,
+    EventType,
+} from '@notifee/react-native';
 
-/*
-|--------------------------------------------------------------------------
-| REQUEST PERMISSION
-|--------------------------------------------------------------------------
-*/
+import { navigate } from '../navigations/NavigationService';
+import {
+    NotificationEmitter,
+    NOTIFICATION_RECEIVED,
+} from '../utils/NotificationEmitter';
+
 
 export const requestUserPermission = async () => {
     try {
         let permissionGranted = true;
 
-        // ANDROID 13+
+        // ✅ Android 13+
         if (Platform.OS === 'android' && Platform.Version >= 33) {
             const granted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
@@ -23,7 +27,7 @@ export const requestUserPermission = async () => {
             }
         }
 
-        // IOS
+        // ✅ iOS permission
         const authStatus = await messaging().requestPermission({
             alert: true,
             badge: true,
@@ -34,9 +38,7 @@ export const requestUserPermission = async () => {
             authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
             authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-        if (!enabled) {
-            permissionGranted = false;
-        }
+        if (!enabled) permissionGranted = false;
 
         return permissionGranted;
     } catch (e) {
@@ -55,6 +57,7 @@ export const getFCMToken = async () => {
     try {
         await messaging().registerDeviceForRemoteMessages();
         const token = await messaging().getToken();
+
         console.log('FCM TOKEN:', token);
         return token;
     } catch (e) {
@@ -62,11 +65,6 @@ export const getFCMToken = async () => {
     }
 };
 
-/*
-|--------------------------------------------------------------------------
-| CREATE CHANNEL (ANDROID)
-|--------------------------------------------------------------------------
-*/
 
 export const createNotificationChannel = async () => {
     return await notifee.createChannel({
@@ -76,16 +74,10 @@ export const createNotificationChannel = async () => {
     });
 };
 
-/*
-|--------------------------------------------------------------------------
-| DISPLAY NOTIFICATION
-|--------------------------------------------------------------------------
-*/
-
 export const displayNotification = async (
     title = '',
     body = '',
-    data = {}
+    data = {},
 ) => {
     try {
         const channelId = await createNotificationChannel();
@@ -114,7 +106,7 @@ export const displayNotification = async (
 
 /*
 |--------------------------------------------------------------------------
-| FOREGROUND LISTENER
+| FOREGROUND MESSAGE LISTENER
 |--------------------------------------------------------------------------
 */
 
@@ -132,30 +124,73 @@ export const notificationListener = () => {
             remoteMessage?.data?.body ||
             '';
 
+        // show local notification
         await displayNotification(title, body, remoteMessage?.data);
+
+        // update badge / UI
+        NotificationEmitter.emit(NOTIFICATION_RECEIVED);
     });
 };
 
 /*
 |--------------------------------------------------------------------------
-| OPEN EVENTS
+| HANDLE NAVIGATION
+|--------------------------------------------------------------------------
+*/
+
+export const handleNotificationNavigation = (data = {}) => {
+    console.log('Navigate from notification:', data);
+    setTimeout(() => {
+        navigate('notifications');
+    }, 600);
+};
+
+/*
+|--------------------------------------------------------------------------
+| OPEN EVENTS (CLICK HANDLING)
 |--------------------------------------------------------------------------
 */
 
 export const notificationOpenHandler = () => {
+    /*
+    |----------------------------------
+    | BACKGROUND STATE
+    |----------------------------------
+    */
     messaging().onNotificationOpenedApp(remoteMessage => {
         console.log('Opened from background:', remoteMessage);
+
+        handleNotificationNavigation(remoteMessage?.data);
+        NotificationEmitter.emit(NOTIFICATION_RECEIVED);
     });
 
+    /*
+    |----------------------------------
+    | QUIT STATE (APP CLOSED)
+    |----------------------------------
+    */
     messaging()
         .getInitialNotification()
         .then(remoteMessage => {
             if (remoteMessage) {
-                console.log('Opened from quit state:', remoteMessage);
+                console.log('Opened from quit state');
+
+                setTimeout(() => {
+                    handleNotificationNavigation(remoteMessage?.data);
+                    NotificationEmitter.emit(NOTIFICATION_RECEIVED);
+                }, 800);
             }
         });
 
+    /*
+    |----------------------------------
+    | NOTIFEE FOREGROUND PRESS
+    |----------------------------------
+    */
     notifee.onForegroundEvent(({ type, detail }) => {
-        console.log('Notifee event:', type, detail);
+        if (type === EventType.PRESS) {
+            handleNotificationNavigation(detail.notification?.data);
+            NotificationEmitter.emit(NOTIFICATION_RECEIVED);
+        }
     });
 };

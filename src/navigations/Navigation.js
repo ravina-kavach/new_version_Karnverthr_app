@@ -25,12 +25,15 @@ import Chatbot from '../screens/chatbot/Chatbot';
 import ExpenseDetail from '../screens/expenses/ExpenseDetail';
 import PaySlip from '../screens/paySlip/PaySlip';
 import RaiseTicket from '../screens/raiseTicket/RaiseTicket';
+import TimeSheet from '../screens/timesheet/TimeSheet';
+import Notifications from '../screens/notifications/Notifications';
+import { navigationRef } from './NavigationService';
 
 const Stack = createNativeStackNavigator();
 
 function Navigation({ props }) {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator initialRouteName="splash">
         <Stack.Group screenOptions={{ header: () => null }}>
           <Stack.Screen name="splash" component={Splash} />
@@ -51,6 +54,7 @@ function Navigation({ props }) {
           <Stack.Screen name="emergencyDetails" component={EmergencyDetails} />
 
           <Stack.Screen name="shiftTiming" component={ShiftTiming} />
+          <Stack.Screen name="timeSheet" component={TimeSheet} />
           <Stack.Screen name="paySlip" component={PaySlip} />
           <Stack.Screen name="attendance" component={Attendance} />
           <Stack.Screen name="leaves" component={Leaves} />
@@ -59,6 +63,8 @@ function Navigation({ props }) {
           <Stack.Screen name="chatbot" component={Chatbot} />
           <Stack.Screen name="expenseDetail" component={ExpenseDetail} />
           <Stack.Screen name="raiseTicket" component={RaiseTicket} />
+          <Stack.Screen name="notifications" component={Notifications} />
+
         </Stack.Group>
 
         <Stack.Group

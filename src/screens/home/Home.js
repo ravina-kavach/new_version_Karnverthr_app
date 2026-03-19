@@ -20,6 +20,7 @@ const Home = () => {
     setLogoutVisible,
     navigateRaiseTicket
   } = useHome();
+
   return (
     <CommonView>
       <GreetingHeader />
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20
   },
   mainContainer: { paddingHorizontal: 10 },
-  itemContainer: { flex: 1, alignItems: 'center', marginBottom: 20 },
+  itemContainer: { flex: 1, marginBottom: 20 },
   plusContainer: { position: "absolute", right: 20, bottom: 20 },
   iconContainer: { backgroundColor: COLOR.Black1, padding: 13, borderRadius: 14, overflow: 'hidden' },
 

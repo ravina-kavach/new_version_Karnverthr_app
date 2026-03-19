@@ -30,8 +30,8 @@ const processQueue = (error, token = null) => {
 API.interceptors.request.use(
   async config => {
     const token = await AsyncStorage.getItem('USER_TOKEN');
-    console.log("BASE_URL====>",Config.BASE_URL)
-    console.log("TOKEN====>",token)
+    console.log("BASE_URL====>", Config.BASE_URL)
+    console.log("TOKEN====>", token)
     if (!skipAuthUrls.some(url => config.url.includes(url))) {
       if (token) {
         config.headers.Authorization = token;
@@ -49,8 +49,8 @@ API.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error?.response?.status === 401 &&
-        !originalRequest._retry &&
-        !skipAuthUrls.some(url => originalRequest.url.includes(url))
+      !originalRequest._retry &&
+      !skipAuthUrls.some(url => originalRequest.url.includes(url))
     ) {
 
       if (isRefreshing) {
