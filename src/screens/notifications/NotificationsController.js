@@ -126,8 +126,29 @@ const useNotifications = () => {
 
     const badgeCount = unseenNotifications.length;
 
-    const navigateToScreen = (screen) => {
-        // Navigation.navigate("")
+
+    const navigateToScreen = (model) => {
+        const screenMap = {
+            calendar: "calender",
+            leave: "leaves",
+            attendance: "attendance",
+            expence: "expenses",
+            check_in: "attendance",
+            check_out: "attendance",
+            ticket: "raiseTicket",
+            approval_request: "approvals",
+            // birthday: "BirthdayScreen",
+            // work_anniversary: "WorkAnniversaryScreen",
+        };
+
+
+        const screenName = screenMap[model];
+        console.log("MODEL===>", model, screenName)
+        if (screenName) {
+            Navigation.navigate(screenName);
+        } else {
+            console.log("No screen mapped for:", model);
+        }
     }
 
     return {

@@ -20,7 +20,7 @@ import {
   getFCMToken,
   notificationListener,
   notificationOpenHandler,
-} from './src/services/notificationService';
+} from './src/utils/PushNotificationService';
 
 const Root = () => {
   const dispatch = useDispatch();
