@@ -45,6 +45,7 @@ export const useHome = () => {
     isError,
     errorMessage,
     UserAttendanceData,
+    UserDetailsData,
     isAttendanceFetching,
   } = useSelector(CommonSelector);
 
@@ -253,6 +254,7 @@ export const useHome = () => {
   return {
     MENUDATA,
     UsersigninData,
+    UserDetailsData,
     attendance,
     isAttendanceFetching,
     takeImage,

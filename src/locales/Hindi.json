@@ -55,7 +55,7 @@
         "Expense_Date": "व्यय तिथि"
     },
     "Attendance": {
-        "AttendanceList": "उपस्थिति सूची",
+        "AttendanceList": "उपस्थिति",
         "Total_Hours": "कुल घंटे",
         "Select_Month": "महीना चुनिए",
         "Select_Year": "वर्ष चुनें",
@@ -244,6 +244,5 @@
         "locationRequired": "स्थान आवश्यक है",
         "organizerRequired": "आयोजक का नाम आवश्यक है",
         "descriptionTooLong": "विवरण 150 अक्षरों से अधिक नहीं हो सकता"
-       
     }
 }

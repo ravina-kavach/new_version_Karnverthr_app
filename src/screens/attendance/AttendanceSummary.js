@@ -7,15 +7,31 @@ import {
     Dimensions,
     ScrollView,
     Pressable,
+    Image
 } from "react-native";
 import { CommonView } from "../../utils/common";
 import moment from "moment";
+import { COLOR } from "../../theme/theme";
+import { ProfileIcon } from "../../assets/svgs";
 
 const { width } = Dimensions.get("window");
 
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-const AttendanceSummary = ({ attendanceData, month, year }) => {
+const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) => {
+
+    const holidayMap = useMemo(() => {
+        if (!publicHolidayData?.length) return {};
+
+        const map = {};
+
+        publicHolidayData.forEach(h => {
+            const date = moment(h.date_from).format("YYYY-MM-DD");
+            map[date] = h;
+        });
+
+        return map;
+    }, [publicHolidayData]);
 
     const todayDate = new Date();
 
@@ -25,55 +41,85 @@ const AttendanceSummary = ({ attendanceData, month, year }) => {
 
     const today = isCurrentMonth ? todayDate.getDate() : null;
 
-    // ✅ CALENDAR DATA (DYNAMIC)
     const calendarData = useMemo(() => {
         if (!month || !year) return [];
 
         const monthIndex = Number(month) - 1;
+
+        const firstDay = new Date(year, monthIndex, 1).getDay(); // 0=Sunday
         const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
 
         const data = [];
 
-        for (let i = 1; i <= daysInMonth; i++) {
-            const currentDate = new Date(year, monthIndex, i);
+        for (let i = 0; i < firstDay; i++) {
+            data.push({
+                key: `empty-${i}`,
+                status: "empty",
+            });
+        }
 
-            const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+        for (let day = 1; day <= daysInMonth; day++) {
+            const currentDate = new Date(year, monthIndex, day);
+
+            const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
             const found = attendanceData?.find(item => item.date === dateStr);
+            const holiday = holidayMap[dateStr];
 
             const isFuture =
                 year > todayDate.getFullYear() ||
                 (year == todayDate.getFullYear() && monthIndex > todayDate.getMonth()) ||
                 (year == todayDate.getFullYear() &&
                     monthIndex == todayDate.getMonth() &&
-                    i > todayDate.getDate());
+                    day > todayDate.getDate());
 
+            // FUTURE
             if (isFuture) {
-                data.push({ day: i, status: "future" });
+                data.push({ day, status: "future" });
                 continue;
             }
 
-            if (currentDate.getDay() === 0) {
-                data.push({ day: i, status: "weekoff" });
-                continue;
-            }
-
+            // PRESENT (highest priority)
             if (found) {
                 data.push({
-                    day: i,
+                    day,
                     status: "present",
-                    checkIn: found.check_in?.split(" ")[1]?.slice(0, 5) || "--",
-                    checkOut: found.check_out?.split(" ")[1]?.slice(0, 5) || "--",
+                    checkIn: found.check_in || "--",
+                    checkOut: found.check_out || "--",
+                    checkInImage: found.check_in_image && found.check_in_image,
+                    checkOutImage: found.check_out_image && found.check_out_image,
                     lateTime: found.late_time_display || "On Time",
                 });
                 continue;
             }
 
-            data.push({ day: i, status: "absent" });
+            // HOLIDAY
+            if (holiday) {
+                data.push({
+                    day,
+                    status: "holiday",
+                    holidayName: holiday.name,
+                });
+                continue;
+            }
+
+            if (currentDate.getDay() === 0) {
+                data.push({
+                    day,
+                    status: "weekoff",
+                });
+                continue;
+            }
+
+            // ABSENT
+            data.push({
+                day,
+                status: "absent",
+            });
         }
 
         return data;
-    }, [attendanceData, month, year]);
+    }, [attendanceData, holidayMap, month, year]);
 
     // ✅ SELECT DAY
     const [selectedDay, setSelectedDay] = useState(null);
@@ -89,35 +135,44 @@ const AttendanceSummary = ({ attendanceData, month, year }) => {
         }
     }, [calendarData]);
 
-    // ✅ MONTH TITLE
     const monthName = moment(`${year}-${month}`, "YYYY-MM").format("MMMM YYYY");
-
-    // ✅ TODAY DETAILS
     const getTodayDetails = () => {
         if (!isCurrentMonth) return null;
 
         const todayStr = moment().format("YYYY-MM-DD");
-        const todayRecord = attendanceData?.find(item => item.date === todayStr);
+        const todayRecord = attendanceData?.find(
+            item => item.date === todayStr
+        );
+
         if (!todayRecord) return null;
 
-        const checkIn = todayRecord.check_in ? new Date(todayRecord.check_in) : null;
-        const checkOut = todayRecord.check_out ? new Date(todayRecord.check_out) : null;
+        const checkIn = todayRecord.check_in
+            ? moment(todayRecord.check_in)
+            : null;
+
+        const checkOut = todayRecord.check_out
+            ? moment(todayRecord.check_out)
+            : null;
 
         let workedHours = "00:00";
 
         if (checkIn) {
-            const endTime = checkOut || new Date();
-            const diff = endTime - checkIn;
+            const endTime = checkOut || moment();
+            const diff = moment.duration(endTime.diff(checkIn));
 
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const hours = Math.floor(diff.asHours());
+            const minutes = diff.minutes();
 
-            workedHours = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+            workedHours = `${String(hours).padStart(2, "0")}:${String(
+                minutes
+            ).padStart(2, "0")}`;
         }
 
         return {
-            checkIn: checkIn?.toTimeString().slice(0, 5) || "--",
-            checkOut: checkOut?.toTimeString().slice(0, 5) || "--",
+            checkIn: checkIn ? checkIn.toISOString() : "--",
+            checkOut: checkOut ? checkOut.toISOString() : "--",
+            checkInImage: todayRecord.check_in_image && todayRecord.check_in_image,
+            checkOutImage: todayRecord.check_out_image && todayRecord.check_out_image,
             workedHours,
             lateTime: todayRecord.late_time_display || "On Time",
         };
@@ -148,12 +203,74 @@ const AttendanceSummary = ({ attendanceData, month, year }) => {
         }
     };
 
+    const getStatusTextStyle = (status, isLate, isPresent) => {
+        if (isPresent && isLate) return styles.lateText;
+        if (isPresent) return styles.presentText;
+
+        switch (status) {
+            case "holiday":
+                return styles.holidayTextBadge;
+
+            case "weekoff":
+                return styles.weekTextBadge;
+
+            case "absent":
+                return styles.absentText;
+
+            default:
+                return {};
+        }
+    };
+
+    const formatCheckTimeDisplay = (checkIn, checkOut, type = "in") => {
+        if (!checkIn || checkIn === "--") return "--";
+
+        const inMoment = moment(checkIn);
+        const outMoment = checkOut && checkOut !== "--"
+            ? moment(checkOut)
+            : null;
+
+        // CHECK-IN → always time
+        if (type === "in") {
+            return inMoment.local().format("hh:mm A");
+        }
+
+        // CHECK-OUT
+        if (!outMoment) return "--";
+
+        const isDifferentDate = !inMoment.isSame(outMoment, "day");
+
+        // ✅ DIFFERENT DATE → SHOW DATE + TIME
+        if (isDifferentDate) {
+            return `${outMoment.local().format("h:mm A")} (${outMoment.local().format("DD MMM")})`;
+        }
+
+        // SAME DAY → TIME ONLY
+        return outMoment.local().format("hh:mm A");
+    };
+
+    const ShowImage = ({ image }) => {
+        if (!image) return (
+            <View style={styles.borderImage}>
+                <ProfileIcon width={22} height={22} />
+            </View>
+
+        )
+
+        return (
+            <View style={styles.imageContainer}>
+                <Image
+                    source={{ uri: `data:image/png;base64,${image}` }}
+                    style={styles.innerImageContainer}
+                    resizeMode="cover"
+                />
+            </View>
+        );
+    };
+
     return (
         <CommonView>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={styles.containerWrapper}>
-
-                <Text style={styles.header}>{monthName}</Text>
-
                 {/* CALENDAR */}
                 <View style={styles.calendar}>
                     <View style={styles.row}>
@@ -166,7 +283,9 @@ const AttendanceSummary = ({ attendanceData, month, year }) => {
                         data={calendarData}
                         numColumns={7}
                         scrollEnabled={false}
-                        keyExtractor={(item) => item.day.toString()}
+                        keyExtractor={(item, index) =>
+                            item.day ? item.day.toString() : item.key || index.toString()
+                        }
                         renderItem={({ item }) => {
                             const isToday = today && item.day === today;
                             const isLate = item.lateTime && item.lateTime !== "On Time";
@@ -224,9 +343,7 @@ const AttendanceSummary = ({ attendanceData, month, year }) => {
                                         <Text
                                             style={[
                                                 styles.statusBadgeText,
-                                                isPresent && isLate && styles.lateText,
-                                                isPresent && !isLate && styles.presentText,
-                                                !isPresent && styles.absentText, // ✅ FIXED
+                                                getStatusTextStyle(selectedDay.status, isLate, isPresent),
                                             ]}
                                         >
                                             {isPresent
@@ -255,31 +372,43 @@ const AttendanceSummary = ({ attendanceData, month, year }) => {
                                 )}
 
                                 <View style={styles.timeRow}>
-                                    <View style={styles.iconCircleGreen}><Text>⏱</Text></View>
+                                    <View style={styles.iconCircleGreen}>
+                                        <ShowImage image={selectedDay?.checkInImage} />
+                                    </View>
                                     <View>
                                         <Text style={styles.label}>Check-in</Text>
                                         <Text style={styles.value}>
                                             {selectedDay.day === today
-                                                ? todayDetails?.checkIn
-                                                : selectedDay.checkIn}
+                                                ? formatCheckTimeDisplay(todayDetails?.checkIn, todayDetails?.checkOut, "in")
+                                                : formatCheckTimeDisplay(selectedDay.checkIn, selectedDay.checkOut, "in")}
                                         </Text>
                                     </View>
                                 </View>
 
                                 <View style={styles.timeRow}>
-                                    <View style={styles.iconCircleBlue}><Text>⏱</Text></View>
+                                    <View style={styles.iconCircleBlue}>
+                                        <ShowImage image={selectedDay?.checkOutImage} />
+                                    </View>
                                     <View>
                                         <Text style={styles.label}>Check-out</Text>
                                         <Text style={styles.value}>
                                             {selectedDay.day === today
-                                                ? todayDetails?.checkOut
-                                                : selectedDay.checkOut}
+                                                ? formatCheckTimeDisplay(todayDetails?.checkIn, todayDetails?.checkOut, "out")
+                                                : formatCheckTimeDisplay(selectedDay.checkIn, selectedDay.checkOut, "out")}
                                         </Text>
                                     </View>
                                 </View>
                             </View>
                         )}
 
+                        {selectedDay.status === "holiday" && (
+                            <View style={styles.centerRow}>
+                                <Text style={styles.bigEmoji}>🎉</Text>
+                                <Text style={styles.holidayName}>
+                                    {selectedDay.holidayName || "Holiday"}
+                                </Text>
+                            </View>
+                        )}
                         {selectedDay.status === "weekoff" && (
                             <View style={styles.centerRow}>
                                 <Text style={styles.bigEmoji}>🛌</Text>
@@ -320,6 +449,12 @@ const AttendanceSummary = ({ attendanceData, month, year }) => {
                             {calendarData.filter(d => d.status === "weekoff").length}
                         </Text>
                     </View>
+                    <View style={styles.rowBetween}>
+                        <Text>Holiday</Text>
+                        <Text>
+                            {calendarData.filter(d => d.status === "holiday").length}
+                        </Text>
+                    </View>
                 </View>
 
             </ScrollView>
@@ -331,8 +466,7 @@ const boxSize = width / 7 - 16;
 
 const styles = StyleSheet.create({
     container: { flex: 1, paddingHorizontal: 14 },
-    header: { fontSize: 24, fontWeight: "700", marginVertical: 12 },
-    calendar: { backgroundColor: "#fff", borderRadius: 20, padding: 14, marginBottom: 16 },
+    calendar: { backgroundColor: "#fff", marginTop: 20, borderRadius: 20, padding: 14, marginBottom: 16 },
     row: { flexDirection: "row", justifyContent: "space-between" },
     dayText: { width: boxSize, textAlign: "center", fontSize: 11, color: "#999" },
 
@@ -358,8 +492,8 @@ const styles = StyleSheet.create({
     lateBox: { borderWidth: 2, borderColor: "#ffcc00" },
 
     dateText: { fontWeight: "600" },
-    todayBox: { borderWidth: 2, borderColor: "#ff7a00" },
-    todayText: { color: "#ff7a00" },
+    todayBox: { backgroundColor: COLOR.Black1 },
+    todayText: { color: COLOR.White1 },
 
     dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "green", marginTop: 4 },
 
@@ -371,6 +505,16 @@ const styles = StyleSheet.create({
     detailHeader: { flexDirection: "row", justifyContent: "space-between" },
     detailDate: { fontWeight: "700" },
 
+    holidayTextBadge: {
+        color: "#3b5bdb", // blue
+        fontWeight: "700",
+    },
+
+    weekTextBadge: {
+        color: "#666",
+        fontWeight: "700",
+    },
+
     statusBadge: { padding: 5, borderRadius: 8 },
     lateBadge: { backgroundColor: "#fff4cc" },
 
@@ -381,15 +525,15 @@ const styles = StyleSheet.create({
     timeRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
 
     iconCircleGreen: {
-        width: 30, height: 30, borderRadius: 15,
-        backgroundColor: "#dcfce7", marginRight: 10,
+
+        marginRight: 10,
         justifyContent: "center", alignItems: "center",
     },
 
     iconCircleBlue: {
-        width: 30, height: 30, borderRadius: 15,
-        backgroundColor: "#e0e7ff", marginRight: 10,
-        justifyContent: "center", alignItems: "center",
+        marginRight: 10,
+        justifyContent: "center",
+        alignItems: "center",
     },
 
     label: { fontSize: 12, color: "#777" },
@@ -409,6 +553,33 @@ const styles = StyleSheet.create({
 
     lateText: { color: "#ffb300", fontWeight: "700" },
     presentText: { color: "green", fontWeight: "700" },
+
+    imageContainer: {
+        height: 34,
+        width: 34,
+        borderRadius: 6,
+        overflow: 'hidden',
+        borderWidth: 0.5,
+        borderColor: COLOR.Black1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    borderImage: {
+        height: 34,
+        width: 34,
+        borderRadius: 6,
+        overflow: 'hidden',
+        borderWidth: 1.5,
+        borderColor: COLOR.dark1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+
+    innerImageContainer: {
+        height: 32,
+        width: 32,
+        borderRadius: 6,
+    },
 });
 
 export default AttendanceSummary;

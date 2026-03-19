@@ -11,7 +11,7 @@ import ExitModal from '../../components/ExitModal.js';
 const Home = () => {
   const {
     MENUDATA,
-    UsersigninData,
+    UserDetailsData,
     takeImage,
     attendance,
     isAttendanceFetching,
@@ -20,7 +20,6 @@ const Home = () => {
     setLogoutVisible,
     navigateRaiseTicket
   } = useHome();
-
   return (
     <CommonView>
       <GreetingHeader />
@@ -30,7 +29,7 @@ const Home = () => {
         nestedScrollEnabled
       >
         <WorkingHoursCard
-          usersigninData={UsersigninData}
+          UserDetailsData={UserDetailsData}
           localAttendanceData={attendance}
           onPress={takeImage}
           loading={isAttendanceFetching}

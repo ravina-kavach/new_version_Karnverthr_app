@@ -77,6 +77,9 @@ const APIS_ENDPOINTS = {
   CREATE_SUPPORT_TICKET: '/support-ticket/create',
   SUPPORT_TICKET_LIST: (id) => `/support-ticket/list/${id}`,
   DELETE_SUPPORT_TICKET: (id) => `/support-ticket/delete/${id}`,
+
+  // ================  PUBLIC HOLIDAY ==============
+  PUBLIC_HOLIDAY: (id) => `api/public_holiday?user_id=${id}`
 };
 
 export default APIS_ENDPOINTS;

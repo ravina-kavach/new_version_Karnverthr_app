@@ -8,13 +8,14 @@ import {
 import CommonButton from './CommonButton';
 import { useTranslation } from 'react-i18next';
 import { COLOR } from "../theme/theme";
-import { ProfileIcon , CheckIn } from '../assets/svgs';
+import { ProfileIcon, CheckIn } from '../assets/svgs';
 import dayjs from "dayjs";
 import { GlobalFonts } from "../theme/typography";
 import { FontSize, responsiveHeight } from "../utils/metrics";
+import { font } from "../theme/typography";
 
 const WorkingHoursCard = ({
-  usersigninData,
+  UserDetailsData,
   localAttendanceData,
   onPress,
   loading,
@@ -25,11 +26,11 @@ const WorkingHoursCard = ({
 
   const ShowImage = ({ image }) => {
     if (!image) return (
-    <View style={styles.borderImage}>
-    <ProfileIcon width={22} height={22} />
-    </View>
-  
-  )
+      <View style={styles.borderImage}>
+        <ProfileIcon width={22} height={22} />
+      </View>
+
+    )
 
     return (
       <View style={styles.imageContainer}>
@@ -47,10 +48,10 @@ const WorkingHoursCard = ({
       <View style={styles.headerRow}>
         <Text style={styles.title}>{t('Home.Shift_Timings')}</Text>
         <Text style={styles.weekText}>
-          {usersigninData?.shift_timing}
+          {UserDetailsData?.resource_calendar_id?.[1]}
         </Text>
       </View>
-      <View style={styles.lineView}/>
+      <View style={styles.lineView} />
       <View style={styles.timeRow}>
         <View style={styles.timeItem}>
           <Text style={styles.label}>{t('Home.Check_in')}</Text>
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     paddingBottom: 30,
-    paddingHorizontal:25,
+    paddingHorizontal: 25,
     marginHorizontal: 10,
     marginVertical: 16
   },
@@ -108,33 +109,34 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 15,
     ...GlobalFonts.buttonText,
-    fontSize:FontSize.Font16,
+    fontSize: FontSize.Font16,
     color: COLOR.Placeholder,
   },
 
   weekText: {
-    fontSize: 13,
-    fontWeight: "500",
+    fontSize: 14,
+    fontFamily: font('Medium'),
+    fontWeight: 'bold',
     color: COLOR.Secondary,
   },
 
   timeRow: {
     flexDirection: "row",
-    justifyContent:'center',
-    marginVertical:responsiveHeight(2)
+    justifyContent: 'center',
+    marginVertical: responsiveHeight(2)
   },
 
   timeItem: {
     width: "48%",
-    alignItems:'center'
+    alignItems: 'center'
   },
 
   label: {
     fontSize: FontSize.Font12,
     color: COLOR.Placeholder,
     ...GlobalFonts.small,
-    paddingHorizontal:15,
-    alignSelf:'flex-start',
+    paddingHorizontal: 15,
+    alignSelf: 'flex-start',
     marginBottom: 12,
   },
 
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: FontSize.Font16,
     ...GlobalFonts.subtitle,
-    color:COLOR.Secondary
+    color: COLOR.Secondary
   },
 
   imageContainer: {
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  borderImage:{
+  borderImage: {
     height: 34,
     width: 34,
     borderRadius: 6,
@@ -180,13 +182,13 @@ const styles = StyleSheet.create({
   buttonMainCotainer: {
     marginTop: 4,
   },
-  textStyle:{
+  textStyle: {
     ...GlobalFonts.normalText,
-    color:COLOR.Primary1
+    color: COLOR.Primary1
   },
-  lineView:{
-    backgroundColor:COLOR.GrayBorder,
-    height:1,
+  lineView: {
+    backgroundColor: COLOR.GrayBorder,
+    height: 1,
   }
 });
 export default WorkingHoursCard;

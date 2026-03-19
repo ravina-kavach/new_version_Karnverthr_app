@@ -60,7 +60,6 @@ const GreetingHeader = ({
   const initials = getInitials(UserDetailsData?.name);
   const bgColor = getAvatarColor(initials);
   const notificationCount = badgeCount;
-  console.log("notificationCount===>", notificationCount)
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -204,7 +203,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 2,
     right: 0,
-    backgroundColor: "#FF3B30",
+    backgroundColor: COLOR.Black1,
     borderRadius: 14,
     minWidth: 20,
     height: 20,

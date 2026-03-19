@@ -1,15 +1,17 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from 'react-i18next';
 import moment from "moment";
 import { useDispatch, useSelector } from 'react-redux';
 import {
   CommonSelector,
   GetAttandanceList,
+  GetPublicHolidaysList,
   UserAttendanceRegcategories,
   UserAttendanceRegularization
 } from '../../store/reducers/commonSlice';
 import { showMessage } from 'react-native-flash-message';
 import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const useAttendance = () => {
   const { t } = useTranslation();
@@ -51,11 +53,13 @@ export const useAttendance = () => {
     months.find(m => Number(m.id) === currentMonth)
   );
 
-  const { 
+  const {
     GetAttandanceListData,
     isGetAttandanceListFetching,
     UserAttendanceRegcategoriesData,
     UsersigninData,
+    UserDetailsData,
+    GetPublicHolidayData,
     isFeatchAttendanceReguration
   } = useSelector(CommonSelector);
 
@@ -77,6 +81,22 @@ export const useAttendance = () => {
     dispatch(UserAttendanceRegcategories({ id: Number(UsersigninData.user_id) }));
 
   }, [IsFocused, Selectedmonth?.id, SelectedYear?.name]);
+
+
+  useEffect(() => {
+    const fetchHoildays = async () => {
+      const token = await AsyncStorage.getItem('USER_ODOO_TOKEN');
+      if (token && UsersigninData?.user_id) {
+        dispatch(
+          GetPublicHolidaysList({
+            token: token,
+            id: Number(UsersigninData.user_id),
+          })
+        );
+      }
+    };
+    fetchHoildays();
+  }, [UsersigninData?.user_id]);
 
   // ✅ SUCCESS MESSAGE
   React.useEffect(() => {
@@ -177,5 +197,7 @@ export const useAttendance = () => {
     visible,
     onCreateRegularization,
     isFeatchAttendanceReguration,
+    UserDetailsData,
+    GetPublicHolidayData
   };
 };

@@ -24,12 +24,12 @@ export default function Attendance() {
     UserAttendanceRegcategoriesData,
     isFeatchAttendanceReguration,
     isGetAttandanceListFetching,
+    GetPublicHolidayData,
     changeMonth,
     visible,
     handleModal,
     onCreateRegularization,
   } = useAttendance();
-
   const insets = useSafeAreaInsets();
 
   const attendanceList = GetAttandanceListData?.attandancelist || [];
@@ -72,6 +72,7 @@ export default function Attendance() {
       ) : attendanceList.length > 0 ? (
         <AttendanceSummary
           attendanceData={attendanceList}
+          publicHolidayData={GetPublicHolidayData}
           month={Selectedmonth?.id}
           year={SelectedYear?.name}
         />
@@ -138,11 +139,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 20,
   },
   loadingText: {
     marginTop: 10,
-    fontSize: 14,
+    fontSize: 16,
+    ...GlobalFonts.small,
     color: '#666',
   },
 
