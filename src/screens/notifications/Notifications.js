@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
     View,
     Text,
@@ -12,9 +12,19 @@ import CommonHeader from '../../components/CommonHeader';
 import useNotifications from './NotificationsController';
 
 const Notifications = () => {
-    const { GetAllNotificationData, isGetAllNotificationfeatching } = useNotifications();
 
-    const notifications = GetAllNotificationData?.data || [];
+    const {
+        uniqueNotifications,
+        isGetAllNotificationfeatching,
+        markAllAsSeen
+    } = useNotifications();
+
+    useEffect(() => {
+        const init = async () => {
+            await markAllAsSeen();
+        };
+        init();
+    }, []);
 
     const getSectionTitle = (date) => {
         const mDate = moment(date);
@@ -25,19 +35,20 @@ const Notifications = () => {
         return mDate.format('DD MMM YYYY');
     };
 
-    const groupedData = notifications.reduce((acc, item) => {
-        const section = getSectionTitle(item.created_on);
-        if (!acc[section]) acc[section] = [];
-        acc[section].push(item);
-        return acc;
-    }, {});
+    const sections = useMemo(() => {
+        const groupedData = uniqueNotifications.reduce((acc, item) => {
+            const section = getSectionTitle(item.created_on);
+            if (!acc[section]) acc[section] = [];
+            acc[section].push(item);
+            return acc;
+        }, {});
 
-    const sections = Object.keys(groupedData).map((title) => ({
-        title,
-        data: groupedData[title],
-    }));
+        return Object.keys(groupedData).map((title) => ({
+            title,
+            data: groupedData[title],
+        }));
+    }, [uniqueNotifications]);
 
-    // 🔥 ICON + COLOR + BG
     const getEventMeta = (event) => {
         switch (event) {
             case 'support_ticket_created':
@@ -61,15 +72,11 @@ const Notifications = () => {
         return (
             <View style={[styles.card, { borderLeftColor: meta.color }]}>
 
-                {/* ICON */}
                 <View style={[styles.iconBox, { backgroundColor: meta.bg }]}>
                     <Text style={styles.icon}>{meta.icon}</Text>
                 </View>
 
-                {/* CONTENT */}
                 <View style={styles.content}>
-
-                    {/* TITLE + TIME */}
                     <View style={styles.row}>
                         <Text style={styles.title}>{item.title}</Text>
                         <Text style={styles.time}>
@@ -77,7 +84,6 @@ const Notifications = () => {
                         </Text>
                     </View>
 
-                    {/* MESSAGE */}
                     <Text style={styles.message}>{item.message}</Text>
                 </View>
             </View>
@@ -93,6 +99,8 @@ const Notifications = () => {
         );
     }
 
+    console.log("sections====>", JSON.stringify(sections, null, 2))
+
     return (
         <CommonView>
             <CommonHeader title="Notifications" />
@@ -105,7 +113,6 @@ const Notifications = () => {
                 <FlatList
                     data={sections}
                     keyExtractor={(item) => item.title}
-                    showsVerticalScrollIndicator={false}
                     renderItem={({ item }) => (
                         <View>
                             <Text style={styles.sectionTitle}>{item.title}</Text>

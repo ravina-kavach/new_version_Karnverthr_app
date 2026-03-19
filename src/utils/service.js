@@ -3,7 +3,7 @@ import moment from 'moment';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 
 //=======================
-const OpenLocaitonbutton =()=>{
+const OpenLocaitonbutton = () => {
     LocationServicesDialogBox.checkLocationServicesIsEnabled({
         message: "<h2>Enable Location Services</h2>App needs location services enabled.",
         ok: "Enable",
@@ -14,11 +14,11 @@ const OpenLocaitonbutton =()=>{
         preventOutSideTouch: false,
         preventBackClick: false,
         providerListener: true
-      }).then(function(success) {
+    }).then(function (success) {
         console.log("Location enabled:", success);
-      }).catch((error) => {
+    }).catch((error) => {
         console.log("Location enable error:", error.message);
-      });
+    });
 }
 
 const ClearStorage = async () => {
@@ -105,7 +105,7 @@ const FormatIndianNumber = (number) => {
     const numberStr = number?.toString();
     if (numberStr?.length !== 10) {
         console.log("The number should have exactly 10 digits.")
-        return numberStr; 
+        return numberStr;
     }
     const formattedNumber = `+91 ${numberStr?.slice(0, 5)} ${numberStr?.slice(5)}`;
     return formattedNumber;
@@ -144,12 +144,12 @@ const GetisVerified = async () => {
 };
 
 export const setVerifiedUser = async email => {
-  await AsyncStorage.setItem('VERIFIED_USER', email);
+    await AsyncStorage.setItem('VERIFIED_USER', email);
 };
 
 // Get verified email
 export const GetVerifiedUser = async () => {
-  return await AsyncStorage.getItem('VERIFIED_USER');
+    return await AsyncStorage.getItem('VERIFIED_USER');
 };
 
 
@@ -178,19 +178,19 @@ const GetAsyncAttendanceData = async () => {
 
 
 const saveToken = async (token, expiresInSeconds) => {
-  const expiresAt = Date.now() + expiresInSeconds * 1000;
+    const expiresAt = Date.now() + expiresInSeconds * 1000;
 
-  await AsyncStorage.multiSet([
-    ['USER_TOKEN', token],
-    ['TOKEN_EXPIRES_AT', expiresAt.toString()],
-  ]);
+    await AsyncStorage.multiSet([
+        ['USER_TOKEN', token],
+        ['TOKEN_EXPIRES_AT', expiresAt.toString()],
+    ]);
 };
 
 const Service = {
     setRemember, GetRemember, removeRemember, GetisFirstime, removeisFirstime, setisFirstime, ClearStorage,
-    FormatIndianNumber, getDayDifference, GetisBiomatic, removeisBiomatic, setisBiomatic,OpenLocaitonbutton,
-    setisVerified,removeisVerified,GetisVerified,setAsyncAttendanceData,removeAsyncAttendanceData,GetAsyncAttendanceData,
-    setVerifiedUser,GetVerifiedUser,saveToken
+    FormatIndianNumber, getDayDifference, GetisBiomatic, removeisBiomatic, setisBiomatic, OpenLocaitonbutton,
+    setisVerified, removeisVerified, GetisVerified, setAsyncAttendanceData, removeAsyncAttendanceData, GetAsyncAttendanceData,
+    setVerifiedUser, GetVerifiedUser, saveToken
 };
 
 export default Service;

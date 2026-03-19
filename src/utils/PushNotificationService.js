@@ -2,7 +2,8 @@ import { Platform, PermissionsAndroid, Alert } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import { navigate } from '../navigations/NavigationService';
-
+import { NotificationEmitter, NOTIFICATION_RECEIVED }
+    from '../utils/NotificationEmitter';
 /*
 |--------------------------------------------------------------------------
 | REQUEST PERMISSION
@@ -121,6 +122,7 @@ export const displayNotification = async (
 
 export const notificationListener = () => {
     return messaging().onMessage(async remoteMessage => {
+
         console.log('Foreground message:', remoteMessage);
 
         const title =
@@ -134,6 +136,9 @@ export const notificationListener = () => {
             '';
 
         await displayNotification(title, body, remoteMessage?.data);
+
+        // ✅ notify app
+        NotificationEmitter.emit(NOTIFICATION_RECEIVED);
     });
 };
 
@@ -150,6 +155,7 @@ export const notificationOpenHandler = () => {
         console.log('Opened from background:', remoteMessage);
 
         handleNotificationNavigation(remoteMessage?.data);
+        NotificationEmitter.emit(NOTIFICATION_RECEIVED);
     });
 
     // 🔹 App in quit state
@@ -160,6 +166,8 @@ export const notificationOpenHandler = () => {
                 console.log('Opened from quit state:', remoteMessage);
 
                 handleNotificationNavigation(remoteMessage?.data);
+                NotificationEmitter.emit(NOTIFICATION_RECEIVED);
+
             }
         });
 
@@ -174,27 +182,5 @@ export const notificationOpenHandler = () => {
 };
 
 export const handleNotificationNavigation = (data) => {
-    if (!data) return;
-
-    const { type, screen, id, extra } = data;
-
-    // switch (type) {
-    //     case 'ATTENDANCE':
-    //         navigate('attendance');
-    //         break;
-
-    //     case 'LEAVE':
-    //         navigate('leaves')
-
-    //     case 'EXPENSE':
-    //         navigate('expenses');
-    //         break;
-
-    //     case 'ANNOUNCEMENT':
-    //         navigate('AnnouncementScreen');
-    //         break;
-
-    //     default:
-    //         navigate('home');
-    // }
+    navigate('notifications');
 };

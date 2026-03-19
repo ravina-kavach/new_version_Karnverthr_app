@@ -16,6 +16,7 @@ import { FontSize, responsiveHeight } from '../utils/metrics';
 import { GlobalFonts } from '../theme/typography';
 import { EditIcon, NotificationIcon } from '../assets/svgs';
 import { COLOR } from '../theme/theme';
+import useNotifications from '../screens//notifications/NotificationsController';
 
 const GreetingHeader = ({
   desc,
@@ -27,6 +28,7 @@ const GreetingHeader = ({
   const { t } = useTranslation();
   const { UserDetailsData, isProfileUpdateFetching } = useSelector(CommonSelector);
   const navigation = useNavigation();
+  const { badgeCount } = useNotifications();
 
   const navigateProfile = () => {
     if (screenName !== 'editProfile') {
@@ -57,7 +59,8 @@ const GreetingHeader = ({
 
   const initials = getInitials(UserDetailsData?.name);
   const bgColor = getAvatarColor(initials);
-  const notificationCount = 0;
+  const notificationCount = badgeCount;
+  console.log("notificationCount===>", notificationCount)
   return (
     <TouchableOpacity
       activeOpacity={1}

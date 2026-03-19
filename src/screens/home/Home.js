@@ -3,7 +3,6 @@ import { CommonView } from '../../utils/common';
 import { ScrollView, FlatList, View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import WorkingHoursCard from '../../components/WorkingHoursCard';
 import { useHome } from './HomeController.js';
-import { useNotifications } from '../notifications/NotificationsController.js';
 import { RenderBox } from '../../components/RenderBox.js'
 import GreetingHeader from '../../components/GreetingHeader.js'
 import { COLOR } from '../../theme/theme.js';
@@ -21,8 +20,7 @@ const Home = () => {
     setLogoutVisible,
     navigateRaiseTicket
   } = useHome();
-  const { badgeCount } = useNotifications();
-  console.log("badgeCount===>", badgeCount)
+
   return (
     <CommonView>
       <GreetingHeader />
