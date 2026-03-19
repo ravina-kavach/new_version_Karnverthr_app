@@ -57,6 +57,38 @@ export const UserOdooToken = createAsyncThunk(
     }
 );
 
+export const GetNotifications = createAsyncThunk(
+    'auth/GetNotifications',
+    async (userdata, thunkAPI) => {
+        const { id, token } = userdata
+
+        try {
+            const response = await fetch(`${ODOO_BASE_URL}api/get_notification?user_id=${id}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token,
+                },
+            });
+
+            const result = await response.json();
+            console.log("PUSH NOTIFICATION====>", result)
+            if (response.ok && result?.status === 'success') {
+                return result;
+            }
+
+            return thunkAPI.rejectWithValue({
+                error: result?.message,
+            });
+        } catch (error) {
+            console.error("NOTIFICATION API ERROR ======>", error);
+            return thunkAPI.rejectWithValue({
+                error: error?.message,
+            });
+        }
+    }
+);
+
 export const StoreFCMToken = createAsyncThunk(
     'StoreFCMToken',
     async (payload, thunkAPI) => {
@@ -118,6 +150,10 @@ export const GetUserDetails = createAsyncThunk(
 export const Usersignin = createAsyncThunk(
     'Usersignin',
     async (userdata, thunkAPI) => {
+        console.log("Pay===>", JSON.stringify({
+            email: userdata.email,
+            password: userdata.password,
+        }, null, 2))
         try {
             const result = await API.post(APIS_ENDPOINTS.LOGIN, {
                 email: userdata.email,
@@ -1147,6 +1183,9 @@ export const CommonSlice = createSlice({
         isGetSupportListFetching: false,
 
         isCreateSupportListFetching: false,
+
+        GetAllNotificationData: [],
+        isGetAllNotificationfeatching: false,
 
         isError: false,
         errorMessage: ""
@@ -2244,6 +2283,40 @@ export const CommonSlice = createSlice({
         });
         builder.addCase(CreateSupportTicket.pending, state => {
             state.isCreateSupportListFetching = true;
+        });
+
+        //==== GetNotifications
+
+        builder.addCase(GetNotifications.fulfilled, (state, { payload }) => {
+            try {
+                state.GetAllNotificationData = payload
+                state.isGetAllNotificationfeatching = false;
+                state.isError = false;
+                state.errorMessage = '';
+                return state;
+            } catch (error) {
+                console.log('Error: GetNotifications.fulfilled try catch error >>', error);
+            }
+        });
+        builder.addCase(GetNotifications.rejected, (state, { payload }) => {
+            console.log("[GetNotifications.rejected]>>>", payload)
+            try {
+                state.isGetAllNotificationfeatching = false;
+                state.isError = true;
+                payload
+                    ? (state.errorMessage = payload.error?.message
+                        ? payload.error?.message
+                        : payload.error)
+                    : (state.errorMessage = 'API Response Invalid. Please Check API');
+            } catch (error) {
+                console.log(
+                    'Error: [GetNotifications.rejected] try catch error >>',
+                    error,
+                );
+            }
+        });
+        builder.addCase(GetNotifications.pending, state => {
+            state.isGetAllNotificationfeatching = true;
         });
 
         //==== GetPaySlip

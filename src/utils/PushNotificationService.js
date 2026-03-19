@@ -167,9 +167,9 @@ export const notificationOpenHandler = () => {
     notifee.onForegroundEvent(({ type, detail }) => {
         console.log('Notifee event:', type, detail);
 
-        if (type === EventType.PRESS) {
-            handleNotificationNavigation(detail.notification?.data);
-        }
+        // if (type === EventType.PRESS) {
+        //     handleNotificationNavigation(detail.notification?.data);
+        // }
     });
 };
 
@@ -178,23 +178,23 @@ export const handleNotificationNavigation = (data) => {
 
     const { type, screen, id, extra } = data;
 
-    switch (type) {
-        case 'ATTENDANCE':
-            navigate('attendance');
-            break;
+    // switch (type) {
+    //     case 'ATTENDANCE':
+    //         navigate('attendance');
+    //         break;
 
-        case 'LEAVE':
-            navigate('leaves')
+    //     case 'LEAVE':
+    //         navigate('leaves')
 
-        case 'EXPENSE':
-            navigate('expenses');
-            break;
+    //     case 'EXPENSE':
+    //         navigate('expenses');
+    //         break;
 
-        case 'ANNOUNCEMENT':
-            navigate('AnnouncementScreen');
-            break;
+    //     case 'ANNOUNCEMENT':
+    //         navigate('AnnouncementScreen');
+    //         break;
 
-        default:
-            navigate('home');
-    }
+    //     default:
+    //         navigate('home');
+    // }
 };
