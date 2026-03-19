@@ -5,6 +5,7 @@ import {
     StyleSheet,
     FlatList,
     ActivityIndicator,
+    TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 import { CommonView } from '../../utils/common';
@@ -16,7 +17,8 @@ const Notifications = () => {
     const {
         uniqueNotifications,
         isGetAllNotificationfeatching,
-        markAllAsSeen
+        markAllAsSeen,
+        navigateToScreen
     } = useNotifications();
 
     useEffect(() => {
@@ -70,7 +72,7 @@ const Notifications = () => {
         const meta = getEventMeta(item.event);
 
         return (
-            <View style={[styles.card, { borderLeftColor: meta.color }]}>
+            <TouchableOpacity style={[styles.card, { borderLeftColor: meta.color }]} onPress={() => navigateToScreen(item?.model)}>
 
                 <View style={[styles.iconBox, { backgroundColor: meta.bg }]}>
                     <Text style={styles.icon}>{meta.icon}</Text>
@@ -86,7 +88,7 @@ const Notifications = () => {
 
                     <Text style={styles.message}>{item.message}</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         );
     };
 
@@ -98,8 +100,6 @@ const Notifications = () => {
             </CommonView>
         );
     }
-
-    console.log("sections====>", JSON.stringify(sections, null, 2))
 
     return (
         <CommonView>

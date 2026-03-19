@@ -20,7 +20,7 @@ import {
   getFCMToken,
   notificationListener,
   notificationOpenHandler,
-} from './src/utils/PushNotificationService';
+} from './src/services/notificationService';
 
 const Root = () => {
   const dispatch = useDispatch();
@@ -28,6 +28,25 @@ const Root = () => {
   const [storeUrl, setStoreUrl] = useState('');
   const [isOffline, setIsOffline] = useState(false);
   const appStateRef = useRef(AppState.currentState);
+
+  // notification configation
+
+  useEffect(() => {
+    const initNotifications = async () => {
+      await requestUserPermission();
+      await getFCMToken();
+    };
+    initNotifications();
+    const unsubscribeForeground = notificationListener();
+    notificationOpenHandler();
+    return () => {
+      if (unsubscribeForeground) {
+        unsubscribeForeground();
+      }
+    };
+  }, []);
+
+
   const isNetworkStable = (state) => {
     const details = state.details || {};
     const linkSpeed = details.linkSpeed || 0;
@@ -89,18 +108,6 @@ const Root = () => {
     });
 
     return () => unsubscribe();
-  }, []);
-
-  // notification configation
-
-  useEffect(() => {
-    requestUserPermission();
-    getFCMToken();
-
-    const unsubscribe = notificationListener();
-    notificationOpenHandler();
-
-    return unsubscribe;
   }, []);
 
   const handleRetry = async () => {

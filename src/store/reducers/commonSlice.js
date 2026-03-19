@@ -150,10 +150,6 @@ export const GetUserDetails = createAsyncThunk(
 export const Usersignin = createAsyncThunk(
     'Usersignin',
     async (userdata, thunkAPI) => {
-        console.log("Pay===>", JSON.stringify({
-            email: userdata.email,
-            password: userdata.password,
-        }, null, 2))
         try {
             const result = await API.post(APIS_ENDPOINTS.LOGIN, {
                 email: userdata.email,

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GetNotifications, CommonSelector } from "../../store/reducers/commonSlice";
@@ -14,7 +14,7 @@ const SEEN_NOTIFICATION_KEY = "SEEN_NOTIFICATIONS";
 const useNotifications = () => {
     const isFocused = useIsFocused();
     const dispatch = useDispatch();
-
+    const Navigation = useNavigation();
     const {
         UsersigninData,
         GetAllNotificationData,
@@ -126,6 +126,10 @@ const useNotifications = () => {
 
     const badgeCount = unseenNotifications.length;
 
+    const navigateToScreen = (screen) => {
+        // Navigation.navigate("")
+    }
+
     return {
         uniqueNotifications,
         unseenNotifications,
@@ -133,6 +137,7 @@ const useNotifications = () => {
         markAllAsSeen,
         GetAllNotificationData,
         isGetAllNotificationfeatching,
+        navigateToScreen
     };
 };
 
