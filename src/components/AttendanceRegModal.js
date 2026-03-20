@@ -305,6 +305,7 @@ const AttendanceRegModal = ({ data, visible, onClose, onCreateReq, loading }) =>
                                 placeholder="Add a description"
                                 placeholderTextColor={COLOR.TextPlaceholder}
                                 value={description}
+                                maxLength={250}
                                 onChangeText={(text) => {
                                     if (text.length <= MAX_DESC_LENGTH) {
                                         setDescription(text);

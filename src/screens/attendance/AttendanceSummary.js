@@ -13,12 +13,16 @@ import { CommonView } from "../../utils/common";
 import moment from "moment";
 import { COLOR } from "../../theme/theme";
 import { ProfileIcon } from "../../assets/svgs";
+import { CommonSelector } from "../../store/reducers/commonSlice";
+import { useSelector } from "react-redux";
 
 const { width } = Dimensions.get("window");
 
 const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) => {
+    const { UserDetailsData } = useSelector(CommonSelector);
+    const calendarId = UserDetailsData?.resource_calendar_id?.[0];
 
     const holidayMap = useMemo(() => {
         if (!publicHolidayData?.length) return {};
@@ -40,6 +44,13 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
         Number(year) === todayDate.getFullYear();
 
     const today = isCurrentMonth ? todayDate.getDate() : null;
+
+    const weekOffDays = useMemo(() => {
+        if (calendarId === 56) {
+            return [0, 6]; // Sunday (0) + Saturday (6)
+        }
+        return [0]; // default only Sunday
+    }, [calendarId]);
 
     const calendarData = useMemo(() => {
         if (!month || !year) return [];
@@ -106,7 +117,7 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                 continue;
             }
 
-            if (currentDate.getDay() === 0) {
+            if (weekOffDays.includes(currentDate.getDay())) {
                 data.push({
                     day,
                     status: "weekoff",
