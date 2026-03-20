@@ -11,7 +11,7 @@ import { AppBackgroundSvg } from '../assets/svgs';
 export const CommonView = ({
   style,
   children,
-  statusBarColor = COLOR.White1,
+  statusBarColor = COLOR.Black1,
   showBackground = true,
 }) => {
   const insets = useSafeAreaInsets();
