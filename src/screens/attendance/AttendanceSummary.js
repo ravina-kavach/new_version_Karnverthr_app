@@ -295,7 +295,7 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
     };
 
     return (
-        <CommonView>
+        <CommonView showBackground={calendarData.length < 0}>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={styles.containerWrapper}>
                 {/* CALENDAR */}
                 <View style={styles.calendar}>

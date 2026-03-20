@@ -208,9 +208,9 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#F4F4F5",
+    // backgroundColor: "#F4F4F5",
     padding: 16,
-    paddingBottom: 80,
+    paddingBottom: 180,
   },
   loader: {
     flex: 1,
@@ -271,7 +271,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: COLOR.Black1,
+    backgroundColor: COLOR.White1,
+    borderColor: COLOR.TextPlaceholder,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -281,11 +282,12 @@ const styles = StyleSheet.create({
     color: COLOR.Black1,
   },
   verisonText: {
-    backgroundColor: COLOR.Primary1,
+    // backgroundColor: COLOR.Primary1,
     fontSize: FontSize.Font16,
     textAlign: 'center',
     fontWeight: '500',
-    paddingVertical: 20,
+    paddingTop: 60,
+    paddingBottom: 20,
     bottom: 50,
     color: COLOR.TextPlaceholder,
   },

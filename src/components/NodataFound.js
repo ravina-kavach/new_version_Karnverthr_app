@@ -19,7 +19,7 @@ function NodataFound({ titleText, style }) {
 const styles = StyleSheet.create({
   container: { alignItems: 'center' },
   imageCotainer: { height: 200, width: 200 },
-  textContainer: { textAlign: 'center', marginTop: 20, ...GlobalFonts.normalText, color: COLOR.Placeholder, fontSize: FontSize.Font16 },
+  textContainer: { textAlign: 'center', marginTop: 20, ...GlobalFonts.normalText, color: COLOR.Black1, fontSize: FontSize.Font16 },
 
 })
 

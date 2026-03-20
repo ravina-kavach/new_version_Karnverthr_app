@@ -210,8 +210,6 @@ export default function Expenses() {
             )}
           </View>
         </Modal>
-
-
       </View>
     </CommonView>
   );
@@ -341,7 +339,7 @@ const styles = StyleSheet.create({
   },
 
   placeHoldeContainer: {
-    marginTop: 120,
+    marginTop: 50,
   },
 
   previewModal: {

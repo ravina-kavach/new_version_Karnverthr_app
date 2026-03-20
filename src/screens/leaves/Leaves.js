@@ -160,7 +160,6 @@ const Leaves = () => {
   return (
     <CommonView statusBarColor={COLOR.LightOrange}>
       <View style={styles.container}>
-
         <FlatList
           data={filteredLeaves}
           keyExtractor={(item, index) => index.toString()}
@@ -226,7 +225,6 @@ export default Leaves
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F7F7',
   },
 
   sectionTitle: {
@@ -305,7 +303,7 @@ const styles = StyleSheet.create({
   placeHoldeContainer: {
     flex: 1,
     alignItems: 'center',
-    marginTop: 80,
+    marginTop: 10,
   },
 
   leaveCard: {

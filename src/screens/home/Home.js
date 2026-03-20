@@ -21,7 +21,7 @@ const Home = () => {
     navigateRaiseTicket
   } = useHome();
   return (
-    <CommonView>
+    <CommonView showBackground={false}>
       <GreetingHeader />
       <ScrollView
         showsVerticalScrollIndicator={false}
