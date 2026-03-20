@@ -347,14 +347,6 @@ export default function Calendar() {
               }
               <View style={styles.legendContainer}>
                 <View style={styles.legendItem}>
-                  <View style={[styles.dot, styles.absentDot]} />
-                  <Text style={styles.legendText}>Absent</Text>
-                </View>
-                <View style={styles.legendItem}>
-                  <View style={[styles.dot, styles.lateDot]} />
-                  <Text style={styles.legendText}>Late</Text>
-                </View>
-                <View style={styles.legendItem}>
                   <View style={[styles.dot, styles.meetingDot]} />
                   <Text style={styles.legendText}>Events</Text>
                 </View>
