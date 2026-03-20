@@ -30,7 +30,7 @@ export const CommonView = ({
             width: '100%',
             opacity: 0.8,
             height: '100%',
-            bottom: 30,
+            bottom: 10,
           }}
         />
       )}
