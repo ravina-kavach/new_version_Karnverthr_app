@@ -59,6 +59,8 @@ import SupportIcon from './SupportIcon.svg'
 import DeleteIcon from './DeleteIcon.svg'
 import NotificationIcon from './NotificationIcon.svg'
 import AppBackgroundSvg from './AppBackgroundSvg.svg'
+import RightIcon from './RightIcon.svg'
+import LeftIcon from './LeftIcon.svg'
 export {
   Check,
   FillCheck,
@@ -120,5 +122,7 @@ export {
   DeleteIcon,
   TimeSheeetIcon,
   NotificationIcon,
-  AppBackgroundSvg
+  AppBackgroundSvg,
+  RightIcon,
+  LeftIcon
 };

@@ -14,6 +14,8 @@ import AttendanceRegModal from '../../components/AttendanceRegModal';
 import { font, GlobalFonts } from '../../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AttendanceSummary from './AttendanceSummary';
+import { LeftIcon, RightIcon } from '../../assets/svgs';
+import { FontSize } from '../../utils/metrics';
 
 export default function Attendance() {
   const {
@@ -40,27 +42,38 @@ export default function Attendance() {
 
       {/* MONTH NAV */}
       <View style={styles.monthNavContainer}>
+
+        {/* PREV BUTTON */}
         <TouchableOpacity
-          style={styles.navBtn}
-          onPress={() => !isGetAttandanceListFetching && changeMonth("prev")}
+          activeOpacity={0.8}
+          style={[
+            styles.navCircle,
+          ]}
+          onPress={() => changeMonth("prev")}
           disabled={isGetAttandanceListFetching}
         >
-          <Text style={styles.navText}>◀</Text>
+          <LeftIcon color="#333" />
         </TouchableOpacity>
 
-        <View style={styles.monthCenter}>
+        {/* MONTH DISPLAY */}
+        <View style={styles.monthCard}>
           <Text style={styles.monthText}>
             {Selectedmonth?.name} {SelectedYear?.name}
           </Text>
         </View>
 
+        {/* NEXT BUTTON */}
         <TouchableOpacity
-          style={styles.navBtn}
-          onPress={() => !isGetAttandanceListFetching && changeMonth("next")}
+          activeOpacity={0.8}
+          style={[
+            styles.navCircle,
+          ]}
+          onPress={() => changeMonth("next")}
           disabled={isGetAttandanceListFetching}
         >
-          <Text style={styles.navText}>▶</Text>
+          <RightIcon color="#333" />
         </TouchableOpacity>
+
       </View>
 
       {/* CONTENT */}
@@ -103,19 +116,6 @@ export default function Attendance() {
 }
 
 const styles = StyleSheet.create({
-  monthNavContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: 20,
-    marginTop: 12,
-    marginBottom: 10,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 10,
-    elevation: 3,
-  },
   navBtn: {
     padding: 8,
     borderRadius: 8,
@@ -129,12 +129,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  monthText: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
 
-  /* LOADER */
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -170,5 +165,52 @@ const styles = StyleSheet.create({
     ...GlobalFonts.buttonText,
     fontSize: 14,
     fontWeight: '600',
+  },
+
+  monthNavContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: 16,
+    marginTop: 18,
+    marginBottom: 14,
+  },
+
+  navCircle: {
+    height: 48,
+    width: 48,
+    borderRadius: 24,
+    backgroundColor: '#F9FAFB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+  },
+
+  monthCard: {
+    flex: 1,
+    marginHorizontal: 14,
+    borderRadius: 20,
+    paddingVertical: 14,
+
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    elevation: 8,
+    shadowColor: COLOR.Black1,
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+  },
+
+  monthText: {
+    fontSize: FontSize.Font15,
+    fontWeight: '700',
+    color: '#111827',
+    marginTop: 2,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
   },
 });
