@@ -81,6 +81,8 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
 
             // PRESENT (highest priority)
             if (found) {
+                const hours = Math.floor(found?.worked_hours);
+                const minutes = Math.round((found?.worked_hours - hours) * 60);
                 data.push({
                     day,
                     status: "present",
@@ -89,6 +91,7 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                     checkInImage: found.check_in_image && found.check_in_image,
                     checkOutImage: found.check_out_image && found.check_out_image,
                     lateTime: found.late_time_display || "On Time",
+                    workedHours: `${hours}:${minutes.toString().padStart(2, '0')}`
                 });
                 continue;
             }
@@ -268,6 +271,29 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
         );
     };
 
+    const status = selectedDay?.status?.trim()?.toLowerCase();
+
+    const safeStatus =
+        status && status !== "null" ? status : "empty";
+    const STATUS_CONFIG = {
+        holiday: {
+            emoji: "🎉",
+            label: selectedDay?.holidayName || "Holiday",
+        },
+        weekoff: {
+            emoji: "🛌",
+            label: "Week Off",
+        },
+        absent: {
+            emoji: "❌",
+            label: "Absent",
+        },
+        empty: {
+            emoji: "📭",
+            label: "No Data",
+        },
+    };
+
     return (
         <CommonView>
             <ScrollView style={styles.container} showsVerticalScrollIndicator={false} contentContainerStyle={styles.containerWrapper}>
@@ -317,10 +343,15 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                 {/* DETAIL CARD */}
                 {selectedDay && (
                     <View style={styles.detailCardPremium}>
+
+                        {/* HEADER */}
                         <View style={styles.detailHeader}>
-                            <Text style={styles.detailDate}>
-                                {selectedDay.day} {monthName}
-                            </Text>
+                            <View>
+                                <Text style={styles.detailDate}>
+                                    {selectedDay.day} {monthName}
+                                </Text>
+                                <Text style={styles.subDate}>Attendance Details</Text>
+                            </View>
 
                             {(() => {
                                 const lateValue =
@@ -335,17 +366,12 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                                     <View
                                         style={[
                                             styles.statusBadge,
-                                            isPresent && !isLate && styles.present,
+                                            isPresent && !isLate && styles.presentBadge,
                                             isPresent && isLate && styles.lateBadge,
                                             !isPresent && getCardStyle(selectedDay.status),
                                         ]}
                                     >
-                                        <Text
-                                            style={[
-                                                styles.statusBadgeText,
-                                                getStatusTextStyle(selectedDay.status, isLate, isPresent),
-                                            ]}
-                                        >
+                                        <Text style={styles.statusBadgeText}>
                                             {isPresent
                                                 ? isLate
                                                     ? `LATE ${formatLateTime(lateValue)}`
@@ -357,25 +383,30 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                             })()}
                         </View>
 
-                        {selectedDay.status === "present" && (
-                            <View style={styles.detailContent}>
+                        {/* PRESENT CONTENT */}
+                        {status === "present" && (
+                            <>
+                                {/* WORKED HOURS HERO */}
+                                <View style={styles.workedBox}>
+                                    <Text style={styles.workedHours}>
+                                        {selectedDay.day === today
+                                            ? todayDetails?.workedHours
+                                            : selectedDay.workedHours} hrs
+                                    </Text>
+                                    <Text style={styles.workedLabel}>
+                                        Total Worked Hours
+                                    </Text>
+                                </View>
 
-                                {selectedDay.day === today && todayDetails && (
-                                    <View style={{ marginBottom: 12 }}>
-                                        <Text style={{ fontSize: 18, fontWeight: "700", color: "#ff7a00" }}>
-                                            {todayDetails.workedHours} hrs
-                                        </Text>
-                                        <Text style={{ fontSize: 12, color: "#777" }}>
-                                            Worked today
-                                        </Text>
-                                    </View>
-                                )}
+                                {/* DIVIDER */}
+                                <View style={styles.divider} />
 
+                                {/* CHECK-IN */}
                                 <View style={styles.timeRow}>
                                     <View style={styles.iconCircleGreen}>
                                         <ShowImage image={selectedDay?.checkInImage} />
                                     </View>
-                                    <View>
+                                    <View style={{ flex: 1 }}>
                                         <Text style={styles.label}>Check-in</Text>
                                         <Text style={styles.value}>
                                             {selectedDay.day === today
@@ -385,11 +416,12 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                                     </View>
                                 </View>
 
+                                {/* CHECK-OUT */}
                                 <View style={styles.timeRow}>
                                     <View style={styles.iconCircleBlue}>
                                         <ShowImage image={selectedDay?.checkOutImage} />
                                     </View>
-                                    <View>
+                                    <View style={{ flex: 1 }}>
                                         <Text style={styles.label}>Check-out</Text>
                                         <Text style={styles.value}>
                                             {selectedDay.day === today
@@ -398,28 +430,17 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                                         </Text>
                                     </View>
                                 </View>
-                            </View>
+                            </>
                         )}
 
-                        {selectedDay.status === "holiday" && (
-                            <View style={styles.centerRow}>
-                                <Text style={styles.bigEmoji}>🎉</Text>
-                                <Text style={styles.holidayName}>
-                                    {selectedDay.holidayName || "Holiday"}
+                        {safeStatus !== "present" && (
+                            <View style={styles.centerBox}>
+                                <Text style={styles.bigEmoji}>
+                                    {STATUS_CONFIG[safeStatus]?.emoji || "📭"}
                                 </Text>
-                            </View>
-                        )}
-                        {selectedDay.status === "weekoff" && (
-                            <View style={styles.centerRow}>
-                                <Text style={styles.bigEmoji}>🛌</Text>
-                                <Text style={styles.holidayName}>Week Off</Text>
-                            </View>
-                        )}
-
-                        {selectedDay.status === "absent" && (
-                            <View style={styles.centerRow}>
-                                <Text style={styles.bigEmoji}>❌</Text>
-                                <Text style={styles.holidayName}>Absent</Text>
+                                <Text style={styles.holidayName}>
+                                    {STATUS_CONFIG[safeStatus]?.label || "No Data"}
+                                </Text>
                             </View>
                         )}
                     </View>
@@ -501,10 +522,6 @@ const styles = StyleSheet.create({
     weekText: { fontSize: 10, color: "#888" },
     absentText: { fontSize: 10, color: "red", fontWeight: "700" },
 
-    detailCardPremium: { backgroundColor: "#fff", borderRadius: 20, padding: 18, marginBottom: 16 },
-    detailHeader: { flexDirection: "row", justifyContent: "space-between" },
-    detailDate: { fontWeight: "700" },
-
     holidayTextBadge: {
         color: "#3b5bdb", // blue
         fontWeight: "700",
@@ -515,33 +532,9 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
 
-    statusBadge: { padding: 5, borderRadius: 8 },
-    lateBadge: { backgroundColor: "#fff4cc" },
-
-    statusBadgeText: { fontSize: 10 },
-
     detailContent: { marginTop: 10 },
 
-    timeRow: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-
-    iconCircleGreen: {
-
-        marginRight: 10,
-        justifyContent: "center", alignItems: "center",
-    },
-
-    iconCircleBlue: {
-        marginRight: 10,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-
-    label: { fontSize: 12, color: "#777" },
-    value: { fontWeight: "600" },
-
     centerRow: { flexDirection: "row", justifyContent: "center", alignItems: "center" },
-    bigEmoji: { fontSize: 24, marginRight: 8 },
-    holidayName: { fontWeight: "600" },
 
     card: { backgroundColor: "#fff", padding: 16, borderRadius: 16 },
     title: { fontWeight: "700", marginBottom: 10 },
@@ -579,6 +572,141 @@ const styles = StyleSheet.create({
         height: 32,
         width: 32,
         borderRadius: 6,
+    },
+
+
+
+
+    detailCardPremium: {
+        backgroundColor: "#fff",
+        borderRadius: 22,
+        padding: 18,
+        marginBottom: 16,
+        shadowColor: "#000",
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 5,
+    },
+
+    detailHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+
+    detailDate: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#222",
+    },
+
+    subDate: {
+        fontSize: 12,
+        color: "#888",
+        marginTop: 2,
+    },
+
+    statusBadge: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+    },
+
+    presentBadge: {
+        backgroundColor: "#e6f9ed",
+    },
+
+    lateBadge: {
+        backgroundColor: "#fff4cc",
+    },
+
+    statusBadgeText: {
+        fontSize: 11,
+        fontWeight: "700",
+    },
+
+    /* WORKED HOURS */
+    workedBox: {
+        marginTop: 16,
+        backgroundColor: "#fff7ed",
+        padding: 14,
+        borderRadius: 14,
+        alignItems: "center",
+    },
+
+    workedHours: {
+        fontSize: 22,
+        fontWeight: "800",
+        color: "#ff7a00",
+    },
+
+    workedLabel: {
+        fontSize: 12,
+        color: "#777",
+        marginTop: 4,
+    },
+
+    divider: {
+        height: 1,
+        backgroundColor: "#eee",
+        marginVertical: 14,
+    },
+
+    /* TIME ROW */
+    timeRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 14,
+    },
+
+    iconCircleGreen: {
+        height: 42,
+        width: 42,
+        borderRadius: 12,
+        backgroundColor: "#e6f9ed",
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: 12,
+    },
+
+    iconCircleBlue: {
+        height: 42,
+        width: 42,
+        borderRadius: 12,
+        backgroundColor: "#e8edff",
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: 12,
+    },
+
+    label: {
+        fontSize: 12,
+        color: "#888",
+    },
+
+    value: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#222",
+    },
+
+    /* CENTER STATES */
+    centerBox: {
+        justifyContent: "center",
+        alignItems: "center",
+        paddingVertical: 20,
+    },
+
+    bigEmoji: {
+        fontSize: 30,
+        marginBottom: 6,
+    },
+
+    holidayName: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#444",
     },
 });
 
