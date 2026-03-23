@@ -93,6 +93,7 @@ export const displayNotification = async (
                 pressAction: {
                     id: 'default',
                 },
+                importance: AndroidImportance.HIGH,
             },
 
             ios: {
@@ -109,25 +110,37 @@ export const displayNotification = async (
 | FOREGROUND MESSAGE LISTENER
 |--------------------------------------------------------------------------
 */
+const getNotificationContent = (remoteMessage) => {
+    const notification = remoteMessage?.notification || {};
+    const data = remoteMessage?.data || {};
+
+    return {
+        title:
+            notification.title ||
+            data.title ||
+            data.notification_title ||
+            'Notification',
+
+        body:
+            notification.body ||
+            data.body ||
+            data.message ||
+            data.notification_body ||
+            '',
+    };
+};
 
 export const notificationListener = () => {
     return messaging().onMessage(async remoteMessage => {
         console.log('Foreground message:', remoteMessage);
 
-        const title =
-            remoteMessage?.notification?.title ||
-            remoteMessage?.data?.title ||
-            '';
+        const { title, body } =
+            getNotificationContent(remoteMessage);
 
-        const body =
-            remoteMessage?.notification?.body ||
-            remoteMessage?.data?.body ||
-            '';
+        if (remoteMessage?.notification) {
+            await displayNotification(title, body, remoteMessage?.data);
+        }
 
-        // show local notification
-        await displayNotification(title, body, remoteMessage?.data);
-
-        // update badge / UI
         NotificationEmitter.emit(NOTIFICATION_RECEIVED);
     });
 };
