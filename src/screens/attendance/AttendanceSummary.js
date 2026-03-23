@@ -92,8 +92,12 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
 
             // PRESENT (highest priority)
             if (found) {
-                const hours = Math.floor(found?.worked_hours);
-                const minutes = Math.round((found?.worked_hours - hours) * 60);
+                const isLate =
+                    found?.late_time_display &&
+                    found?.late_time_display !== "On Time";
+                const totalMinutes = Math.round(found?.worked_hours * 60);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
                 data.push({
                     day,
                     status: "present",
@@ -102,7 +106,8 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                     checkInImage: found.check_in_image && found.check_in_image,
                     checkOutImage: found.check_out_image && found.check_out_image,
                     lateTime: found.late_time_display || "On Time",
-                    workedHours: `${hours}:${minutes.toString().padStart(2, '0')}`
+                    isLate,
+                    workedHours: `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
                 });
                 continue;
             }
@@ -137,7 +142,6 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
 
     // ✅ SELECT DAY
     const [selectedDay, setSelectedDay] = useState(null);
-
     useEffect(() => {
         if (!calendarData.length) return;
 
@@ -476,6 +480,15 @@ const AttendanceSummary = ({ attendanceData, publicHolidayData, month, year }) =
                     </View>
 
                     <View style={styles.rowBetween}>
+                        <Text>Late</Text>
+                        <Text style={styles.lateText}>
+                            {calendarData.filter(
+                                d => d.status === "present" && d.isLate
+                            ).length}
+                        </Text>
+                    </View>
+
+                    <View style={styles.rowBetween}>
                         <Text>Week Off</Text>
                         <Text>
                             {calendarData.filter(d => d.status === "weekoff").length}
@@ -593,11 +606,6 @@ const styles = StyleSheet.create({
         borderRadius: 22,
         padding: 18,
         marginBottom: 16,
-        shadowColor: "#000",
-        shadowOpacity: 0.08,
-        shadowRadius: 10,
-        shadowOffset: { width: 0, height: 4 },
-        elevation: 5,
     },
 
     detailHeader: {

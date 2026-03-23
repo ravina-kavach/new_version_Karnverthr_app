@@ -183,11 +183,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F9FAFB',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
   },
 
   monthCard: {
@@ -195,14 +190,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 14,
     borderRadius: 20,
     paddingVertical: 14,
-
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    elevation: 8,
-    shadowColor: COLOR.Black1,
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
   },
 
   monthText: {
