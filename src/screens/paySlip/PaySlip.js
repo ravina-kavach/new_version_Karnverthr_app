@@ -127,6 +127,6 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         elevation: 5,
     },
-    emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    emptyText: { ...GlobalFonts.subtitle, color: COLOR.TextPlaceholder },
+    emptyContainer: { flex: 1, paddingTop: 150, alignItems: 'center' },
+    emptyText: { ...GlobalFonts.subtitle, color: COLOR.Black1 },
 });

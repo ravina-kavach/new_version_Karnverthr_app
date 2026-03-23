@@ -9,9 +9,10 @@ import BackgroundGeolocation from 'react-native-background-geolocation';
 import BackgroundGeolocationHeadlessTask from './src/utils/HeadlessTask.js'
 import messaging from '@react-native-firebase/messaging';
 import { displayNotification } from './src/utils/PushNotificationService.js';
+import 'react-native-get-random-values';
 
 if (typeof __DEV__ !== 'undefined' && __DEV__) {
-  console.log = () => { };
+  // console.log = () => { };
   console.warn = () => { };
   console.error = () => { };
   console.info = () => { };
@@ -21,14 +22,10 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Background message:', remoteMessage);
 
   const title =
-    remoteMessage?.notification?.title ||
-    remoteMessage?.data?.title ||
-    '';
+    remoteMessage?.data?.title || 'Notification';
 
   const body =
-    remoteMessage?.notification?.body ||
-    remoteMessage?.data?.body ||
-    '';
+    remoteMessage?.data?.body || '';
 
   await displayNotification(title, body, remoteMessage?.data);
 });

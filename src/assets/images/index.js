@@ -5,6 +5,7 @@ const welcome2Image = require('./Welcome2.png');
 const welcome3Image = require('./Welcome3.png');
 const welcome_background = require('./Welcome_bg.png');
 const AppLogo = require('./AppLogo.png');
+const AppBackground = require('./AppBackground.png');
 
 export {
   splash_background,
@@ -13,5 +14,6 @@ export {
   welcome2Image,
   welcome3Image,
   welcome_background,
-  AppLogo
+  AppLogo,
+  AppBackground
 };

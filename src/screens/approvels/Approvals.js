@@ -48,9 +48,9 @@ export default function Approvals() {
   const [rejectReason, setRejectReason] = useState('');
   const [selectedApprovalId, setSelectedApprovalId] = useState(null);
   const [reasonError, setReasonError] = useState(false);
-   const [selectedStatus, setSelectedStatus] = useState(
-      APPROVALS_STATUS[0]
-    );
+  const [selectedStatus, setSelectedStatus] = useState(
+    APPROVALS_STATUS[0]
+  );
 
   useEffect(() => {
     if (isFocused && UsersigninData?.user_id) {
@@ -104,7 +104,7 @@ export default function Approvals() {
         approval_request_id: id,
         user_id: UsersigninData.user_id,
       };
-      
+
       const result = await dispatch(
         ApproveActionApprove(payload)
       ).unwrap();
@@ -158,14 +158,14 @@ export default function Approvals() {
         ApproveActionReject(payload)
       ).unwrap();
 
-       if (result?.status === "success") {
-         showMessage({
+      if (result?.status === "success") {
+        showMessage({
           icon: 'success',
           message: result?.message,
           type: 'success',
         });
 
-        
+
         setRejectReason('');
         setReasonError(false);
 
@@ -192,14 +192,14 @@ export default function Approvals() {
   };
 
   const filteredApprovals = useMemo(() => {
-      if (!selectedStatus || selectedStatus.id === 'all') {
-        return GetApprovalListData;
-      }
-      return GetApprovalListData?.filter(item => {
-        const itemLabel = APPROVALS_STATUS[item.state]; 
-        return itemLabel === selectedStatus.name;
-      });
-    }, [GetApprovalListData, selectedStatus]);
+    if (!selectedStatus || selectedStatus.id === 'all') {
+      return GetApprovalListData;
+    }
+    return GetApprovalListData?.filter(item => {
+      const itemLabel = APPROVALS_STATUS[item.state];
+      return itemLabel === selectedStatus.name;
+    });
+  }, [GetApprovalListData, selectedStatus]);
 
   const renderItem = ({ item }) => {
     const status = item.state?.toLowerCase();
@@ -271,13 +271,13 @@ export default function Approvals() {
     <CommonView>
       <CommonHeader title={t('Approvals.Approvals')} />
       <View style={styles.headerWrapper}>
-            <Text style={styles.sectionTitle}>{t('Approvals.Approvals')}</Text>
-            <CommonFilterDropdown
-              data={APPROVALS_STATUS_FILTER_OPTIONS}
-              selectedItem={selectedStatus}
-              setSelectedItem={setSelectedStatus}
-            />
-          </View>
+        <Text style={styles.sectionTitle}>{t('Approvals.Approvals')}</Text>
+        <CommonFilterDropdown
+          data={APPROVALS_STATUS_FILTER_OPTIONS}
+          selectedItem={selectedStatus}
+          setSelectedItem={setSelectedStatus}
+        />
+      </View>
       <FlatList
         data={filteredApprovals}
         keyExtractor={(item) => item.id.toString()}
@@ -290,7 +290,7 @@ export default function Approvals() {
           />
         }
         ListEmptyComponent={
-          <View style={{ paddingTop: responsiveHeight(30) }}>
+          <View style={{ paddingTop: responsiveHeight(10) }}>
             <NodataFound titleText={t('comman.No_records_found')} />
           </View>
         }
@@ -350,7 +350,7 @@ export default function Approvals() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <ActivityIndicator animating={isApproveActionFetching}/>
+      <ActivityIndicator animating={isApproveActionFetching} />
     </CommonView>
   );
 }
@@ -561,7 +561,7 @@ const styles = StyleSheet.create({
     fontSize: FontSize.Font14,
     color: COLOR.White1,
   },
-    headerWrapper: {
+  headerWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 30,

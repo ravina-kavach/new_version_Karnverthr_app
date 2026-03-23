@@ -58,6 +58,9 @@ import KeyIcon from './KeyIcon.svg'
 import SupportIcon from './SupportIcon.svg'
 import DeleteIcon from './DeleteIcon.svg'
 import NotificationIcon from './NotificationIcon.svg'
+import AppBackgroundSvg from './AppBackgroundSvg.svg'
+import RightIcon from './RightIcon.svg'
+import LeftIcon from './LeftIcon.svg'
 export {
   Check,
   FillCheck,
@@ -118,5 +121,8 @@ export {
   SupportIcon,
   DeleteIcon,
   TimeSheeetIcon,
-  NotificationIcon
+  NotificationIcon,
+  AppBackgroundSvg,
+  RightIcon,
+  LeftIcon
 };

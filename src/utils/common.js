@@ -1,26 +1,48 @@
 import React from 'react';
-import { Text, StyleSheet, StatusBar, View, Platform } from 'react-native';
+import { Text, StyleSheet, StatusBar, View, Platform, ImageBackground } from 'react-native';
 import { FontSize } from './metrics';
 import { COLOR } from '../theme/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlobalStyle from '../theme/globalstyle';
 import { GlobalFonts } from '../theme/typography'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppBackgroundSvg } from '../assets/svgs';
 
-export const CommonView = props => {
+export const CommonView = ({
+  style,
+  children,
+  statusBarColor = COLOR.Black1,
+  showBackground = true,
+}) => {
   const insets = useSafeAreaInsets();
+
   return (
     <View
       style={{
         ...GlobalStyle.flexContainer,
-        ...props.style
-        // paddingBottom: insets.bottom,
+        ...style,
       }}
     >
-      <StatusBar translucent colo backgroundColor={props?.statusBarColor ? props.statusBarColor : COLOR.White1} barStyle="dark-content" />
-      {props.children}
-    </View>
+      {showBackground && (
+        <AppBackgroundSvg
+          style={{
+            position: 'absolute',
+            width: '100%',
+            opacity: 0.8,
+            height: '100%',
+            bottom: 10,
+          }}
+        />
+      )}
 
+      <StatusBar
+        translucent
+        backgroundColor={statusBarColor}
+        barStyle="dark-content"
+      />
+
+      {children}
+    </View>
   );
 };
 
@@ -48,7 +70,8 @@ export const commonStyle = StyleSheet.create({
     marginBottom: 6,
     color: COLOR.Secondary,
     fontSize: FontSize.Font24,
-    ...GlobalFonts.title
+    ...GlobalFonts.title,
+
   },
   subtitleText: {
     marginBottom: 6,
@@ -81,12 +104,14 @@ export const commonStyle = StyleSheet.create({
     color: COLOR.dark2,
     marginBottom: 3,
     fontWeight: "400",
+
   },
   Valide: {
     fontSize: 15,
     color: COLOR.Red,
     fontWeight: "400",
   },
+
   input: {
     height: 50,
     fontSize: 15,

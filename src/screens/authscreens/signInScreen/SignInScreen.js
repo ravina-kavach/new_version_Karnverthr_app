@@ -54,7 +54,7 @@ function SignInScreen() {
     navigatePrivacyPolicy
   } = useSignInScreen();
   return (
-    <CommonView style={styles.mainContainer}>
+    <CommonView style={styles.mainContainer} showBackground={false}>
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
